@@ -1,0 +1,207 @@
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@tailwind base;
+@tailwind components;
+@tailwind screens;
+@tailwind utilities;
+@tailwind variants;
+html {
+    font-size: 13px;
+}
+body {
+    @apply text-gray-800 bg-slate-50 dark:bg-gray-700 dark:text-slate-100;
+    font-size: 1rem;
+    min-width: 320px
+}
+html, body, #app {
+    @apply w-full h-full overflow-hidden
+}
+@layer base {
+    *, ::before, ::after {
+        @apply border-slate-200 dark:border-slate-700
+    }
+    body {
+        @apply text-gray-800 bg-white dark:text-gray-300 dark:bg-gray-700
+    }
+    /**
+     * Forms
+     */
+    [type='checkbox'], [type='radio'], [type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select, button, [type="button"], [role="button"] {
+        @apply appearance-none block w-full px-3 py-1.5 rounded bg-white border border-inherit dark:text-slate-200 dark:border-inherit dark:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-offset-0 focus:ring-blue-500 focus:outline-0 transition
+    }
+/*    .dark input, .dark select, .dark textarea, .dark button {
+        color-scheme: dark
+    }*/
+    input.focus, select.focus, textarea.focus, button.focus {
+        @apply border-blue-500 dark:border-blue-500 ring-1 ring-offset-0 ring-blue-500 outline-0
+    }
+    [type='checkbox'], [type='radio'] {
+        @apply inline-block w-5 h-5 p-0 shrink-0 rounded bg-contain bg-no-repeat checked:bg-center focus:ring-1 checked:bg-blue-500 checked:border-blue-500 dark:checked:bg-blue-500 transition-all;
+        background-position: center -1em;
+        background-size: 80%;
+    }
+    [type='radio'] {
+        @apply bg-white rounded-full;
+        background-size: 60%;
+    }
+    [type='checkbox']:checked {
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22white%22%20viewBox%3D%220%200%2024%2019%22%3E%3Cpath%20d%3D%22M24%204v1L10%2018H8l-8-8V8l3-2h2l4%205L19%200h2l3%203v1Z%22%2F%3E%3C%2Fsvg%3E");
+    }
+    [type="radio"]:checked {
+        background-image: url("data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22white%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22m24%2012-2%206a12%2012%200%200%201-16%204A12%2012%200%200%201%202%206a12%2012%200%200%201%2016-4%2012%2012%200%200%201%206%2010Z%22%2F%3E%3C%2Fsvg%3E");
+    }
+    input::-webkit-calendar-picker-indicator {
+        @apply opacity-50 cursor-pointer
+    }
+    input[list]::-webkit-calendar-picker-indicator {
+        @apply opacity-0
+    }
+    select, input[list], .app-appearance-select {
+        @apply !pr-8 bg-no-repeat bg-right;
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22grey%22%20viewBox%3D%220%200%2024%2014%22%3E%3Cpath%20d%3D%22M24%202v1L13%2014a1%201%200%200%201-2%200L0%203a1%201%200%200%201%200-2l1-1a1%201%200%200%201%202%200l9%2010%209-10a1%201%200%200%201%202%200l1%201v1Z%22%2F%3E%3C%2Fsvg%3E");
+        background-size: 0.8em;
+        background-position: calc(100% - 0.5em) center;
+    }
+    select:focus, input[list]:focus, .app-appearance-select:focus {
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22royalblue%22%20viewBox%3D%220%200%2024%2014%22%3E%3Cpath%20d%3D%22M24%202v1L13%2014a1%201%200%200%201-2%200L0%203a1%201%200%200%201%200-2l1-1a1%201%200%200%201%202%200l9%2010%209-10a1%201%200%200%201%202%200l1%201v1Z%22%2F%3E%3C%2Fsvg%3E");
+    }
+    button, [type="button"], [role="button"] {
+        @apply inline-flex w-auto px-3 py-1 cursor-pointer font-medium border hover:bg-slate-50 active:bg-slate-100 focus:ring-blue-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-600
+    }
+    .btn-lg, .input-lg {
+        @apply px-6 py-3 rounded border-2 text-lg font-medium focus:ring-0
+    }
+    [type='checkbox'].input-lg, [type='radio'].input-lg {
+        @apply p-0 w-6 h-6
+    }
+    input.invalid, select.invalid, textarea.invalid {
+        @apply !border-rose-600
+    }
+    .btn-sm {
+        @apply inline-flex items-center text-sm px-2 py-1 min-h-[2rem] rounded whitespace-nowrap select-none cursor-pointer transition
+    }
+    .btn-sm:disabled {
+        cursor: none;
+    }
+    .btn-green {
+        @apply bg-green-500 border-transparent text-white hover:bg-green-600 active:bg-green-600 focus:border-green-500 focus:ring-green-500 dark:bg-green-600 dark:border-transparent dark:hover:bg-green-700 dark:active:bg-green-700 dark:focus:border-green-500 dark:focus:ring-green-500
+    }
+    .btn-green.disabled, .btn-green:disabled {
+        @apply cursor-none
+    }
+    .btn-red {
+        @apply bg-rose-600 border-transparent text-white hover:bg-rose-700 active:bg-rose-700 focus:border-rose-500 focus:ring-rose-500 dark:bg-rose-700 dark:border-transparent dark:hover:bg-rose-800 dark:active:bg-rose-800 dark:focus:border-rose-600 dark:focus:ring-rose-600
+    }
+    .btn-blue {
+        @apply !bg-blue-600 border-transparent dark:border-transparent text-white hover:!bg-blue-700 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-blue-500
+    }
+    .btn-outline-red {
+        @apply border-2 focus:ring-1 border-rose-600 text-rose-600 hover:bg-rose-600 hover:border-rose-700 hover:text-white focus:border-rose-600 focus:ring-rose-600
+    }
+    .btn-gray {
+        @apply bg-slate-200 border-transparent dark:border-transparent text-gray-900 dark:text-gray-100 hover:bg-slate-100 dark:bg-gray-600 dark:hover:bg-gray-500
+    }
+    .btn-light {
+        @apply bg-slate-50 border-transparent dark:border-transparent text-gray-900 dark:text-gray-50 hover:bg-white dark:bg-gray-400 hover:dark:bg-gray-300
+    }
+    /**
+     * Icons
+     */
+    .fa {
+        @apply relative
+    }
+    .fa > .fa {
+        @apply absolute right-0 bottom-0 text-xs
+    }
+    .fa > .fa-lock {
+        @apply text-rose-600
+    }
+}
+/**
+ * Alerts
+ */
+.app-alert {
+    @apply rounded p-4
+}
+.app-alert__blue {
+    @apply bg-blue-500/40
+}
+.app-alert__info {
+    @apply bg-blue-500/40
+}
+.app-alert__error {
+    @apply bg-rose-600/40
+}
+.app-alert__warning {
+    @apply bg-amber-500/40
+}
+.app-alert code {
+    @apply text-fuchsia-500 dark:text-fuchsia-400
+}
+input:-webkit-autofill {
+    -webkit-text-fill-color: rgb(203 213 225 / 1);
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    @apply bg-clip-text
+}
+/**
+ * Notify
+ */
+.app-notifications {
+    @apply !top-1.5 break-words
+}
+.app-notifications .vue-notification {
+    @apply rounded
+}
+.app-notifications .vue-notification.error {
+    @apply bg-rose-600 border-rose-700
+}
+/**
+ * Transition
+ */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+.fade-scale-enter-active,
+.fade-scale-leave-active {
+    transition: 0.15s ease;
+}
+.fade-scale-enter-from,
+.fade-scale-leave-to {
+    opacity: 0;
+    transform: scale(0.85);
+    transition: 0.15s ease;
+}
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.15s ease;
+}
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+/**
+ * Scrollbar
+ */
+::-webkit-scrollbar, *::-webkit-scrollbar, ::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb {
+    @apply w-2 h-2 bg-gray-50 dark:bg-gray-800 rounded-xl
+}
+::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb, :hover::-webkit-scrollbar-thumb, *:hover::-webkit-scrollbar-thumb {
+    @apply ring-inset ring ring-gray-500/50
+}
+::-webkit-scrollbar-thumb:hover, *::-webkit-scrollbar-thumb:hover {
+    @apply ring-inset ring ring-gray-600/50 dark:ring-gray-300/50
+}
+::-webkit-scrollbar-corner, *::-webkit-scrollbar-corner {
+    @apply bg-transparent
+}
+::selection, select option:checked, select option:hover, select optgroup option:hover, select:focus > option:checked {
+    @apply bg-blue-500 text-white
+}
