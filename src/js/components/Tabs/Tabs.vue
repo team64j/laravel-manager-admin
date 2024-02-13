@@ -63,7 +63,7 @@ export default {
         tab.loaded = tab.active
       })
 
-      if (!this.active) {
+      if (!this.active && this.data[0]) {
         this.active = this.data[0].id
         this.data[0].active = true
         this.data[0].loaded = true

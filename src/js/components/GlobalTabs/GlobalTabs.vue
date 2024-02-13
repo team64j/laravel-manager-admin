@@ -112,7 +112,7 @@ export default {
     closeTab (callback) {
       const route = typeof callback === 'object' ? callback : this.$route
       const tab = this.$store.getters['GlobalTabs/find'](route)
-      if (tab?.changed && !confirm(`warning_not_saved`)) {
+      if (tab?.changed && !confirm(this.$store.get('lang.warning_not_saved'))) {
         return
       }
 
@@ -128,7 +128,7 @@ export default {
 
     toTab (data) {
       const tab = this.$store.getters['GlobalTabs/find'](this.$route)
-      if (tab?.changed && !confirm(`warning_not_saved`)) {
+      if (tab?.changed && !confirm(this.$store.get('lang.warning_not_saved'))) {
         return
       }
       this.$store.dispatch('GlobalTabs/to', data)

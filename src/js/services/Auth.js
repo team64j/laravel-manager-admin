@@ -5,7 +5,7 @@ import * as vue from 'vue'
 const auth = {
   auth (callback) {
     if (store.getters.get('Storage.token')) {
-      axios.post('bootstrap').then(({ data: { data } }) => this.app(data, callback)).catch(() => this.login(callback))
+      axios.post('bootstrap').then(({ data }) => this.app(data, callback)).catch(() => this.login(callback))
     } else {
       this.login(callback)
     }
@@ -17,22 +17,20 @@ const auth = {
       )
     })
   },
-  app (data, callback) {
-    if (data.routes) {
+  app (response, callback) {
+    if (response.data.routes) {
       const component = () => import('../pages/Default.vue')
-      for (const route of data.routes) {
+      for (const route of response.data.routes) {
         router.addRoute({ ...route, component })
       }
 
-      store.dispatch('set', { config: data.config || {} }).then()
+      store.dispatch('set', { config: response.data.config || {} }).then()
+      store.dispatch('set', { lang: response.data.lang || {} }).then()
 
-      document.title = data.config['site_name']
-      const app = vue.createApp(vue.defineAsyncComponent(() => import('../layouts/Default.vue')), {
-        menu: data?.menu,
-        sidebar: data?.sidebar
-      })
+      document.title = response.data.config['site_name']
+      const app = vue.createApp(vue.defineAsyncComponent(() => import('../layouts/Default.vue')), response.layout)
 
-      data.assets && this.assets(data.assets)
+      response.data.assets && this.assets(response.data.assets)
 
       Object.entries(import.meta.glob('../components/*/*.vue', { eager: true })).forEach(([, { default: module }]) => {
         if (module?.['__isStatic']) {

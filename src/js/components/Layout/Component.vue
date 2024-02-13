@@ -74,7 +74,7 @@ export default {
         return
       }
 
-      console.log(component.name)
+      //console.log(component.name)
 
       const slots = data.slots && this.initLayout(data.slots)
       const attrs = toRaw(data.attrs || {})

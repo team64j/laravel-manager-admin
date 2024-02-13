@@ -1,6 +1,6 @@
 const storageKey = 'CMS'
-const storageVersion = '1.4'
-let state = JSON.parse(localStorage[storageKey] || '{ "version": "' + storageVersion + '" }')
+const storageVersion = 1.5
+let state = JSON.parse(localStorage[storageKey] || '{ "version": ' + storageVersion + ' }')
 
 if (!state.version || state.version < storageVersion) {
   state = {
