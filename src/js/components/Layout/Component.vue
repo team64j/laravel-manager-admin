@@ -67,14 +67,18 @@ export default {
       return data
     },
     createComponent (data) {
-      let component = this.$.appContext.components[data.component] ||
-          (data.component && (new Function('return ' + data.component + '')).call(this))
+      let component
+
+      try {
+        component = this.$.appContext.components[data.component] ||
+            (data.component && (new Function('return ' + data.component + '')).call(this))
+      } catch (exception) {
+        return
+      }
 
       if (!component) {
         return
       }
-
-      //console.log(component.name)
 
       const slots = data.slots && this.initLayout(data.slots)
       const attrs = toRaw(data.attrs || {})

@@ -1,12 +1,5 @@
 const storageKey = 'laravel-manager-admin'
-const storageVersion = 1.5
-let state = JSON.parse(localStorage[storageKey] || '{ "version": ' + storageVersion + ' }')
-
-if (!state.version || state.version < storageVersion) {
-  state = {
-    version: storageVersion
-  }
-}
+let state = JSON.parse(sessionStorage[storageKey] || '{}')
 
 const mutations = {
   set (state, data) {
@@ -23,18 +16,10 @@ const mutations = {
       Object.assign(state, data)
     }
 
-    localStorage[storageKey] = JSON.stringify(state)
+    sessionStorage[storageKey] = JSON.stringify(state)
   },
-
-  del (state, key) {
-    if (state[key] !== undefined) {
-      delete state[key]
-    }
-    localStorage[storageKey] = JSON.stringify(state)
-  },
-
-  update () {
-    localStorage[storageKey] = JSON.stringify(state)
+  clear () {
+    sessionStorage[storageKey] = JSON.stringify(state = {})
   }
 }
 
@@ -42,13 +27,8 @@ const actions = {
   set ({ commit }, data) {
     commit('set', data)
   },
-
-  del ({ commit }, key) {
-    commit('del', key)
-  },
-
-  update ({ commit }) {
-    commit('update')
+  clear ({ commit }) {
+    commit('clear')
   }
 }
 

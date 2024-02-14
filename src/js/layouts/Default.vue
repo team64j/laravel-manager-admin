@@ -28,7 +28,7 @@ export default {
         this.$store.getters['get']('Storage.root.dark', false)
     )
 
-    this.$refs.sidebar.$el.classList.toggle(
+    this.$refs.sidebar?.$el.classList.toggle(
         'app-sidebar__hidden',
         !this.$store.getters['get']('Storage.root.sidebarShow', true)
     )
@@ -106,15 +106,17 @@ export default {
     <search ref="search"/>
     <global-menu :data="menu" @action="action"/>
     <div class="app-main">
-      <sidebar ref="sidebar" class="w-80 shrink-0 shadow-2xl md:shadow overflow-hidden"
-               :style="{ width: `${sidebarWidth}px` }"
-               :layout="sidebar"
-               @action="action"/>
-      <div class="relative z-10 md:z-20 group shrink-0 w-0 cursor-col-resize" @mousedown="splitterDown">
-        <div class="absolute h-full w-1.5 -ml-0.5"/>
-        <div class="absolute h-full w-0.5 group-hover:bg-blue-500 transition"/>
-        <div class="fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize group-active:block"/>
-      </div>
+      <template v-if="sidebar?.slots">
+        <sidebar ref="sidebar" class="w-80 shrink-0 shadow-2xl md:shadow overflow-hidden"
+                 :style="{ width: `${sidebarWidth}px` }"
+                 :layout="sidebar"
+                 @action="action"/>
+        <div class="relative z-10 md:z-20 group shrink-0 w-0 cursor-col-resize" @mousedown="splitterDown">
+          <div class="absolute h-full w-1.5 -ml-0.5"/>
+          <div class="absolute h-full w-0.5 group-hover:bg-blue-500 transition"/>
+          <div class="fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize group-active:block"/>
+        </div>
+      </template>
       <global-tabs class="grow flex flex-col overflow-hidden"/>
     </div>
     <tooltip/>

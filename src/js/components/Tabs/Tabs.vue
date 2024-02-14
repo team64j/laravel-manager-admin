@@ -270,7 +270,7 @@ export default {
   @apply opacity-20 pointer-events-none
 }
 .app-tabs .app-tabs__page {
-  @apply relative flex flex-wrap items-start w-full overflow-auto grow p-6 rounded bg-white dark:bg-gray-750
+  @apply relative flex flex-wrap items-start content-start w-full overflow-auto grow p-6 rounded bg-white dark:bg-gray-750
 }
 .app-tabs__vertical {
   @apply flex-row p-0 self-stretch overflow-visible

@@ -45,7 +45,7 @@ export default {
       keyStorage: key,
       propUrl: this.url ?? (this.$route?.['meta']?.url || (this.$route['path'])) ?? null,
       filterTimer: 0,
-      settings: this.$store.getters['get'](`Storage.${key}`, {})
+      settings: this.$store.getters.get(`Session.${key}`, {})
     }
   },
   mounted () {
@@ -258,7 +258,7 @@ export default {
         this.settings.closed.push(category.id)
       }
 
-      this.$store.dispatch('set', { ['Storage.' + this.keyStorage]: { closed: this.settings.closed } })
+      this.$store.dispatch('set', { ['Session.' + this.keyStorage]: { closed: this.settings.closed } })
     },
     hasClosedCategory (category) {
       return this.settings?.closed?.includes(category.id)

@@ -109,6 +109,7 @@ export default {
           this.$store.dispatch('set', { ['Storage.lang']: this.lang.key })
           this.$store.dispatch('set', { ['Storage.token']: data['access_token'] })
           this.$store.dispatch('set', { ['Storage.tokenExpiresIn']: data['expires_in'] })
+          this.$store.dispatch('Session/clear')
 
           this.$router.push('/').then(() => location.reload())
         }

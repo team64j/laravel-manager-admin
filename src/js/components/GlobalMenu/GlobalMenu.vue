@@ -196,7 +196,7 @@ export default {
   @apply -rotate-90
 }
 .app-global-menu li .app-global-menu__pagination {
-  @apply flex grow items-center px-3 py-2 text-blue-500 text-sm select-none
+  @apply flex grow items-center px-3 py-2 text-blue-500 dark:text-blue-400 text-sm select-none
 }
 .app-global-menu li .app-global-menu__pagination .app-global-menu__prev, .app-global-menu li .app-global-menu__pagination .app-global-menu__next {
   @apply px-2 py-1 rounded text-blue-500 cursor-pointer hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-white/10
@@ -205,7 +205,7 @@ export default {
   @apply opacity-20 pointer-events-none
 }
 .app-global-menu li .app-global-menu__pagination span {
-  @apply grow text-center opacity-80
+  @apply grow text-center
 }
 .app-global-menu li .app-global-menu__filter {
   @apply relative w-full px-3 py-1
