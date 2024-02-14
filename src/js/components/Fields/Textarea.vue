@@ -8,12 +8,12 @@
       </label>
       <slot name="label"/>
     </div>
-    <textarea v-model="model" :id="ID" class="resize-none" :rows="rows" :style="{ height }"/>
+    <textarea v-model="model" :id="ID" :class="[resize ? 'resize-y' : 'resize-none']" class="min-h-10" :rows="rows" :style="{ height }"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
     <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </div>
   <template v-else>
-    <textarea v-model="model" :id="ID" class="resize-none" :rows="rows" :style="{ height }"/>
+    <textarea v-model="model" :id="ID" :class="[resize ? 'resize-y' : 'resize-none']" class="min-h-10" :rows="rows" :style="{ height }"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
     <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </template>
@@ -35,6 +35,10 @@ export default {
     rows: {
       type: Number,
       default: 2
+    },
+    resize: {
+      type: Boolean,
+      default: true
     }
   },
 
