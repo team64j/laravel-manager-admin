@@ -273,7 +273,7 @@ export default {
   @apply relative flex flex-wrap items-start content-start w-full overflow-auto grow p-6 rounded bg-white dark:bg-gray-750
 }
 .app-tabs__vertical {
-  @apply flex-row p-0 self-stretch overflow-visible
+  @apply flex-row p-0 h-full self-stretch overflow-visible
 }
 .app-tabs__vertical > .app-tabs__rows {
   @apply grow-0 h-auto w-auto mb-0 overflow-visible

@@ -102,6 +102,8 @@ export default {
   },
 
   data () {
+    const key = `tree.` + this.id.toLowerCase()
+
     this.iconsDefault = {
       default: 'far fa-file',
       folder: 'far fa-folder',
@@ -109,6 +111,7 @@ export default {
     }
 
     return {
+      keyStorage: key,
       loading: false,
       data: null,
       meta: null,
@@ -155,10 +158,17 @@ export default {
   // },
 
   mounted () {
+    Object.assign(this.propSettings, this.$store.getters.get(`Session.${this.keyStorage}`, {}))
     this.get()
   },
 
   watch: {
+    propSettings: {
+      handler (data) {
+        this.$store.dispatch('set', { ['Session.' + this.keyStorage]: data })
+      },
+      deep: true
+    },
     '$store.state.actionUpdate' () {
       if (this.$store.state.route === this.dataRoute.name) {
         switch (this.$store.state.action) {
