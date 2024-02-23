@@ -98,7 +98,10 @@ export default {
     search: Boolean,
     menu: Object,
     contextMenu: Object,
-    settings: Object
+    settings: {
+      type: Object,
+      default: {}
+    }
   },
 
   data () {
@@ -116,7 +119,6 @@ export default {
       data: null,
       meta: null,
       needReload: false,
-      propSettings: Object.assign({}, this.settings || {}),
       propSearch: this.search,
       dataRoute: typeof this.route === 'object' ? this.route : {
         name: this.route,
@@ -158,12 +160,12 @@ export default {
   // },
 
   mounted () {
-    Object.assign(this.propSettings, this.$store.getters.get(`Session.${this.keyStorage}`, {}))
+    Object.assign(this.settings, this.$store.getters.get(`Session.${this.keyStorage}`, {}))
     this.get()
   },
 
   watch: {
-    propSettings: {
+    settings: {
       handler (data) {
         this.$store.dispatch('set', { ['Session.' + this.keyStorage]: data })
       },
@@ -230,7 +232,6 @@ export default {
       this.loader(1)
       axios.get(this.url, {
         params: {
-          parent: this.propSettings?.parent ?? null,
           settings: this.settings,
           filter: this.filter
         }
@@ -267,8 +268,7 @@ export default {
       } else {
         axios.get(this.url, {
           params: {
-            parent: node['id'] ?? node['key'],
-            settings: this.propSettings
+            settings: Object.assign({}, this.settings, { parent: node['id'] ?? node['key'] })
           }
         }).then(({ data }) => {
           this.setOpened(node)
@@ -284,28 +284,28 @@ export default {
     setOpened (node) {
       const id = node['id'] ?? node['key']
 
-      if (!this.propSettings.opened) {
-        this.propSettings.opened = []
+      if (!this.settings.opened) {
+        this.settings.opened = []
       }
 
-      const index = this.propSettings.opened.indexOf(id)
+      const index = this.settings.opened.indexOf(id)
 
       if (!~index) {
-        this.propSettings.opened.push(id)
+        this.settings.opened.push(id)
       }
     },
 
     removeOpened (node) {
       const id = node['id'] ?? node['key']
 
-      if (!this.propSettings.opened) {
-        this.propSettings.opened = []
+      if (!this.settings.opened) {
+        this.settings.opened = []
       }
 
-      const index = this.propSettings.opened.indexOf(id)
+      const index = this.settings.opened.indexOf(id)
 
       if (~index) {
-        this.propSettings.opened.splice(index, 1)
+        this.settings.opened.splice(index, 1)
         this.removeChildOpened(node)
       }
     },
@@ -315,14 +315,14 @@ export default {
         const id = node['id'] ?? node['key']
 
         if (node['folder'] && node['data']) {
-          if (!this.propSettings.opened) {
-            this.propSettings.opened = []
+          if (!this.settings.opened) {
+            this.settings.opened = []
           }
 
-          const index = this.propSettings.opened.indexOf(id)
+          const index = this.settings.opened.indexOf(id)
 
           if (~index) {
-            this.propSettings.opened.splice(index, 1)
+            this.settings.opened.splice(index, 1)
             this.removeChildOpened(node)
           }
         }
@@ -334,7 +334,7 @@ export default {
       this.data['loading'] = true
       axios.get(url, {
         params: {
-          settings: this.propSettings
+          settings: this.settings
         }
       }).then(({ data }) => {
         this.meta['pagination']['next'] = data['meta']?.pagination?.['next'] || null
@@ -499,8 +499,8 @@ export default {
         }
       }
 
-      if (this.propSettings?.keyTitle && data[this.propSettings.keyTitle] !== undefined) {
-        data[this.keyTitle] = data[this.propSettings.keyTitle]
+      if (this.settings?.keyTitle && data[this.settings.keyTitle] !== undefined) {
+        data[this.keyTitle] = data[this.settings.keyTitle]
       }
 
       return data
