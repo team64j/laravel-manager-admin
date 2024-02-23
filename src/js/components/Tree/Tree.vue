@@ -41,6 +41,7 @@ import TreeNode from './TreeNode.vue'
 import TreeMenuItem from './TreeMenuItem.vue'
 import TreeSearch from './TreeSearch.vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
+import { notify } from '@kyvg/vue3-notification'
 
 export default {
   __isStatic: true,
@@ -183,6 +184,15 @@ export default {
           case 'delete':
             this.deleteNode(this.$store.state.data, this.data)
             break
+        }
+      }
+    },
+    '$store.state.treeSelect' (select) {
+      if (this.$route['name'] === this.dataRoute.name) {
+        if (select) {
+          this.$el.querySelector('.app-tree__body').classList.add('focused')
+        } else {
+          this.$el.querySelector('.app-tree__body').classList.remove('focused')
         }
       }
     }
@@ -359,8 +369,15 @@ export default {
         if (this.$store.getters.get('treeSelect') && this.$route['name'] === this.dataRoute.name) {
           const context = this.$store.getters.get('context')
           const event = this.$store.getters.get('event')
-          context.model = node['id']
-          this.$nextTick(() => event.target.value = node['title'])
+          if (context.modelValue === node['id']) {
+            notify({
+              text: 'Error select tree node',
+              type: 'error'
+            })
+          } else {
+            context.model = node['id']
+            this.$nextTick(() => event.target.value = node['id'] + ' - ' + node['title'])
+          }
         } else {
           this.$parent.$emit('action', 'pushRouter', {
             ...this.dataRoute,
@@ -480,6 +497,9 @@ export default {
 <style>
 .app-tree {
   @apply relative h-full w-full overflow-hidden flex flex-col flex-wrap cursor-default
+}
+.app-tree .app-tree__body.focused {
+  @apply ring-2 ring-inset ring-blue-500
 }
 .app-tree .app-tree__body {
   @apply h-0 grow w-full relative transition-all duration-200

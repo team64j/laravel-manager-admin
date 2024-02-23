@@ -9,7 +9,7 @@
       <slot name="label"/>
     </div>
     <div class="relative">
-      <div v-if="loading" class="absolute left-0 top-0 my-1 mx-2">
+      <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2">
         <app-loader-icon/>
       </div>
 
@@ -81,7 +81,7 @@
 <script>
 import CheckboxComponent from './Checkbox.vue'
 import Field from './Field.vue'
-import AppLoaderIcon from '@/components/Layout/LoaderIcon.vue'
+import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
   __isStatic: true,

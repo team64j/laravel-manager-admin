@@ -11,7 +11,7 @@ export default {
   props: ['menu', 'sidebar'],
   data () {
     return {
-      sidebarWidth: this.$store.getters['Storage/get']('sidebarWidth', 325)
+      sidebarWidth: this.$store.getters.get('Storage.sidebarWidth', 325)
     }
   },
   watch: {
@@ -25,12 +25,12 @@ export default {
   mounted () {
     document.documentElement.classList.toggle(
         'dark',
-        this.$store.getters['get']('Storage.root.dark', false)
+        this.$store.getters.get('Storage.root.dark', false)
     )
 
     this.$refs.sidebar?.$el.classList.toggle(
         'app-sidebar__hidden',
-        !this.$store.getters['get']('Storage.root.sidebarShow', true)
+        !this.$store.getters.get('Storage.root.sidebarShow', true)
     )
 
     /**
@@ -96,6 +96,18 @@ export default {
       }
 
       this.$router.push(route).then(callback)
+    },
+    inputTreeSelect (event, context) {
+      this.$store.dispatch('set', { event, context })
+
+      const input = context.$el.querySelector('input')
+      if (input.classList.contains('focus')) {
+        input.classList.remove('focus')
+        this.$store.dispatch('set', { treeSelect: false })
+      } else {
+        input.classList.add('focus')
+        this.$store.dispatch('set', { treeSelect: true })
+      }
     }
   }
 }
@@ -117,7 +129,7 @@ export default {
           <div class="fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize group-active:block"/>
         </div>
       </template>
-      <global-tabs class="grow flex flex-col overflow-hidden"/>
+      <global-tabs class="grow flex flex-col overflow-hidden" @action="action"/>
     </div>
     <tooltip/>
   </div>
