@@ -61,7 +61,7 @@ axios.interceptors['response'].use(
     if (error.response?.data?.message) {
       if (status === 422) {
         notify({
-          text: error.response.data.message,
+          text: error.response.data.message.replace(/\r\n|\r|\n|\\n/g, '<br>'),
           type: 'error'
         })
       } else {

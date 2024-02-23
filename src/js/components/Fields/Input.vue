@@ -10,7 +10,7 @@
       <slot name="label"/>
     </div>
     <div class="relative" :class="{ 'app-input__number': type === 'number' }">
-      <div v-if="loading" class="absolute left-0 top-0 my-1 mx-2 flex items-center justify-center"
+      <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
            :class="[type === 'button' ? 'right-0 bottom-0' : '']">
         <app-loader-icon/>
       </div>
@@ -36,7 +36,7 @@
     <slot name="item"/>
   </div>
   <div v-else class="relative" :class="[$props.class, type === 'number' ? 'app-input__number' : '']">
-    <div v-if="loading" class="absolute left-0 top-0 my-1 mx-2 flex items-center justify-center"
+    <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
          :class="[type === 'button' ? 'right-0 bottom-0' : '']">
       <app-loader-icon/>
     </div>

@@ -41,7 +41,6 @@ import TreeNode from './TreeNode.vue'
 import TreeMenuItem from './TreeMenuItem.vue'
 import TreeSearch from './TreeSearch.vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
-import { notify } from '@kyvg/vue3-notification'
 
 export default {
   __isStatic: true,
@@ -232,7 +231,7 @@ export default {
       axios.get(this.url, {
         params: {
           parent: this.propSettings?.parent ?? null,
-          settings: this.propSettings,
+          settings: this.settings,
           filter: this.filter
         }
       }).then(({ data }) => {
@@ -350,11 +349,40 @@ export default {
     },
 
     click (event, node, category) {
-      if ((category && node['folder'] || node['category']) && !node['hideChildren']) {
+      if (this.$store.getters.get('treeSelect') && this.$route['name'] === this.dataRoute.name) {
+        const context = this.$store.getters.get('context')
+        const event = this.$store.getters.get('event')
+
+        this.loader(1)
+        context.loading = true
+
+        const path = this.$router.resolve({
+          name: this.route,
+          params: {
+            id: 'parents'
+          }
+        }).path + '/' + this.$route['params']['id'] + '/' + node['id']
+
+        axios.get(path).then(({ data: { data } }) => {
+          context.loading = false
+          context.model = data['id']
+          this.$nextTick(() => event.target.value = data['id'] + ' - ' + data['title'])
+          this.$store.dispatch('set', { treeSelect: false })
+        }).catch(() => {
+          setTimeout(() => event.target.classList.add('focus'), 0)
+          this.$store.dispatch('set', { treeSelect: true })
+        }).finally(() => {
+          this.loader(0)
+          context.loading = false
+        })
+        return
+      }
+
+      if (((category && node['folder']) || node['category']) && !node['hideChildren']) {
         this.toggle(node)
       }
 
-      if ((this.category && node['folder']) || node['disabled']) {
+      if (((this.category && node['folder']) || node['category']) || node['disabled']) {
         return
       }
 
@@ -366,26 +394,12 @@ export default {
           }
         })
       } else {
-        if (this.$store.getters.get('treeSelect') && this.$route['name'] === this.dataRoute.name) {
-          const context = this.$store.getters.get('context')
-          const event = this.$store.getters.get('event')
-          if (context.modelValue === node['id']) {
-            notify({
-              text: 'Error select tree node',
-              type: 'error'
-            })
-          } else {
-            context.model = node['id']
-            this.$nextTick(() => event.target.value = node['id'] + ' - ' + node['title'])
+        this.$parent.$emit('action', 'pushRouter', {
+          ...this.dataRoute,
+          params: {
+            id: node.key || node.id
           }
-        } else {
-          this.$parent.$emit('action', 'pushRouter', {
-            ...this.dataRoute,
-            params: {
-              id: node.key || node.id
-            }
-          })
-        }
+        })
       }
     },
 
@@ -394,9 +408,13 @@ export default {
     },
 
     updateNode (node, data) {
-      if (!data) {
-        this.loader(1)
+      if (this.$store.getters.get('treeSelect') !== undefined) {
+        this.$store.dispatch('remove', 'treeSelect')
+        this.get()
+        return
       }
+
+      this.loader(1)
 
       data = data || this.data
       node = this.alias(node)
@@ -412,6 +430,14 @@ export default {
               const el = Object.assign({}, data[i], node)
               data.splice(i, 1)
               this.transfer(el)
+
+              const order = this.settings['order'] ?? 'menuindex'
+              const dir = this.settings['dir'] ?? 'asc'
+              if (dir === 'asc') {
+                data.sort((a, b) => a[order] > b[order] ? 1 : (a[order] < b[order] ? -1 : 0))
+              } else {
+                data.sort((a, b) => a[order] > b[order] ? -1 : (a[order] < b[order] ? 1 : 0))
+              }
             } else {
               for (let j in data[i]) {
                 if (node[j] !== undefined) {
@@ -419,14 +445,14 @@ export default {
                 }
               }
             }
-
-            this.loader(0)
             break
-          } else if (data[i]?.['data']?.['data']) {
-            this.updateNode(node, data[i]['data']['data'])
+          } else if (data[i]?.['data']) {
+            this.updateNode(node, data[i]['data'])
           }
         }
       }
+
+      this.loader(0)
     },
 
     deleteNode (node, data) {
@@ -442,15 +468,15 @@ export default {
     transfer (node, data) {
       data = data || this.data
 
-      // for (const i in data) {
-      //   if (data[i].id === node['parent'] && data[i].folder) {
-      //     data[i].data.push(node)
-      //     console.log(node)
-      //   } else if (data[i].folder && data[i]['data']) {
-      //     this.transfer(node, data[i]['data'])
-      //     console.log(data[i])
-      //   }
-      // }
+      for (const i in data) {
+        if (data[i].id === node['parent'] && data[i].folder) {
+          if (data[i].data) {
+            data[i].data.push(node)
+          }
+        } else if (data[i].folder && data[i]['data']) {
+          this.transfer(node, data[i]['data'])
+        }
+      }
 
       // for (const i in data) {
       //   if (data[i].id === node['parent'] && data[i].folder) {

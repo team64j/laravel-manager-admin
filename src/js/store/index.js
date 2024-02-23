@@ -52,12 +52,20 @@ const mutations = {
         }
       }
     }
+  },
+  remove (state, key) {
+    if (state[key] !== undefined) {
+      delete state[key]
+    }
   }
 }
 
 const actions = {
   set ({ commit }, data) {
     commit('set', data)
+  },
+  remove ({ commit }, key) {
+    commit('remove', key)
   }
 }
 

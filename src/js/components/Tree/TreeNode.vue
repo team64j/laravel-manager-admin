@@ -163,11 +163,12 @@ export default {
       return icon
     },
     title () {
-      if (this.templates?.title) {
-        let data = this.templates.title
+      const template = this.node?.templates?.title ?? this.templates?.title
+
+      if (template) {
         let cleanKeys = true
 
-        return data.replace(/\{([\w.]*)}/g, (str, key) => {
+        return template.replace(/\{([\w.]*)}/g, (str, key) => {
           const value = typeof this.node[key] !== undefined ? this.node[key] : ''
           return (value === null || value === undefined) ? (cleanKeys ? '' : str) : value
         }).replace(/&/g, "&amp;")
@@ -178,11 +179,12 @@ export default {
       }
     },
     help () {
-      if (this.templates?.help) {
-        let data = this.templates.help
+      const template = this.node?.templates?.help ?? this.templates?.help
+
+      if (template) {
         let cleanKeys = true
 
-        return (data.replace(/\{([\w.]*)}/g, (str, key) => {
+        return (template.replace(/\{([\w.]*)}/g, (str, key) => {
           const value = typeof this.node[key] !== undefined ? this.node[key] : ''
           return new Option((value === null || value === undefined) ? (cleanKeys ? '' : str) : value).innerHTML
         })).replace(/\r\n+/g, '<br>')
