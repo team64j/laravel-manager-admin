@@ -4,7 +4,7 @@ import CheckboxComponent from '../Fields/Checkbox.vue'
 import InputComponent from '../Fields/Input.vue'
 
 export default {
-  __isStatic: true,
+  //__isStatic: true,
   name: 'TreeBuilder',
   components: { draggable, CheckboxComponent, InputComponent },
   emits: ['action', 'update:modelValue'],

@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import TreeMenuItem from '../../components/Tree/TreeMenuItem.vue'
+import TreeMenuItem from './TreeMenuItem.vue'
 
 export default {
   name: 'TreeMenu',

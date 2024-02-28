@@ -1,247 +1,33 @@
-<template>
-  <li
-      :class="this.class"
-      :data-level="level">
-    <div :style="{ paddingLeft: (level * 18) + 8 + 'px' }" class="app-tree__node">
-      <div v-if="node['loading']" class="app-tree__node__toggle">
-        <app-loader-icon/>
-      </div>
-      <div v-else-if="node['folder'] && !node['hideChildren']"
-           class="app-tree__node__toggle"
-           @click.stop="$emit('action', 'toggle', node)">
-        <i v-if="node?.['data']" class="fa fa-angle-down fa-fw"/>
-        <i v-else class="fa fa-angle-right fa-fw"/>
-      </div>
-
-      <i class="app-tree__node-icon" :class="icon" @mousedown="contextmenu">
-        <i v-if="node['private']" class="fa fa-lock app-tree__node-lock"/>
-      </i>
-
-      <div @click="$emit('action', 'click', $event, node, category)"
-           @contextmenu="contextmenu"
-           @mouseenter="mouseenter"
-           @mousemove="mousemove"
-           @mouseleave="mouseleave"
-           class="app-tree__node-title"
-           :data-tooltip="title">
-        {{ name }}
-      </div>
-
-      <component :is="append"/>
-
-      <div v-if="help" v-html="help" class="app-tree__node-help"/>
-      <button ref="menuBtn" class="absolute opacity-0 w-0 h-0 p-0" @click="menuOpen" @blur="menuClose"/>
-
-      <transition>
-        <div v-show="menuActive && actions" class="app-tree__node__menu" :class="menuData?.class">
-          <div class="app-tree__node__menu-header">
-            {{ node.title }}
-          </div>
-          <template v-for="action in actions">
-            <div v-if="action.title && Object.values(action).length === 1" class="app-tree__node__menu-item">
-              {{ action.title }}
-            </div>
-            <div v-else-if="action.split" class="app-tree__node-split"/>
-            <div v-else class="app-tree__node__menu-item" @mousedown="clickAction(action)">
-              <i v-if="action.icon" :class="action.icon" class="fa fa-fw"/>
-              {{ action.title }}
-            </div>
-          </template>
-        </div>
-      </transition>
-    </div>
-
-    <ul v-if="node?.['data'] && node['data'].length">
-      <tree-node
-          v-for="child in node['data']"
-          v-bind="Object.assign({}, $props, { node: child, level: level + 1 })"
-          @action="action"/>
-
-      <li v-if="node['meta']?.['pagination']?.['next']" @click.stop="more(node['meta']['pagination']['next'])">
-        <a class="app-tree__node-more">
-          <app-loader-icon v-if="node['loading']"/>
-          <span v-else>{{ node['meta']['pagination']['lang']['next'] }}</span>
-        </a>
-      </li>
-    </ul>
-  </li>
-</template>
-
 <script>
-import { compile } from 'vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
   name: 'TreeNode',
   components: { AppLoaderIcon },
-
-  props: [
-    'node',
-    'id',
-    'url',
-    'route',
-    'category',
-    'keyTitle',
-    'level',
-    'aliases',
-    'icons',
-    'templates',
-    'appends',
-    'contextMenu',
-    'settings',
-    'menu'
-  ],
-
+  props: {
+    id: [String, Number],
+    level: Number,
+    node: [null, Object]
+  },
   computed: {
     class () {
-      const classes = []
+      const c = []
 
-      if (this.node['class']) {
-        this.node['class'].split(' ').forEach(i => {
-          classes.push(i)
-        })
-      }
-
-      if (this.node['folder'] !== undefined || !!this.node['data']) {
-        classes.push('app-tree__node-folder')
-      }
-
-      if (!!this.node['data']) {
-        classes.push('app-tree__node-opened')
-      }
-
-      if (this.node['hidden']) {
-        classes.push('app-tree__node-hide')
-      }
-
-      if (this.node['unhidden'] || (this.node['inhidden'] !== undefined && !this.node['inhidden'])) {
-        classes.push('app-tree__node-inhidden')
-      }
-
-      if (this.node['unpublished'] || this.node['published'] !== undefined && !this.node['published']) {
-        classes.push('app-tree__node-unpublished')
+      if (this.node['selected']) {
+        c.push('app-tree__node-selected')
       }
 
       if (this.node['deleted']) {
-        classes.push('app-tree__node-deleted')
+        c.push('app-tree__node-deleted')
       }
 
-      if (this.current) {
-        classes.push('app-tree__node-active')
+      if (this.node['unpublished']) {
+        c.push('app-tree__node-unpublished')
       }
 
-      if (this.menuActive) {
-        classes.push('app-tree__node-menu-active')
-      }
-
-      return classes
-    },
-    icon () {
-      let icon = ''
-
-      switch (true) {
-        case !!this.icons[this.node['id']]:
-          icon = this.icons[this.node['id']]
-          break
-
-        case !!this.icons[this.node['type']]:
-          icon = this.icons[this.node['type']]
-          break
-
-        case !!this.node['folder']:
-          if (this.node?.['data']?.length) {
-            icon = this.icons.folderOpen
-          } else {
-            icon = this.icons.folder
-          }
-          break
-
-        default:
-          icon = this.icons.default
-      }
-
-      return icon
-    },
-    title () {
-      const template = this.node?.templates?.title ?? this.templates?.title
-
-      if (template) {
-        let cleanKeys = true
-
-        return template.replace(/\{([\w.]*)}/g, (str, key) => {
-          const value = typeof this.node[key] !== undefined ? this.node[key] : ''
-          return (value === null || value === undefined) ? (cleanKeys ? '' : str) : value
-        }).replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;")
-      }
-    },
-    help () {
-      const template = this.node?.templates?.help ?? this.templates?.help
-
-      if (template) {
-        let cleanKeys = true
-
-        return (template.replace(/\{([\w.]*)}/g, (str, key) => {
-          const value = typeof this.node[key] !== undefined ? this.node[key] : ''
-          return new Option((value === null || value === undefined) ? (cleanKeys ? '' : str) : value).innerHTML
-        })).replace(/\r\n+/g, '<br>')
-      }
-    },
-    name () {
-      return this.node[this.keyTitle]
-    },
-    actions () {
-      return this.menuData?.actions?.filter(i => {
-        if (i.hidden) {
-          for (const j in i.hidden) {
-            if (this.node?.[j] === i.hidden[j]) {
-              return false
-            }
-          }
-        }
-
-        return true
-      })
-    },
-    current () {
-      return this.$route['name'] === this.route
-          && (parseInt(this.$route['params']?.id?.toString()) === this.node?.['id'] ||
-              (this.$route['params']?.['id'] && this.$route['params']['id'] === this.node?.['key']))
-          && (!this.node['folder'] && this.category || !this.category)
-    },
-    append () {
-      const appends = []
-
-      this.appends.map(i => {
-        if (this.node[i] !== undefined) {
-          appends.push(`<div class="pl-2 text-sm">` + this.node[i] + `</div>`)
-        }
-      })
-
-      return compile(appends.join(' '))
+      return c
     }
   },
-
-  data () {
-    this.timer = 0
-
-    return {
-      menuData: this.node['contextMenu'] ?? this.contextMenu ?? {},
-      menuActive: false
-    }
-  },
-
-  created () {
-    this.alias(this.node)
-  },
-
-  updated () {
-    this.alias(this.node)
-  },
-
   methods: {
     action () {
       if (typeof this[arguments[0]] === 'function') {
@@ -249,106 +35,90 @@ export default {
       } else {
         this.$emit('action', ...arguments)
       }
-    },
-
-    alias (data) {
-      for (const i in data) {
-        if (this.aliases[i] && this.aliases[i] !== i) {
-          data[this.aliases[i]] = data[i]
-          delete data[i]
-        }
-      }
-
-      return data
-    },
-
-    more (url) {
-      this.$emit('action', 'loader', 1)
-      this.node.loading = true
-      axios.get(url).then(({ data }) => {
-        this.node['meta']['pagination']['next'] = data['meta']?.['pagination']?.['next'] || null
-
-        if (data['data']) {
-          this.node['data'].push(...data['data'])
-        }
-
-        this.$emit('action', 'loader', 0)
-        this.node.loading = false
-      })
-    },
-
-    contextmenu (event) {
-      if (this.menuData) {
-        event.preventDefault()
-        this.$refs.menuBtn.click()
-      }
-    },
-
-    menuOpen (event) {
-      if (this.menuActive) {
-        this.menuActive = !this.menuActive
-        return
-      }
-
-      this.menuActive = true
-      event.target.focus()
-
-      this.$nextTick(() => {
-        let menu = this.$el.querySelector('.app-tree__node__menu'),
-            position = this.$el.firstElementChild.getBoundingClientRect()
-
-        menu.classList.add(
-            (position.top + position.height + menu.offsetHeight > window.innerHeight ? 'bottom-full' : 'top-full')
-        )
-      })
-    },
-
-    menuClose () {
-      this.$nextTick(() => this.menuActive = false)
-    },
-
-    clickAction (action) {
-      if (action.to) {
-        const to = window._.mergeWith({
-          params: { id: this.node['id'] },
-          query: { parent: this.node['id'] }
-        }, action.to)
-
-        if (to.params.id === this.node['id']) {
-          delete to.query.parent
-        }
-
-        this.$router.push(to)
-      }
-    },
-
-    mouseenter () {
-      if (this.templates?.help) {
-        this.timer = setTimeout(() => {
-          clearTimeout(this.timer)
-          this.$el.classList.add('app-tree__node-hover')
-        }, 1000)
-      }
-    },
-
-    mousemove (event) {
-      if (this.templates?.help) {
-        const help = this.$el.querySelector('.app-tree__node-help')
-        help.style.left = event.clientX + 16 + 'px'
-        help.style.top = event.clientY + 16 + 'px'
-
-        if (event.clientY + 16 + help.offsetHeight > window.innerHeight) {
-          help.style.top = event.clientY - help.offsetHeight + 'px'
-        }
-      }
-    },
-
-    mouseleave () {
-      if (this.templates?.help) {
-        clearTimeout(this.timer)
-        this.$el.classList.remove('app-tree__node-hover')
-      }
     }
   }
 }
 </script>
+
+<template>
+  <div v-if="node" class="app-tree__node">
+    <div class="app-tree__node-item" :style="{ paddingLeft: (level * 16) + `px` }">
+      <div v-if="node['data']" class="app-tree__node-toggle" @click.stop="$emit('action', 'toggle', node)">
+        <app-loader-icon v-if="node['loading']" class="!w-4 !h-4"/>
+        <i v-else class="fa fa-angle-right fa-fw transition-all" :class="{ 'rotate-90': node['data'].length }"/>
+      </div>
+
+      <div class="app-tree__node-icon">
+        <i v-if="node['icon']" class="fa-fw" :class="node['icon']"/>
+        <template v-else-if="node['data']">
+          <i v-if="node['data'].length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
+          <i v-else class="far fa-folder fa-fw w-5"/>
+        </template>
+        <i v-else class="far fa-file fa-fw"/>
+      </div>
+
+      <div class="app-tree__node-title" :class="this.class" @click="$emit('action', 'click', $event, node)">
+        {{ node['title'] }}
+      </div>
+
+      <div class="app-tree__node-id">
+        {{ node['id'] }}
+      </div>
+    </div>
+
+    <template v-if="node['data']?.length">
+      <div class="app-tree__node-children">
+        <tree-node v-for="item in node['data']" v-bind="{ node: item, level: level + 1 }" @action="action"/>
+
+        <div v-if="node['meta'] && node['meta']['pagination'] && node['meta']['pagination']['next']"
+             @click.stop="$emit('action', 'more', node)"
+             class="app-tree__node-pagination"
+             :style="{ paddingLeft: ((level + 1) * 18) + `px` }">
+          {{ node['meta']['pagination']['lang']['next'] }}
+        </div>
+      </div>
+    </template>
+  </div>
+</template>
+
+<style scoped>
+.app-tree__node {
+  @apply py-0.5 cursor-default
+}
+.app-tree__node > div, .app-tree__node > div > div {
+  @apply relative
+}
+.app-tree__node .app-tree__node-item {
+  @apply flex items-center pl-5 w-full
+}
+.app-tree__node .app-tree__node-item::before {
+  @apply absolute left-0 top-0 right-0 bottom-0 content-[""] rounded pointer-events-none hover:bg-blue-600/10 dark:hover:bg-blue-600/30 transition
+}
+.app-tree__node .app-tree__node-toggle {
+  @apply -ml-5 w-5 flex items-center justify-center text-gray-300 hover:text-blue-500 transition
+}
+.app-tree__node .app-tree__node-icon {
+  @apply pl-1 text-gray-400 dark:text-gray-200
+}
+.app-tree__node .app-tree__node-title {
+  @apply truncate px-1 pb-0.5 grow
+}
+.app-tree__node .app-tree__node-id {
+  @apply pr-1.5 text-sm opacity-80
+}
+.app-tree__node .app-tree__node-pagination {
+  @apply flex items-center text-amber-400
+}
+.app-tree__node-children {
+  @apply flex flex-col
+}
+.app-tree__node-selected {
+  @apply text-blue-500 dark:text-blue-300
+}
+.app-tree__node-deleted {
+  @apply text-rose-600 not-italic line-through
+}
+.app-tree__node-unpublished {
+  @apply italic opacity-70
+}
+</style>

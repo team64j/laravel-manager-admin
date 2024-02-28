@@ -45,9 +45,6 @@ export default {
 </style>
 
 <style>
-.app .app-sidebar .app-tree {
-  @apply bg-slate-50 dark:bg-gray-800
-}
 .app .app-sidebar .app-tabs {
   @apply p-0
 }
@@ -70,7 +67,7 @@ export default {
   @apply text-white
 }
 .app .app-sidebar .app-tabs .app-tabs__page {
-  @apply p-0 bg-transparent border-0 dark:bg-transparent shadow-none rounded-none
+  @apply p-0 bg-white dark:bg-gray-800 border-0 shadow-none rounded-none
 }
 </style>
 
