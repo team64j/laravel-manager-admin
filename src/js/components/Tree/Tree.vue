@@ -1,8 +1,10 @@
 <script>
+import { provide } from 'vue'
 import TreeNode from './TreeNode.vue'
+import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
-  components: { TreeNode },
+  components: { AppLoaderIcon, TreeNode },
   __isStatic: true,
   name: 'Tree',
   props: {
@@ -13,15 +15,21 @@ export default {
     url: String,
     route: [String, Object],
     routeList: String,
+    aliases: Object,
+    appends: Array,
     settings: Object
   },
   data () {
     return {
-      data: [],
+      loading: false,
+      data: null,
       meta: {}
     }
   },
   mounted () {
+    provide('appends', this.appends)
+    provide('aliases', this.aliases)
+
     this.get()
   },
   methods: {
@@ -33,12 +41,20 @@ export default {
       }
     },
     get () {
+      this.loading = true
+
       axios.get(this.url).then(({ data }) => {
         this.data = data['data']
         this.meta = data['meta']
+      }).finally(() => {
+        this.loading = false
       })
     },
     click (event, node) {
+      if (node['category']) {
+        return this.toggle(node)
+      }
+
       if (event.ctrlKey && this.routeList && node['folder']) {
         this.$parent.$emit('action', 'pushRouter', {
           name: this.routeList,
@@ -61,7 +77,7 @@ export default {
       }
     },
     toggle (node) {
-      if (node['data'].length) {
+      if (node['data']?.length) {
         node['data'] = []
       } else {
         node['loading'] = true
@@ -84,6 +100,7 @@ export default {
     },
     more (node) {
       if (node['data'].length) {
+        node['loading'] = true
         axios.get(node['meta']['pagination']['next'], {
           params: {
             settings: Object.assign({}, this.settings, { parent: node['id'] })
@@ -96,6 +113,8 @@ export default {
           if (data['meta']) {
             node['meta'] = data['meta']
           }
+        }).finally(() => {
+          node['loading'] = false
         })
       }
     }
@@ -106,12 +125,22 @@ export default {
 <template>
   <div class="app-tree">
     <div class="app-tree__menu">
-
+      MENU
     </div>
 
     <div class="app-tree__body">
       <div class="app-tree__root">
-        <tree-node v-for="item in data" v-bind="{ node: item, level: 1 }" @action="action"/>
+        <div v-if="!data" class="text-center p-5">
+          <app-loader-icon/>
+        </div>
+
+        <template v-else-if="data.length">
+          <tree-node v-for="node in data" v-bind="{ node, level: 1 }" @action="action"/>
+        </template>
+
+        <div v-else class="text-center p-5">
+          {{ meta['message'] }}
+        </div>
       </div>
     </div>
   </div>
@@ -119,12 +148,15 @@ export default {
 
 <style scoped>
 .app-tree {
-  @apply flex flex-col overflow-hidden w-full
+  @apply flex flex-col overflow-hidden w-full h-full
+}
+.app-tree__menu {
+  @apply grow-0
 }
 .app-tree__body {
-  @apply grow
+  @apply grow overflow-hidden
 }
 .app-tree__root {
-  @apply overflow-y-auto p-1
+  @apply overflow-y-auto p-1 h-full
 }
 </style>

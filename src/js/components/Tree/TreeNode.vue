@@ -1,4 +1,5 @@
 <script>
+import { inject } from 'vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
@@ -10,6 +11,19 @@ export default {
     node: [null, Object]
   },
   computed: {
+    title () {
+      if (this.aliases?.['title']) {
+        const aliases = typeof this.aliases['title'] === 'object' ? this.aliases['title'] : [this.aliases['title']]
+
+        for (const i of aliases) {
+          if (this.node[i] !== undefined) {
+            return this.node[i]
+          }
+        }
+      }
+
+      return this.node['title']
+    },
     class () {
       const c = []
 
@@ -28,6 +42,12 @@ export default {
       return c
     }
   },
+  data () {
+    return {
+      appends: inject('appends'),
+      aliases: inject('aliases')
+    }
+  },
   methods: {
     action () {
       if (typeof this[arguments[0]] === 'function') {
@@ -41,29 +61,32 @@ export default {
 </script>
 
 <template>
-  <div v-if="node" class="app-tree__node">
+  <div v-if="node" class="app-tree__node" :data-level="level">
     <div class="app-tree__node-item" :style="{ paddingLeft: (level * 16) + `px` }">
-      <div v-if="node['data']" class="app-tree__node-toggle" @click.stop="$emit('action', 'toggle', node)">
+      <div v-if="node['data'] || node['category']" class="app-tree__node-toggle"
+           @click.stop="$emit('action', 'toggle', node)">
         <app-loader-icon v-if="node['loading']" class="!w-4 !h-4"/>
-        <i v-else class="fa fa-angle-right fa-fw transition-all" :class="{ 'rotate-90': node['data'].length }"/>
+        <i v-else class="fa fa-angle-right fa-fw" :class="{ 'rotate-90': node['data']?.length }"/>
       </div>
 
       <div class="app-tree__node-icon">
         <i v-if="node['icon']" class="fa-fw" :class="node['icon']"/>
-        <template v-else-if="node['data']">
-          <i v-if="node['data'].length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
+        <template v-else-if="node['data'] || node['category']">
+          <i v-if="node['data']?.length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
           <i v-else class="far fa-folder fa-fw w-5"/>
         </template>
         <i v-else class="far fa-file fa-fw"/>
       </div>
 
       <div class="app-tree__node-title" :class="this.class" @click="$emit('action', 'click', $event, node)">
-        {{ node['title'] }}
+        {{ title }}
       </div>
 
-      <div class="app-tree__node-id">
-        {{ node['id'] }}
-      </div>
+      <template v-if="(node['appends'] || appends).length">
+        <div v-for="i in (node['appends'] || appends)" :class="`app-tree__node-`+i" class="app-tree__node-append">
+          {{ node[i] }}
+        </div>
+      </template>
     </div>
 
     <template v-if="node['data']?.length">
@@ -75,6 +98,7 @@ export default {
              class="app-tree__node-pagination"
              :style="{ paddingLeft: ((level + 1) * 18) + `px` }">
           {{ node['meta']['pagination']['lang']['next'] }}
+          <app-loader-icon v-if="node['loading']" class="!w-4 !h-4 ml-2"/>
         </div>
       </div>
     </template>
@@ -92,22 +116,22 @@ export default {
   @apply flex items-center pl-5 w-full
 }
 .app-tree__node .app-tree__node-item::before {
-  @apply absolute left-0 top-0 right-0 bottom-0 content-[""] rounded pointer-events-none hover:bg-blue-600/10 dark:hover:bg-blue-600/30 transition
+  @apply absolute left-0 top-0 right-0 bottom-0 content-[""] rounded pointer-events-none hover:bg-blue-600/10 dark:hover:bg-blue-600/30
 }
 .app-tree__node .app-tree__node-toggle {
-  @apply -ml-5 w-5 flex items-center justify-center text-gray-300 hover:text-blue-500 transition
+  @apply absolute -ml-5 w-6 flex items-center justify-center cursor-pointer text-gray-300 hover:text-blue-500
 }
 .app-tree__node .app-tree__node-icon {
-  @apply pl-1 text-gray-400 dark:text-gray-200
+  @apply pl-1 cursor-pointer text-gray-400 dark:text-gray-200
 }
 .app-tree__node .app-tree__node-title {
-  @apply truncate px-1 pb-0.5 grow
+  @apply truncate px-1 pb-0.5 grow cursor-pointer
 }
-.app-tree__node .app-tree__node-id {
-  @apply pr-1.5 text-sm opacity-80
+.app-tree__node .app-tree__node-append {
+  @apply pr-1.5 text-sm opacity-80 truncate
 }
 .app-tree__node .app-tree__node-pagination {
-  @apply flex items-center text-amber-400
+  @apply flex items-center text-amber-400 cursor-pointer
 }
 .app-tree__node-children {
   @apply flex flex-col
