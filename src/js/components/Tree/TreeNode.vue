@@ -24,6 +24,19 @@ export default {
 
       return this.node['title']
     },
+    icon () {
+      if (this.node['icon']) {
+        return this.node['icon']
+      }
+
+      if (this.icons[this.node['type']]) {
+        return this.icons[this.node['type']]
+      }
+
+      if (this.icons['default'] && !(this.node['category'] || this.node['data'])) {
+        return this.icons['default']
+      }
+    },
     class () {
       const c = []
 
@@ -45,7 +58,8 @@ export default {
   data () {
     return {
       appends: inject('appends'),
-      aliases: inject('aliases')
+      aliases: inject('aliases'),
+      icons: inject('icons')
     }
   },
   methods: {
@@ -70,7 +84,7 @@ export default {
       </div>
 
       <div class="app-tree__node-icon">
-        <i v-if="node['icon']" class="fa-fw" :class="node['icon']"/>
+        <i v-if="icon" class="fa-fw" :class="icon"/>
         <template v-else-if="node['data'] || node['category']">
           <i v-if="node['data']?.length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
           <i v-else class="far fa-folder fa-fw w-5"/>
@@ -82,7 +96,7 @@ export default {
         {{ title }}
       </div>
 
-      <template v-if="(node['appends'] || appends).length">
+      <template v-if="(node['appends'] || appends)?.length">
         <div v-for="i in (node['appends'] || appends)" :class="`app-tree__node-`+i" class="app-tree__node-append">
           {{ node[i] }}
         </div>
@@ -128,7 +142,7 @@ export default {
   @apply truncate px-1 pb-0.5 grow cursor-pointer
 }
 .app-tree__node .app-tree__node-append {
-  @apply pr-1.5 text-sm opacity-80 truncate
+  @apply pr-1.5 text-sm opacity-80 whitespace-nowrap
 }
 .app-tree__node .app-tree__node-pagination {
   @apply flex items-center text-amber-400 cursor-pointer

@@ -16,6 +16,7 @@ export default {
     route: [String, Object],
     routeList: String,
     aliases: Object,
+    icons: Object,
     appends: Array,
     settings: Object
   },
@@ -29,6 +30,7 @@ export default {
   mounted () {
     provide('appends', this.appends)
     provide('aliases', this.aliases)
+    provide('icons', this.icons)
 
     this.get()
   },
