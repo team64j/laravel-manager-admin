@@ -106,7 +106,9 @@ export default {
         <i v-else class="fa fa-angle-right fa-fw" :class="{ 'rotate-90': node['data']?.length }"/>
       </div>
 
-      <div class="app-tree__node-icon" @click.stop="$emit('action', 'buildContextMenu', $event, node)">
+      <div class="app-tree__node-icon"
+           @click.stop="$emit('action', 'buildContextMenu', $event, node)"
+           @contextmenu.prevent="$emit('action', 'buildContextMenu', $event, node)">
         <i v-if="icon" class="fa-fw" :class="icon"/>
         <template v-else-if="node['data'] || node['category']">
           <i v-if="node['data']?.length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
@@ -115,7 +117,9 @@ export default {
         <i v-else class="far fa-file fa-fw"/>
       </div>
 
-      <div class="app-tree__node-title" :class="this.class" @click="$emit('action', 'click', $event, node)"
+      <div class="app-tree__node-title" :class="this.class"
+           @click="$emit('action', 'click', $event, node)"
+           @contextmenu.prevent="$emit('action', 'buildContextMenu', $event, node)"
            :data-tooltip="tooltip">
         {{ title }}
       </div>

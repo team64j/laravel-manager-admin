@@ -15,21 +15,32 @@ export default {
     url: String,
     route: [String, Object],
     routeList: String,
+    settings: Object,
     templates: Object,
     aliases: Object,
     appends: Array,
     icons: Object,
-    settings: Object,
     contextMenu: Object
   },
   data () {
     return {
+      keyStorage: `tree.` + this.id.toLowerCase(),
       loading: false,
       data: null,
       meta: {},
+      propSettings: this.settings || {},
+      idContextMenu: null,
       showContextMenu: false,
       dataContextMenu: [],
       classContextMenu: null
+    }
+  },
+  watch: {
+    propSettings: {
+      handler (data) {
+        this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: data })
+      },
+      deep: true
     }
   },
   mounted () {
@@ -38,9 +49,11 @@ export default {
     provide('aliases', this.aliases)
     provide('icons', this.icons)
 
+    Object.assign(this.propSettings, this.$store.getters.get(`Session.${this.keyStorage}`, {}))
+
     this.get()
 
-    document.addEventListener('click', event => {
+    document.addEventListener('click', () => {
       if (this.showContextMenu) {
         this.showContextMenu = false
       }
@@ -57,7 +70,11 @@ export default {
     get () {
       this.loading = true
 
-      axios.get(this.url).then(({ data }) => {
+      axios.get(this.url, {
+        params: {
+          settings: this.propSettings
+        }
+      }).then(({ data }) => {
         this.data = data['data']
         this.meta = data['meta']
       }).finally(() => {
@@ -91,13 +108,27 @@ export default {
       }
     },
     toggle (node) {
+      const opened = [...this.propSettings.opened || []]
+
+      const id = node['id'] ?? node['key']
+      const index = opened.indexOf(id)
+
       if (node['data']?.length) {
+        if (~index) {
+          opened.splice(index, 1)
+          this.removeChildOpened(node, opened)
+        }
+
         node['data'] = []
       } else {
+        if (!~index) {
+          opened.push(id)
+        }
+
         node['loading'] = true
         axios.get(this.url, {
           params: {
-            settings: Object.assign({}, this.settings, { parent: node['id'] })
+            settings: Object.assign({}, this.propSettings, { parent: node['id'] })
           }
         }).then(({ data }) => {
           if (data['data']) {
@@ -111,13 +142,29 @@ export default {
           node['loading'] = false
         })
       }
+
+      this.propSettings.opened = opened
+    },
+    removeChildOpened (data, opened) {
+      for (const node of data['data']) {
+        const id = node['id'] ?? node['key']
+
+        if (node['data']?.length) {
+          const index = opened.indexOf(id)
+
+          if (~index) {
+            opened.splice(index, 1)
+            this.removeChildOpened(node, opened)
+          }
+        }
+      }
     },
     more (node) {
       if (node['data'].length) {
         node['loading'] = true
         axios.get(node['meta']['pagination']['next'], {
           params: {
-            settings: Object.assign({}, this.settings, { parent: node['id'] })
+            settings: Object.assign({}, this.propSettings, { parent: node['id'] })
           }
         }).then(({ data }) => {
           if (data['data']) {
@@ -133,6 +180,7 @@ export default {
       }
     },
     buildContextMenu (event, node) {
+      this.idContextMenu = node['id']
       this.showContextMenu = false
       this.dataContextMenu = []
       const contextMenu = node['contextMenu'] !== undefined ? node['contextMenu'] : this.contextMenu
@@ -159,7 +207,8 @@ export default {
         } else {
           this.dataContextMenu.push({
             title: action.title,
-            icon: action.icon
+            icon: action.icon,
+            to: action.to
           })
         }
       })
@@ -167,10 +216,10 @@ export default {
       this.showContextMenu = true
 
       this.$nextTick(() => {
-        const position = event.target.getBoundingClientRect()
+        const position = event.currentTarget.offsetParent.querySelector('.app-tree__node-title').getBoundingClientRect()
 
-        let top = position.top - 30
-        let left = position.left + position.width
+        let top = position.top - position.height
+        let left = position.left
 
         if (top + this.$refs.ctx.offsetHeight > this.$el.offsetHeight) {
           top -= top + this.$refs.ctx.offsetHeight - this.$el.offsetHeight - 30
@@ -181,7 +230,28 @@ export default {
       })
     },
     clickContextMenu (item) {
+      if (item.to) {
+        item.to.query ??= {}
+        item.to.params ??= {}
 
+        if (item.to.query.id && item.to.query.id.toString()[0] === ':') {
+          item.to.query.id = this.idContextMenu
+        }
+
+        if (item.to.query.parent && item.to.query.parent.toString()[0] === ':') {
+          item.to.query.parent = this.idContextMenu
+        }
+
+        if (item.to.params.id && item.to.params.id.toString()[0] === ':') {
+          item.to.params.id = this.idContextMenu
+        }
+
+        if (item.to.params.parent && item.to.params.parent.toString()[0] === ':') {
+          item.to.params.parent = this.idContextMenu
+        }
+
+        this.$router.push(item.to)
+      }
     }
   }
 }
