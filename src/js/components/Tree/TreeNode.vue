@@ -29,6 +29,10 @@ export default {
         return this.node['icon']
       }
 
+      if (this.icons[this.node['id']]) {
+        return this.icons[this.node['id']]
+      }
+
       if (this.icons[this.node['type']]) {
         return this.icons[this.node['type']]
       }
@@ -53,10 +57,29 @@ export default {
       }
 
       return c
+    },
+    tooltip () {
+      const template = typeof this.node?.['templates'] !== 'undefined'
+          ? (this.node?.['templates']?.['title'] || '')
+          : this.templates?.['title']
+
+      if (template) {
+        const cleanKeys = true
+        return template.replace(/\{([\w.]*)}/g, (str, key) => {
+          const value = typeof this.node[key] !== undefined ? this.node[key] : ''
+          return (value === null || value === undefined) ? (cleanKeys ? '' : str) : value.toString().
+              replace(/&/g, '&amp;').
+              replace(/</g, '&lt;').
+              replace(/>/g, '&gt;').
+              replace(/"/g, '&quot;').
+              replace(/'/g, '&#039;')
+        })
+      }
     }
   },
   data () {
     return {
+      templates: inject('templates'),
       appends: inject('appends'),
       aliases: inject('aliases'),
       icons: inject('icons')
@@ -78,12 +101,12 @@ export default {
   <div v-if="node" class="app-tree__node" :data-level="level">
     <div class="app-tree__node-item" :style="{ paddingLeft: (level * 16) + `px` }">
       <div v-if="node['data'] || node['category']" class="app-tree__node-toggle"
-           @click.stop="$emit('action', 'toggle', node)">
+           @click="$emit('action', 'toggle', node)">
         <app-loader-icon v-if="node['loading']" class="!w-4 !h-4"/>
         <i v-else class="fa fa-angle-right fa-fw" :class="{ 'rotate-90': node['data']?.length }"/>
       </div>
 
-      <div class="app-tree__node-icon">
+      <div class="app-tree__node-icon" @click.stop="$emit('action', 'buildContextMenu', $event, node)">
         <i v-if="icon" class="fa-fw" :class="icon"/>
         <template v-else-if="node['data'] || node['category']">
           <i v-if="node['data']?.length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
@@ -92,7 +115,8 @@ export default {
         <i v-else class="far fa-file fa-fw"/>
       </div>
 
-      <div class="app-tree__node-title" :class="this.class" @click="$emit('action', 'click', $event, node)">
+      <div class="app-tree__node-title" :class="this.class" @click="$emit('action', 'click', $event, node)"
+           :data-tooltip="tooltip">
         {{ title }}
       </div>
 
@@ -153,10 +177,10 @@ export default {
 .app-tree__node-selected {
   @apply text-blue-500 dark:text-blue-300
 }
-.app-tree__node-deleted {
-  @apply text-rose-600 not-italic line-through
-}
 .app-tree__node-unpublished {
   @apply italic opacity-70
+}
+.app-tree__node-deleted {
+  @apply !text-rose-500 not-italic line-through
 }
 </style>

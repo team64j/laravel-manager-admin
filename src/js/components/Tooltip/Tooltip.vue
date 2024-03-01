@@ -38,7 +38,7 @@ export default {
 
       this.$nextTick(() => {
         this.top = this.position.top + this.position.height
-        this.left = this.position.left + (this.position.width / 2) - (this.$el.offsetWidth / 2)
+        this.left = event.clientX//this.position.left + (this.position.width / 2) - (this.$el.offsetWidth / 2)
 
         if (this.left + this.$el.offsetWidth + 16 > window.innerWidth) {
           this.left -= (this.left + this.$el.offsetWidth) - window.innerWidth + 16
