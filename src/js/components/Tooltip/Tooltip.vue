@@ -22,7 +22,7 @@ export default {
   methods: {
     create (event) {
       if (!event.target || event.target === this.$el || !event.target.getAttribute ||
-          !event.target.getAttribute('data-tooltip')) {
+          !event.target.getAttribute('data-tooltip') || event.target.getAttribute('data-tooltip') === '...') {
         return
       }
 

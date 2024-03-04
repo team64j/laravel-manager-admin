@@ -342,6 +342,8 @@ export default {
         if (value[0] === '' || value[1] === '') {
           value = ''
         }
+      } else if (filter.data && !filter.data.some(i => i.key === value) && filter.data.some(i => i.value === value)) {
+        value = filter.data.find(i => i.value === value)['key']
       }
 
       if (this.propUrl) {
