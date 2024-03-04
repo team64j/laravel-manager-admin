@@ -68,7 +68,7 @@ html, body, #app {
         background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22royalblue%22%20viewBox%3D%220%200%2024%2014%22%3E%3Cpath%20d%3D%22M24%202v1L13%2014a1%201%200%200%201-2%200L0%203a1%201%200%200%201%200-2l1-1a1%201%200%200%201%202%200l9%2010%209-10a1%201%200%200%201%202%200l1%201v1Z%22%2F%3E%3C%2Fsvg%3E");
     }
     button, [type="button"], [role="button"] {
-        @apply inline-flex w-auto px-3 py-1 cursor-pointer font-medium border hover:bg-slate-50 active:bg-slate-100 focus:ring-blue-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-600
+        @apply inline-flex w-auto px-3 py-1 cursor-pointer font-medium border hover:bg-slate-50 active:bg-slate-100 focus:ring-blue-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500
     }
     .btn-lg, .input-lg {
         @apply px-6 py-3 rounded border-2 text-lg font-medium focus:ring-0

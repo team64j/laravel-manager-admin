@@ -81,6 +81,13 @@ export default {
       }).then(({ data }) => {
         this.data = data['data']
         this.meta = data['meta']
+      }).catch((error) => {
+        this.data = []
+        if (error?.message) {
+          this.meta = {
+            message: error.message
+          }
+        }
       }).finally(() => {
         this.loading = false
       })
@@ -330,6 +337,12 @@ export default {
 <style>
 .app-tree .app-tree__context-menu {
   @apply fixed left-0 top-0 min-w-64 py-1 border bg-white border-white dark:bg-gray-700 dark:border-gray-700 rounded shadow-2xl
+}
+.app-tree .app-tree__context-menu.app-tree__context-menu__position-left {
+  @apply left-0 right-auto
+}
+.app-tree .app-tree__context-menu.app-tree__context-menu__position-right {
+  @apply left-auto right-0
 }
 .app-tree .app-tree__context-menu__header {
   @apply px-4 pb-2

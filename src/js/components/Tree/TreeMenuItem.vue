@@ -71,7 +71,7 @@ export default {
 
     <transition>
       <div v-if="active && actions" class="app-tree__context-menu"
-           :class="[position !== 'right' ? 'left-0' : 'right-0']">
+           :class="`app-tree__context-menu__position-`+position">
         <template v-for="action in actions">
           <div v-if="action.title && Object.values(action).length === 1" class="app-tree__context-menu__header">
             {{ action.title }}
@@ -93,9 +93,9 @@ export default {
   @apply relative
 }
 .app-tree__menu-item button {
-  @apply flex justify-center items-center w-6 h-6 mx-0.5 p-0 border-0
+  @apply flex justify-center items-center w-6 h-6 mx-0.5 p-0 border-0 focus:ring-0
 }
 .app-tree__menu-item .app-tree__context-menu {
-  @apply absolute top-full left-auto m-1
+  @apply absolute top-full m-1
 }
 </style>

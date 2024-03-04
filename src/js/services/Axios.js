@@ -76,8 +76,8 @@ axios.interceptors['response'].use(
         type: 'error'
       })
 
-      store.dispatch('set', { ['Storage.token']: null })
-      return router.push({ name: 'Login' })
+      //store.dispatch('set', { ['Storage.token']: null })
+      //return router.push({ name: 'Login' })
     }
 
     return Promise.reject(error)
