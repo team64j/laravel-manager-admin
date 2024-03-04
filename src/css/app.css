@@ -197,10 +197,10 @@ input:-webkit-autofill:active {
     @apply w-2 h-2 bg-gray-50 dark:bg-gray-800 rounded-xl
 }
 ::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb, :hover::-webkit-scrollbar-thumb, *:hover::-webkit-scrollbar-thumb {
-    @apply ring-inset ring ring-gray-500/50
+    @apply ring-inset ring-8 ring-gray-500/50
 }
 ::-webkit-scrollbar-thumb:hover, *::-webkit-scrollbar-thumb:hover {
-    @apply ring-inset ring ring-gray-600/50 dark:ring-gray-300/50
+    @apply ring-inset ring-8 ring-gray-600/50 dark:ring-gray-300/50
 }
 ::-webkit-scrollbar-corner, *::-webkit-scrollbar-corner {
     @apply bg-transparent

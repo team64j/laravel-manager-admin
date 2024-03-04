@@ -1,10 +1,11 @@
 <script>
 import { provide } from 'vue'
 import TreeNode from './TreeNode.vue'
+import TreeMenuItem from './TreeMenuItem.vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
-  components: { AppLoaderIcon, TreeNode },
+  components: { TreeNode, TreeMenuItem, AppLoaderIcon },
   __isStatic: true,
   name: 'Tree',
   props: {
@@ -20,7 +21,8 @@ export default {
     aliases: Object,
     appends: Array,
     icons: Object,
-    contextMenu: Object
+    contextMenu: Object,
+    menu: Object
   },
   data () {
     return {
@@ -44,6 +46,7 @@ export default {
     }
   },
   mounted () {
+    provide('settings', this.propSettings)
     provide('templates', this.templates)
     provide('appends', this.appends)
     provide('aliases', this.aliases)
@@ -69,6 +72,7 @@ export default {
     },
     get () {
       this.loading = true
+      this.data = null
 
       axios.get(this.url, {
         params: {
@@ -252,6 +256,9 @@ export default {
 
         this.$router.push(item.to)
       }
+    },
+    menuUpdate () {
+      this.get()
     }
   }
 }
@@ -259,8 +266,17 @@ export default {
 
 <template>
   <div class="app-tree">
-    <div class="app-tree__menu">
-      MENU
+    <div v-if="menu" class="app-tree__menu">
+      <div class="flex items-center grow">
+        <template v-for="a in menu['actions'].filter(i => i.position === 'left' || !i.position)">
+          <tree-menu-item v-bind="a" :settings="propSettings" @action="action"/>
+        </template>
+      </div>
+      <div class="flex items-center">
+        <template v-for="a in menu['actions'].filter(i => i.position === 'right')">
+          <tree-menu-item v-bind="a" :settings="propSettings" @action="action"/>
+        </template>
+      </div>
     </div>
 
     <div class="app-tree__body">
@@ -301,7 +317,7 @@ export default {
   @apply flex flex-col overflow-hidden w-full h-full
 }
 .app-tree__menu {
-  @apply grow-0
+  @apply grow-0 flex relative z-10 p-0.5 border-b dark:border-t
 }
 .app-tree__body {
   @apply grow overflow-hidden
@@ -309,16 +325,22 @@ export default {
 .app-tree__root {
   @apply overflow-y-auto p-1 h-full
 }
-.app-tree__context-menu {
-  @apply fixed left-0 top-0 py-2 bg-gray-700 rounded shadow-lg
+</style>
+
+<style>
+.app-tree .app-tree__context-menu {
+  @apply fixed left-0 top-0 min-w-64 py-1 border bg-white border-white dark:bg-gray-700 dark:border-gray-700 rounded shadow-2xl
 }
-.app-tree__context-menu__split {
-  @apply border-t m-2
+.app-tree .app-tree__context-menu__header {
+  @apply px-4 pb-2
 }
-.app-tree__context-menu__item {
+.app-tree .app-tree__context-menu__split {
+  @apply border-t my-1
+}
+.app-tree .app-tree__context-menu__item {
   @apply px-4 py-0.5 hover:bg-blue-600 hover:text-white cursor-pointer
 }
-.app-tree__context-menu__item i {
+.app-tree .app-tree__context-menu__item i {
   @apply mr-1 opacity-80
 }
 </style>

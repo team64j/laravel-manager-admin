@@ -79,7 +79,7 @@ export default {
 
 <style scoped>
 .app-tooltip  {
-  @apply fixed z-[999] -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-slate-800/85 text-slate-100 dark:bg-slate-50/85 dark:text-slate-800 text-sm shadow transition-all
+  @apply fixed z-[999] -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-slate-50/90 text-slate-800 dark:bg-gray-600/90 dark:text-slate-100 text-sm shadow transition-all
 }
 </style>
 

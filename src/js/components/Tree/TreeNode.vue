@@ -79,6 +79,7 @@ export default {
   },
   data () {
     return {
+      settings: inject('settings'),
       templates: inject('templates'),
       appends: inject('appends'),
       aliases: inject('aliases'),
