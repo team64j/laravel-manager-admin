@@ -43,6 +43,38 @@ export default {
         this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: data })
       },
       deep: true
+    },
+    '$store.state.treeSelect' (select) {
+      const route = typeof this.route === 'object' ? this.route : {
+        name: this.route,
+        meta: {}
+      }
+
+      if (this.$route['name'] === route.name) {
+        this.$el.querySelector('.app-tree__body').classList.toggle('focused', select)
+      }
+    },
+    '$store.state.actionUpdate' () {
+      const route = typeof this.route === 'object' ? this.route : {
+        name: this.route,
+        meta: {}
+      }
+
+      if (this.$store.state.route === route.name) {
+        switch (this.$store.state.action) {
+          case 'create':
+            this.createNode(this.$store.state.data, this.data)
+            break
+
+          case 'update':
+            this.updateNode(this.$store.state.data, this.data)
+            break
+
+          case 'delete':
+            this.deleteNode(this.$store.state.data, this.data)
+            break
+        }
+      }
     }
   },
   mounted () {
@@ -92,9 +124,9 @@ export default {
         this.loading = false
       })
     },
-    click (event, node) {
+    clickNode (event, node) {
       if (node['category']) {
-        return this.toggle(node)
+        return this.toggleNode(node)
       }
 
       if (event.ctrlKey && this.routeList && node['folder']) {
@@ -118,7 +150,7 @@ export default {
         })
       }
     },
-    toggle (node) {
+    toggleNode (node) {
       const opened = [...this.propSettings.opened || []]
 
       const id = node['id'] ?? node['key']
@@ -155,6 +187,25 @@ export default {
       }
 
       this.propSettings.opened = opened
+    },
+    updateNode (node, data) {
+      if (this.$store.getters.get('treeSelect') !== undefined) {
+        this.$store.dispatch('remove', 'treeSelect')
+        this.get()
+        return
+      }
+    },
+    createNode (node, data) {
+
+    },
+    deleteNode (node, data) {
+      data.forEach((i, k) => {
+        if (i.id === node.id) {
+          data.splice(k, 1)
+        } else if (i.data) {
+          this.deleteNode(node, i.data)
+        }
+      })
     },
     removeChildOpened (data, opened) {
       for (const node of data['data']) {
@@ -196,7 +247,7 @@ export default {
       this.dataContextMenu = []
       const contextMenu = node['contextMenu'] !== undefined ? node['contextMenu'] : this.contextMenu
 
-      if (contextMenu === undefined) {
+      if (!contextMenu) {
         return
       }
 
@@ -303,7 +354,7 @@ export default {
     </div>
 
     <transition>
-      <div v-if="showContextMenu" ref="ctx" class="app-tree__context-menu" :class="classContextMenu">
+      <div v-if="showContextMenu && dataContextMenu.length" ref="ctx" class="app-tree__context-menu" :class="classContextMenu">
         <template v-for="i in dataContextMenu">
           <div v-if="i.split" class="app-tree__context-menu__split"/>
           <div v-else-if="i.title && Object.values(i).length === 1" class="app-tree__context-menu__item">
@@ -328,6 +379,9 @@ export default {
 }
 .app-tree__body {
   @apply grow overflow-hidden
+}
+.app-tree__body.focused {
+  @apply ring-2 ring-inset ring-blue-500
 }
 .app-tree__root {
   @apply overflow-y-auto p-1 h-full

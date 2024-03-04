@@ -102,7 +102,7 @@ export default {
   <div v-if="node" class="app-tree__node" :data-level="level">
     <div class="app-tree__node-item" :style="{ paddingLeft: (level * 16) + `px` }">
       <div v-if="node['data'] || node['category']" class="app-tree__node-toggle"
-           @click="$emit('action', 'toggle', node)">
+           @click="$emit('action', 'toggleNode', node)">
         <app-loader-icon v-if="node['loading']" class="!w-4 !h-4"/>
         <i v-else class="fa fa-angle-right fa-fw" :class="{ 'rotate-90': node['data']?.length }"/>
       </div>
@@ -119,7 +119,7 @@ export default {
       </div>
 
       <div class="app-tree__node-title" :class="this.class"
-           @click="$emit('action', 'click', $event, node)"
+           @click="$emit('action', 'clickNode', $event, node)"
            @contextmenu.prevent="$emit('action', 'buildContextMenu', $event, node)"
            :data-tooltip="tooltip">
         {{ title }}
