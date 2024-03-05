@@ -31,6 +31,10 @@ export default {
       data: null,
       meta: {},
       propSettings: this.settings || {},
+      propRoute: typeof this.route === 'object' ? this.route : {
+        name: this.route,
+        meta: {}
+      },
       idContextMenu: null,
       showContextMenu: false,
       dataContextMenu: [],
@@ -45,22 +49,12 @@ export default {
       deep: true
     },
     '$store.state.treeSelect' (select) {
-      const route = typeof this.route === 'object' ? this.route : {
-        name: this.route,
-        meta: {}
-      }
-
-      if (this.$route['name'] === route.name) {
+      if (this.$route['name'] === this.propRoute.name) {
         this.$el.querySelector('.app-tree__body').classList.toggle('focused', select)
       }
     },
     '$store.state.actionUpdate' () {
-      const route = typeof this.route === 'object' ? this.route : {
-        name: this.route,
-        meta: {}
-      }
-
-      if (this.$store.state.route === route.name) {
+      if (this.$store.state.route === this.propRoute.name) {
         switch (this.$store.state.action) {
           case 'create':
             this.createNode(this.$store.state.data, this.data)
@@ -125,27 +119,51 @@ export default {
       })
     },
     clickNode (event, node) {
+      if (this.$store.getters.get('treeSelect') && this.$route['name'] === this.propRoute.name) {
+        const context = this.$store.getters.get('context')
+        const event = this.$store.getters.get('event')
+        context.loading = true
+        this.loading = true
+
+        const path = this.$router.resolve({
+          name: this.route,
+          params: {
+            id: 'parents'
+          }
+        }).path + '/' + this.$route['params']['id'] + '/' + node['id']
+
+        axios.get(path).then(({ data: { data } }) => {
+          context.loading = false
+          context.model = data['id']
+          this.$nextTick(() => event.target.value = data['id'] + ' - ' + data['title'])
+          this.$store.dispatch('set', { treeSelect: false })
+        }).catch(() => {
+          setTimeout(() => event.target.classList.add('focus'), 0)
+          this.$store.dispatch('set', { treeSelect: true })
+        }).finally(() => {
+          context.loading = false
+          this.loading = false
+        })
+
+        return
+      }
+
       if (node['category']) {
         return this.toggleNode(node)
       }
 
-      if (event.ctrlKey && this.routeList && node['folder']) {
+      if (event.ctrlKey && this.routeList ) {
         this.$parent.$emit('action', 'pushRouter', {
           name: this.routeList,
           params: {
-            id: node.id
+            id: node['id']
           }
         })
       } else {
-        const route = typeof this.route === 'object' ? this.route : {
-          name: this.route,
-          meta: {}
-        }
-
         this.$parent.$emit('action', 'pushRouter', {
-          ...route,
+          ...this.propRoute,
           params: {
-            id: node.key || node.id
+            id: node['id']
           }
         })
       }

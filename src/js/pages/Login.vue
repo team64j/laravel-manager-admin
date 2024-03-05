@@ -126,7 +126,7 @@ export default {
 
 <template>
   <div class="dark flex w-full h-full justify-center items-center bg-login">
-    <notifications position="top right" class="app-notifications"/>
+    <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
 
     <div
         class="relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl pt-6 px-8 pb-6 shadow-lg w-[33rem] max-w-[95%]">

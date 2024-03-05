@@ -37,7 +37,7 @@ export default {
         return this.icons[this.node['type']]
       }
 
-      if (this.icons['default'] && !(this.node['category'] || this.node['data'])) {
+      if (this.icons['default'] && !(this.node['category'] || this.node['data'] !== undefined)) {
         return this.icons['default']
       }
     },
@@ -111,8 +111,9 @@ export default {
            @click.stop="$emit('action', 'buildContextMenu', $event, node)"
            @contextmenu.prevent="$emit('action', 'buildContextMenu', $event, node)">
         <i v-if="icon" class="fa-fw" :class="icon"/>
-        <template v-else-if="node['data'] || node['category']">
+        <template v-else-if="node['data'] !== undefined || node['category']">
           <i v-if="node['data']?.length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
+          <i v-else-if="!node['data']" class="fa fa-folder fa-fw w-5"/>
           <i v-else class="far fa-folder fa-fw w-5"/>
         </template>
         <i v-else class="far fa-file fa-fw"/>

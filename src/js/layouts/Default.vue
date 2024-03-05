@@ -115,7 +115,7 @@ export default {
 
 <template>
   <div class="app flex flex-col h-full w-full">
-    <notifications position="top right" class="app-notifications"/>
+    <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
     <search ref="search"/>
     <global-menu :data="menu" @action="action"/>
     <div class="app-main">
