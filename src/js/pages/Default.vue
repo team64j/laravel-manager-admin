@@ -99,14 +99,19 @@ export default {
     },
     delete () {
       if (confirm('OK ?')) {
-        this.$emit('action', 'closeTab')
+        const url = this.$route?.['meta']?.['url'] ? this.$route['meta']['url'] : this.$route['path']
 
-        this.$store.dispatch('set', {
-          action: 'delete',
-          data: Object.assign({}, this.data),
-          route: this.$route['name'],
-          actionUpdate: Date.now()
-        })
+        axios.delete(url, this.data).
+            then(() => {
+              this.$emit('action', 'closeTab')
+
+              this.$store.dispatch('set', {
+                action: 'delete',
+                data: Object.assign({}, this.data),
+                route: this.$route['name'],
+                actionUpdate: Date.now()
+              })
+            })
       }
     },
     cancel () {
