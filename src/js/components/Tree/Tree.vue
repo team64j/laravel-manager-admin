@@ -38,7 +38,8 @@ export default {
       idContextMenu: null,
       showContextMenu: false,
       dataContextMenu: [],
-      classContextMenu: null
+      classContextMenu: null,
+      lastSelectValue: null
     }
   },
   watch: {
@@ -135,7 +136,7 @@ export default {
         axios.get(path).then(({ data: { data } }) => {
           context.loading = false
           context.model = data['id']
-          this.$nextTick(() => event.target.value = data['id'] + ' - ' + data['title'])
+          this.lastSelectValue = data['id'] + ' - ' + data['title']
           this.$store.dispatch('set', { treeSelect: false })
         }).catch(() => {
           setTimeout(() => event.target.classList.add('focus'), 0)
@@ -143,6 +144,9 @@ export default {
         }).finally(() => {
           context.loading = false
           this.loading = false
+          if (this.lastSelectValue) {
+            this.$nextTick(() => event.target.value = this.lastSelectValue)
+          }
         })
 
         return
@@ -152,7 +156,7 @@ export default {
         return this.toggleNode(node)
       }
 
-      if (event.ctrlKey && this.routeList ) {
+      if (event.ctrlKey && this.routeList) {
         this.$parent.$emit('action', 'pushRouter', {
           name: this.routeList,
           params: {
@@ -372,7 +376,8 @@ export default {
     </div>
 
     <transition>
-      <div v-if="showContextMenu && dataContextMenu.length" ref="ctx" class="app-tree__context-menu" :class="classContextMenu">
+      <div v-if="showContextMenu && dataContextMenu.length" ref="ctx" class="app-tree__context-menu"
+           :class="classContextMenu">
         <template v-for="i in dataContextMenu">
           <div v-if="i.split" class="app-tree__context-menu__split"/>
           <div v-else-if="i.title && Object.values(i).length === 1" class="app-tree__context-menu__item">
