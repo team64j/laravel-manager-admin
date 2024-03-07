@@ -77,6 +77,8 @@ export default {
       const to = action.to || this?.to?.[action]
       action = action.action || action
 
+      this.$store.dispatch('set', { action })
+
       if (to) {
         if (to.close) {
           this.$emit('action', 'closeTab')

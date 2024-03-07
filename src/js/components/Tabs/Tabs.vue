@@ -49,8 +49,9 @@ export default {
               return
             }
 
-            if (this.active !== active) {
-              this.active = active
+            if (this.active !== active ||
+                (this.active === active && ['delete', 'save', 'update'].includes(this.$store.state.action))) {
+              this.select(active)
             }
           }
       )
@@ -120,6 +121,16 @@ export default {
       return false
     },
     select (tab, index) {
+      if (typeof tab === 'string') {
+        const id = tab
+        tab = this.data.find(i => i.id === id)
+        index = this.data.findIndex(i => i.id === id)
+
+        if (!tab) {
+          return
+        }
+      }
+
       this.active = tab.id
 
       this.init(index)

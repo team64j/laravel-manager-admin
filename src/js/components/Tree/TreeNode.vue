@@ -107,7 +107,7 @@ function action () {
         <i v-if="icon" class="fa-fw" :class="icon"/>
         <template v-else-if="node['data'] !== undefined || node['category']">
           <i v-if="node['data']?.length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
-          <i v-else-if="!node['data']" class="fa fa-folder fa-fw w-5"/>
+          <i v-else-if="node['data'] === null" class="fa fa-folder fa-fw w-5"/>
           <i v-else class="far fa-folder fa-fw w-5"/>
         </template>
         <i v-else class="far fa-file fa-fw"/>

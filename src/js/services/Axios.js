@@ -36,11 +36,15 @@ axios.interceptors['request'].use(
           //delete params[k]
         }
 
+        if (k === 'id' && v === 'new') {
+          return
+        }
+
         config.url = config.url.replace(re, encodeURIComponent(v.toString())).replace(/\/\//g, '/').replace(/\/$/, '')
       }
     })
 
-    config.url = config.url.replace(/(:\w+)/, '').replace(/^\w+:\/\/[^\/]+/, '')
+    config.url = config.url.replace(/(\/?:\w+)/, '').replace(/^\w+:\/\/[^\/]+/, '')
 
     return config
   },

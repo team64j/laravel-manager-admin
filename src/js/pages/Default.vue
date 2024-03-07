@@ -61,7 +61,7 @@ export default {
       })
     },
     save (stay) {
-      const url = this.$route?.['meta']?.['url'] ? this.$route['meta']['url'] : this.$route['path']
+      const url = this.$route?.['meta']?.['url'] ? this.$route['meta']['url'] : this.$route['matched'][0]['path']
 
       this.errors = null
 
@@ -103,14 +103,14 @@ export default {
 
         axios.delete(url, this.data).
             then(() => {
-              this.$emit('action', 'closeTab')
-
               this.$store.dispatch('set', {
                 action: 'delete',
                 data: Object.assign({}, this.data),
                 route: this.$route['name'],
                 actionUpdate: Date.now()
               })
+
+              this.$emit('action', 'closeTab')
             })
       }
     },

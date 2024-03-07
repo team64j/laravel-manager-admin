@@ -64,6 +64,10 @@ const mutations = {
 
     const index = state['tabs'].indexOf(data)
 
+    index > -1 && state['tabs'].splice(index, 1) && state['keys'].splice(index, 1)
+
+    this.commit('set', { treeSelect: false })
+
     if (data.active && index > 0 && state['tabs'][index - 1]) {
       state['tabs'][index - 1].active = true
       router.push(state['tabs'][index - 1]).then(() => {
@@ -72,10 +76,6 @@ const mutations = {
         }
       })
     }
-
-    this.commit('set', { treeSelect: false })
-
-    index > -1 && state['tabs'].splice(index, 1) && state['keys'].splice(index, 1)
 
     return index
   },
