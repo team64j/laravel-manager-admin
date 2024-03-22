@@ -10,7 +10,7 @@ axios.interceptors['request'].use(
   config => {
     config.baseURL = (store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, '')
     config.headers['Authorization'] = 'Bearer ' + store.getters.get('Storage.token', '')
-    config.headers['Accept-Language'] = store.getters.get('Storage.auth.lang', 'en')
+    config.headers['Accept-Language'] = store.getters.get('Storage.lang', 'en')
 
     if (!config.url) {
       return config

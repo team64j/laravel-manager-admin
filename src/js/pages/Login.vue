@@ -90,7 +90,7 @@ export default {
     removeHostname (item) {
       if (item.name === this.hostname) {
         this.hostname = ''
-        this.$store.dispatch('set', { ['Storage.auth.hostname']: this.hostname })
+        this.$store.dispatch('set', { ['Storage.hostname']: this.hostname })
       }
       this.hostnames = this.hostnames.filter(i => i.name !== item.name)
       this.$store.dispatch('set', { ['Storage.hostnames']: this.hostnames })
