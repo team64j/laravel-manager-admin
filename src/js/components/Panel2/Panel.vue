@@ -104,7 +104,6 @@ export default {
     },
     cells (item) {
       const items = []
-      const className = 'px-2 py-1 first:pl-6 last:pr-6 '
 
       if (this.columns?.length) {
         for (const i in this.columns) {
@@ -116,7 +115,6 @@ export default {
 
           items.push(h('td', {
             style,
-            class: className
           }, this.value(item, this.columns[i])))
         }
       } else {
@@ -129,7 +127,6 @@ export default {
 
           items.push(h(`td`, {
             style,
-            class: className,
             innerHTML: item[i]
           }))
         }
@@ -474,7 +471,7 @@ export default {
         </thead>
 
         <tbody v-if="!data.length">
-        <tr>
+        <tr class="pointer-events-none">
           <td :colspan="columns?.length || 1" class="text-center p-5">
             <div v-if="meta?.['message']">
               {{ meta?.['message'] }}
@@ -574,6 +571,9 @@ export default {
 </template>
 
 <style scoped>
+.app-panel__data thead > tr > th, .app-panel__data thead > tr > td {
+  @apply border-r last:border-0 dark:border-r-gray-700
+}
 .app-panel__data tbody tr:not(.disabled) {
   @apply even:bg-slate-400/5 hover:bg-blue-600/10
 }
@@ -585,6 +585,9 @@ export default {
 }
 .app-panel__data tbody tr.disabled.active {
   @apply bg-rose-600/10 dark:hover:bg-rose-600/10
+}
+.app-panel__data tbody tr > td {
+  @apply px-2 py-2 first:pl-6 last:pr-6
 }
 </style>
 
