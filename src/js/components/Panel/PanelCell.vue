@@ -162,8 +162,10 @@ export default {
 }
 </script>
 
+<!--
 <style scoped>
 td {
   @apply px-3 py-1 first:pl-6 last:pr-6
 }
 </style>
+-->

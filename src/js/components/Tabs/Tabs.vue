@@ -320,10 +320,3 @@ export default {
   @apply hidden
 }
 </style>
-
-<style>
-.app-tabs__page > .app-panel {
-  @apply -m-6 p-0 shadow-none;
-  height: calc(100% + 3rem);
-}
-</style>

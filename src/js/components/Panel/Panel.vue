@@ -710,7 +710,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<!--<style scoped>
 .app-panel {
   @apply flex flex-col grow mx-4 mb-4 rounded shadow bg-white dark:bg-gray-700 overflow-auto
 }
@@ -826,4 +826,4 @@ export default {
 .app-panel tbody tr.disabled {
   @apply even:bg-rose-400/10 bg-rose-400/20 hover:bg-rose-600/10 dark:hover:bg-rose-600/10
 }
-</style>
+</style>-->

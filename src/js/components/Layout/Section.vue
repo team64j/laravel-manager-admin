@@ -47,12 +47,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.app-section .app-section__header + .app-section__content .app-panel {
-  @apply rounded-t-none
-}
-.app-section .app-section__content .app-panel {
-  @apply -mx-4 -mb-4 p-0 shadow-none
-}
-</style>

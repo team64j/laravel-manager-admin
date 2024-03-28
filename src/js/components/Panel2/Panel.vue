@@ -85,8 +85,26 @@ export default {
         this.$emit('update:props', data)
       })
     },
+    selectRow (event, item, callback) {
+      if (!event.ctrlKey) {
+        this.data.map(i => {
+          if (i.data) {
+            i.data.map(j => j['@active'] = false)
+          } else {
+            i['@active'] = false
+          }
+        })
+      }
+
+      item['@active'] = !item['@active']
+
+      if (typeof callback === 'function') {
+        return callback()
+      }
+    },
     cells (item) {
       const items = []
+      const className = 'px-2 py-1 first:pl-6 last:pr-6 '
 
       if (this.columns?.length) {
         for (const i in this.columns) {
@@ -98,7 +116,7 @@ export default {
 
           items.push(h('td', {
             style,
-            class: 'px-2 py-1 first:pl-6 last:pr-6'
+            class: className
           }, this.value(item, this.columns[i])))
         }
       } else {
@@ -111,7 +129,7 @@ export default {
 
           items.push(h(`td`, {
             style,
-            class: 'px-2 py-1 first:pl-6 last:pr-6',
+            class: className,
             innerHTML: item[i]
           }))
         }
@@ -469,9 +487,11 @@ export default {
 
         <template v-for="category in (data[0]?.data ? data : [{ data, route, draggable }])">
           <tbody v-if="category.name && category.data.length">
-          <tr class="app-panel__category" :class="{ closed: hasClosedCategory(category) }"
+          <tr class="app-panel__category cursor-pointer hover:text-blue-500"
+              :class="{ closed: hasClosedCategory(category) }"
               @mousedown="toggleCategory(category)">
-            <td :colspan="columns?.length || Object.values(category.data[0]).length">
+            <td class="px-4 pt-3 pb-1 border-b-2 font-bold"
+                :colspan="columns?.length || Object.values(category.data[0]).length">
               <span class="toggle">
                 <i :class="[!hasClosedCategory(category) ? 'fa-square-minus' : 'fa-square-plus']"
                    class="far fa-fw mr-1"/>
@@ -487,8 +507,8 @@ export default {
             <router-link v-for="item in category.data"
                          :to="{ name: category.route || route, params: { id: item.id } }"
                          custom v-slot="{ navigate }">
-              <tr @click="navigate" class="cursor-pointer hover:bg-blue-600/10 even:bg-slate-400/5"
-                  :class="{ 'disabled' : item.disabled }">
+              <tr @click="selectRow($event, item, navigate)" class="cursor-pointer"
+                  :class="{ 'disabled' : item.disabled, 'active': item['@active'] }">
                 <template v-for="cell in cells(item)">
                   <component :is="cell"/>
                 </template>
@@ -502,7 +522,8 @@ export default {
                        tag="tbody"
                        @end="sortable($event, category.data)">
               <template #item="{ element: item }">
-                <tr class="hover:bg-blue-600/10 even:bg-slate-400/5" :class="{ 'disabled' : item.disabled }">
+                <tr :class="{ 'disabled' : item.disabled, 'active': item['@active'] }"
+                    @click="selectRow($event, item)">
                   <template v-for="cell in cells(item)">
                     <component :is="cell"
                                @action="action"
@@ -514,7 +535,7 @@ export default {
             </draggable>
 
             <tbody v-else>
-            <tr v-for="item in category.data" class="hover:bg-blue-600/10 even:bg-slate-400/5">
+            <tr v-for="item in category.data" @click="selectRow($event, item)">
               <template v-for="cell in cells(item)">
                 <component :is="cell"/>
               </template>
@@ -551,3 +572,25 @@ export default {
 
   </div>
 </template>
+
+<style scoped>
+.app-panel__data tbody tr:not(.disabled) {
+  @apply even:bg-slate-400/5 hover:bg-blue-600/10
+}
+.app-panel__data tbody tr:not(.disabled).active {
+  @apply bg-blue-600/10
+}
+.app-panel__data tbody tr.disabled {
+  @apply even:bg-rose-400/10 bg-rose-400/20 hover:bg-rose-600/10 dark:hover:bg-rose-600/10
+}
+.app-panel__data tbody tr.disabled.active {
+  @apply bg-rose-600/10 dark:hover:bg-rose-600/10
+}
+</style>
+
+<style>
+.app-tabs__page > .app-panel {
+  @apply -m-6 p-0 shadow-none;
+  height: calc(100% + 3rem);
+}
+</style>
