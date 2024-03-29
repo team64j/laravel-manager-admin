@@ -572,7 +572,7 @@ export default {
 
 <style scoped>
 .app-panel__data thead > tr > th, .app-panel__data thead > tr > td {
-  @apply border-r last:border-0 dark:border-r-gray-700
+  @apply border-r border-r-transparent last:border-0
 }
 .app-panel__data tbody tr:not(.disabled) {
   @apply even:bg-slate-400/5 hover:bg-blue-600/10
