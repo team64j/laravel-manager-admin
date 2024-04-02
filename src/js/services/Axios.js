@@ -57,9 +57,9 @@ axios.interceptors['response'].use(
     const status = error.response?.status ?? 500
 
     if (status === 401) {
-      store.dispatch('set', { ['Storage.token']: null })
-      location.reload()
-      return
+      return store.dispatch('set', { ['Storage.token']: null }).then(() => {
+        router.push({ name: 'Logout' }).then()
+      })
     }
 
     if (error.response?.data?.message) {
