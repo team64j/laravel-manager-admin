@@ -54,7 +54,7 @@ export default {
 
         if (this.data.languages?.length) {
           this.lang = this.data.languages.filter(
-              i => i.key === (this.$store.getters['get']('Storage.lang') || 'en'))[0] ?? {}
+              i => i.key === (this.$store.getters.get('Storage.lang') || 'en'))[0] ?? {}
         }
 
         if (!this.hostnames.some(i => i.name === this.hostname)) {
@@ -125,44 +125,47 @@ export default {
 </script>
 
 <template>
-  <div class="dark flex w-full h-full justify-center items-center bg-login">
+  <div class="app__page__login dark flex w-full h-full justify-center items-center bg-login text-xl">
     <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
 
     <div
-        class="relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl pt-6 px-8 pb-6 shadow-lg w-[33rem] max-w-[95%]">
+        class="relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl px-10 py-8 shadow-lg w-[40rem] max-w-[95%]">
 
       <div class="flex items-center justify-center">
-        <img src="../../img/logo.svg" :src="data['logo']" class="inline-block h-14" alt="logo">
-        <div class="text-3xl font-bold text-white ml-3 uppercase">Evo Admin</div>
+        <img src="../../img/logo.svg" :src="data['logo']" class="inline-block h-16" alt="logo">
+        <div class="text-4xl font-bold text-white ml-3 uppercase">Evo Admin</div>
       </div>
 
-      <div class="text-center text-xs font-normal">{{ data?.['siteName'] || `* * *` }}</div>
+      <div class="text-base text-center font-normal">{{ data?.['siteName'] || `* * *` }}</div>
 
       <div>
-        <label for="hostname" class="text-sm">Manager API</label>
+        <label for="hostname" class="text-base">Manager API</label>
 
         <div class="flex mb-2 mx-[1px]">
           <div v-if="data?.languages?.length" class="grow-0 flex -mx-[1px]">
-            <button type="button" class="h-full flex items-center border-2 py-2 !ring-0 !bg-transparent rounded-r-none"
+            <button type="button"
+                    class="h-full flex items-center border-2 py-2.5 px-3.5 !ring-0 !bg-transparent rounded-r-none focus:z-10"
                     @click="showLanguages">
               {{ lang.key?.toUpperCase() }}
             </button>
           </div>
           <div class="grow flex -mx-[1px]">
             <input v-model="hostname" type="text" id="hostname"
-                   class="border-2 py-2 !ring-0 !bg-transparent rounded-r-none z-[1]"
+                   class="border-2 py-2.5 px-3.5 !ring-0 !bg-transparent rounded-r-none z-[1] focus:z-10"
                    :class="[ errors['hostname'] ? '!border-rose-500' : '', data?.languages?.length ? 'rounded-l-none' : '']"
                    @keyup.enter="checkServer"
                    autocomplete="off">
           </div>
           <div v-if="hostnames.length" class="grow-0 flex -mx-[1px]">
-            <button type="button" class="border-2 py-2 !ring-0 !bg-transparent h-full flex items-center rounded-none"
+            <button type="button"
+                    class="border-2 py-2.5 px-3.5 !ring-0 !bg-transparent h-full flex items-center rounded-none focus:z-10"
                     @click="showHostnames">
               <i class="fa fa-ellipsis fa-fw"/>
             </button>
           </div>
           <div class="grow-0 flex -mx-[1px]">
-            <button type="button" class="border-2 py-2 !ring-0 !bg-transparent h-full flex items-center rounded-l-none"
+            <button type="button"
+                    class="border-2 py-2.5 w-14 !ring-0 !bg-transparent h-full flex items-center justify-center rounded-l-none focus:z-10"
                     :disabled="isCheckServer"
                     @click="checkServer">
               <i v-if="isCheckServer"
@@ -175,34 +178,34 @@ export default {
 
       <div v-if="connected" class="pt-2">
         <div class="mb-4">
-          <label for="username" class="text-sm">{{ lang.user }}</label>
+          <label for="username" class="text-base">{{ lang.user }}</label>
           <input v-model="form['username']"
                  type="text"
                  id="username"
                  name="username"
-                 class="border-2 py-2 !ring-0 !bg-transparent"
+                 class="border-2 py-2.5 px-3.5 !ring-0 !bg-transparent"
                  :class="[ errors['username'] ? '!border-rose-500' : '']"
                  autocomplete="username"
                  @keyup.enter="login">
         </div>
 
         <div class="mb-4">
-          <label for="password" class="text-sm">{{ lang.password }}</label>
+          <label for="password" class="text-base">{{ lang.password }}</label>
           <input v-model="form['password']" type="password"
                  id="password"
                  name="password"
-                 class="border-2 py-2 !ring-0 !bg-transparent"
+                 class="border-2 py-2.5 px-3.5 !ring-0 !bg-transparent"
                  :class="[ errors['password'] ? '!border-rose-500' : '']"
                  @keyup.enter="login">
         </div>
 
         <div class="flex justify-between items-center">
           <div class="inline-flex items-center">
-            <input v-model="form['remember']" type="checkbox" id="remember" name="remember" class="mr-2 h-5 w-5">
-            <label for="remember" class="text-sm">{{ lang.remember }}</label>
+            <input v-model="form['remember']" type="checkbox" id="remember" name="remember" class="mr-2 h-6 w-6">
+            <label for="remember" class="text-lg">{{ lang.remember }}</label>
           </div>
           <div>
-            <button type="button" class="btn-green !ring-0 py-2 px-5 flex items-center justify-center"
+            <button type="button" class="btn-green !ring-0 py-2.5 px-6 flex items-center justify-center"
                     :disabled="isLogin" @click="login">
               <i v-if="isLogin"
                  class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin absolute"/>
@@ -212,7 +215,7 @@ export default {
         </div>
       </div>
 
-      <div v-if="data?.version" class="text-xs text-gray-400 text-center mt-2 -mb-4">
+      <div v-if="data?.version" class="text-sm text-gray-400 text-center mt-2 -mb-4">
         {{ data.version }}
       </div>
 
@@ -256,11 +259,8 @@ export default {
   </div>
 </template>
 
-<style>
-html {
-  font-size: 16px;
-}
-body {
+<style scoped>
+.app__page__login {
   @apply bg-center bg-cover;
   background-image: url("../../img/login-background.jpg");
 }
