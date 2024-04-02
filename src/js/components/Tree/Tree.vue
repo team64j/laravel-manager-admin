@@ -231,6 +231,10 @@ export default {
     },
     removeChildOpened (data, opened) {
       for (const node of data['data']) {
+        if (!node) {
+          continue
+        }
+
         const id = node['id'] ?? node['key']
 
         if (node['data']?.length) {

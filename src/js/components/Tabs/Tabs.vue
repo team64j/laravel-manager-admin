@@ -311,7 +311,7 @@ export default {
   @apply h-auto w-full py-1 top-auto bottom-0
 }
 .app-tabs__vertical > .app-tabs__page {
-  @apply flex-col h-full p-0 shadow-none rounded-none overflow-visible
+  @apply flex-col h-full p-0 shadow-none rounded-none overflow-auto flex-nowrap
 }
 .app-tabs__vertical > .app-tabs__rows ~ .app-tabs__page {
   @apply pl-6 border-l bg-transparent border-opacity-80
