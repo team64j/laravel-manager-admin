@@ -3,6 +3,7 @@ import { shallowRef } from 'vue'
 import Frame from '../components/Layout/Frame.vue'
 import Loader from '../components/Layout/Loader.vue'
 import Component from '../components/Layout/Component.vue'
+import router from '../router'
 
 export default {
   name: 'DefaultPage',
@@ -50,8 +51,8 @@ export default {
 
       axios.get(url, {
         params: this.$route['query']
-      }).then(({ data }) => {
-        this.setData(data)
+      }).then(r => {
+        r?.data && this.setData(r.data)
       }).finally(() => {
         this.$emit('action', 'setTab', {
           key: this._.vnode.key,
@@ -119,14 +120,14 @@ export default {
     },
     pushRouter (route) {
       if (typeof route === 'string') {
-        route = this.$router.resolve(route)
+        route = router.resolve(route)
       }
 
-      this.$router.push(route).then(this.get)
+      router.push(route).then(this.get)
     },
     inputChangeQuery (event, t) {
-      const route = this.$router.resolve({
-        query: Object.assign({}, this.$route.query, { [t._.vnode.key]: event.target.value })
+      const route = router.resolve({
+        query: Object.assign({}, router.currentRoute.value.query, { [t._.vnode.key]: event.target.value })
       })
       this.pushRouter(route)
     },

@@ -24,7 +24,11 @@ export default {
     }
   },
   created () {
-    this.checkServer()
+    if (this.$store.getters.get('Storage.token')) {
+      this.$router.push('/')
+    } else {
+      this.checkServer()
+    }
   },
   methods: {
     checkServer () {
@@ -111,7 +115,7 @@ export default {
           this.$store.dispatch('set', { ['Storage.tokenExpiresIn']: data['expires_in'] })
           this.$store.dispatch('Session/clear')
 
-          this.$router.push('/').then(() => location.reload())
+          this.$router.push('/')
         }
       }).catch(() => {
         this.errors['username'] = true
@@ -126,7 +130,6 @@ export default {
 
 <template>
   <div class="app__page__login dark flex w-full h-full justify-center items-center bg-login text-xl">
-    <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
 
     <div
         class="relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl px-10 py-8 shadow-lg w-[40rem] max-w-[95%]">

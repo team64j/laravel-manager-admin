@@ -73,12 +73,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (store.getters['get']('Storage.token')) {
-    if (to.name === 'Login') {
-      next({ name: 'Dashboard' })
-    } else {
-      next()
-    }
+  if (!store.getters.get('Storage.token') && to.name !== 'Login') {
+    next({ name: 'Login' })
   } else {
     next()
   }
