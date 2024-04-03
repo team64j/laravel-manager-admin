@@ -31,16 +31,10 @@ export default {
   },
   created () {
     this.bootstrap()
-  },
-  mounted () {
+
     document.documentElement.classList.toggle(
         'dark',
         this.$store.getters.get('Storage.root.dark', false)
-    )
-
-    this.$refs.sidebar?.$el.classList.toggle(
-        'app-sidebar__hidden',
-        !this.$store.getters.get('Storage.root.sidebarShow', true)
     )
 
     /**
@@ -85,6 +79,9 @@ export default {
       }
     },
     bootstrap () {
+      this.layout = null
+      this.loaded = false
+
       if (this.$store.getters.get('Storage.token')) {
         axios.post('bootstrap').then(({ data: response }) => {
           if (response.data.routes) {
@@ -100,12 +97,13 @@ export default {
 
             response.data.assets && this.assets(response.data.assets)
 
-            Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).forEach(([, { default: module }]) => {
-              const name = `App` + (module.name || module.__name)
-              if (module?.['__isStatic'] && !this.$.appContext.components[name]) {
-                this.$.appContext.app.component(name, module)
-              }
-            })
+            Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).
+                forEach(([, { default: module }]) => {
+                  const name = `App` + (module.name || module.__name)
+                  if (module?.['__isStatic'] && !this.$.appContext.components[name]) {
+                    this.$.appContext.app.component(name, module)
+                  }
+                })
 
             if (!this.$.appContext.components.RouterView) {
               this.$.appContext.app.use(router)
@@ -215,6 +213,7 @@ export default {
           <sidebar ref="sidebar" class="w-80 shrink-0 shadow-2xl md:shadow overflow-hidden"
                    :style="{ width: `${sidebarWidth}px` }"
                    :layout="layout?.['sidebar']"
+                   :class="{ 'app-sidebar__hidden': !$store.getters.get('Storage.root.sidebarShow', true) }"
                    @action="action"/>
           <div class="relative z-10 md:z-20 group shrink-0 w-0 cursor-col-resize" @mousedown="splitterDown">
             <div class="absolute h-full w-1.5 -ml-0.5"/>
