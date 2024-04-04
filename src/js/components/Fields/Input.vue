@@ -32,7 +32,7 @@
          @click="onClear"/>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
     <slot name="item"/>
   </div>
   <div v-else class="relative" :class="[$props.class, type === 'number' ? 'app-input__number' : '']">
@@ -57,7 +57,7 @@
        class="fa fa-circle-xmark absolute block right-0 top-0 my-4 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
        @click="onClear"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </div>
 </template>
 

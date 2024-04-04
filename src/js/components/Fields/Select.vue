@@ -56,7 +56,7 @@
       </template>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </div>
   <template v-else>
     <select v-model="model"
@@ -74,7 +74,7 @@
       </template>
     </select>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </template>
 </template>
 

@@ -51,7 +51,7 @@ export default {
     },
     '$store.state.treeSelect' (select) {
       if (this.$route['name'] === this.propRoute.name) {
-        this.$el.querySelector('.app-tree__body').classList.toggle('focused', select)
+        this.$el.querySelector('.app-tree__body').classList.toggle('focused', !!select)
       }
     },
     '$store.state.actionUpdate' () {
@@ -214,11 +214,23 @@ export default {
       this.propSettings.opened = opened
     },
     updateNode (node, data) {
-      if (this.$store.getters.get('treeSelect') !== undefined) {
+      if (this.$store.getters.get('treeSelect')) {
         this.$store.dispatch('remove', 'treeSelect')
         this.get()
         return
       }
+
+      data.forEach(i => {
+        if (i.id === node['id']) {
+          for (const j in node) {
+            if (node[j] !== undefined) {
+              i[j] = node[j]
+            }
+          }
+        } else if (i.data) {
+          this.updateNode(node, i.data)
+        }
+      })
     },
     createNode (node, data) {
 

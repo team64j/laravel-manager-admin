@@ -26,7 +26,7 @@ const title = computed(() => {
     }
   }
 
-  return $props.node['title']
+  return $props.node['title'] ?? $props.node[$data.config['settings']['keyTitle']] ?? $props.node['id']
 })
 
 const icon = computed(() => {
@@ -58,8 +58,38 @@ const className = computed(() => {
     c.push('app-tree__node-deleted')
   }
 
-  if ($props.node['unpublished']) {
-    c.push('app-tree__node-unpublished')
+  if ($props.node['muted']) {
+    c.push('app-tree__node-muted')
+  }
+
+  if ($data.config['aliases']) {
+    for (const a in $data.config['aliases']) {
+      const aliases = typeof $data.config['aliases'][a] === 'object'
+          ? $data.config['aliases'][a]
+          : [$data.config['aliases'][a]]
+      let key, value
+
+      for (const i of aliases) {
+        [key, value] = i.split(':')
+
+        if (value !== undefined) {
+          if (/^-?[\d.]+(?:e-?\d+)?$/.test(value)) {
+            value = parseInt(value)
+          }
+        }
+
+        if (($props.node[key] !== undefined && (value !== undefined && $props.node[key] === value)) ||
+            ($props.node[key] && value === undefined)) {
+          if (a === 'selected') {
+            c.push('app-tree__node-selected')
+          } else if (a === 'deleted') {
+            c.push('app-tree__node-deleted')
+          } else if (a === 'muted') {
+            c.push('app-tree__node-muted')
+          }
+        }
+      }
+    }
   }
 
   const route = router.currentRoute.value
@@ -116,6 +146,7 @@ function action () {
           <i v-else class="far fa-folder fa-fw w-5"/>
         </template>
         <i v-else class="far fa-file fa-fw"/>
+        <i v-if="node['locked']" class="fa fa-lock text-sm text-rose-500 bottom-0 right-0 absolute"/>
       </div>
 
       <div class="app-tree__node-title"
@@ -156,7 +187,7 @@ function action () {
   @apply relative
 }
 .app-tree__node .app-tree__node-item {
-  @apply flex items-center pl-5 py-0.5 w-full rounded hover:bg-slate-200/60 dark:hover:bg-gray-600/70
+  @apply flex items-center pl-5 h-[1.8rem] w-full rounded hover:bg-slate-200/60 dark:hover:bg-gray-600/70
 }
 .app-tree__node .app-tree__node-item.app-tree__node-active {
   @apply bg-slate-200/40 dark:bg-gray-600/50
@@ -168,7 +199,7 @@ function action () {
   @apply pl-1 cursor-pointer text-gray-400 dark:text-gray-200
 }
 .app-tree__node .app-tree__node-title {
-  @apply truncate px-1 pb-0.5 grow cursor-pointer
+  @apply truncate px-1 grow cursor-pointer
 }
 .app-tree__node .app-tree__node-append {
   @apply pr-1.5 text-sm opacity-80 whitespace-nowrap
@@ -182,7 +213,7 @@ function action () {
 .app-tree__node .app-tree__node-selected .app-tree__node-title {
   @apply text-blue-500 dark:text-blue-300
 }
-.app-tree__node .app-tree__node-unpublished .app-tree__node-title {
+.app-tree__node .app-tree__node-muted .app-tree__node-title {
   @apply italic opacity-70
 }
 .app-tree__node .app-tree__node-deleted .app-tree__node-title {
