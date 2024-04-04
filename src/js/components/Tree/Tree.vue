@@ -73,11 +73,14 @@ export default {
     }
   },
   mounted () {
-    provide('settings', this.propSettings)
-    provide('templates', this.templates)
-    provide('appends', this.appends)
-    provide('aliases', this.aliases)
-    provide('icons', this.icons)
+    provide('config', {
+      settings: this.propSettings,
+      templates: this.templates,
+      appends: this.appends,
+      aliases: this.aliases,
+      icons: this.icons,
+      route: this.route
+    })
 
     Object.assign(this.propSettings, this.$store.getters.get(`Session.${this.keyStorage}`, {}))
 

@@ -120,6 +120,8 @@ export default {
       }
     },
     login () {
+      this.$store.dispatch('set', { ['Storage.token']: null })
+
       if (!this.$.appContext.components.RouterView) {
         this.$.appContext.app.use(router)
       }

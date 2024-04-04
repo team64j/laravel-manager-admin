@@ -1,6 +1,7 @@
 <script setup>
 import { computed, inject, reactive } from 'vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
+import router from '../../router'
 
 const $props = defineProps({
   id: [String, Number],
@@ -11,16 +12,12 @@ const $props = defineProps({
 const $emit = defineEmits(['action'])
 
 const $data = reactive({
-  settings: inject('settings'),
-  templates: inject('templates'),
-  appends: inject('appends'),
-  aliases: inject('aliases'),
-  icons: inject('icons')
+  config: inject('config')
 })
 
 const title = computed(() => {
-  if ($data.aliases?.['title']) {
-    const aliases = typeof $data.aliases['title'] === 'object' ? $data.aliases['title'] : [$data.aliases['title']]
+  if ($data.config['aliases']?.['title']) {
+    const aliases = typeof $data.config['aliases']['title'] === 'object' ? $data.config['aliases']['title'] : [$data.config['aliases']['title']]
 
     for (const i of aliases) {
       if ($props.node[i] !== undefined) {
@@ -37,16 +34,16 @@ const icon = computed(() => {
     return $props.node['icon']
   }
 
-  if ($data.icons[$props.node['id']]) {
-    return $data.icons[$props.node['id']]
+  if ($data.config['icons'][$props.node['id']]) {
+    return $data.config['icons'][$props.node['id']]
   }
 
-  if ($data.icons[$props.node['type']]) {
-    return $data.icons[$props.node['type']]
+  if ($data.config['icons'][$props.node['type']]) {
+    return $data.config['icons'][$props.node['type']]
   }
 
-  if ($data.icons['default'] && !($props.node['category'] || $props.node['data'] !== undefined)) {
-    return $data.icons['default']
+  if ($data.config['icons']['default'] && !($props.node['category'] || $props.node['data'] !== undefined)) {
+    return $data.config['icons']['default']
   }
 })
 
@@ -65,13 +62,21 @@ const className = computed(() => {
     c.push('app-tree__node-unpublished')
   }
 
+  const route = router.currentRoute.value
+
+  if (route['name'] === $data.config['route'] && (parseInt(route['params']?.id?.toString()) === $props.node?.['id'] ||
+          (route['params']?.['id'] && route['params']['id'] === $props.node?.['key'])) &&
+      (!$props.node['folder'] && $props.node['category'] || !$props.node['category'])) {
+    c.push('app-tree__node-active')
+  }
+
   return c
 })
 
 const tooltip = computed(() => {
   const template = typeof $props.node?.['templates'] !== 'undefined'
       ? ($props.node?.['templates']?.['title'] || '')
-      : $data.templates?.['title']
+      : $data.config['templates']?.['title']
 
   if (template) {
     const cleanKeys = true
@@ -94,7 +99,7 @@ function action () {
 
 <template>
   <div v-if="node" class="app-tree__node" :data-level="level">
-    <div class="app-tree__node-item" :style="{ paddingLeft: (level * 16) + `px` }">
+    <div class="app-tree__node-item" :class="className" :style="{ paddingLeft: (level * 16) + `px` }">
       <div v-if="node['data'] || node['category']" class="app-tree__node-toggle"
            @click="$emit('action', 'toggleNode', node)">
         <app-loader-icon v-if="node['loading']" class="!w-4 !h-4"/>
@@ -113,15 +118,15 @@ function action () {
         <i v-else class="far fa-file fa-fw"/>
       </div>
 
-      <div class="app-tree__node-title" :class="className"
+      <div class="app-tree__node-title"
            @click="$emit('action', 'clickNode', $event, node)"
            @contextmenu.prevent="$emit('action', 'buildContextMenu', $event, node)"
            :data-tooltip="tooltip">
         {{ title }}
       </div>
 
-      <template v-if="(node['appends'] || $data.appends)?.length">
-        <div v-for="i in (node['appends'] || $data.appends)" :class="`app-tree__node-`+i" class="app-tree__node-append">
+      <template v-if="(node['appends'] || $data.config['appends'])?.length">
+        <div v-for="i in (node['appends'] || $data.config['appends'])" :class="`app-tree__node-`+i" class="app-tree__node-append">
           {{ node[i] }}
         </div>
       </template>
@@ -145,16 +150,16 @@ function action () {
 
 <style scoped>
 .app-tree__node {
-  @apply py-0.5 cursor-default
+  @apply cursor-default
 }
 .app-tree__node > div, .app-tree__node > div > div {
   @apply relative
 }
 .app-tree__node .app-tree__node-item {
-  @apply flex items-center pl-5 w-full
+  @apply flex items-center pl-5 py-0.5 w-full rounded hover:bg-slate-200/60 dark:hover:bg-gray-600/70
 }
-.app-tree__node .app-tree__node-item::before {
-  @apply absolute left-0 top-0 right-0 bottom-0 content-[""] rounded pointer-events-none hover:bg-blue-600/10 dark:hover:bg-blue-600/30
+.app-tree__node .app-tree__node-item.app-tree__node-active {
+  @apply bg-slate-200/40 dark:bg-gray-600/50
 }
 .app-tree__node .app-tree__node-toggle {
   @apply absolute -ml-5 w-6 flex items-center justify-center cursor-pointer text-gray-300 hover:text-blue-500
@@ -171,16 +176,16 @@ function action () {
 .app-tree__node .app-tree__node-pagination {
   @apply flex items-center text-amber-400 cursor-pointer
 }
-.app-tree__node-children {
+.app-tree__node .app-tree__node-children {
   @apply flex flex-col
 }
-.app-tree__node-selected {
+.app-tree__node .app-tree__node-selected .app-tree__node-title {
   @apply text-blue-500 dark:text-blue-300
 }
-.app-tree__node-unpublished {
+.app-tree__node .app-tree__node-unpublished .app-tree__node-title {
   @apply italic opacity-70
 }
-.app-tree__node-deleted {
+.app-tree__node .app-tree__node-deleted .app-tree__node-title {
   @apply !text-rose-500 not-italic line-through
 }
 </style>
