@@ -1,4 +1,4 @@
-import { splitVendorChunkPlugin } from 'vite'
+//import { splitVendorChunkPlugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 export default {
@@ -6,14 +6,15 @@ export default {
   build: {
   //   //outDir: '../../../manager',
     target: 'esnext',
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        inlineDynamicImports: false,
-        manualChunks (id) {
-          if (id.includes('node_modules')) {
-            return id.toString().split('node_modules/')[1].split('/')[0].toString()
-          }
-        },
+        inlineDynamicImports: true,
+        // manualChunks (id) {
+        //   if (id.includes('node_modules')) {
+        //     return id.toString().split('node_modules/')[1].split('/')[0].toString()
+        //   }
+        // },
         assetFileNames: (assetInfo) => {
           let extType = assetInfo.name.split('.').at(1),
             ext = assetInfo.name.split('.').pop()
@@ -32,7 +33,7 @@ export default {
     }
   },
   plugins: [
-    splitVendorChunkPlugin(),
+    //splitVendorChunkPlugin(),
     vue()
   ],
   resolve: {
