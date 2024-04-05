@@ -125,10 +125,10 @@ export default {
   @apply absolute hidden cursor-default md:flex justify-center items-center right-0 w-8 h-1/2 text-gray-300 hover:text-blue-600
 }
 .app-input__number .app-input__plus {
-  @apply top-0 pt-1
+  @apply top-0 pt-2
 }
 .app-input__number .app-input__minus {
-  @apply bottom-0 pb-1
+  @apply bottom-0 pb-1.5
 }
 .app-input__number input[type="number"] {
   @apply pr-8
