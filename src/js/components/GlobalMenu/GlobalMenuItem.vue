@@ -1,5 +1,7 @@
 <script>
 import { h } from 'vue'
+import { RouterLink } from 'vue-router'
+import GlobalMenuItem from './GlobalMenuItem.vue'
 
 export default {
   name: 'GlobalMenuItem',
@@ -98,9 +100,12 @@ export default {
 
       if (this.loading) {
         slots.push(
-            h('span', { class: 'app-global-menu__toggle' },
-                h('i',
-                    { class: 'inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin' }
+            h('span', {
+                  class: 'app-global-menu__toggle'
+                },
+                h('i', {
+                      class: 'inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin'
+                    }
                 )
             )
         )
@@ -108,7 +113,11 @@ export default {
         slots.push(
             h('span', {
               class: 'app-global-menu__toggle'
-            }, h('i', { class: 'fa fa-angle-down fa-fw leading-[0]' }))
+                },
+                h('i', {
+                  class: 'fa fa-angle-down fa-fw leading-[0]'
+                })
+            )
         )
       }
 
@@ -123,7 +132,7 @@ export default {
       }
       // router link
       else if (this.model['to']) {
-        node = h(this.$root.$.appContext.components['RouterLink'], {
+        node = h(RouterLink, {
           to: this.model['to'],
           class: className,
           'data-tooltip': this.model['title']
@@ -243,22 +252,33 @@ export default {
         clearTimeout(this.timer)
       }
     }
+  },
+  setup (props) {
+    return function () {
+      let children = [this.node]
+
+      if (this.model?.['data']?.length) {
+        children.push(
+            h('ul',
+                this.model['data'].map((n, i) => h(GlobalMenuItem, {
+                      data: n,
+                      key: i,
+                      level: props.level + 1,
+                      onAction: this.action
+                    })
+                )
+            )
+        )
+      }
+
+      return h('li', {
+        'data-level': props.level,
+        class: this.classEl,
+        onClick: this.onClick,
+        onMouseenter: this.onEnter,
+        onMouseleave: this.onOut
+      }, children)
+    }
   }
 }
 </script>
-
-<template>
-  <li :data-level="level" :class="classEl" @click="onClick" @mouseenter="onEnter" @mouseleave="onOut">
-
-    <component :is="node"/>
-
-    <ul v-if="model?.['data']?.length">
-      <global-menu-item
-          v-for="(n, i) in model['data']"
-          :data="n"
-          :key="i"
-          :level="level + 1"
-          @action="action"/>
-    </ul>
-  </li>
-</template>

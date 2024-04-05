@@ -1,9 +1,11 @@
 <script>
+import { h } from 'vue'
 import GlobalMenuItem from './GlobalMenuItem.vue'
+
+import('./GlobalMenu.css')
 
 export default {
   name: 'GlobalMenu',
-  components: { GlobalMenuItem },
   props: {
     data: Array
   },
@@ -103,139 +105,23 @@ export default {
         instance.loading = false
       })
     }
+  },
+  setup (props) {
+    return function () {
+      return h('div', {
+        class: 'app-global-menu'
+      }, [
+        h('ul', props.data.map((n, i) => h(
+                GlobalMenuItem,
+                {
+                  data: n,
+                  key: i,
+                  onAction: this.action
+                }
+            )
+        ))
+      ])
+    }
   }
 }
 </script>
-
-<template>
-  <div class="app-global-menu">
-    <ul>
-      <global-menu-item v-for="(n, i) in data" :data="n" :key="i" @action="action"/>
-    </ul>
-  </div>
-</template>
-
-<style>
-.app-global-menu {
-  @apply relative bg-gray-700 text-slate-200
-}
-.app-global-menu.app-global-menu__active {
-  @apply z-40
-}
-.app-global-menu::before {
-  @apply fixed left-0 top-0 right-0 bottom-0 bg-black/5 opacity-0 invisible transition-all;
-  content: "";
-}
-.app-global-menu.app-global-menu__active::before {
-  @apply opacity-100 visible
-}
-.app-global-menu > ul {
-  @apply md:justify-between px-1
-}
-.app-global-menu ul, .app-global-menu li {
-  @apply flex grow cursor-default
-}
-.app-global-menu > ul > li li {
-  @apply flex items-center justify-between grow transition
-}
-.app-global-menu > ul > li {
-  @apply grow md:grow-0 my-1 rounded
-}
-.app-global-menu > ul > li > ul > li > * {
-  @apply rounded
-}
-.app-global-menu > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li li.app-global-menu__hover > span {
-  @apply bg-gray-600 dark:bg-gray-600 cursor-pointer
-}
-.app-global-menu li > a, .app-global-menu li > span {
-  @apply flex justify-center items-center py-2 px-2.5 md:px-4 w-full h-full
-}
-.app-global-menu > ul > li > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > span {
-  @apply bg-blue-600 text-white dark:bg-blue-600
-}
-.app-global-menu > ul > li > ul > li li.app-global-menu__hover > span.disabled {
-  @apply bg-inherit text-inherit cursor-default
-}
-.app-global-menu li .app-global-menu__icon {
-  @apply w-5 text-center
-}
-.app-global-menu > ul > li > ul > li > * > .app-global-menu__icon {
-  @apply text-lg leading-[0]
-}
-.app-global-menu li img {
-  @apply -my-1 -mx-1.5 min-w-[2rem] max-w-none max-h-none h-8 w-auto block relative
-}
-.app-global-menu li .app-global-menu__title {
-  @apply grow truncate
-}
-.app-global-menu > ul > li > ul > li > a .app-global-menu__title, .app-global-menu > ul > li > ul > li > span .app-global-menu__title {
-  @apply hidden md:inline-block
-}
-.app-global-menu li .app-global-menu__icon + .app-global-menu__title {
-  @apply ml-3
-}
-.app-global-menu li .app-global-menu__locked {
-  @apply text-rose-500 text-sm leading-[0] ml-2
-}
-.app-global-menu li .app-global-menu__id {
-  @apply ml-2 text-sm opacity-70
-}
-.app-global-menu > ul > li ul > li > span .app-global-menu__toggle {
-  @apply hidden md:inline-flex
-}
-.app-global-menu li .app-global-menu__toggle {
-  @apply ml-2 -mr-1 inline-flex items-center justify-center h-full opacity-70
-}
-.app-global-menu li .app-global-menu__toggle i {
-  @apply pointer-events-none transition
-}
-.app-global-menu.app-global-menu__active > ul > li > ul > li.app-global-menu__hover > * > .app-global-menu__toggle i {
-  @apply rotate-180
-}
-.app-global-menu > ul > li li li .app-global-menu__toggle i {
-  @apply -rotate-90
-}
-.app-global-menu li .app-global-menu__pagination {
-  @apply flex grow items-center px-3 py-2 text-blue-500 dark:text-blue-400 text-sm select-none
-}
-.app-global-menu li .app-global-menu__pagination .app-global-menu__prev, .app-global-menu li .app-global-menu__pagination .app-global-menu__next {
-  @apply px-2 py-1 rounded text-blue-500 cursor-pointer hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-white/10
-}
-.app-global-menu li .app-global-menu__pagination .app-global-menu__prev[disabled], .app-global-menu li .app-global-menu__pagination .app-global-menu__next[disabled] {
-  @apply opacity-20 pointer-events-none
-}
-.app-global-menu li .app-global-menu__pagination span {
-  @apply grow text-center
-}
-.app-global-menu li .app-global-menu__filter {
-  @apply relative w-full px-3 py-1
-}
-.app-global-menu li .app-global-menu__filter input {
-  @apply pl-2 pr-6 py-0.5 mt-[1px]
-}
-.app-global-menu li .app-global-menu__filter .app-global-menu__clear {
-  @apply text-rose-500 cursor-pointer absolute z-10 top-3 right-6
-}
-.app-global-menu > ul > li > ul > li.app-global-menu__parent {
-  @apply md:relative
-}
-.app-global-menu > ul > li > ul > li.app-global-menu__parent > ul {
-  @apply mt-1
-}
-.app-global-menu > ul > li > ul li.app-global-menu__parent > ul {
-  @apply absolute opacity-0 invisible top-full left-1.5 right-1.5 md:right-auto md:left-0 flex-col md:min-w-full md:w-[20rem] rounded py-1 shadow-2xl bg-white text-gray-950 dark:bg-gray-700 dark:text-slate-50 transition;
-  max-height: calc(100vh - 3rem);
-}
-.app-global-menu > ul > li > ul > li ul ul {
-  @apply overflow-auto overflow-x-hidden
-}
-.app-global-menu > ul > li:last-of-type li.app-global-menu__parent > ul {
-  @apply md:left-auto md:right-0
-}
-.app-global-menu > ul > li > ul li li.app-global-menu__parent > ul {
-  @apply md:left-full top-0
-}
-.app-global-menu.app-global-menu__active li.app-global-menu__parent.app-global-menu__hover > ul {
-  @apply opacity-100 visible z-10
-}
-</style>
