@@ -1,16 +1,14 @@
-<template>
-  <div class="app-template" :class="$props.class">
-    <slot name="default"/>
-  </div>
-</template>
-
 <script>
+import { h } from 'vue'
+
 export default {
   __isStatic: true,
   name: 'LayoutTemplate',
-
-  props: {
-    class: [Array, Object, String]
+  props: ['class'],
+  setup (props) {
+    return function () {
+      return h('div', { class: props.class }, this.$slots)
+    }
   }
 }
 </script>

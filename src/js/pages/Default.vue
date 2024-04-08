@@ -1,13 +1,11 @@
 <script>
 import { shallowRef } from 'vue'
 import Frame from '../components/Layout/Frame.vue'
-import Loader from '../components/Layout/Loader.vue'
 import Component from '../components/Layout/Component.vue'
 import router from '../router'
 
 export default {
   name: 'DefaultPage',
-  components: { Loader },
   data () {
     return {
       data: null,
@@ -192,7 +190,13 @@ export default {
                @action="action"
                @update:modelValue="updateModelValue"/>
     <div v-else class="flex items-center justify-center grow">
-      <loader :delay="0"/>
+      <div class="app-loader animate-ping w-48 h-48 bg-no-repeat bg-center"/>
     </div>
   </div>
 </template>
+
+<style scoped>
+.app-loader {
+  background-image: url("../../img/logo.svg");
+}
+</style>

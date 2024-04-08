@@ -210,7 +210,7 @@ export default {
     <template v-if="layout">
       <global-menu :data="layout?.['menu']" @action="action"/>
 
-      <div class="app-main">
+      <div class="app-main grow flex flex-row overflow-hidden">
         <template v-if="layout?.['sidebar']?.slots">
           <sidebar ref="sidebar" class="w-80 shrink-0 shadow-2xl md:shadow overflow-hidden"
                    :style="{ width: `${sidebarWidth}px` }"
@@ -233,9 +233,3 @@ export default {
     <router-view v-else/>
   </div>
 </template>
-
-<style scoped>
-.app-main {
-  @apply grow flex flex-row overflow-hidden
-}
-</style>
