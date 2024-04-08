@@ -7,6 +7,7 @@ export default {
       left: 0,
       el: null,
       html: null,
+      type: null,
       timer: null,
       isShow: false,
       position: {}
@@ -18,6 +19,23 @@ export default {
     document.addEventListener('mouseout', this.destroy)
     document.addEventListener('keydown', this.destroy)
     document.addEventListener('click', this.destroy)
+  },
+  computed: {
+    className () {
+      const c = []
+
+      if (this.isShow) {
+        c.push('opacity-100 visible')
+      } else {
+        c.push('opacity-0 invisible')
+      }
+
+      if (this.type === 'error') {
+        c.push('!bg-rose-600')
+      }
+
+      return c
+    }
   },
   methods: {
     create (event) {
@@ -35,6 +53,7 @@ export default {
           // .replace(/"/g, "&quot;")
           // .replace(/'/g, "&#039;")
           .replace(/\r\n|\r|\n/g, '<br>')
+      this.type = this.el.getAttribute('data-type')
 
       this.$nextTick(() => {
         this.top = this.position.top + this.position.height
@@ -67,8 +86,11 @@ export default {
 </script>
 
 <template>
-  <div class="app-tooltip" :class="[isShow ? 'opacity-100 visible' : 'opacity-0 invisible']"
-      @mousedown.stop="() => null" @click.stop="() => null" @mouseover.stop="() => null"
+  <div class="app-tooltip"
+       :class="className"
+       @mousedown.stop="() => null"
+       @click.stop="() => null"
+       @mouseover.stop="() => null"
       :style="{
            top: top + 'px',
            left: left + 'px'
@@ -77,27 +99,24 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style>
 .app-tooltip  {
   @apply fixed z-[999] -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-slate-50/90 text-slate-800 dark:bg-gray-600/90 dark:text-slate-100 text-sm shadow transition-all
 }
-</style>
-
-<style>
 .app-tooltip .badge {
   @apply float-right ml-2 px-1.5 bg-blue-500 text-white rounded
 }
-[data-tooltip] > *:not(.pointer-events-auto) {
+i[data-tooltip] > *:not(.pointer-events-auto) {
   @apply pointer-events-none
 }
-.app-help[data-tooltip] {
-  @apply cursor-help
+i[data-tooltip] {
+  @apply ml-2 cursor-help leading-[1] text-slate-300 hover:opacity-80 dark:text-slate-500 font-normal not-italic;
 }
-.app-help {
-  @apply ml-2 cursor-pointer text-slate-300 hover:opacity-80 dark:text-slate-500 font-normal not-italic;
-  font-family: "Font Awesome 6 Free", serif;
+i[data-tooltip][data-type="error"] {
+  @apply text-rose-500
 }
-.app-help::before {
+i[data-tooltip]::before {
   content: "\f059";
+  font-family: "Font Awesome 6 Free", serif;
 }
 </style>
