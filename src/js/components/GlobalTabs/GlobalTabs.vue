@@ -170,14 +170,6 @@ export default {
       this.$el.removeEventListener('mousemove', this.moveTabs)
       this.$el.removeEventListener('mouseup', this.endMoveTabs)
       this.$el.classList.remove('drag')
-    },
-
-    pushRouter (route, callback) {
-      if (typeof route === 'string') {
-        route = this.$router.resolve(route)
-      }
-
-      this.$router.push(route).then(callback)
     }
   }
 }

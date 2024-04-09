@@ -3,6 +3,7 @@ import { provide } from 'vue'
 import TreeNode from './TreeNode.vue'
 import TreeMenuItem from './TreeMenuItem.vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
+import router from '../../router'
 
 export default {
   components: { TreeNode, TreeMenuItem, AppLoaderIcon },
@@ -31,10 +32,7 @@ export default {
       data: null,
       meta: {},
       propSettings: this.settings || {},
-      propRoute: typeof this.route === 'object' ? this.route : {
-        name: this.route,
-        meta: {}
-      },
+      propRoute: typeof this.route === 'object' ? this.route : { path: this.route },
       idContextMenu: null,
       showContextMenu: false,
       dataContextMenu: [],
@@ -50,12 +48,12 @@ export default {
       deep: true
     },
     '$store.state.treeSelect' (select) {
-      if (this.$route['name'] === this.propRoute.name) {
+      if (this.$route['path'] === this.propRoute.path) {
         this.$el.querySelector('.app-tree__body').classList.toggle('focused', !!select)
       }
     },
     '$store.state.actionUpdate' () {
-      if (this.$store.state.route === this.propRoute.name) {
+      if (this.$store.state.route === this.propRoute.path) {
         switch (this.$store.state.action) {
           case 'create':
             this.createNode(this.$store.state.data, this.data)
@@ -123,7 +121,7 @@ export default {
       })
     },
     clickNode (event, node) {
-      if (this.$store.getters.get('treeSelect') && this.$route['name'] === this.propRoute.name) {
+      if (this.$store.getters.get('treeSelect') && this.$route['path'] === this.propRoute.path) {
         const context = this.$store.getters.get('context')
         const event = this.$store.getters.get('event')
         context.loading = true
@@ -161,7 +159,7 @@ export default {
 
       if (event.ctrlKey && this.routeList) {
         this.$parent.$emit('action', 'pushRouter', {
-          name: this.routeList,
+          path: this.routeList,
           params: {
             id: node['id']
           }

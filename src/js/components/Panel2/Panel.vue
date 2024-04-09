@@ -501,16 +501,27 @@ export default {
 
           <template v-if="category.data && !hasClosedCategory(category)">
             <tbody v-if="category.route || route">
-            <router-link v-for="item in category.data"
-                         :to="{ name: category.route || route, params: { id: item.id } }"
-                         custom v-slot="{ navigate }">
-              <tr @click="selectRow($event, item, navigate)" class="cursor-pointer"
-                  :class="{ 'disabled' : item.disabled, 'active': item['@active'] }">
-                <template v-for="cell in cells(item)">
-                  <component :is="cell"/>
-                </template>
-              </tr>
-            </router-link>
+            <tr v-for="item in category.data" @click="selectRow($event, item, () => $emit('action', 'pushRouter', {
+          path: category.route || route,
+          params: {
+            id: item.id
+          }
+        }))" class="cursor-pointer"
+                :class="{ 'disabled' : item.disabled, 'active': item['@active'] }">
+              <template v-for="cell in cells(item)">
+                <component :is="cell"/>
+              </template>
+            </tr>
+<!--            <router-link v-for="item in category.data"-->
+<!--                         :to="{ path: category.route || route, params: { id: item.id } }"-->
+<!--                         custom v-slot="{ navigate }">-->
+<!--              <tr @click="selectRow($event, item, navigate)" class="cursor-pointer"-->
+<!--                  :class="{ 'disabled' : item.disabled, 'active': item['@active'] }">-->
+<!--                <template v-for="cell in cells(item)">-->
+<!--                  <component :is="cell"/>-->
+<!--                </template>-->
+<!--              </tr>-->
+<!--            </router-link>-->
             </tbody>
 
             <draggable v-else-if="category.draggable ?? draggable"

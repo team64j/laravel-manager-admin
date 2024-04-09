@@ -58,6 +58,16 @@ const routes = [
     }
   },
   {
+    path: '/:path(.*)',
+    component: () => import('../pages/Default.vue'),
+    props: true
+  },
+  {
+    path: '/:path(.*)/:id(\\d+)',
+    component: () => import('../pages/Default.vue'),
+    props: true
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('../pages/NotFound.vue'),
