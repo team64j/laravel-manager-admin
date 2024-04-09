@@ -181,7 +181,9 @@ export default {
       event.currentTarget.removeEventListener('mouseup', this.splitterUp)
     },
     pushRouter (route, callback) {
-      route = router.resolve(route)
+      if (typeof route === 'string') {
+        route = router.resolve(route)
+      }
 
       Object.entries(route.params).forEach(([k, v]) => {
         if (!(v === undefined || v === null)) {
