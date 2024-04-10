@@ -116,9 +116,9 @@ export default {
     cancel () {
       this.$emit('action', 'closeTab')
     },
-    inputChangeQuery (event, t) {
+    inputChangeQuery (event, ctx) {
       const route = router.resolve({
-        query: Object.assign({}, router.currentRoute.value.query, { [t._.vnode.key]: event.target.value })
+        query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: event.target.value })
       })
       this.$emit('action', 'pushRouter', route, this.get)
     },
@@ -154,13 +154,13 @@ export default {
         component = Component
 
         if (data['meta']?.['title'] !== undefined || data['meta']?.['icon'] !== undefined) {
-          this.$nextTick(() => this.$emit('action', 'setTab', {
+          this.$emit('action', 'setTab', {
             key: this._.vnode.key,
             meta: {
               title: data['meta']['title'] ?? '',
               icon: data['meta']['icon'] ?? ''
             }
-          }))
+          })
         }
       }
 

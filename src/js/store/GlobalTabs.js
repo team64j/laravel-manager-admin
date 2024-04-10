@@ -40,7 +40,7 @@ const mutations = {
 
   set (state, data) {
     if (data.key) {
-      const index = state['keys'].indexOf(data.key)
+      const index = state['keys'].indexOf(decodeURIComponent(data.key))
       index > -1 && window._.mergeWith(state['tabs'][index], data)
     } else {
       state['tabs'].map(i => i.active && window._.mergeWith(i, data))
