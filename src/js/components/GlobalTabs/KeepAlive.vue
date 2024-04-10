@@ -61,7 +61,7 @@ function matches (pattern, name) {
     return pattern.some((p) => matches(p, name))
   } else if (isString(pattern)) {
     return pattern.split(',').includes(name)
-  } else if (pattern.test) {
+  } else if (pattern?.test) {
     return pattern.test(name)
   }
   /* istanbul ignore next */

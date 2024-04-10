@@ -82,10 +82,7 @@ export default {
 
         instance.model.data = [].concat(prepend, (data['data'] || []).map(i => {
           i.to = {
-            name: data['meta']['name'],
-            params: {
-              id: i.id
-            }
+            path: data['meta']['route'].replace(':id', i.id)
           }
 
           return i

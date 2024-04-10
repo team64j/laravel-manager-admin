@@ -136,12 +136,14 @@ export default {
       this.init(index)
 
       if (this.history) {
-        const route = {
-          params: {}
-        }
-
-        route.params[this.history] = tab.id
-        this.$emit('action', 'pushRouter', route)
+        this.$emit('action', 'pushRouter', {
+          params: {
+            [this.history]: tab.id
+          },
+          meta: {
+            group: true
+          }
+        })
       }
 
       if (this.loadOnce) {

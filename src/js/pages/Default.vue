@@ -116,6 +116,9 @@ export default {
     cancel () {
       this.$emit('action', 'closeTab')
     },
+    pushRouter (route) {
+      this.$emit('action', 'pushRouter', route, this.get)
+    },
     inputChangeQuery (event, ctx) {
       const route = router.resolve({
         query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: event.target.value })

@@ -84,18 +84,24 @@ export default {
 
       if (this.$store.getters.get('Storage.token')) {
         axios.post('bootstrap').then(({ data: response }) => {
-          if (response.data.routes) {
-            const component = () => import('./pages/Default.vue')
-            for (const route of response.data.routes) {
-              router.addRoute({ ...route, component })
+          if (response.data) {
+            if (response.data.routes) {
+              const component = () => import('./pages/Default.vue')
+              for (const route of response.data.routes) {
+                router.addRoute({ ...route, component })
+              }
             }
 
-            this.$store.dispatch('set', { config: response.data.config || {} })
-            this.$store.dispatch('set', { lang: response.data.lang || {} })
+            if (response.data.assets) {
+              this.assets(response.data.assets)
+            }
+
+            this.$store.dispatch('set', {
+              config: response.data.config || {},
+              lang: response.data.lang || {}
+            })
 
             document.title = response.data.config['site_name']
-
-            response.data.assets && this.assets(response.data.assets)
 
             Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).
                 forEach(([, { default: module }]) => {
@@ -128,7 +134,7 @@ export default {
 
       this.layout = null
       this.loaded = true
-      router.push({ name: 'Login' })
+      router.push('/login')
     },
     assets (assets) {
       assets.forEach(i => {
@@ -180,15 +186,17 @@ export default {
       event.currentTarget.removeEventListener('mousemove', this.splitterMove)
       event.currentTarget.removeEventListener('mouseup', this.splitterUp)
     },
-    pushRouter (route, callback) {
-      if (typeof route === 'string') {
+    pushRouter (r, callback) {
+      let route = r
+
+      if (typeof route === 'string' || !route.path) {
         route = router.resolve(route)
       }
 
       Object.entries(route.params).forEach(([k, v]) => {
         if (!(v === undefined || v === null)) {
           delete route.params[k]
-          route.path = route.path.replace(new RegExp(':' + k, 'g'), encodeURIComponent(v.toString())).
+          route.path = route.path.replace(new RegExp(':' + k, 'g'), v.toString()).
               replace(/\/\//g, '/').
               replace(/\/$/, '')
         }
