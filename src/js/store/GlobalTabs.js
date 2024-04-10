@@ -5,6 +5,16 @@ const state = {
   keys: []
 }
 
+const compare = (a, b) => {
+  const isGroup = a?.meta?.group
+
+  if (b) {
+    return isGroup ? a.matched[0].path === b.matched[0].path : (a.name || a.path) === (b.name || b.path)
+  } else {
+    return a.name || a.path
+  }
+}
+
 const mutations = {
   init () {
     router.getRoutes().filter(i => i?.meta?.fixed).map(i => this.dispatch('GlobalTabs/add', router.resolve(i)))
@@ -12,7 +22,7 @@ const mutations = {
   },
 
   add (state, data) {
-    if (!data) {
+    if (!data/* || data.path === '/'*/) {
       return
     }
 
@@ -21,7 +31,8 @@ const mutations = {
     let is = false
 
     state['tabs'].map(i => {
-      i.active = data.meta.group ? i.name === data.name : i.path === data.path
+      //i.active = data.meta.group ? i.name === data.name : i.path === data.path
+      i.active = compare(i, data)
 
       if (i.active) {
         is = true
@@ -35,7 +46,7 @@ const mutations = {
       state['tabs'].push(data)
     }
 
-    state.keys = state['tabs'].map(i => i.meta.group ? i.name : i.path)
+    state.keys = state['tabs'].map(i => i.meta.group && i.name || i.path)
   },
 
   set (state, data) {
@@ -52,7 +63,7 @@ const mutations = {
       return
     }
 
-    data = state['tabs'].filter(i => i.meta.group ? i.name === data.name : i.path === data.path)[0]
+    data = state['tabs'].filter(i => compare(i, data))[0]
 
     if (!data) {
       return
@@ -62,8 +73,7 @@ const mutations = {
       return
     }
 
-    const index = state['tabs'].indexOf(data)
-
+    const index = state['keys'].indexOf(compare(data))
     index > -1 && state['tabs'].splice(index, 1) && state['keys'].splice(index, 1)
 
     this.commit('set', { treeSelect: false })
@@ -95,7 +105,7 @@ const mutations = {
     const route = router.resolve({ path: '/redirect' + data.path, query: data.query })
 
     router.replace(route).then(() => {
-      const index = state['keys'].indexOf(data.meta.group ? data.name : data.path)
+      const index = state['keys'].indexOf(compare(data))
       index > -1 && state['keys'].splice(index, 1)
     })
   }
@@ -139,13 +149,13 @@ const getters = {
   frames: (state) => () => state['tabs'].filter(i => i?.meta?.['isIframe']),
 
   get: (state) => (data) => {
-    const tab = state['tabs'].filter(i => i.meta.group ? i.name === data.name : i.path === data.path)[0] || null
+    const tab = state['tabs'].filter(i => compare(i, data))[0] || null
 
     return tab && !Object.values(data.query).length && Object.values(tab.query).length && tab || false
   },
 
   find: (state) => (data) => {
-    return state['tabs'].filter(i => i.meta.group ? i.name === data.name : i.path === data.path)[0] ||
+    return state['tabs'].filter(i => compare(i, data))[0] ||
       null
   },
 

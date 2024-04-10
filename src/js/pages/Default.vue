@@ -30,7 +30,7 @@ export default {
       const url = this.$route?.['meta']?.['url'] ? this.$route['meta']['url'] : this.$route['path']
 
       this.$emit('action', 'setTab', {
-        key: this._.vnode.key,
+        //key: this._.vnode.key,
         changed: false,
         loading: true,
         meta: {
@@ -53,7 +53,7 @@ export default {
         r?.data && this.setData(r.data)
       }).finally(() => {
         this.$emit('action', 'setTab', {
-          key: this._.vnode.key,
+          //key: this._.vnode.key,
           changed: false,
           loading: false
         })
@@ -65,7 +65,7 @@ export default {
       this.errors = null
 
       this.$emit('action', 'setTab', {
-        key: this._.vnode.key,
+        //key: this._.vnode.key,
         changed: false,
         loading: true
       })
@@ -90,7 +90,7 @@ export default {
         }
       }).finally(() => {
         this.$emit('action', 'setTab', {
-          key: this._.vnode.key,
+          //key: this._.vnode.key,
           changed: false,
           loading: false
         })
@@ -158,7 +158,7 @@ export default {
 
         if (data['meta']?.['title'] !== undefined || data['meta']?.['icon'] !== undefined) {
           this.$emit('action', 'setTab', {
-            key: this._.vnode.key,
+            //key: this._.vnode.key,
             meta: {
               title: data['meta']['title'] ?? '',
               icon: data['meta']['icon'] ?? ''

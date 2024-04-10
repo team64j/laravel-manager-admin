@@ -2,22 +2,26 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '../store'
 
 const routes = [
-  {
-    path: '/',
-    redirect: '/dashboard',
-    meta: {
-      hidden: true,
-    }
-  },
-  {
-    path: '/dashboard',
-    component: () => import('../pages/Default.vue'),
-    meta: {
-      fixed: true,
-      icon: 'fa fa-home',
-      title: null
-    }
-  },
+  // {
+  //   path: '/',
+  //   component: () => import('../pages/Default.vue'),
+  // },
+  // {
+  //   path: '/',
+  //   redirect: '/dashboard',
+  //   meta: {
+  //     hidden: true,
+  //   }
+  // },
+  // {
+  //   path: '/dashboard',
+  //   component: () => import('../pages/Default.vue'),
+  //   meta: {
+  //     fixed: true,
+  //     icon: 'fa fa-home',
+  //     title: null
+  //   }
+  // },
   {
     path: '/login',
     component: () => import('../pages/Login.vue'),
@@ -52,9 +56,22 @@ const routes = [
     }
   },
   {
-    path: '/:path(.*)/:id',
+    path: '/:path(.*)',
     component: () => import('../pages/Default.vue'),
     props: true
+  },
+  {
+    path: '/:path(.*)/:id(\\d+)',
+    component: () => import('../pages/Default.vue'),
+    props: true
+  },
+  {
+    path: '/:path(.*)/:element',
+    component: () => import('../pages/Default.vue'),
+    props: true,
+    meta: {
+      group: true
+    }
   },
   {
     path: '/:pathMatch(.*)*',
