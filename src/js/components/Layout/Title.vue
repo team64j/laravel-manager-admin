@@ -7,8 +7,7 @@
         {{ value }}
       </span>
       <span v-if="cId" class="ml-2">({{ cId }})</span>
-      <i v-if="help" class="app-help"
-         @click="show=!show"/>
+      <i v-if="help" class="far fa-question-circle ml-2 cursor-pointer text-slate-500 hover:opacity-80" @click="show=!show"/>
     </h1>
     <transition mode="out-in">
       <div v-if="help" v-show="show" v-html="help" class="app-alert app-alert__blue mt-3"/>

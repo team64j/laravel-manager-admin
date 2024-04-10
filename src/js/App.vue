@@ -83,11 +83,15 @@ export default {
       this.loaded = false
 
       if (this.$store.getters.get('Storage.token')) {
-        axios.post('bootstrap').then(({ data: response }) => {
+        axios.post('/bootstrap').then(({ data: response }) => {
           if (response.data) {
             if (response.data.routes) {
+              const routes = router.getRoutes()
               const component = () => import('./pages/Default.vue')
               for (const route of response.data.routes) {
+                if (routes.some(i => (i.name || i.path) === (route.name || route.path))) {
+                  continue
+                }
                 router.addRoute({ ...route, component })
               }
             }
@@ -193,14 +197,16 @@ export default {
         route = router.resolve(route)
       }
 
-      Object.entries(route.params).forEach(([k, v]) => {
-        if (!(v === undefined || v === null)) {
-          delete route.params[k]
-          route.path = route.path.replace(new RegExp(':' + k, 'g'), v.toString()).
-              replace(/\/\//g, '/').
-              replace(/\/$/, '')
-        }
-      })
+      if (route.params) {
+        Object.entries(route.params).forEach(([k, v]) => {
+          if (!(v === undefined || v === null)) {
+            delete route.params[k]
+            route.path = route.path.replace(new RegExp(':' + k, 'g'), v.toString()).
+                replace(/\/\//g, '/').
+                replace(/\/$/, '')
+          }
+        })
+      }
 
       router.push(route).then(callback)
     },

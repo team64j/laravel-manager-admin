@@ -40,7 +40,7 @@ axios.interceptors['request'].use(
           return
         }
 
-        config.url = config.url.replace(re, encodeURIComponent(v.toString())).replace(/\/\//g, '/').replace(/\/$/, '')
+        config.url = config.url.replace(re, v.toString()).replace(/\/\//g, '/').replace(/\/$/, '')
       }
     })
 

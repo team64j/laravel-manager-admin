@@ -1,4 +1,6 @@
 <script>
+import router from '../router'
+
 export default {
   name: 'Login',
   data () {
@@ -25,7 +27,7 @@ export default {
   },
   created () {
     if (this.$store.getters.get('Storage.token')) {
-      this.$router.push('/')
+      router.push('/')
     } else {
       this.checkServer()
     }
@@ -43,7 +45,7 @@ export default {
 
       this.$store.dispatch('set', { ['Storage.hostname']: this.hostname.replace(/\/$/g, '') })
 
-      axios.get('bootstrap').then(r => {
+      axios.get('/bootstrap').then(r => {
         if (typeof r.data === 'string') {
           this.errors['hostname'] = true
           return
@@ -115,7 +117,7 @@ export default {
           this.$store.dispatch('set', { ['Storage.tokenExpiresIn']: data['expires_in'] })
           this.$store.dispatch('Session/clear')
 
-          this.$router.push('/')
+          router.push('/')
         }
       }).catch(() => {
         this.errors['username'] = true

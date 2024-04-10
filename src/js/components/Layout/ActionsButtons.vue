@@ -87,7 +87,7 @@ export default {
         if (to.href) {
           window.open(to.href)
         } else {
-          this.$router.push(to)
+          this.$emit('action', 'pushRouter', to)
         }
       } else if (this[action]) {
         this[action](event, stay)
@@ -127,11 +127,10 @@ export default {
 
     new (event) {
       if (this.to['new']) {
-        this.$router.push(this.to['new'])
-        return
+        this.$emit('action', 'pushRouter', this.to['new'])
+      } else {
+        this.$emit('action', 'new', event)
       }
-
-      this.$emit('action', 'new', event)
     },
 
     propLang (i) {

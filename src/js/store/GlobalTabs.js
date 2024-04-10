@@ -6,12 +6,10 @@ const state = {
 }
 
 const compare = (a, b) => {
-  const isGroup = a?.meta?.group
-
   if (b) {
-    return isGroup ? a.matched[0].path === b.matched[0].path : (a.name || a.path) === (b.name || b.path)
+    return a?.meta?.group ? a.matched[0].path === b.matched[0].path : (a.name || a.path) === (b.name || b.path)
   } else {
-    return a.name || a.path
+    return a?.meta?.group ? a.matched[0].path : a.name || a.path
   }
 }
 
@@ -31,7 +29,6 @@ const mutations = {
     let is = false
 
     state['tabs'].map(i => {
-      //i.active = data.meta.group ? i.name === data.name : i.path === data.path
       i.active = compare(i, data)
 
       if (i.active) {
@@ -46,7 +43,7 @@ const mutations = {
       state['tabs'].push(data)
     }
 
-    state.keys = state['tabs'].map(i => i.meta.group && i.name || i.path)
+    state.keys = state['tabs'].map(i => compare(i))
   },
 
   set (state, data) {
