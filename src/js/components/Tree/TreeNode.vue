@@ -94,7 +94,9 @@ const className = computed(() => {
 
   const route = router.currentRoute.value
 
-  if (route['name'] === $data.config['route'] && (parseInt(route['params']?.id?.toString()) === $props.node?.['id'] ||
+  if ((route['name'] === $data.config['route'] || route['path'] ===
+          $data.config['route'].replace(':id', route['params']['id'])) &&
+      (parseInt(route['params']?.id?.toString()) === $props.node?.['id'] ||
           (route['params']?.['id'] && route['params']['id'] === $props.node?.['key'])) &&
       (!$props.node['folder'] && $props.node['category'] || !$props.node['category'])) {
     c.push('app-tree__node-active')
