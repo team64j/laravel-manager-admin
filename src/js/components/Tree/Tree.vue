@@ -5,6 +5,8 @@ import TreeMenuItem from './TreeMenuItem.vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 import router from '../../router'
 
+import('./Tree.css')
+
 export default {
   components: { TreeNode, TreeMenuItem, AppLoaderIcon },
   __isStatic: true,
@@ -127,7 +129,7 @@ export default {
         context.loading = true
         this.loading = true
 
-        const path = this.$router.resolve({
+        const path = router.resolve({
           name: this.route,
           params: {
             id: 'parents'
@@ -351,7 +353,7 @@ export default {
           item.to.params.parent = this.idContextMenu
         }
 
-        this.$router.push(item.to)
+        router.push(item.to)
       }
     },
     menuUpdate () {
@@ -409,45 +411,3 @@ export default {
     </transition>
   </div>
 </template>
-
-<style scoped>
-.app-tree {
-  @apply flex flex-col overflow-hidden w-full h-full
-}
-.app-tree__menu {
-  @apply grow-0 flex relative z-10 p-0.5 border-b dark:border-t
-}
-.app-tree__body {
-  @apply grow overflow-hidden
-}
-.app-tree__body.focused {
-  @apply ring-2 ring-inset ring-blue-500
-}
-.app-tree__root {
-  @apply overflow-y-auto p-1 h-full
-}
-</style>
-
-<style>
-.app-tree .app-tree__context-menu {
-  @apply fixed left-0 top-0 min-w-64 py-1 border bg-white border-white dark:bg-gray-700 dark:border-gray-700 rounded shadow-2xl
-}
-.app-tree .app-tree__context-menu.app-tree__context-menu__position-left {
-  @apply left-0 right-auto
-}
-.app-tree .app-tree__context-menu.app-tree__context-menu__position-right {
-  @apply left-auto right-0
-}
-.app-tree .app-tree__context-menu__header {
-  @apply px-4 pb-2
-}
-.app-tree .app-tree__context-menu__split {
-  @apply border-t my-1
-}
-.app-tree .app-tree__context-menu__item {
-  @apply px-4 py-0.5 hover:bg-blue-600 hover:text-white cursor-pointer
-}
-.app-tree .app-tree__context-menu__item i {
-  @apply mr-1 opacity-80
-}
-</style>

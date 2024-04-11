@@ -159,7 +159,7 @@ export default {
         <keep-alive-component :include="this.$store.getters['GlobalTabs/keys']()">
           <component
               v-if="!$route?.meta?.['isIframe']"
-              :key="$route?.meta?.['group'] && $route.name || $route.path"
+              :key="this.$store.getters['GlobalTabs/key']($route)"
               :is="Component"
               @action="action"/>
         </keep-alive-component>

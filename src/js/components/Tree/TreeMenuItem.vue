@@ -87,15 +87,3 @@ function onClickItem (action) {
     </transition>
   </div>
 </template>
-
-<style scoped>
-.app-tree__menu-item {
-  @apply relative
-}
-.app-tree__menu-item button {
-  @apply flex justify-center items-center w-6 h-6 mx-0.5 p-0 border-0 focus:ring-0
-}
-.app-tree__menu-item .app-tree__context-menu {
-  @apply absolute top-full m-1
-}
-</style>

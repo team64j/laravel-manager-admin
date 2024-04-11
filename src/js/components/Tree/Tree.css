@@ -1,0 +1,84 @@
+.app-tree {
+    @apply flex flex-col overflow-hidden w-full h-full
+}
+.app-tree__body {
+    @apply grow overflow-hidden
+}
+.app-tree__body.focused {
+    @apply ring-2 ring-inset ring-blue-500
+}
+.app-tree__root {
+    @apply overflow-y-auto p-1 h-full
+}
+.app-tree__context-menu {
+    @apply fixed left-0 top-0 min-w-64 py-1 border bg-white border-white dark:bg-gray-700 dark:border-gray-700 rounded shadow-2xl
+}
+.app-tree__context-menu.app-tree__context-menu__position-left {
+    @apply left-0 right-auto
+}
+.app-tree__context-menu.app-tree__context-menu__position-right {
+    @apply left-auto right-0
+}
+.app-tree__context-menu__header {
+    @apply px-4 pb-2
+}
+.app-tree__context-menu__split {
+    @apply border-t my-1
+}
+.app-tree__context-menu__item {
+    @apply px-4 py-0.5 hover:bg-blue-600 hover:text-white cursor-pointer
+}
+.app-tree__context-menu__item i {
+    @apply mr-1 opacity-80
+}
+.app-tree__menu {
+    @apply grow-0 flex relative z-10 p-0.5 bg-slate-50 dark:bg-gray-800
+}
+.app-tree__menu-item {
+    @apply relative
+}
+.app-tree__menu-item button {
+    @apply flex justify-center items-center w-6 h-6 mx-0.5 p-0 border-0 focus:ring-0
+}
+.app-tree__menu-item .app-tree__context-menu {
+    @apply absolute top-full m-1
+}
+.app-tree__node {
+    @apply cursor-default
+}
+.app-tree__node > div, .app-tree__node > div > div {
+    @apply relative
+}
+.app-tree__node .app-tree__node-item {
+    @apply flex items-center pl-5 h-[1.8rem] w-full rounded hover:bg-slate-200/60 dark:hover:bg-gray-600/70
+}
+.app-tree__node .app-tree__node-item.app-tree__node-active {
+    @apply bg-slate-200/40 dark:bg-gray-600/50
+}
+.app-tree__node .app-tree__node-toggle {
+    @apply absolute -ml-5 w-6 flex items-center justify-center cursor-pointer text-gray-300 hover:text-blue-500
+}
+.app-tree__node .app-tree__node-icon {
+    @apply pl-1 cursor-pointer text-gray-400 dark:text-gray-200
+}
+.app-tree__node .app-tree__node-title {
+    @apply truncate px-1 grow cursor-pointer
+}
+.app-tree__node .app-tree__node-append {
+    @apply pr-1.5 text-sm opacity-80 whitespace-nowrap
+}
+.app-tree__node .app-tree__node-pagination {
+    @apply flex items-center text-amber-400 cursor-pointer
+}
+.app-tree__node .app-tree__node-children {
+    @apply flex flex-col
+}
+.app-tree__node .app-tree__node-selected .app-tree__node-title {
+    @apply text-blue-500 dark:text-blue-300
+}
+.app-tree__node .app-tree__node-muted .app-tree__node-title {
+    @apply italic opacity-70
+}
+.app-tree__node .app-tree__node-deleted .app-tree__node-title {
+    @apply !text-rose-500 not-italic line-through
+}
