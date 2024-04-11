@@ -311,7 +311,8 @@ export default {
           this.dataContextMenu.push({
             title: action.title,
             icon: action.icon,
-            to: action.to
+            to: action.to,
+            node
           })
         }
       })
@@ -337,23 +338,37 @@ export default {
         item.to.query ??= {}
         item.to.params ??= {}
 
-        if (item.to.query.id && item.to.query.id.toString()[0] === ':') {
-          item.to.query.id = this.idContextMenu
+        const to = { ...item.to }
+
+        for (const i in item.to.query) {
+          if (item.node[i] !== undefined) {
+            to.query[i] = item.node[i]
+          }
         }
 
-        if (item.to.query.parent && item.to.query.parent.toString()[0] === ':') {
-          item.to.query.parent = this.idContextMenu
+        for (const i in item.to.params) {
+          if (item.node[i] !== undefined) {
+            to.params[i] = item.node[i]
+          }
         }
 
-        if (item.to.params.id && item.to.params.id.toString()[0] === ':') {
-          item.to.params.id = this.idContextMenu
-        }
+        // if (item.to.query.id && item.to.query.id.toString()[0] === ':') {
+        //   item.to.query.id = this.idContextMenu
+        // }
+        //
+        // if (item.to.query.parent && item.to.query.parent.toString()[0] === ':') {
+        //   item.to.query.parent = this.idContextMenu
+        // }
+        //
+        // if (item.to.params.id && item.to.params.id.toString()[0] === ':') {
+        //   item.to.params.id = this.idContextMenu
+        // }
+        //
+        // if (item.to.params.parent && item.to.params.parent.toString()[0] === ':') {
+        //   item.to.params.parent = this.idContextMenu
+        // }
 
-        if (item.to.params.parent && item.to.params.parent.toString()[0] === ':') {
-          item.to.params.parent = this.idContextMenu
-        }
-
-        router.push(item.to)
+        router.push(to)
       }
     },
     menuUpdate () {
