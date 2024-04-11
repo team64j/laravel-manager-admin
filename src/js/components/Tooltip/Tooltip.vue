@@ -40,11 +40,11 @@ export default {
   methods: {
     create (event) {
       if (!event.target || event.target === this.$el || !event.target.getAttribute ||
-          !event.target.getAttribute('data-tooltip') || event.target.getAttribute('data-tooltip') === '...') {
+          !event.target.closest('[data-tooltip]') || event.target.getAttribute('data-tooltip') === '...') {
         return
       }
 
-      this.el = event.target
+      this.el = event.target.closest('[data-tooltip]')
       this.position = this.el.getBoundingClientRect()
       this.html = this.el.getAttribute('data-tooltip')
           // .replace(/<br ?\/?>/g, '\n').replace(/&/g, "&amp;")
