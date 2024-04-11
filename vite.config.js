@@ -28,7 +28,7 @@ export default {
           return `assets/${extType}/[name].[hash][extname]`
         },
         chunkFileNames: 'assets/js/[name].[hash].js',
-        entryFileNames: 'assets/[name].[hash].js'
+        entryFileNames: 'assets/js/[name].[hash].js'
       }
     }
   },
