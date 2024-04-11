@@ -1,4 +1,6 @@
 <script>
+import('./Tabs.css')
+
 export default {
   __isStatic: true,
   name: 'Tabs',
@@ -247,78 +249,3 @@ export default {
 
   </div>
 </template>
-
-<style scoped>
-.app-tabs {
-  @apply flex flex-col grow content-start px-4 pb-4 overflow-hidden
-}
-.app-tabs__rows {
-  @apply overflow-hidden relative h-11 w-full grow-0 shrink-0
-}
-.app-tabs__row {
-  @apply relative overflow-hidden overflow-x-auto h-20 px-0 mx-0 flex flex-nowrap
-}
-.app-tabs.app-tabs__with-navigation > .app-tabs__rows .app-tabs__row {
-  @apply mx-5
-}
-.app-tabs .app-tabs__tab {
-  @apply flex items-center mx-0.5 px-4 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none text-center font-medium hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
-}
-.app-tabs .app-tabs__tab.app-tabs__tab-active {
-  @apply border-inherit text-white bg-blue-600 dark:text-white dark:bg-blue-600 dark:hover:bg-blue-600
-}
-.app-tabs .app-tabs__tab .app-tabs__tab-icon + span {
-  @apply ml-2
-}
-.app-tabs .app-tabs__prev, .app-tabs .app-tabs__next {
-  @apply absolute h-10 w-5 top-0 pt-1 flex items-center justify-center cursor-pointer select-none hover:text-blue-500
-}
-.app-tabs .app-tabs__prev {
-  @apply left-0
-}
-.app-tabs .app-tabs__next {
-  @apply right-0
-}
-.app-tabs .app-tabs__prev.app-tabs__disabled, .app-tabs .app-tabs__next.app-tabs__disabled {
-  @apply opacity-20 pointer-events-none
-}
-.app-tabs .app-tabs__page {
-  @apply relative flex flex-wrap items-start content-start w-full overflow-auto grow p-6 rounded bg-white dark:bg-gray-750
-}
-.app-tabs__vertical {
-  @apply flex-row p-0 h-full self-stretch overflow-visible
-}
-.app-tabs__vertical > .app-tabs__rows {
-  @apply grow-0 h-auto w-auto mb-0 overflow-visible
-}
-.app-tabs__vertical > .app-tabs__rows::after {
-  @apply left-auto top-0
-}
-.app-tabs__vertical > .app-tabs__rows .app-tabs__row {
-  @apply sticky top-0 flex-col h-auto py-0 m-0 pr-6
-}
-.app-tabs__vertical.app-tabs__with-navigation > .app-tabs__rows .app-tabs__row {
-  @apply mx-0
-}
-.app-tabs__vertical > .app-tabs__rows .app-tabs__tab {
-  @apply truncate mx-0 my-0.5 max-w-[15rem]
-}
-.app-tabs__vertical > .app-tabs__rows .app-tabs__prev::before, .app-tabs__vertical > .app-tabs__rows .app-tabs__next::before {
-  @apply rotate-90
-}
-.app-tabs__vertical > .app-tabs__rows .app-tabs__prev {
-  @apply h-auto w-full py-1
-}
-.app-tabs__vertical > .app-tabs__rows .app-tabs__next {
-  @apply h-auto w-full py-1 top-auto bottom-0
-}
-.app-tabs__vertical > .app-tabs__page {
-  @apply flex-col h-full p-0 shadow-none rounded-none overflow-auto flex-nowrap
-}
-.app-tabs__vertical > .app-tabs__rows ~ .app-tabs__page {
-  @apply pl-6 border-l bg-transparent border-opacity-80
-}
-.app-tabs__vertical .app-tabs__prev, .app-tabs__vertical .app-tabs__next {
-  @apply hidden
-}
-</style>

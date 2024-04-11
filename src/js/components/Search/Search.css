@@ -1,0 +1,21 @@
+.app-search {
+    @apply flex justify-center items-baseline absolute z-30 left-0 top-0 right-0 bottom-0 p-5
+}
+.app-search__back {
+    @apply absolute left-0 top-0 right-0 bottom-0
+}
+.app-search__main {
+    @apply relative flex flex-col bg-white dark:bg-gray-800 border w-full h-auto max-w-screen-md max-h-full shadow-2xl
+}
+.app-search__input {
+    @apply -mb-0.5 relative
+}
+.app-search__input input {
+    @apply w-full
+}
+.app-search__clear {
+    @apply absolute top-4 right-4 text-lg cursor-pointer opacity-75 hover:opacity-100 transition
+}
+.app-search__result {
+    @apply grow h-full overflow-auto
+}

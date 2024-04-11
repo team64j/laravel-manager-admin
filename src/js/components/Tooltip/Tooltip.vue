@@ -1,4 +1,7 @@
 <script>
+import { h } from 'vue'
+import('./Tooltip.css')
+
 export default {
   name: 'Tooltip',
   data () {
@@ -22,7 +25,7 @@ export default {
   },
   computed: {
     className () {
-      const c = []
+      const c = ['app-tooltip']
 
       if (this.isShow) {
         c.push('opacity-100 visible')
@@ -81,42 +84,26 @@ export default {
       this.timer = null
       this.isShow = false
     }
+  },
+  setup () {
+    return function () {
+      return h('div', {
+        class: this.className,
+        style: {
+          top: this.top + 'px',
+          left: this.left + 'px'
+        },
+        onMousedown (event) {
+          event.stopPropagation()
+        },
+        onClick (event) {
+          event.stopPropagation()
+        },
+        onMouseover (event) {
+          event.stopPropagation()
+        }
+      }, [h('div', { class: 'pointer-events-none', innerHTML: this.html })])
+    }
   }
 }
 </script>
-
-<template>
-  <div class="app-tooltip"
-       :class="className"
-       @mousedown.stop="() => null"
-       @click.stop="() => null"
-       @mouseover.stop="() => null"
-      :style="{
-           top: top + 'px',
-           left: left + 'px'
-         }">
-    <div v-html="html" class="pointer-events-none"/>
-  </div>
-</template>
-
-<style>
-.app-tooltip  {
-  @apply fixed z-[999] -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-slate-50/90 text-slate-800 dark:bg-gray-600/90 dark:text-slate-100 text-sm shadow transition-all
-}
-.app-tooltip .badge {
-  @apply float-right ml-2 px-1.5 bg-blue-500 text-white rounded
-}
-i[data-tooltip] > *:not(.pointer-events-auto) {
-  @apply pointer-events-none
-}
-i[data-tooltip] {
-  @apply ml-2 cursor-help leading-[1] text-slate-300 hover:opacity-80 dark:text-slate-500 font-normal not-italic;
-}
-i[data-tooltip][data-type="error"] {
-  @apply text-rose-500
-}
-i[data-tooltip]::before {
-  content: "\f059";
-  font-family: "Font Awesome 6 Free", serif;
-}
-</style>
