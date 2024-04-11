@@ -30,21 +30,13 @@ axios.interceptors['request'].use(
 
     Object.entries(params).forEach(([k, v]) => {
       if (!(v === undefined || v === null)) {
-        const re = new RegExp(':' + k, 'g')
-
-        if (re.test(config.url)) {
-          //delete params[k]
-        }
-
-        if (k === 'id' && v === 'new') {
-          return
-        }
-
-        config.url = config.url.replace(re, v.toString()).replace(/\/\//g, '/').replace(/\/$/, '')
+        config.url = config.url.replace((new RegExp(':' + k, 'g')), v.toString()).
+          replace(/\/\//g, '/').
+          replace(/\/$/, '')
       }
     })
 
-    config.url = config.url.replace(/(\/?:\w+)/, '').replace(/^\w+:\/\/[^\/]+/, '')
+    config.url = config.url.replace(/(\/?:\w+)/, '').replace(/^\w+:\/\/[^\/]+/, '').replace(/(\(.*?\))/g, '')
 
     return config
   },

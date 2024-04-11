@@ -32,7 +32,7 @@
     @apply mr-1 opacity-80
 }
 .app-tree__menu {
-    @apply grow-0 flex relative z-10 p-0.5 bg-slate-50 dark:bg-gray-800
+    @apply grow-0 flex relative z-10 p-0.5 border-b dark:border-white/5
 }
 .app-tree__menu-item {
     @apply relative
