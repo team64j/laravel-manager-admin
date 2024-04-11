@@ -7,7 +7,7 @@ const state = {
 
 const mutations = {
   init () {
-    router.getRoutes().filter(i => i?.meta?.fixed).map(i => this.dispatch('GlobalTabs/add', router.resolve(i)))
+    router.getRoutes().filter(i => i?.meta?.fixed).map(i => this.dispatch('GlobalTabs/add', router.parse(i)))
     this.dispatch('GlobalTabs/add', router.currentRoute.value)
   },
 
@@ -16,7 +16,7 @@ const mutations = {
       return
     }
 
-    data = router.resolve(data)
+    data = router.parse(data)
 
     let is = false
 
@@ -69,7 +69,7 @@ const mutations = {
 
     if (data.active && index > 0 && state['tabs'][index - 1]) {
       state['tabs'][index - 1].active = true
-      router.push(state['tabs'][index - 1]).then(() => {
+      router.to(state['tabs'][index - 1]).then(() => {
         if (typeof callback === 'function') {
           callback()
         }
@@ -87,11 +87,11 @@ const mutations = {
 
   to (state, data) {
     this.commit('GlobalTabs/del', router.currentRoute.value)
-    router.push(data).then(() => {})
+    router.to(data).then(() => {})
   },
 
   reload (state, data) {
-    const route = router.resolve({ path: '/redirect' + data.path, query: data.query })
+    const route = router.parse({ path: '/redirect' + data.path, query: data.query })
 
     router.replace(route).then(() => {
       const index = state['keys'].indexOf(getters.key()(data))

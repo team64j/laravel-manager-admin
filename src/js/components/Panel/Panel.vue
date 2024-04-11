@@ -1,6 +1,7 @@
 <script>
 import { h, reactive } from 'vue'
 import draggable from 'vuedraggable'
+import router from '../../router'
 
 import('./Panel.css')
 
@@ -64,7 +65,7 @@ export default {
       }
     },
     get (query, data) {
-      const url = this.$router.resolve(this.propUrl)
+      const url = router.parse(this.propUrl)
       const path = this.propUrl.split('?')[0]
       query = Object.assign(url.query, query || this.$route?.['query'] || {})
 
@@ -290,7 +291,7 @@ export default {
       url = url.split('?')[1] ?? ''
 
       if (this.propUrl) {
-        url = this.$router.resolve('?' + url)
+        url = router.parse('?' + url)
         if (this.history) {
           if (this.rerender) {
             this.$emit(
@@ -299,7 +300,7 @@ export default {
                 url
             )
           } else {
-            this.$router.push(url).then(() => this.get(url.query, []))
+            router.to(url).then(() => this.get(url.query, []))
           }
         } else {
           this.get(url.query, [])
@@ -388,7 +389,7 @@ export default {
                   { query }
               )
             } else {
-              this.$router.push({ query }).then(() => this.get(null, []))
+              router.to({ query }).then(() => this.get(null, []))
             }
           } else {
             this.get(query)
@@ -406,7 +407,7 @@ export default {
                 { query: {} }
             )
           } else {
-            this.$router.push({ query: {} }).then(() => this.get(null, []))
+            router.to({ query: {} }).then(() => this.get(null, []))
           }
         } else {
           this.get({})

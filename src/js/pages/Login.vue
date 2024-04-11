@@ -1,6 +1,4 @@
 <script>
-import router from '../router'
-
 export default {
   name: 'Login',
   data () {
@@ -27,7 +25,7 @@ export default {
   },
   created () {
     if (this.$store.getters.get('Storage.token')) {
-      router.push('/')
+      this.$router.to('/')
     } else {
       this.checkServer()
     }
@@ -116,8 +114,7 @@ export default {
           this.$store.dispatch('set', { ['Storage.token']: data['access_token'] })
           this.$store.dispatch('set', { ['Storage.tokenExpiresIn']: data['expires_in'] })
           this.$store.dispatch('Session/clear')
-
-          router.push('/')
+          this.$router.to('/')
         }
       }).catch(() => {
         this.errors['username'] = true

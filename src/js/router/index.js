@@ -73,4 +73,37 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+/**
+ * @param route - Raw route location to resolve
+ * @see router.resolve()
+ */
+router.parse = (route) => {
+  if (route.path && route.params) {
+    Object.entries(route.params).forEach(([k, v]) => {
+      if (!(v === undefined || v === null)) {
+        const re = new RegExp(':' + k, 'g')
+        v = v.toString()
+
+        if (/:/.test(route?.path)) {
+          route.path = route.path.replace(re, v).
+            replace(/\/\//g, '/').
+            replace(/\/$/, '')
+        }
+
+        if (route?.query?.[k]) {
+          route.query[k] = route.query[k].replace(re, v)
+        }
+      }
+    })
+  }
+
+  return router.resolve(route)
+}
+
+/**
+ * @param route - Raw route location to push
+ * @see router.push()
+ */
+router.to = (route) => router.push(router.parse(route))
+
 export default router

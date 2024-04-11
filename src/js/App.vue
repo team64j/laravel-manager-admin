@@ -65,7 +65,7 @@ export default {
         const to = url.pathname.replace(document.baseURI.replace(/\/$/g, '').replace(location.origin, '') + '/', '/')
         if (window.location.pathname !== to && event.preventDefault) {
           event.preventDefault()
-          router.push(to)
+          router.to(to)
         }
       }
     })
@@ -138,7 +138,7 @@ export default {
 
       this.layout = null
       this.loaded = true
-      router.push('/login')
+      router.to('/login')
     },
     assets (assets) {
       assets.forEach(i => {
@@ -190,25 +190,11 @@ export default {
       event.currentTarget.removeEventListener('mousemove', this.splitterMove)
       event.currentTarget.removeEventListener('mouseup', this.splitterUp)
     },
-    pushRouter (r, callback) {
-      let route = r
-
+    pushRouter (route, callback) {
       if (typeof route === 'string' || !route.path) {
         route = router.resolve(route)
       }
-
-      if (route.params) {
-        Object.entries(route.params).forEach(([k, v]) => {
-          if (!(v === undefined || v === null)) {
-            delete route.params[k]
-            route.path = route.path.replace(new RegExp(':' + k, 'g'), v.toString()).
-                replace(/\/\//g, '/').
-                replace(/\/$/, '')
-          }
-        })
-      }
-
-      router.push(route).then(callback)
+      router.to(route).then(callback)
     },
     inputTreeSelect (event, context) {
       this.$store.dispatch('set', { event, context })

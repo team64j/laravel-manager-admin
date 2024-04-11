@@ -121,11 +121,11 @@ export default {
           'action',
           'pushRouter',
           route,
-          this.$store.getters['GlobalTabs/key'](this.$route, router.resolve(route)) && this.get
+          this.$store.getters['GlobalTabs/key'](this.$route, router.parse(route)) && this.get
       )
     },
     inputChangeQuery (event, ctx) {
-      const route = router.resolve({
+      const route = router.parse({
         query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: event.target.value })
       })
       this.$emit('action', 'pushRouter', route, this.get)

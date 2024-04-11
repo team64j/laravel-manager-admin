@@ -129,7 +129,7 @@ export default {
         context.loading = true
         this.loading = true
 
-        const path = router.resolve({
+        const path = router.parse({
           name: this.route,
           params: {
             id: 'parents'
@@ -337,38 +337,9 @@ export default {
       if (item.to) {
         item.to.query ??= {}
         item.to.params ??= {}
-
-        const to = { ...item.to }
-
-        for (const i in item.to.query) {
-          if (item.node[i] !== undefined) {
-            to.query[i] = item.node[i]
-          }
-        }
-
-        for (const i in item.to.params) {
-          if (item.node[i] !== undefined) {
-            to.params[i] = item.node[i]
-          }
-        }
-
-        // if (item.to.query.id && item.to.query.id.toString()[0] === ':') {
-        //   item.to.query.id = this.idContextMenu
-        // }
-        //
-        // if (item.to.query.parent && item.to.query.parent.toString()[0] === ':') {
-        //   item.to.query.parent = this.idContextMenu
-        // }
-        //
-        // if (item.to.params.id && item.to.params.id.toString()[0] === ':') {
-        //   item.to.params.id = this.idContextMenu
-        // }
-        //
-        // if (item.to.params.parent && item.to.params.parent.toString()[0] === ':') {
-        //   item.to.params.parent = this.idContextMenu
-        // }
-
-        router.push(to)
+        const route = { ...item.to }
+        Object.assign(route.params, item.node)
+        this.$router.to(route)
       }
     },
     menuUpdate () {
