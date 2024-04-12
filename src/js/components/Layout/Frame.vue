@@ -5,6 +5,7 @@ import router from '../../router'
 
 export default {
   props: {
+    url: String,
     data: String
   },
 
@@ -56,7 +57,9 @@ export default {
       }
     }
 
-    if (props.data !== undefined) {
+    if (props.url) {
+      attrs.src = props.url
+    } else if (props.data !== undefined) {
       attrs.srcdoc = props.data
     } else {
       let query = router.currentRoute.value['query'] || {}

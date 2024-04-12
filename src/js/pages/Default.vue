@@ -8,10 +8,12 @@ export default {
   name: 'DefaultPage',
   data () {
     return {
+      url: null,
       data: null,
       meta: null,
       layout: null,
       errors: null,
+      componentName: null,
       currentComponent: null
     }
   },
@@ -50,7 +52,7 @@ export default {
       axios.get(url, {
         params: this.$route['query']
       }).then(r => {
-        r?.data && this.setData(r.data)
+        r?.data && this.setData(r.data, null, r.request.responseURL)
       }).finally(() => {
         this.$emit('action', 'setTab', {
           key: this._.vnode.key,
@@ -135,7 +137,9 @@ export default {
         changed: true
       })
     },
-    setData (data, stay) {
+    setData (data, stay, url) {
+      this.url = url
+
       if (data?.['meta']?.['redirect']) {
         location.href = data['meta']['redirect']
       }
@@ -156,9 +160,11 @@ export default {
 
       if (typeof data === 'string' || typeof data['layout'] === 'string') {
         this.data = data['layout'] ?? data
+        this.componentName = 'frame'
         component = Frame
       } else {
         Object.assign(this.$data, data)
+        this.componentName = 'page'
         component = Component
 
         if (data['meta']?.['title'] !== undefined || data['meta']?.['icon'] !== undefined) {
@@ -188,6 +194,7 @@ export default {
                :meta="meta"
                :layout="layout"
                :errors="errors"
+               :url="url"
                @action="action"
                @update:modelValue="updateModelValue"/>
     <div v-else class="flex items-center justify-center grow">

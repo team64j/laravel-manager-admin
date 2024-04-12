@@ -1,6 +1,7 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
 import router from '../../router'
+import { markRaw } from 'vue'
 
 import('./GlobalTabs.css')
 
@@ -34,7 +35,7 @@ export default {
     },
 
     getComponent (component) {
-      return component
+      return markRaw(component)
     },
 
     init () {
@@ -166,8 +167,8 @@ export default {
       </router-view>
 
       <div
-          class="grow overflow-hidden"
-          v-for="{ path, matched: [{ components: { default: component }}] } in this.$store.getters['GlobalTabs/frames']()"
+          class="grow overflow-hidden app-global-tabs__frames"
+          v-for="{ path, matched: [{ components: { default: component } }] } in this.$store.getters['GlobalTabs/frames']()"
           v-show="$route.path === path">
         <component
             :key="path"
