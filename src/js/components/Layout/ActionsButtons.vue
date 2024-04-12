@@ -10,7 +10,7 @@
           <i class="fa fa-plus fa-fw"/>
           <i :class="ii.icon"/>
           <span>{{ propLang(i) + ' + ' + ii.title }}</span>
-          <i v-if="$store.getters['GlobalTabs/isLoading']"
+          <i v-if="$store.getters.get('tabsLoading')"
              class="btn-sm btn-green cursor-progress absolute flex items-center justify-center left-0 top-0 h-full w-full z-10"
              @click.prevent.stop="() => false">
             <app-loader-icon/>

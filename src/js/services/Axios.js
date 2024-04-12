@@ -53,17 +53,10 @@ axios.interceptors['response'].use(
     }
 
     if (error.response?.data?.message) {
-      if (status === 422) {
-        notify({
-          text: error.response.data.message.replace(/\r\n|\r|\n|\\n/g, '<br>'),
-          type: 'error'
-        })
-      } else {
-        store.dispatch('GlobalTabs/del', router.currentRoute.value).then(() => notify({
-          text: error.response.data.message,
-          type: 'error'
-        }))
-      }
+      notify({
+        text: error.response.data.message.replace(/\r\n|\r|\n|\\n/g, '<br>'),
+        type: 'error'
+      })
     } else if (error.message) {
       notify({
         text: error.message,

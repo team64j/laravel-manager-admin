@@ -1,14 +1,16 @@
-<script setup>
+<script>
 import store from '../store'
 import router from '../router'
 
-store.dispatch('set', { ['Storage.token']: null }).then(() => {
-  store.dispatch('GlobalTabs/destroy').then(() => {
-    store.dispatch('Session/clear').then(() => {
-      router.to('/login')
+export default {
+  setup () {
+    store.dispatch('set', { ['Storage.token']: null }).then(() => {
+      store.dispatch('Session/clear').then(() => {
+        router.to('/login')
+      })
     })
-  })
-})
-</script>
 
-<template/>
+    return () => {}
+  }
+}
+</script>

@@ -1,8 +1,8 @@
 <script>
-import { shallowRef } from 'vue'
-import Frame from '../components/Layout/Frame.vue'
-import Component from '../components/Layout/Component.vue'
+import { defineAsyncComponent, defineComponent, h, shallowRef } from 'vue'
 import router from '../router'
+import Component from '../components/Layout/Component.vue'
+import Frame from '../components/Layout/Frame.vue'
 
 export default {
   name: 'DefaultPage',
@@ -123,7 +123,7 @@ export default {
           'action',
           'pushRouter',
           route,
-          this.$store.getters['GlobalTabs/key'](this.$route, router.parse(route)) && this.get
+          router.key(this.$route, router.parse(route)) && this.get
       )
     },
     inputChangeQuery (event, ctx) {
@@ -182,29 +182,33 @@ export default {
         this.currentComponent = shallowRef(component)
       }
     }
+  },
+  setup () {
+    return function () {
+      return h('div', {
+        class: 'app-page__default w-full h-full flex flex-col overflow-auto'
+      }, [
+        this.currentComponent ?
+            h(this.currentComponent, {
+              url: this.url,
+              data: this.data,
+              meta: this.meta,
+              layout: this.layout,
+              errors: this.errors,
+              onAction: this.action,
+              'onUpdate:modelValue': this.updateModelValue
+            }) :
+            h('div', { class: 'flex items-center justify-center grow' },
+                h('div', { class: 'app-loader animate-ping w-48 h-48 bg-no-repeat bg-center' })
+            )
+      ])
+    }
   }
 }
 </script>
 
-<template>
-  <div class="app-page__default w-full h-full flex flex-col overflow-auto">
-    <component v-if="currentComponent"
-               :is="currentComponent"
-               :data="data"
-               :meta="meta"
-               :layout="layout"
-               :errors="errors"
-               :url="url"
-               @action="action"
-               @update:modelValue="updateModelValue"/>
-    <div v-else class="flex items-center justify-center grow">
-      <div class="app-loader animate-ping w-48 h-48 bg-no-repeat bg-center"/>
-    </div>
-  </div>
-</template>
-
 <style scoped>
 .app-loader {
-  background-image: url("../../img/logo.svg");
+  background-image: url("../../img/logo.svg")
 }
 </style>

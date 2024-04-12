@@ -1,10 +1,6 @@
-<template>
-  <div class="p-8">
-    <h1 class="text-2xl text-center">Page not found</h1>
-  </div>
-</template>
-
 <script>
+import { h } from 'vue'
+
 export default {
   name: 'NotFoundPage',
   created () {
@@ -12,6 +8,14 @@ export default {
       meta: { title: 'Page not found' },
       changed: false
     })
+  },
+  setup () {
+    return () => h('div',
+        { class: 'p-8' },
+        h('h1',
+            { class: 'text-2xl text-center', innerHTML: 'Page not found' }
+        )
+    )
   }
 }
 </script>

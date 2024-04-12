@@ -1,7 +1,7 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
-import router from '../../router'
 import { markRaw } from 'vue'
+import router from '../../router'
 
 import('./GlobalTabs.css')
 
@@ -17,7 +17,19 @@ export default {
 
   data () {
     return {
+      tabs: [],
+      keys: [],
+      //frames: [],
       closing: false
+    }
+  },
+
+  computed: {
+    pages () {
+      return this.tabs.filter(i => !i.meta['isIframe']).map(i => router.key(i))
+    },
+    frames () {
+      return this.tabs.filter(i => i.meta['isIframe'])
     }
   },
 
@@ -34,45 +46,106 @@ export default {
       }
     },
 
+    destroyTabs () {
+      this.tabs = []
+      this.keys = []
+    },
+
     getComponent (component) {
       return markRaw(component)
     },
 
     init () {
-      this.$store.dispatch('GlobalTabs/init')
+      router.getRoutes().filter(i => i?.meta?.fixed).map(i => this.addTab(router.parse(i)))
     },
 
     addTab (data) {
-      this.$store.dispatch('GlobalTabs/add', data)
+      if (!data) {
+        return
+      }
+
+      data = router.parse(data)
+
+      let is = false
+
+      this.tabs.map(i => {
+        i.active = router.key(i, data)
+
+        if (i.active) {
+          is = true
+          data.meta = i.meta
+          Object.assign(i, data)
+        }
+      })
+
+      if (!is && !data.meta['hidden']) {
+        data.active = true
+        this.tabs.push(data)
+      }
+
+      this.keys = this.tabs.map(i => router.key(i))
     },
 
     setTab (data) {
-      this.$store.dispatch('GlobalTabs/set', data)
+      this.$store.dispatch('set', { tabsLoading: data.loading })
+
+      if (data.key) {
+        const index = this.keys.indexOf(data.key)
+        index > -1 && window._.mergeWith(this.tabs[index], data)
+      } else {
+        this.tabs.map(i => i.active && window._.mergeWith(i, data))
+      }
     },
 
     closeTab (callback) {
-      const route = typeof callback === 'object' ? callback : router.currentRoute.value
-      const tab = this.$store.getters['GlobalTabs/find'](route)
+      let route = typeof callback === 'object' ? callback : router.currentRoute.value
+      const tab = this.find(route)
       if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
         return
       }
 
       this.closing = true
-      this.$store.dispatch('GlobalTabs/del', route).then(() => {
-        setTimeout(() => this.closing = false, 100)
 
-        if (typeof callback === 'function') {
-          callback()
-        }
-      })
+      if (!route) {
+        return
+      }
+
+      route = this.tabs.filter(i => router.key(i, route))[0]
+
+      if (!route) {
+        return
+      }
+
+      if (route?.meta['fixed']) {
+        return
+      }
+
+      const index = this.keys.indexOf(router.key(route))
+      index > -1 && this.tabs.splice(index, 1) && this.keys.splice(index, 1)
+
+      this.setTab({ treeSelect: false })
+
+      if (route.active && index > 0 && this.tabs[index - 1]) {
+        this.tabs[index - 1].active = true
+        router.to(this.tabs[index - 1])
+      }
+
+      this.closing = false
+
+      if (typeof callback === 'function') {
+        callback()
+      }
+
+      return index
     },
 
     toTab (data) {
-      const tab = this.$store.getters['GlobalTabs/find'](router.currentRoute.value)
+      const tab = this.find(router.currentRoute.value)
       if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
         return
       }
-      this.$store.dispatch('GlobalTabs/to', data)
+      this.closeTab(router.currentRoute.value)
+      router.to(data)
     },
 
     clickTab (tab) {
@@ -89,7 +162,7 @@ export default {
       if (this.closing) {
         return
       }
-      this.$store.dispatch('GlobalTabs/reload', tab)
+      this.reload(tab)
     },
 
     dragTabs (event) {
@@ -114,6 +187,19 @@ export default {
       this.$el.removeEventListener('mousemove', this.moveTabs)
       this.$el.removeEventListener('mouseup', this.endMoveTabs)
       this.$el.classList.remove('drag')
+    },
+
+    find (data) {
+      return this.tabs.filter(i => router.key(i, data))[0] || null
+    },
+
+    reload (data) {
+      const route = router.parse({ path: '/redirect' + data.path, query: data.query })
+
+      router.replace(route).then(() => {
+        const index = this.keys.indexOf(router.key(data))
+        index > -1 && this.keys.splice(index, 1)
+      })
     }
   }
 }
@@ -125,7 +211,7 @@ export default {
     <div class="grow-0">
       <div class="relative h-[2.35rem] bg-slate-200 dark:bg-gray-800 overflow-hidden">
         <div class="relative flex flex-nowrap pt-0.5 h-14 overflow-auto" ref="panel">
-          <a v-for="(tab, i) in this.$store.getters['GlobalTabs/tabs']()"
+          <a v-for="(tab, i) in this.tabs"
              :key="i"
              :data-to="tab.path"
              :class="{ 'app-global-tabs__tab-active': tab.active }"
@@ -156,24 +242,18 @@ export default {
 
     <div class="grow flex overflow-hidden">
 
-      <router-view v-slot="{ Component }">
-        <keep-alive-component :include="this.$store.getters['GlobalTabs/keys']()">
-          <component
-              v-if="!$route?.meta?.['isIframe']"
-              :key="this.$store.getters['GlobalTabs/key']($route)"
-              :is="Component"
-              @action="action"/>
+      <router-view v-slot="slot">
+        <keep-alive-component :include="this.keys">
+          <component v-if="!slot.route?.meta?.['isIframe']" :key="$router.key($route)" :is="slot.Component"
+                     @action="action"/>
         </keep-alive-component>
       </router-view>
 
       <div
           class="grow overflow-hidden app-global-tabs__frames"
-          v-for="{ path, matched: [{ components: { default: component } }] } in this.$store.getters['GlobalTabs/frames']()"
+          v-for="{ path, matched: [{ components: { default: component } }] } in this.frames"
           v-show="$route.path === path">
-        <component
-            :key="path"
-            :is="getComponent(component)"
-            @action="action"/>
+        <component :key="path" :is="getComponent(component)" @action="action"/>
       </div>
 
     </div>

@@ -339,7 +339,7 @@ export default {
         item.to.params ??= {}
         const route = { ...item.to }
         Object.assign(route.params, item.node)
-        this.$router.to(route)
+        router.to(route)
       }
     },
     menuUpdate () {

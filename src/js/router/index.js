@@ -73,6 +73,16 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+router.key = (a, b) => {
+  if (b) {
+    return a?.meta?.group ?
+      ((a.name && a.name === b.name) || a.matched[0]?.path === b.matched[0]?.path) :
+      a.path === b.path
+  } else {
+    return a?.meta?.group ? (a.name || a.matched[0]?.path || a.path) : a.path
+  }
+}
+
 /**
  * @param route - Raw route location to resolve
  * @see router.resolve()
