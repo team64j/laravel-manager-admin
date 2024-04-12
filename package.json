@@ -14,9 +14,6 @@
         "@codemirror/lang-vue": "^0.1.1",
         "@codemirror/lang-xml": "^6.0.2",
         "@codemirror/theme-one-dark": "^6.1.0",
-        "@electron-forge/cli": "^7.3.1",
-        "@electron-forge/maker-squirrel": "^7.3.1",
-        "@electron-forge/maker-zip": "^7.3.1",
         "@fortawesome/fontawesome-free": "^6.5.1",
         "@kyvg/vue3-notification": "^3.1.2",
         "@vitejs/plugin-vue": "^4.5.2",
@@ -36,13 +33,7 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
-        "build-win": "electron-builder build",
-        "electron:start": "electron .",
-        "start": "electron-forge start",
-        "package": "electron-forge package",
-        "packager": "electron-packager ./ --platform=win32",
-        "make": "electron-forge make"
+        "build": "vite build"
     },
     "browserslist": [
         "> 1%",
@@ -50,33 +41,5 @@
         "not dead",
         "not ie 11"
     ],
-    "main": "main.js",
-    "build": {
-        "appId": "com.electron.laravel-manager-admin",
-        "productName": "EvoAdmin",
-        "copyright": "Copyright © 2024 ${author}",
-        "win": {
-            "target": [
-                "nsis"
-            ]
-        },
-        "nsis": {
-            "oneClick": false,
-            "perMachine": false,
-            "allowToChangeInstallationDirectory": true,
-            "createDesktopShortcut": true,
-            "createStartMenuShortcut": true
-        },
-        "mac": {
-            "category": "public.app-category.utilities"
-        },
-        "files": [
-            "main.js",
-            "dist/**/*",
-            "node_modules/**/*"
-        ],
-        "directories": {
-            "buildResources": "assets"
-        }
-    }
+    "main": "main.js"
 }
