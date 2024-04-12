@@ -8,13 +8,11 @@ import('./GlobalTabs.css')
 export default {
   name: 'GlobalTabs',
   components: { KeepAliveComponent },
-
   watch: {
     $route (route) {
       this.addTab(route)
     }
   },
-
   data () {
     return {
       tabs: [],
@@ -23,7 +21,6 @@ export default {
       closing: false
     }
   },
-
   computed: {
     pages () {
       return this.tabs.filter(i => !i.meta['isIframe']).map(i => router.key(i))
@@ -32,11 +29,9 @@ export default {
       return this.tabs.filter(i => i.meta['isIframe'])
     }
   },
-
   created () {
     this.init()
   },
-
   methods: {
     action () {
       if (typeof this[arguments[0]] === 'function') {
