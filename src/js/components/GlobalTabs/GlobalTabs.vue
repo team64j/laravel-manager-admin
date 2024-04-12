@@ -45,20 +45,12 @@ export default {
         this.$emit('action', ...arguments)
       }
     },
-
-    destroyTabs () {
-      this.tabs = []
-      this.keys = []
-    },
-
     getComponent (component) {
       return markRaw(component)
     },
-
     init () {
       router.getRoutes().filter(i => i?.meta?.fixed).map(i => this.addTab(router.parse(i)))
     },
-
     addTab (data) {
       if (!data) {
         return
@@ -85,7 +77,6 @@ export default {
 
       this.keys = this.tabs.map(i => router.key(i))
     },
-
     setTab (data) {
       this.$store.dispatch('set', { tabsLoading: data.loading })
 
@@ -96,7 +87,6 @@ export default {
         this.tabs.map(i => i.active && window._.mergeWith(i, data))
       }
     },
-
     closeTab (callback) {
       let route = typeof callback === 'object' ? callback : router.currentRoute.value
       const tab = this.find(route)
@@ -138,7 +128,6 @@ export default {
 
       return index
     },
-
     toTab (data) {
       const tab = this.find(router.currentRoute.value)
       if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
@@ -147,7 +136,6 @@ export default {
       this.closeTab(router.currentRoute.value)
       router.to(data)
     },
-
     clickTab (tab) {
       if (this.closing) {
         return
@@ -157,21 +145,24 @@ export default {
         this.$emit('action', 'pushRouter', tab)
       }
     },
-
-    dblClickTab (tab) {
+    dblClickTab (data) {
       if (this.closing) {
         return
       }
-      this.reload(tab)
-    },
 
+      const route = router.parse({ path: '/redirect' + data.path, query: data.query })
+
+      router.replace(route).then(() => {
+        const index = this.keys.indexOf(router.key(data))
+        index > -1 && this.keys.splice(index, 1)
+      })
+    },
     dragTabs (event) {
       this.scrollLeft = this.$refs.panel.scrollLeft
       this.x = event.clientX
       this.$el.addEventListener('mousemove', this.moveTabs)
       this.$el.addEventListener('mouseup', this.endMoveTabs)
     },
-
     moveTabs (event) {
       const left = this.x - event.clientX + this.scrollLeft
 
@@ -182,24 +173,13 @@ export default {
       !this.$el.classList.contains('drag') && this.$el.classList.add('drag')
       this.$refs.panel.scrollLeft = left
     },
-
     endMoveTabs () {
       this.$el.removeEventListener('mousemove', this.moveTabs)
       this.$el.removeEventListener('mouseup', this.endMoveTabs)
       this.$el.classList.remove('drag')
     },
-
     find (data) {
       return this.tabs.filter(i => router.key(i, data))[0] || null
-    },
-
-    reload (data) {
-      const route = router.parse({ path: '/redirect' + data.path, query: data.query })
-
-      router.replace(route).then(() => {
-        const index = this.keys.indexOf(router.key(data))
-        index > -1 && this.keys.splice(index, 1)
-      })
     }
   }
 }
