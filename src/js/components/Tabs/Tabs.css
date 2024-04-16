@@ -11,7 +11,7 @@
     @apply mx-5
 }
 .app-tabs .app-tabs__tab {
-    @apply flex items-center mx-0.5 px-4 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none text-center font-medium hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
+    @apply flex items-center justify-center mx-0.5 px-4 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none text-center font-medium hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
 }
 .app-tabs .app-tabs__tab.app-tabs__tab-active {
     @apply border-inherit text-white bg-blue-600 dark:text-white dark:bg-blue-600 dark:hover:bg-blue-600

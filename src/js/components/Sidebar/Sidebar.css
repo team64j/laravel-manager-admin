@@ -17,23 +17,14 @@
     @apply p-0
 }
 .app .app-sidebar .app-tabs .app-tabs__rows {
-    @apply h-[2.35rem] m-0
+    @apply h-[2.35rem]
 }
 .app .app-sidebar .app-tabs .app-tabs__row {
-    @apply py-0.5 mx-0.5 h-20
+    @apply m-0.5
 }
 .app .app-sidebar .app-tabs .app-tabs__tab {
-    @apply flex justify-center px-2 py-1 mx-0.5 h-8 w-10 hover:bg-slate-300/50 dark:hover:bg-gray-700
-}
-.app .app-sidebar .app-tabs .app-tabs__tab i {
-    @apply w-4 text-slate-600 dark:text-slate-300
-}
-.app .app-sidebar .app-tabs .app-tabs__tab.app-tabs__tab-active {
-    @apply text-white bg-blue-600
-}
-.app .app-sidebar .app-tabs .app-tabs__tab.app-tabs__tab-active i {
-    @apply text-white
+    @apply h-8 w-10
 }
 .app .app-sidebar .app-tabs .app-tabs__page {
-    @apply p-0 bg-white dark:bg-gray-750 border-0 shadow-none rounded-none
+    @apply p-0 border-0 shadow-none rounded-none
 }
