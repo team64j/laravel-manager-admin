@@ -33,7 +33,7 @@
 <script>
 export default {
   __isStatic: true,
-  name: 'LayoutCodeEditor'
+  name: 'CodeEditor'
 }
 </script>
 

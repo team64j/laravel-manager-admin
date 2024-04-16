@@ -6,7 +6,6 @@ import router from '../../router'
 import('./GlobalTabs.css')
 
 export default {
-  name: 'GlobalTabs',
   components: { KeepAliveComponent },
   watch: {
     $route (route) {

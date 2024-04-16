@@ -55,7 +55,7 @@ import Field from './Field.vue'
 
 export default {
   __isStatic: true,
-  name: 'FieldsRadio',
+  name: 'Radio',
   extends: Field,
 
   props: {

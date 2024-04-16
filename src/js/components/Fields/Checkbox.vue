@@ -72,7 +72,7 @@ import Field from './Field.vue'
 
 export default {
   __isStatic: true,
-  name: 'FieldsCheckbox',
+  name: 'Checkbox',
   extends: Field,
 
   props: {

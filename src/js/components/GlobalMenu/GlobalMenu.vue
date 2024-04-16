@@ -5,7 +5,6 @@ import GlobalMenuItem from './GlobalMenuItem.vue'
 import('./GlobalMenu.css')
 
 export default {
-  name: 'GlobalMenu',
   props: {
     data: Array
   },

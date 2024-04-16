@@ -3,7 +3,7 @@ import { h } from 'vue'
 
 export default {
   __isStatic: true,
-  name: 'LayoutTemplate',
+  name: 'Template',
   props: ['class'],
   setup (props) {
     return function () {

@@ -4,7 +4,6 @@ import { RouterLink } from 'vue-router'
 import GlobalMenuItem from './GlobalMenuItem.vue'
 
 export default {
-  name: 'GlobalMenuItem',
   props: {
     data: {
       type: Object,

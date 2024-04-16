@@ -66,7 +66,7 @@ import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
   __isStatic: true,
-  name: 'FieldsInput',
+  name: 'Input',
   extends: Field,
   components: { AppLoaderIcon },
 

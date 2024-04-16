@@ -3,7 +3,6 @@ import { h } from 'vue'
 import('./Tooltip.css')
 
 export default {
-  name: 'Tooltip',
   data () {
     return {
       top: 0,

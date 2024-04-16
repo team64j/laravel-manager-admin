@@ -85,7 +85,7 @@ import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
   __isStatic: true,
-  name: 'FieldsSelect',
+  name: 'Select',
   extends: Field,
   components: { CheckboxComponent, AppLoaderIcon },
 

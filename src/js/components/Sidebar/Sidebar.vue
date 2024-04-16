@@ -5,7 +5,6 @@ import { h } from 'vue'
 import ('./Sidebar.css')
 
 export default {
-  name: 'Sidebar',
   components: { Component },
   props: {
     layout: [Object, Array]

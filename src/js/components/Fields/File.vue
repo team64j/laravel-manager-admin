@@ -48,7 +48,7 @@ import Field from './Field.vue'
 
 export default {
   __isStatic: true,
-  name: 'FieldsFile',
+  name: 'File',
   extends: Field,
 
   props: {

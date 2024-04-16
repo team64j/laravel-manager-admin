@@ -21,7 +21,7 @@
 <script>
 export default {
   __isStatic: true,
-  name: 'LayoutSection',
+  name: 'Section',
 
   props: {
     label: String,

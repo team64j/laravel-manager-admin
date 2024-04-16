@@ -24,7 +24,7 @@ import Field from './Field.vue'
 
 export default {
   __isStatic: true,
-  name: 'FieldsTextarea',
+  name: 'Textarea',
   extends: Field,
 
   props: {

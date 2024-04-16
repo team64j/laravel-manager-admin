@@ -1,0 +1,22 @@
+.app-actions-buttons {
+    @apply fixed z-10 flex rounded-b bg-white/60 dark:bg-gray-700/60 p-2 right-4
+}
+.app-actions-buttons > button, .app-actions-buttons > div {
+    @apply inline-flex mx-0.5
+}
+.app-actions-buttons button:not(.app-actions-buttons__toggle) > i.fa {
+    @apply md:hidden
+}
+.app-actions-buttons button span {
+    @apply hidden md:inline-block px-1
+}
+.app-actions-buttons button.app-actions-buttons__toggle::before {
+    @apply block absolute left-[-1px] top-[10%] h-[80%] w-[1px] bg-white/20;
+    content: "";
+}
+.app-actions-buttons .app-actions-buttons__save-buttons {
+    @apply absolute left-0 top-full mt-0.5 w-full flex flex-col opacity-100 visible transition
+}
+.app-actions-buttons .app-actions-buttons__save-buttons button {
+    @apply border-t-0 rounded-none first:rounded-t last:rounded-b
+}
