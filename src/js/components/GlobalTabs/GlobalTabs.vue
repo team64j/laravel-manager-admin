@@ -193,17 +193,16 @@ export default {
              @click="clickTab(tab)"
              @dblclick="dblClickTab(tab)"
              @mousedown="dragTabs"
-             class="app-global-tabs__tab"
-             :data-tooltip="tab.meta.title">
+             class="app-global-tabs__tab">
 
             <span v-if="tab.loading || tab.meta.icon" class="app-global-tabs__tab-icon">
               <i v-if="tab.loading"
-                 class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white mt-1.5 h-5 w-5 animate-spin"/>
+                 class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin"/>
               <i v-else-if="tab.meta.icon" :class="tab.meta.icon"/>
             </span>
 
-            <span v-if="tab.meta.title" class="app-global-tabs__tab-title">
-              {{ tab.meta.title }}
+            <span v-if="tab.meta.title" class="app-global-tabs__tab-title" :data-tooltip="tab.meta.title">
+              <span class="block truncate w-28">{{ tab.meta.title }}</span>
             </span>
 
             <span v-if="!tab.meta.fixed" class="app-global-tabs__tab-close" @mousedown.stop="closeTab(tab)">✕</span>

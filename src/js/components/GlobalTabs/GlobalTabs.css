@@ -1,20 +1,20 @@
 .app-global-tabs__tab {
-    @apply relative inline-flex items-center justify-between mx-0.5 px-3 py-1.5 h-8 rounded text-slate-600 hover:text-slate-700 hover:bg-slate-300/50 dark:text-slate-300 dark:hover:text-slate-200 dark:hover:bg-gray-600/40 font-medium cursor-pointer select-none transition
+    @apply relative inline-flex justify-between mx-0.5 px-3 h-8 rounded text-slate-600 hover:text-slate-700 hover:bg-slate-300/50 dark:text-slate-300 dark:hover:text-slate-200 dark:hover:bg-gray-600/40 font-medium cursor-pointer select-none transition
 }
 .app-global-tabs__tab.app-global-tabs__tab-active {
     @apply bg-blue-600 text-slate-50 dark:bg-blue-600 dark:text-slate-50
 }
 .app-global-tabs__tab .app-global-tabs__tab-icon {
-    @apply w-5 text-center
+    @apply w-5 inline-flex justify-center items-center
 }
 .app-global-tabs__tab .app-global-tabs__tab-icon + .app-global-tabs__tab-title {
     @apply ml-2
 }
 .app-global-tabs__tab .app-global-tabs__tab-title {
-    @apply grow truncate w-28
+    @apply grow inline-flex items-center
 }
 .app-global-tabs__tab .app-global-tabs__tab-close {
-    @apply ml-0 -mr-3 px-3 py-0 pointer-events-auto
+    @apply inline-flex items-center ml-0 -mr-3 px-3 py-0 pointer-events-auto
 }
 .app-global-tabs__tab .app-global-tabs__tab-changed {
     @apply absolute top-1 left-1 h-1.5 w-1.5 bg-amber-400 rounded-full
