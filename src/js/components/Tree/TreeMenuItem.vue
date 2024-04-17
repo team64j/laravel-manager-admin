@@ -1,8 +1,9 @@
 <script setup>
 import { nextTick, reactive } from 'vue'
 import AppLoaderIcon from '../Layout/LoaderIcon.vue'
+import router from '../../router'
 
-const $props = defineProps(['icon', 'loader', 'click', 'position', 'actions', 'settings'])
+const $props = defineProps(['icon', 'loader', 'click', 'to', 'position', 'actions', 'settings'])
 
 const $emit = defineEmits(['action'])
 
@@ -20,6 +21,8 @@ function onClickButton () {
 
   if ($props.click) {
     $emit('action', `menu${$props.click.charAt(0).toUpperCase() + $props.click.slice(1)}`)
+  } else if ($props.to) {
+    router.to($props.to)
   }
 }
 
