@@ -16,6 +16,9 @@
 .app-panel__data tbody tr > td {
     @apply px-2 py-2 first:pl-6 last:pr-6
 }
+.app-panel__data .app-panel__category + tbody:not(.app-panel__category) > tr td:first-of-type {
+    @apply pl-12
+}
 .app-tabs__page > .app-panel {
     @apply -m-6 p-0 shadow-none;
     height: calc(100% + 3rem);

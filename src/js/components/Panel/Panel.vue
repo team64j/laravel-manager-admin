@@ -492,8 +492,8 @@ export default {
         </tbody>
 
         <template v-for="category in (data[0]?.data ? data : [{ data, route, draggable }])">
-          <tbody v-if="category.name && category.data.length">
-          <tr class="app-panel__category cursor-pointer hover:text-blue-500"
+          <tbody v-if="category.name && category.data.length" class="app-panel__category">
+          <tr class="cursor-pointer hover:text-blue-500"
               :class="{ closed: this.hasClosedCategory(category) }"
               @mousedown="toggleCategory(category)">
             <td class="px-4 pt-3 pb-1 border-b-2 font-bold"
