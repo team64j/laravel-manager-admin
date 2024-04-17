@@ -12,7 +12,7 @@ export default {
     type: {
       default: 'button'
     },
-    loading: Boolean
+    loader: Boolean
   }
 }
 </script>
@@ -23,7 +23,7 @@ export default {
     <i v-if="icon" class="fa fa-fw" :class="icon"/>
     <span v-if="value" v-html="value"/>
     <slot/>
-    <span v-if="loading"
+    <span v-if="loader"
        class="absolute !flex items-center justify-center left-0 top-0 h-full w-full bg-inherit"
        @click.prevent.stop="() => false">
       <LoaderIcon/>
