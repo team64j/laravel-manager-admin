@@ -73,13 +73,13 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-router.key = (a, b) => {
-  if (b) {
-    return a?.meta?.group ?
-      ((a.name && a.name === b.name) || a.matched[0]?.path === b.matched[0]?.path) :
-      a.path === b.path
+router.key = (route, compareRoute) => {
+  if (compareRoute) {
+    return route?.meta?.group ?
+      ((route.name && route.name === compareRoute.name) || route.matched[0]?.path === compareRoute.matched[0]?.path) :
+      route.path === compareRoute.path
   } else {
-    return a?.meta?.group ? (a.name || a.matched[0]?.path || a.path) : a.path
+    return route?.meta?.group ? (route.name || route.matched[0]?.path || route.path) : route.path
   }
 }
 

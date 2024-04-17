@@ -1,0 +1,51 @@
+.app {
+    @apply flex flex-col h-full w-full
+}
+.app-main {
+    @apply grow flex flex-row overflow-hidden
+}
+.app .app-resizer {
+    @apply relative z-10 md:z-20 shrink-0 w-0 cursor-col-resize
+}
+.app .app-resizer > div {
+    @apply fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize
+}
+.app .app-resizer:active > div {
+    @apply block
+}
+.app .app-resizer::before, .app .app-resizer::after {
+    @apply absolute h-full content-[""]
+}
+.app .app-resizer::before {
+    @apply w-1.5 -ml-0.5
+}
+.app .app-resizer::after {
+    @apply absolute h-full w-0.5 transition
+}
+.app .app-resizer:hover::after {
+    @apply bg-blue-500
+}
+.app .app-sidebar {
+    @apply shrink-0 absolute md:relative z-20 translate-y-0 flex grow-0 w-96 h-full bg-slate-200 dark:bg-gray-800 dark:text-slate-200 transition-all
+}
+.app .app-sidebar.app-sidebar-hidden {
+    @apply -translate-x-full !w-0
+}
+.app .app-sidebar.app-sidebar-resize {
+    @apply transition-none
+}
+.app .app-sidebar .app-tabs {
+    @apply p-0
+}
+.app .app-sidebar .app-tabs .app-tabs__rows {
+    @apply h-[2.35rem]
+}
+.app .app-sidebar .app-tabs .app-tabs__row {
+    @apply m-0.5
+}
+.app .app-sidebar .app-tabs .app-tabs__tab {
+    @apply h-8 w-10
+}
+.app .app-sidebar .app-tabs .app-tabs__page {
+    @apply p-0 border-0 shadow-none rounded-none
+}

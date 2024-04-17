@@ -1,6 +1,6 @@
 <script>
 import LoaderIcon from '../Layout/LoaderIcon.vue'
-import Button from '../Fields/Button.vue'
+import Button from '../Form/Button.vue'
 
 import('./ActionsButtons.css')
 
