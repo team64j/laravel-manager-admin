@@ -339,7 +339,15 @@ export default {
         item.to.params ??= {}
         const route = { ...item.to }
         Object.assign(route.params, item.node)
-        router.to(route)
+        if (item.to?.target) {
+          axios.get(router.parse({ ...item.to }).fullPath).then(r => {
+            r.request.responseURL && window.open(r.request.responseURL, item.to.target)
+          }).catch(r => {
+            r.request.responseURL && window.open(r.request.responseURL, item.to.target)
+          })
+        } else {
+          router.to(route)
+        }
       }
     },
     menuUpdate () {
