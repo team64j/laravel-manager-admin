@@ -23,7 +23,7 @@ function onClickButton () {
     $emit('action', `menu${$props.click.charAt(0).toUpperCase() + $props.click.slice(1)}`)
   } else if ($props.to) {
     if ($props.to?.target) {
-      axios.get(router.parse({ ...$props.to }).fullPath).then(r => {
+      axios.head(router.parse({ ...$props.to }).fullPath).then(r => {
         r.request.responseURL && window.open(r.request.responseURL, $props.to.target)
       }).catch(r => {
         r.request.responseURL && window.open(r.request.responseURL, $props.to.target)

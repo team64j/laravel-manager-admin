@@ -340,7 +340,7 @@ export default {
         const route = { ...item.to }
         Object.assign(route.params, item.node)
         if (item.to?.target) {
-          axios.get(router.parse({ ...item.to }).fullPath).then(r => {
+          axios.head(router.parse({ ...item.to }).fullPath).then(r => {
             r.request.responseURL && window.open(r.request.responseURL, item.to.target)
           }).catch(r => {
             r.request.responseURL && window.open(r.request.responseURL, item.to.target)
