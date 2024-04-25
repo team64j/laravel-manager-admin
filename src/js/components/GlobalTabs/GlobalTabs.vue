@@ -83,12 +83,37 @@ export default {
     },
     closeTab (callback) {
       let route = typeof callback === 'object' ? callback : router.currentRoute.value
+      const index = this.keys.indexOf(router.key(route))
+      const tab = this.tabs[index]
+
+      if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
+        return
+      }
+
+      if (route?.meta['fixed']) {
+        return
+      }
+
+      index > -1 && this.tabs.splice(index, 1) && this.keys.splice(index, 1)
+
+      if (route.active && index > 0 && this.tabs[index - 1]) {
+        router.to(this.tabs[index - 1])
+      }
+
+      if (typeof callback === 'function') {
+        callback()
+      }
+
+      return index
+    },
+    closeTab__ (callback) {
+      let route = typeof callback === 'object' ? callback : router.currentRoute.value
       const tab = this.find(route)
       if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
         return
       }
 
-      this.closing = true
+      //this.closing = true
 
       if (!route) {
         return
@@ -110,7 +135,6 @@ export default {
       this.setTab({ treeSelect: false })
 
       if (route.active && index > 0 && this.tabs[index - 1]) {
-        this.tabs[index - 1].active = true
         router.to(this.tabs[index - 1])
       }
 
@@ -131,6 +155,9 @@ export default {
       router.to(data)
     },
     clickTab (tab) {
+      router.to(tab)
+    },
+    clickTab__ (tab) {
       if (this.closing) {
         return
       }
@@ -168,7 +195,7 @@ export default {
              :key="i"
              :data-to="tab.path"
              :class="{ 'app-global-tabs__tab-active': tab.active }"
-             @click="clickTab(tab)"
+             @mousedown="clickTab(tab)"
              @dblclick="dblClickTab(tab)"
              class="app-global-tabs__tab">
 
