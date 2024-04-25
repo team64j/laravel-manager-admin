@@ -151,27 +151,6 @@ export default {
         index > -1 && this.keys.splice(index, 1)
       })
     },
-    dragTabs (event) {
-      this.scrollLeft = this.$refs.panel.scrollLeft
-      this.x = event.clientX
-      this.$el.addEventListener('mousemove', this.moveTabs)
-      this.$el.addEventListener('mouseup', this.endMoveTabs)
-    },
-    moveTabs (event) {
-      const left = this.x - event.clientX + this.scrollLeft
-
-      if (Math.abs(left) < 5) {
-        return
-      }
-
-      !this.$el.classList.contains('drag') && this.$el.classList.add('drag')
-      this.$refs.panel.scrollLeft = left
-    },
-    endMoveTabs () {
-      this.$el.removeEventListener('mousemove', this.moveTabs)
-      this.$el.removeEventListener('mouseup', this.endMoveTabs)
-      this.$el.classList.remove('drag')
-    },
     find (data) {
       return this.tabs.filter(i => router.key(i, data))[0] || null
     }
@@ -183,15 +162,14 @@ export default {
   <div class="app-global-tabs group">
 
     <div class="grow-0">
-      <div class="relative h-[2.35rem] bg-slate-200 dark:bg-gray-800 overflow-hidden">
-        <div class="relative flex flex-nowrap pt-0.5 h-14 overflow-auto" ref="panel">
+      <div class="relative bg-slate-200 dark:bg-gray-800 overflow-hidden">
+        <div class="relative flex flex-nowrap pt-0.5 overflow-auto" ref="panel">
           <a v-for="(tab, i) in this.tabs"
              :key="i"
              :data-to="tab.path"
              :class="{ 'app-global-tabs__tab-active': tab.active }"
              @click="clickTab(tab)"
              @dblclick="dblClickTab(tab)"
-             @mousedown="dragTabs"
              class="app-global-tabs__tab">
 
             <span v-if="tab.loading || tab.meta.icon" class="app-global-tabs__tab-icon">
