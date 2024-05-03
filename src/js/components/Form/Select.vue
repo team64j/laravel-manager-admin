@@ -15,12 +15,12 @@
 
       <template v-if="multiple">
         <input type="text" v-model="model" :id="ID" readonly
-               class="block w-full px-3 py-1 rounded app-appearance-select cursor-pointer"
+               class="block relative w-full px-3 py-1 rounded app-appearance-select cursor-pointer"
                :placeholder="placeholder"
                @mousedown="onClickMultipleInput"
                @blur="onBlurMultipleInput"/>
         <div
-            class="absolute left-0 top-full w-full hidden z-20 border rounded mt-1 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
+            class="absolute left-0 top-full w-full hidden z-[1] border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
             @click="onClickMultipleList"
             @mousedown.prevent.stop="onClickMultipleList">
 
@@ -113,7 +113,7 @@ export default {
         this.model = []
       }
 
-      axios.get(this.url, {
+      this.url && axios.get(this.url, {
         params: {
           selected: this.model
         }
