@@ -1,9 +1,7 @@
 <script>
 import Field from './Field.vue'
-import LoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
-  components: { LoaderIcon },
   __isStatic: true,
   name: 'Button',
   extends: Field,
@@ -26,7 +24,7 @@ export default {
     <span v-if="loader"
        class="absolute !flex items-center justify-center left-0 top-0 h-full w-full bg-inherit"
        @click.prevent.stop="() => false">
-      <LoaderIcon/>
+      <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </span>
   </button>
 </template>

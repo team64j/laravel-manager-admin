@@ -4,13 +4,13 @@
       <label :for="ID" class="font-bold cursor-pointer">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="app-help" :data-tooltip="help"/>
+        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
       </label>
       <slot name="label"/>
     </div>
     <div class="relative">
       <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2">
-        <app-loader-icon/>
+        <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
 
       <template v-if="multiple">
@@ -81,13 +81,12 @@
 <script>
 import CheckboxComponent from './Checkbox.vue'
 import Field from './Field.vue'
-import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
   __isStatic: true,
   name: 'Select',
   extends: Field,
-  components: { CheckboxComponent, AppLoaderIcon },
+  components: { CheckboxComponent },
 
   props: {
     multiple: Boolean,

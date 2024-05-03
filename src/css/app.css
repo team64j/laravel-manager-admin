@@ -113,7 +113,7 @@ html, body, #app {
         @apply relative
     }
     .fa > .fa {
-        @apply absolute right-0 bottom-0 text-xs
+        @apply absolute right-0 bottom-0 text-xs pointer-events-none
     }
     .fa > .fa-lock {
         @apply text-rose-600

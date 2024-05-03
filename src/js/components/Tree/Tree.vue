@@ -2,13 +2,12 @@
 import { provide } from 'vue'
 import TreeNode from './TreeNode.vue'
 import TreeMenuItem from './TreeMenuItem.vue'
-import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 import router from '../../router'
 
 import('./Tree.css')
 
 export default {
-  components: { TreeNode, TreeMenuItem, AppLoaderIcon },
+  components: { TreeNode, TreeMenuItem },
   __isStatic: true,
   name: 'Tree',
   props: {
@@ -375,7 +374,7 @@ export default {
     <div class="app-tree__body">
       <div class="app-tree__root">
         <div v-if="!data" class="text-center p-5">
-          <app-loader-icon/>
+          <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
         </div>
 
         <template v-else-if="data.length">

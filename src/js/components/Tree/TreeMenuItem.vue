@@ -1,6 +1,5 @@
 <script setup>
 import { nextTick, reactive } from 'vue'
-import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 import router from '../../router'
 
 const $props = defineProps(['icon', 'loader', 'click', 'to', 'position', 'actions', 'settings'])
@@ -74,7 +73,8 @@ function onClickItem (action) {
         @mousedown="onClickButton"
         @blur="onBlurButton">
       <template v-if="loader">
-        <app-loader-icon v-if="$data.loading" class="inline-flex"/>
+        <i v-if="$data.loading"
+           class="inline-flex rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
         <i v-else :class="icon" class="fa-fw"/>
       </template>
       <i v-else :class="icon" class="fa-fw"/>

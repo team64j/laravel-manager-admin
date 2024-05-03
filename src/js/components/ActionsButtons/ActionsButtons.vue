@@ -1,5 +1,4 @@
 <script>
-import LoaderIcon from '../Layout/LoaderIcon.vue'
 import Button from '../Form/Button.vue'
 
 import('./ActionsButtons.css')
@@ -7,7 +6,7 @@ import('./ActionsButtons.css')
 export default {
   __isStatic: true,
   name: 'ActionsButtons',
-  components: { Button, LoaderIcon },
+  components: { Button },
   emits: ['action'],
   props: {
     data: {

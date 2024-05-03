@@ -13,7 +13,7 @@
                class="mr-2">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="app-help" :data-tooltip="help"/>
+        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
       </label>
       <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
       <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
@@ -22,7 +22,7 @@
       <div class="block font-bold mb-1">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="app-help" :data-tooltip="help"/>
+        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
       </div>
       <div v-for="(i, k) in data">
         <label :key="k" class="inline-flex items-center cursor-pointer">

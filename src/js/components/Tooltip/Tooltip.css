@@ -7,9 +7,6 @@
 i[data-tooltip] > *:not(.pointer-events-auto) {
     @apply pointer-events-none
 }
-i[data-tooltip] {
-    @apply ml-2 leading-[1] hover:opacity-80 not-italic
-}
 i[data-tooltip]:not([class*="fa-"]) {
     @apply cursor-help text-slate-300 dark:text-slate-500
 }
@@ -19,4 +16,5 @@ i[data-tooltip][data-type="error"] {
 i[data-tooltip]:not([class*="fa-"])::before {
     content: "\f059";
     font-family: "Font Awesome 6 Free", serif;
+    font-style: normal;
 }

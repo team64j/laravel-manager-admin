@@ -183,7 +183,7 @@ export default {
 
         if (item[key + `.help`]) {
           slots.push(h(`i`, {
-            class: `app-help`,
+            class: `ml-2`,
             'data-tooltip': item[key + `.help`]
           }))
         }

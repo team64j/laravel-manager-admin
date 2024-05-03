@@ -4,7 +4,7 @@
       <label :for="ID" class="font-bold cursor-pointer">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="app-help" :data-tooltip="help"/>
+        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
       </label>
       <span v-if="requiredText" class="text-rose-500 ml-3 text-sm font-normal">{{ requiredText }}</span>
       <slot name="label"/>

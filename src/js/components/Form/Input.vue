@@ -4,8 +4,8 @@
       <label :for="ID" class="font-bold cursor-pointer">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="error" :data-tooltip="errorMessage" data-type="error"/>
-        <i v-else-if="help" :data-tooltip="help"/>
+        <i v-if="error" :data-tooltip="errorMessage" data-type="error" class="ml-2 font-normal"/>
+        <i v-else-if="help" :data-tooltip="help" class="ml-2 font-normal"/>
       </label>
       <span v-if="requiredText" class="text-rose-500 ml-3 text-sm font-normal">{{ requiredText }}</span>
       <slot name="label"/>
@@ -13,7 +13,7 @@
     <div class="relative" :class="{ 'app-input__number': type === 'number' }">
       <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
            :class="[type === 'button' ? 'right-0 bottom-0' : '']">
-        <app-loader-icon/>
+        <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
       <input v-model="model"
              :id="ID"
@@ -38,7 +38,7 @@
   <div v-else class="relative" :class="[$props.class, type === 'number' ? 'app-input__number' : '']">
     <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
          :class="[type === 'button' ? 'right-0 bottom-0' : '']">
-      <app-loader-icon/>
+      <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </div>
     <input v-model="model"
            :id="ID"
@@ -62,14 +62,11 @@
 
 <script>
 import Field from './Field.vue'
-import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 
 export default {
   __isStatic: true,
   name: 'Input',
   extends: Field,
-  components: { AppLoaderIcon },
-
   props: {
     type: {
       type: String,
@@ -78,7 +75,6 @@ export default {
           type)
     }
   },
-
   computed: {
     model: {
       get () {
@@ -89,21 +85,17 @@ export default {
       }
     }
   },
-
   methods: {
     onMousedown (event) {
       this.$emit('action', this.emitClick || 'mousedown:input', event, this)
     },
-
     onClear (event) {
       this.$emit('action', 'clear:input', event, this)
     },
-
     onClickPlus () {
       this.$el.querySelector('input').focus()
       this.model++
     },
-
     onClickMinus () {
       this.$el.querySelector('input').focus()
       this.model--

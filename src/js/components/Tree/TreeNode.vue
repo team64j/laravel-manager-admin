@@ -1,6 +1,5 @@
 <script setup>
 import { computed, inject, reactive } from 'vue'
-import AppLoaderIcon from '../Layout/LoaderIcon.vue'
 import router from '../../router'
 
 const $props = defineProps({
@@ -134,7 +133,7 @@ function action () {
     <div class="app-tree__node-item" :class="className" :style="{ paddingLeft: (level * 16) + `px` }">
       <div v-if="node['data'] || node['category']" class="app-tree__node-toggle"
            @click="$emit('action', 'toggleNode', node)">
-        <app-loader-icon v-if="node['loading']" class="!w-4 !h-4"/>
+        <i v-if="node['loading']" class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin"/>
         <i v-else class="fa fa-angle-right fa-fw" :class="{ 'rotate-90': node['data']?.length }"/>
       </div>
 
@@ -174,7 +173,7 @@ function action () {
              class="app-tree__node-pagination"
              :style="{ paddingLeft: ((level + 1) * 18) + `px` }">
           {{ node['meta']['pagination']['lang']['next'] }}
-          <app-loader-icon v-if="node['loading']" class="!w-4 !h-4 ml-2"/>
+          <i v-if="node['loading']" class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin ml-2"/>
         </div>
       </div>
     </template>

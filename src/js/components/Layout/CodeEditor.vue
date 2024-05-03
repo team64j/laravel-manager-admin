@@ -2,7 +2,7 @@
   <div class="w-full mb-3" :class="props.class">
     <div v-if="label" class="block font-bold mb-1">
       {{ label }}
-      <i v-if="help" class="app-help" :data-tooltip="help"/>
+      <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
     </div>
 
     <div class="app-editor relative flex grow">
