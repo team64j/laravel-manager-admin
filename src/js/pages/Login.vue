@@ -16,7 +16,7 @@ export default {
         login: 'Login'
       },
       errors: {},
-      hostname: this.$store.getters.get('Storage.hostname', location.origin),
+      hostname: this.$store.getters.get('Storage.hostname', location.origin + '/manager/api'),
       hostnames: this.$store.getters.get('Storage.hostnames', []),
       logged: false,
       isCheckServer: false,
@@ -40,7 +40,7 @@ export default {
       this.isCheckServer = true
 
       if (!this.hostname) {
-        this.hostname = location.origin
+        this.hostname = location.origin + '/manager/api'
       }
 
       this.$store.dispatch('set', { ['Storage.hostname']: this.hostname.replace(/\/$/g, '') })
