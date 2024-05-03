@@ -17,7 +17,6 @@ export default {
       tabs: [],
       keys: [],
       //frames: [],
-      closing: false
     }
   },
   computed: {
@@ -106,46 +105,6 @@ export default {
 
       return index
     },
-    closeTab__ (callback) {
-      let route = typeof callback === 'object' ? callback : router.currentRoute.value
-      const tab = this.find(route)
-      if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
-        return
-      }
-
-      //this.closing = true
-
-      if (!route) {
-        return
-      }
-
-      route = this.tabs.filter(i => router.key(i, route))[0]
-
-      if (!route) {
-        return
-      }
-
-      if (route?.meta['fixed']) {
-        return
-      }
-
-      const index = this.keys.indexOf(router.key(route))
-      index > -1 && this.tabs.splice(index, 1) && this.keys.splice(index, 1)
-
-      this.setTab({ treeSelect: false })
-
-      if (route.active && index > 0 && this.tabs[index - 1]) {
-        router.to(this.tabs[index - 1])
-      }
-
-      this.closing = false
-
-      if (typeof callback === 'function') {
-        callback()
-      }
-
-      return index
-    },
     toTab (data) {
       const tab = this.find(router.currentRoute.value)
       if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
@@ -157,23 +116,9 @@ export default {
     clickTab (tab) {
       router.to(tab)
     },
-    clickTab__ (tab) {
-      if (this.closing) {
-        return
-      }
-
-      if (router.currentRoute.value.fullPath !== tab.fullPath) {
-        this.$emit('action', 'pushRouter', tab)
-      }
-    },
     dblClickTab (data) {
-      if (this.closing) {
-        return
-      }
-
-      const route = router.parse({ path: '/redirect' + data.path, query: data.query })
-
-      router.replace(route).then(() => {
+      router.key(router.currentRoute.value, data) &&
+      router.replace(router.parse({ path: '/redirect' + data.path, query: data.query })).then(() => {
         const index = this.keys.indexOf(router.key(data))
         index > -1 && this.keys.splice(index, 1)
       })
