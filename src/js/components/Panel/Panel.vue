@@ -235,7 +235,7 @@ export default {
       const attrs = reactive({ ...(data.attrs || {}) })
       attrs.key = data.model
 
-      if (this.modelValue[data.model] !== undefined) {
+      if (this.modelValue?.[data.model] !== undefined) {
         attrs.modelValue = this.modelValue[data.model]
       } else {
         attrs.modelValue = this.modelValue
