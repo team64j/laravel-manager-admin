@@ -173,7 +173,7 @@ export default {
           }))
         }
       } else if ((item[key] ?? column) !== undefined) {
-        if (item[key]) {
+        if (item[key] !== undefined) {
           slots.push(h(`span`, item[key]))
         } else if (column.icon) {
           slots.push(h(`i`, {

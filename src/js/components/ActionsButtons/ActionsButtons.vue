@@ -29,9 +29,13 @@ export default {
   methods: {
     click (event, action, stay) {
       const to = action.to || this?.to?.[action]
-      action = action.action || action
+      let name = action.action || action
 
       this.$store.dispatch('set', { action })
+
+      if (typeof name === 'object') {
+        this.custom({ event, stay, action: name })
+      }
 
       if (to) {
         if (to.close) {
@@ -43,47 +47,51 @@ export default {
         } else {
           this.$emit('action', 'pushRouter', to)
         }
-      } else if (this[action]) {
-        this[action](event, stay)
+      } else if (this[name]) {
+        this[name]({ event, stay, action })
       }
     },
 
-    cancel (event) {
-      this.$emit('action', 'cancel', event)
+    custom () {
+      this.$emit('action', 'custom', ...arguments)
     },
 
-    delete (event) {
-      this.$emit('action', 'delete', event)
+    cancel () {
+      this.$emit('action', 'cancel', ...arguments)
     },
 
-    clear (event) {
-      this.$emit('action', 'clear', event)
+    delete () {
+      this.$emit('action', 'delete', ...arguments)
     },
 
-    restore (event) {
-      this.$emit('action', 'restore', event)
+    clear () {
+      this.$emit('action', 'clear', ...arguments)
     },
 
-    save (event, stay) {
+    restore () {
+      this.$emit('action', 'restore', ...arguments)
+    },
+
+    save ({ stay }) {
       this.isToggle = false
       this.stay = stay
       this.$store.dispatch('Storage/set', ['stay', stay])
-      this.$emit('action', 'save', stay)
+      this.$emit('action', 'save', ...arguments)
     },
 
-    copy (event) {
-      this.$emit('action', 'copy', event)
+    copy () {
+      this.$emit('action', 'copy', arguments)
     },
 
-    view (event) {
-      this.$emit('action', 'view', event)
+    view () {
+      this.$emit('action', 'view', arguments)
     },
 
-    new (event) {
+    new () {
       if (this.to['new']) {
         this.$emit('action', 'pushRouter', this.to['new'])
       } else {
-        this.$emit('action', 'new', event)
+        this.$emit('action', 'new', arguments)
       }
     },
 
@@ -172,7 +180,6 @@ export default {
               :icon="propIcon(i)"
               :value="`<span>` + propLang(i) + `</span>`"
               :class="propClasses(i)"
-              :data-action="i?.action || i"
               @click="click($event, i)"
       />
 

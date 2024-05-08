@@ -61,7 +61,38 @@ export default {
         })
       })
     },
-    save (stay) {
+    custom ({ action, stay }) {
+      this.errors = null
+
+      this.$emit('action', 'setTab', {
+        key: this._.vnode.key,
+        changed: false,
+        loading: true
+      })
+
+      axios[action.method](action.url, this.data).
+          then(({ data }) => {
+            this.setData(data, stay)
+
+            this.$store.dispatch('set', {
+              action: action,
+              data: Object.assign({}, this.data),
+              route: this.$route['name'],
+              actionUpdate: Date.now()
+            })
+          }).catch(({ response }) => {
+        if (response.data.errors) {
+          this.errors = response.data.errors
+        }
+      }).finally(() => {
+        this.$emit('action', 'setTab', {
+          key: this._.vnode.key,
+          changed: false,
+          loading: false
+        })
+      })
+    },
+    save ({ stay }) {
       const url = this.$route?.['meta']?.['url'] ? this.$route['meta']['url'] : this.$route['matched'][0]['path']
 
       this.errors = null
@@ -167,13 +198,20 @@ export default {
         this.componentName = 'page'
         component = Component
 
-        if (data['meta']?.['title'] !== undefined || data['meta']?.['icon'] !== undefined) {
+        const meta = {}
+
+        if (data['meta']?.['title'] !== undefined) {
+          meta['title'] = data['meta']['title']
+        }
+
+        if (data['meta']?.['icon'] !== undefined) {
+          meta['icon'] = data['meta']['icon']
+        }
+
+        if (Object.values(meta).length) {
           this.$emit('action', 'setTab', {
             key: this._.vnode.key,
-            meta: {
-              title: data['meta']['title'] ?? '',
-              icon: data['meta']['icon'] ?? ''
-            }
+            meta
           })
         }
       }

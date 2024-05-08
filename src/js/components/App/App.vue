@@ -107,7 +107,9 @@ export default {
               lang: response.data.lang || {}
             })
 
-            document.title = response.data.config['site_name']
+            if (response.data?.config?.['site_name']) {
+              document.title = response.data.config['site_name']
+            }
 
             Object.entries(import.meta.glob('../*/*.vue', { eager: true })).
                 forEach(([, { default: module }]) => {

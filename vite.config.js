@@ -6,6 +6,7 @@ export default {
   build: {
   //   //outDir: '../../../manager',
     target: 'esnext',
+    manifest: true,
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {

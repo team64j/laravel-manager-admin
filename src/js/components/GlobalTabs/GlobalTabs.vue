@@ -89,13 +89,13 @@ export default {
         return
       }
 
-      if (route?.meta['fixed']) {
+      if (tab?.meta['fixed']) {
         return
       }
 
       index > -1 && this.tabs.splice(index, 1) && this.keys.splice(index, 1)
 
-      if (route.active && index > 0 && this.tabs[index - 1]) {
+      if (tab.active && index > 0 && this.tabs[index - 1]) {
         router.to(this.tabs[index - 1])
       }
 

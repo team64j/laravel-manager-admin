@@ -89,6 +89,19 @@ router.key = (route, compareRoute) => {
  */
 router.parse = (route) => {
   if (route.path && route.params) {
+    const query = route.path.split('?')[1] ?? null
+
+    if (query) {
+      if (!route.query) {
+        route.query = {}
+      }
+
+      for (const i of query.split('&')) {
+        const q = i.split('=')
+        route.query[q[0]] = q[1]
+      }
+    }
+
     Object.entries(route.params).forEach(([k, v]) => {
       if (!(v === undefined || v === null)) {
         const re = new RegExp(':' + k, 'g')
