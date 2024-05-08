@@ -226,14 +226,14 @@ export default {
       <global-menu :data="layout?.['menu']" @action="action"/>
 
       <div class="app-main">
-        <template v-if="layout?.['sidebar']?.slots">
+        <template v-if="layout?.['sidebar']">
           <div
               ref="sidebar"
               class="app-sidebar"
               :class="{ 'app-sidebar-hidden': !$store.getters.get('Storage.root.sidebarShow', true) }"
               :style="{ width: `${sidebarWidth}px` }"
           >
-            <Component :layout="layout?.['sidebar']" @action="action"/>
+            <Component :layout="layout['sidebar']" @action="action"/>
           </div>
           <div class="app-resizer" @mousedown="splitterDown">
             <div/>

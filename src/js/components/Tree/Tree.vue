@@ -166,8 +166,10 @@ export default {
           }
         })
       } else {
+        const route = node['route'] || this.propRoute
+
         this.$parent.$emit('action', 'pushRouter', {
-          ...this.propRoute,
+          ...route,
           params: {
             id: node['id']
           }
