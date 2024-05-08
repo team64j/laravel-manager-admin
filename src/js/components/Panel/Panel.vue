@@ -237,6 +237,8 @@ export default {
 
       if (this.modelValue?.[data.model] !== undefined) {
         attrs.modelValue = this.modelValue[data.model]
+      } else if (/\./.test(data.model)) {
+        attrs.modelValue = this.findDataValue(data.model.split('.'), this.modelValue)
       } else {
         attrs.modelValue = this.modelValue
       }
@@ -268,6 +270,24 @@ export default {
           this.renderComponent = true
         })
       }
+    },
+    findDataValue (keys, data) {
+      let obj = {}
+
+      data = data || this.$props
+
+      keys.forEach((key, index) => {
+        if (data[key] !== undefined) {
+          if (keys[index + 1] !== undefined) {
+            keys.shift()
+            obj = this.findDataValue(keys, data[key])
+          } else {
+            obj = data[key]
+          }
+        }
+      })
+
+      return obj
     },
     toggleCategory (category) {
       if (!this.settings.closed) {
