@@ -74,12 +74,27 @@ router.beforeEach((to, from, next) => {
 })
 
 router.key = (route, compareRoute) => {
+  let queryKey
+
   if (compareRoute) {
-    return route?.meta?.group ?
+    queryKey = true
+
+    if (route?.meta['queryKey'] && compareRoute?.meta['queryKey'] && route?.query['id'] !== undefined &&
+      compareRoute?.query['id'] !== undefined) {
+      queryKey = route.query['id'] === compareRoute.query['id']
+    }
+
+    return (route?.meta?.group ?
       ((route.name && route.name === compareRoute.name) || route.matched[0]?.path === compareRoute.matched[0]?.path) :
-      route.path === compareRoute.path
+      route.path === compareRoute.path) && queryKey
   } else {
-    return route?.meta?.group ? (route.name || route.matched[0]?.path || route.path) : route.path
+    queryKey = ''
+
+    if (route?.meta['queryKey'] && route?.query['id'] !== undefined) {
+      queryKey = '/' + route.query['id']
+    }
+
+    return (route?.meta?.group ? (route.name || route.matched[0]?.path || route.path) : route.path) + queryKey
   }
 }
 

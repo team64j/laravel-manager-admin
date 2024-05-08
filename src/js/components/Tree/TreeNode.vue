@@ -33,6 +33,10 @@ const icon = computed(() => {
     return $props.node['icon']
   }
 
+  if (!$data.config['icons']) {
+    return
+  }
+
   if ($data.config['icons'][$props.node['id']]) {
     return $data.config['icons'][$props.node['id']]
   }

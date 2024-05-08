@@ -61,6 +61,12 @@ export default {
                 src: icon
               })
           )
+        } else if (icon[0] === '<') {
+          slots.push(
+              h('span', {
+                innerHTML: icon
+              })
+          )
         } else {
           slots.push(
               h('i', {

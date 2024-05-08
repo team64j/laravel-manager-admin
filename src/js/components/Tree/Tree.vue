@@ -197,7 +197,7 @@ export default {
         node['loading'] = true
         axios.get(this.url, {
           params: {
-            settings: Object.assign({}, this.propSettings, { parent: node['id'] })
+            settings: Object.assign({}, this.propSettings, { parent: node['id'] || node['key'] })
           }
         }).then(({ data }) => {
           if (data['data']) {
