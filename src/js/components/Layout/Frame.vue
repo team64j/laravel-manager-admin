@@ -10,12 +10,15 @@ export default {
   },
 
   methods: {
-    setTheme (obj) {
-      obj.documentElement.className = store.getters.get('Storage.root.dark') ? 'dark' : 'light'
+    message (win) {
       const style = getComputedStyle(document.body)
-      obj.body.style.font = style.font
-      obj.body.style.color = style.color
-      obj.body.style.background = style.background
+
+      if (win.contentDocument) {
+        win.contentDocument.documentElement.className = store.getters.get('Storage.root.dark') ? 'dark' : 'light'
+        win.contentDocument.body.style = style
+      }
+
+      win.contentWindow?.postMessage({ dark: store.getters.get('Storage.root.dark') }, '*')
     }
   },
 
@@ -30,7 +33,7 @@ export default {
 
     watch(
         () => store.state['Storage']['root']['dark'],
-        () => instance.vnode.el?.contentDocument && instance.ctx.setTheme(instance.vnode.el.contentDocument)
+        () => instance.ctx.message(instance.vnode.el)
     )
 
     const attrs = {
@@ -46,7 +49,21 @@ export default {
           meta: { title: event.target?.contentDocument?.title || title }
         })
 
-        event.target?.contentDocument && this.setTheme(event.target.contentDocument)
+        instance.ctx.message(event.target)
+
+        window.addEventListener('message', event => {
+          if (event.data.data) {
+            const title = event.data.data?.title ?? event.data.data?.h1
+
+            if (title) {
+              emit('action', 'setTab', {
+                key: instance.vnode.key,
+                loading: false,
+                meta: { title }
+              })
+            }
+          }
+        })
       }
     }
 
