@@ -9,6 +9,16 @@ export default {
     data: String
   },
 
+  methods: {
+    setTheme (obj) {
+      obj.documentElement.className = store.getters.get('Storage.root.dark') ? 'dark' : 'light'
+      const style = getComputedStyle(document.body)
+      obj.body.style.font = style.font
+      obj.body.style.color = style.color
+      obj.body.style.background = style.background
+    }
+  },
+
   setup (props, { emit }) {
     const instance = getCurrentInstance()
 
@@ -20,24 +30,15 @@ export default {
 
     watch(
         () => store.state['Storage']['root']['dark'],
-        () => {
-          if (instance.vnode.el.contentDocument) {
-            instance.vnode.el.contentDocument.documentElement.className = store.getters.get('Storage.root.dark')
-                ? 'dark'
-                : 'light'
-            const style = getComputedStyle(document.body)
-            instance.vnode.el.contentDocument.body.style.font = style.font
-            instance.vnode.el.contentDocument.body.style.color = style.color
-            instance.vnode.el.contentDocument.body.style.background = style.background
-          }
-        }
+        () => instance.vnode.el?.contentDocument && instance.ctx.setTheme(instance.vnode.el.contentDocument)
     )
 
     const attrs = {
       class: 'w-full h-full overflow-auto',
       onload: (event) => {
-        const title = (router.currentRoute.value?.['meta']?.['title'] || router.currentRoute.value['name']) + ' ' +
-            (router.currentRoute.value?.['params']?.['id'] || '')
+        const route = router.currentRoute.value
+        const title = (route?.['meta']?.['title'] ?? route['name'] ?? 'Frame') +
+            (route?.['params']?.['id'] ? ': ' + route?.['params']?.['id'] : '')
 
         emit('action', 'setTab', {
           key: instance.vnode.key,
@@ -45,38 +46,34 @@ export default {
           meta: { title: event.target?.contentDocument?.title || title }
         })
 
-        if (event.target?.contentDocument) {
-          event.target.contentDocument.documentElement.className = store.getters.get('Storage.root.dark')
-              ? 'dark'
-              : 'light'
-          const style = getComputedStyle(document.body)
-          event.target.contentDocument.body.style.font = style.font
-          event.target.contentDocument.body.style.color = style.color
-          event.target.contentDocument.body.style.background = style.background
-        }
+        event.target?.contentDocument && this.setTheme(event.target.contentDocument)
       }
     }
 
+    const hostname = store.getters.get('Storage.hostname')
+    const token = store.getters.get('Storage.token')
+
     if (props.url) {
-      attrs.src = props.url
+      attrs.src = (/https?:/.test(props.url) ? '' : hostname) +
+          props.url +
+          (/\?/.test(props.url) ? '&' : '?') + 'token=' + token
     } else if (props.data !== undefined) {
       attrs.srcdoc = props.data
     } else {
-      let query = router.currentRoute.value['query'] || {}
+      const route = { ...router.currentRoute.value }
+      route.query ??= {}
 
-      attrs.url = store.getters.get('Storage.hostname', document.baseURI).replace(/\/$/g, '')
+      attrs.url = hostname
+      route.query.token = token
 
-      query.token = store.getters.get('Storage.token')
-
-      if (router.currentRoute.value['meta']['url']) {
-        attrs.url += router.currentRoute.value['meta']['url'] +
-            (router.currentRoute.value['params']['id'] ? '/' + router.currentRoute.value['params']['id'] : '')
+      if (route['meta']['url']) {
+        attrs.url += route['meta']['url'] + (route['params']['id'] ? '/' + route['params']['id'] : '')
       } else {
-        attrs.url += router.currentRoute.value['path']
+        attrs.url += route['path']
       }
 
-      if (Object.values(query).length) {
-        attrs.url += '?' + new URLSearchParams(query)
+      if (Object.values(route.query).length) {
+        attrs.url += '?' + new URLSearchParams(route.query)
       }
     }
 

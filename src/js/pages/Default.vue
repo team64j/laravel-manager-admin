@@ -1,5 +1,5 @@
 <script>
-import { h, shallowRef } from 'vue'
+import { h, markRaw, shallowRef } from 'vue'
 import router from '../router'
 import Component from '../components/Layout/Component.vue'
 import Frame from '../components/Layout/Frame.vue'
@@ -39,6 +39,16 @@ export default {
           title: this.$route?.['meta']?.['title'] !== undefined ? this.$route['meta']['title'] : '...'
         }
       })
+
+      if (this.$route?.['meta']?.['isIframe']) {
+        this.url = url
+        this.componentName = 'frame'
+        if (!this.currentComponent) {
+          this.currentComponent = shallowRef(Frame)
+        }
+
+        return
+      }
 
       this.data = null
       this.meta = null

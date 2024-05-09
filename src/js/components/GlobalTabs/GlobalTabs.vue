@@ -1,6 +1,6 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
-import { markRaw } from 'vue'
+import { defineComponent, h, isReactive, markRaw, shallowReactive, shallowRef, toValue } from 'vue'
 import router from '../../router'
 
 import('./GlobalTabs.css')
@@ -15,8 +15,7 @@ export default {
   data () {
     return {
       tabs: [],
-      keys: [],
-      //frames: [],
+      keys: []
     }
   },
   computed: {
@@ -135,7 +134,7 @@ export default {
 
     <div class="grow-0">
       <div class="relative bg-slate-200 dark:bg-gray-800 overflow-hidden">
-        <div class="relative flex flex-nowrap pt-0.5 overflow-auto" ref="panel">
+        <div class="relative flex flex-nowrap mx-0.5 min-h-[2.35rem] overflow-auto" ref="panel">
           <a v-for="(tab, i) in this.tabs"
              :key="i"
              :data-to="tab.path"
@@ -176,7 +175,8 @@ export default {
           class="grow overflow-hidden app-global-tabs__frames"
           v-for="{ path, matched: [{ components: { default: component } }] } in this.frames"
           v-show="$route.path === path">
-        <component :key="path" :is="getComponent(component)" @action="action"/>
+        <component :key="path" v-if="this.keys.includes(path)" :is="getComponent(component)"
+                   @action="action"/>
       </div>
 
     </div>

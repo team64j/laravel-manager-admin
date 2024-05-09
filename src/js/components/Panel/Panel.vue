@@ -1,5 +1,5 @@
 <script>
-import { h, reactive } from 'vue'
+import { compile, h, reactive } from 'vue'
 import draggable from 'vuedraggable'
 import router from '../../router'
 
@@ -133,10 +133,7 @@ export default {
             delete style.width
           }
 
-          items.push(h(`td`, {
-            style,
-            innerHTML: item[i]
-          }))
+          items.push(h(`td`, { style }, [h(compile(item[i].toString()))]))
         }
       }
 
@@ -174,7 +171,13 @@ export default {
         }
       } else if ((item[key] ?? column) !== undefined) {
         if (item[key] !== undefined) {
-          slots.push(h(`span`, item[key]))
+          if (column.html) {
+            slots.push(h(compile(item[key])))
+          } else {
+            slots.push(h(`span`, item[key]))
+          }
+        } else if (item[`${key}.html`] !== undefined) {
+          slots.push(h(compile(item[`${key}.html`])))
         } else if (column.icon) {
           slots.push(h(`i`, {
             class: column.icon
@@ -442,12 +445,13 @@ export default {
   <div class="app-panel overflow-hidden flex flex-col grow mx-4 mb-4 rounded bg-white dark:bg-gray-750">
     <div v-if="data" class="app-panel__data grow overflow-auto">
       <table class="w-full" ref="table" :class="{ 'min-h-full': !data.length }">
-        <thead v-if="columns?.length" class="sticky top-0 z-10 bg-slate-100 dark:bg-gray-600">
+        <thead v-if="columns?.length && columns.filter(column => column.label).length"
+               class="sticky top-0 z-10 bg-slate-100 dark:bg-gray-600">
         <tr>
           <template v-for="column in columns">
             <th :style="{ width: column.width }">
               <div class="px-2 py-1 first:pl-6 last:pr-6 truncate" :style="{ minWidth: column.width }">
-                {{ column.label ?? column.name ?? column.key ?? '' }}
+                {{ column.label ?? '' }}
               </div>
             </th>
           </template>
@@ -558,10 +562,9 @@ export default {
             </draggable>
 
             <tbody v-else>
-            <tr v-for="item in category.data" @click="selectRow($event, item)">
-              <template v-for="cell in cells(item)">
-                <component :is="cell"/>
-              </template>
+            <tr v-for="item in category.data" @click="selectRow($event, item)"
+                :class="{ 'disabled' : item.disabled, 'active': item['@active'] }">
+              <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
             </tbody>
           </template>

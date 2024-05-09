@@ -9,8 +9,12 @@ axios.defaults['headers']['common']['X-Requested-With'] = 'XMLHttpRequest'
 axios.interceptors['request'].use(
   config => {
     config.baseURL = (store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, '')
-    config.headers['Authorization'] = 'Bearer ' + store.getters.get('Storage.token', '')
     config.headers['Accept-Language'] = store.getters.get('Storage.lang', 'en')
+
+    const token = store.getters.get('Storage.token', '')
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token
+    }
 
     if (!config.url) {
       return config
