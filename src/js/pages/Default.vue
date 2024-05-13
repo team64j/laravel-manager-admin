@@ -91,7 +91,7 @@ export default {
               actionUpdate: Date.now()
             })
           }).catch(({ response }) => {
-        if (response.data.errors) {
+        if (response?.data.errors) {
           this.errors = response.data.errors
         }
       }).finally(() => {

@@ -28,8 +28,12 @@ export default {
     }
   },
   data () {
+    const keyStorage = `tabs.` + this.id.toLowerCase()
+
     return {
-      active: null
+      keyStorage,
+      active: this.$store.getters.get(`Session.${keyStorage}`, null),
+      settings: {}
     }
   },
   computed: {
@@ -134,6 +138,7 @@ export default {
       }
 
       this.active = tab.id
+      this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: this.active })
 
       this.init(index)
 
