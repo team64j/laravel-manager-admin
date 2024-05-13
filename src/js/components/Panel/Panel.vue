@@ -240,14 +240,16 @@ export default {
 
       if (this.modelValue?.[data.model] !== undefined) {
         attrs.modelValue = this.modelValue[data.model]
+        attrs['onUpdate:modelValue'] = (value) => this.setDataValue(data.model.split('.'), value, this.modelValue, true)
       } else if (/\./.test(data.model)) {
         attrs.modelValue = this.findDataValue(data.model.split('.'), this.modelValue)
+        attrs['onUpdate:modelValue'] = (value) => this.setDataValue(data.model.split('.'), value, this.modelValue, true)
       } else {
         attrs.modelValue = this.modelValue
+        attrs['onUpdate:modelValue'] = (...args) => this.$emit('update:modelValue', ...args, this.modelValue)
       }
 
       attrs['onAction'] = (...args) => this.$emit('action', ...args)
-      attrs['onUpdate:modelValue'] = (...args) => this.$emit('update:modelValue', ...args)
 
       return attrs
     },
@@ -291,6 +293,22 @@ export default {
       })
 
       return obj
+    },
+    setDataValue (keys, value, data, first) {
+      if (!first && data && data[keys[0]] === undefined) {
+        data[keys[0]] = {}
+      }
+
+      keys.forEach((key, index) => {
+        if (data[key] !== undefined) {
+          if (keys[index + 1] !== undefined) {
+            keys.shift()
+            this.setDataValue(keys, value, data[key])
+          } else {
+            data[key] = value
+          }
+        }
+      })
     },
     toggleCategory (category) {
       if (!this.settings.closed) {
