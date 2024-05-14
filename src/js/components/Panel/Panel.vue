@@ -315,18 +315,18 @@ export default {
         this.settings.closed = []
       }
 
-      let index = this.settings.closed.indexOf(category.id)
+      let index = this.settings.closed.indexOf(category['id'] ?? category['key'])
 
       if (index > -1) {
         this.settings.closed.splice(index, 1)
       } else {
-        this.settings.closed.push(category.id)
+        this.settings.closed.push(category['id'] ?? category['key'])
       }
 
       this.$store.dispatch('set', { ['Session.' + this.keyStorage]: { closed: this.settings.closed } })
     },
     hasClosedCategory (category) {
-      return this.settings?.closed?.includes(category.id)
+      return this.settings?.closed?.includes(category['id'] ?? category['key'])
     },
     pagination (url) {
       url = url.split('?')[1] ?? ''
