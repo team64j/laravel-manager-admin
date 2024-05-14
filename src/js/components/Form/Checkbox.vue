@@ -47,6 +47,7 @@
              :value="value"
              :true-value="trueValue"
              :false-value="falseValue"
+             :disabled="disabled"
              type="checkbox">
       <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
       <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
