@@ -227,7 +227,8 @@ export default {
       }
 
       data.forEach(i => {
-        if (i.id === this.nodeKey(node)) {
+        if (this.nodeKey(i) === this.nodeKey(node) &&
+            (!i?.route?.path || i.route.path === router.currentRoute.value.fullPath)) {
           for (const j in node) {
             if (node[j] !== undefined) {
               i[j] = node[j]

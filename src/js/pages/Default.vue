@@ -85,7 +85,7 @@ export default {
             this.setData(data, stay)
 
             this.$store.dispatch('set', {
-              action: action,
+              action: action.action.split(':')[1],
               data: Object.assign({}, this.data),
               route: this.$route['name'],
               actionUpdate: Date.now()

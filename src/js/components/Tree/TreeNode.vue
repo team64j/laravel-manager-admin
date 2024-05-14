@@ -16,7 +16,9 @@ const $data = reactive({
 
 const title = computed(() => {
   if ($data.config['aliases']?.['title']) {
-    const aliases = typeof $data.config['aliases']['title'] === 'object' ? $data.config['aliases']['title'] : [$data.config['aliases']['title']]
+    const aliases = typeof $data.config['aliases']['title'] === 'object'
+        ? $data.config['aliases']['title']
+        : [$data.config['aliases']['title']]
 
     for (const i of aliases) {
       if ($props.node[i] !== undefined) {
@@ -73,11 +75,13 @@ const className = computed(() => {
       let key, value
 
       for (const i of aliases) {
-        [key, value] = i.split(':')
+        [key, value] = i.split(':', 2)
 
         if (value !== undefined) {
           if (/^-?[\d.]+(?:e-?\d+)?$/.test(value)) {
             value = parseInt(value)
+          } else if (['true', 'false'].includes(value)) {
+            value = value === 'true'
           }
         }
 
@@ -97,11 +101,22 @@ const className = computed(() => {
 
   const route = router.currentRoute.value
 
-  if ((route['name'] === $data.config['route'] || route['path'] ===
-          $data.config['route'].replace(':id', route['params']['id'])) &&
-      (parseInt(route['params']?.id?.toString()) === $props.node?.['id'] ||
-          (route['params']?.['id'] && route['params']['id'] === $props.node?.['key'])) &&
-      (!$props.node['folder'] && $props.node['category'] || !$props.node['category'])) {
+  if (
+      route['fullPath'] === $props.node?.['route']?.['path'] ||
+      (
+          (
+              route['name'] === $data.config['route'] ||
+              route['path'] === $data.config['route'].replace(':id', route['params']['id'])
+          ) && (
+              parseInt(route['params']?.id?.toString()) === $props.node?.['id'] ||
+              (
+                  route['params']?.['id'] && route['params']['id'] === $props.node?.['key']
+              )
+          ) && (
+              !$props.node['folder'] && $props.node['category'] || !$props.node['category']
+          )
+      )
+  ) {
     c.push('app-tree__node-active')
   }
 
@@ -137,7 +152,8 @@ function action () {
     <div class="app-tree__node-item" :class="className" :style="{ paddingLeft: (level * 16) + `px` }">
       <div v-if="node['data'] || node['category']" class="app-tree__node-toggle"
            @click="$emit('action', 'toggleNode', node)">
-        <i v-if="node['loading']" class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin"/>
+        <i v-if="node['loading']"
+           class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin"/>
         <i v-else class="fa fa-angle-right fa-fw" :class="{ 'rotate-90': node['data']?.length }"/>
       </div>
 
@@ -162,7 +178,8 @@ function action () {
       </div>
 
       <template v-if="(node['appends'] || $data.config['appends'])?.length">
-        <div v-for="i in (node['appends'] || $data.config['appends'])" :class="`app-tree__node-`+i" class="app-tree__node-append">
+        <div v-for="i in (node['appends'] || $data.config['appends'])" :class="`app-tree__node-`+i"
+             class="app-tree__node-append">
           {{ node[i] }}
         </div>
       </template>
@@ -177,7 +194,8 @@ function action () {
              class="app-tree__node-pagination"
              :style="{ paddingLeft: ((level + 1) * 18) + `px` }">
           {{ node['meta']['pagination']['lang']['next'] }}
-          <i v-if="node['loading']" class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin ml-2"/>
+          <i v-if="node['loading']"
+             class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin ml-2"/>
         </div>
       </div>
     </template>
