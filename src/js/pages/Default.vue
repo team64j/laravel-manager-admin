@@ -13,7 +13,6 @@ export default {
       meta: null,
       layout: null,
       errors: null,
-      componentName: null,
       currentComponent: null
     }
   },
@@ -42,7 +41,6 @@ export default {
 
       if (this.$route?.['meta']?.['isIframe']) {
         this.url = url
-        this.componentName = 'frame'
         if (!this.currentComponent) {
           this.currentComponent = shallowRef(Frame)
         }
@@ -201,11 +199,9 @@ export default {
 
       if (typeof data === 'string' || typeof data['layout'] === 'string') {
         this.data = data['layout'] ?? data
-        this.componentName = 'frame'
         component = Frame
       } else {
         Object.assign(this.$data, data)
-        this.componentName = 'page'
         component = Component
 
         const meta = {}
