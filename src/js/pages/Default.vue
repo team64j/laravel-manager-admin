@@ -1,5 +1,5 @@
 <script>
-import { h, markRaw, shallowRef } from 'vue'
+import { h, shallowRef } from 'vue'
 import router from '../router'
 import Component from '../components/Layout/Component.vue'
 import Frame from '../components/Layout/Frame.vue'
@@ -247,7 +247,12 @@ export default {
               'onUpdate:modelValue': this.updateModelValue
             }) :
             h('div', { class: 'flex items-center justify-center grow' },
-                h('div', { class: 'app-loader animate-ping w-48 h-48 bg-no-repeat bg-center' })
+                h('div', {
+                  class: 'app-loader animate-ping w-48 h-48 bg-no-repeat bg-center opacity-0',
+                  onVnodeMounted (ctx) {
+                    setTimeout(() => ctx.el.classList.remove('opacity-0'), 100)
+                  }
+                })
             )
       ])
     }
