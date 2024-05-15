@@ -234,34 +234,28 @@ export default {
   setup () {
     return function () {
       return h('div', {
-        class: 'app-page__default w-full h-full flex flex-col overflow-auto'
-      }, [
-        this.currentComponent ?
-            h(this.currentComponent, {
-              url: this.url,
-              data: this.data,
-              meta: this.meta,
-              layout: this.layout,
-              errors: this.errors,
-              onAction: this.action,
-              'onUpdate:modelValue': this.updateModelValue
-            }) :
-            h('div', { class: 'flex items-center justify-center grow' },
-                h('div', {
-                  class: 'app-loader animate-ping w-48 h-48 bg-no-repeat bg-center opacity-0',
-                  onVnodeMounted (ctx) {
-                    setTimeout(() => ctx.el.classList.remove('opacity-0'), 100)
-                  }
-                })
-            )
-      ])
+            class: 'app-page__default w-full h-full flex flex-col overflow-auto'
+          },
+          this.currentComponent ?
+              h(this.currentComponent, {
+                url: this.url,
+                data: this.data,
+                meta: this.meta,
+                layout: this.layout,
+                errors: this.errors,
+                onAction: this.action,
+                'onUpdate:modelValue': this.updateModelValue
+              }) :
+              h('div', { class: 'flex items-center justify-center grow' },
+                  h('div', {
+                    class: 'inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500 opacity-0',
+                    onVnodeMounted (ctx) {
+                      setTimeout(() => ctx.el.classList.remove('opacity-0'), 100)
+                    }
+                  })
+              )
+      )
     }
   }
 }
 </script>
-
-<style scoped>
-.app-loader {
-  background-image: url("../../img/logo.svg")
-}
-</style>
