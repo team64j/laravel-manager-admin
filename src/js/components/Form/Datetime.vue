@@ -1,5 +1,6 @@
 <script>
 import Field from './Field.vue'
+import { watchEffect } from 'vue'
 
 const options = {
   format: 'dd-mm-yyyy hh:mm:00',
@@ -47,19 +48,54 @@ export default {
   },
   data () {
     return {
-      monthNames: (this.data.monthNames && this.data.monthNames.length === 12 ?
-          this.data.monthNames : options.monthNames) || options.monthNames,
+      // monthNames: (this.data.monthNames && this.data.monthNames.length === 12 ?
+      //     this.data.monthNames : options.monthNames) || options.monthNames,
       daysInMonth: (this.data.daysInMonth && this.data.daysInMonth.length === 12 ?
           this.data.daysInMonth : options.daysInMonth) || options.daysInMonth,
-      dayNames: (this.data.dayNames && this.data.dayNames.length === 7 ?
-          this.data.dayNames : options.dayNames) || options.dayNames,
+      // dayNames: (this.data.dayNames && this.data.dayNames.length === 7 ?
+      //     this.data.dayNames : options.dayNames) || options.dayNames,
       format: this.data.format || options.format,
-      startDay: this.data.startDay || options.startDay,
-      dayChars: this.data.dayChars || options.dayChars,
-      yearStart: this.data.yearStart || options.yearStart,
+      //startDay: this.data.startDay || options.startDay,
+      //dayChars: this.data.dayChars || options.dayChars,
+      //yearStart: this.data.yearStart || options.yearStart,
       yearRange: this.data.yearRange || options.yearRange,
       yearOrder: this.data.yearOrder || options.yearOrder,
-      yearOffset: this.data.yearOffset || options.yearOffset
+      // yearOffset: this.data.yearOffset || options.yearOffset,
+
+      showDatepicker: false,
+      yearStart: new Date().getFullYear(),
+      yearOffset: 10,
+      monthNames: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ],
+      dayNames: [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday'
+      ],
+      dayChars: 2,
+      startDay: 1,
+      days: [],
+      currentDate: {
+        year: 2024,
+        month: 4,
+        day: 5
+      }
     }
   },
   computed: {
@@ -75,6 +111,63 @@ export default {
   methods: {
     onClear (event) {
       this.$emit('action', 'clear:input', event, this)
+    },
+    onShowDatepicker () {
+      this.showDatepicker = !this.showDatepicker
+
+      if (this.showDatepicker) {
+        watchEffect(() => {
+          if (this.currentDate) {
+            this.days = []
+            const date = new Date()
+            let firstDay = 1 - (7 + date.getDay() - this.startDay) % 7
+            let a = 0
+            const nowDate = {
+              year: date.getFullYear(),
+              month: date.getMonth(),
+              day: date.getDate()
+            }
+
+            while (firstDay <= this.daysInMonth[this.currentDate.month]) {
+              this.days[a] = []
+
+              for (let i = 0; i <= 6; i++) {
+                this.days[a][i] = {}
+
+                if (firstDay <= this.daysInMonth[this.currentDate.month] && firstDay > 0) {
+                  this.days[a][i].axis = this.currentDate.year + '|' + (this.currentDate.month + 1) + '|' +
+                      firstDay
+                  this.days[a][i].value = firstDay
+                } else {
+                  this.days[a][i].value = ''
+                }
+
+                // if (firstDay === parseInt(this.$refs.input.oldDay) &&
+                //     dateInput.month === this.$refs.input.oldMonth &&
+                //     dateInput.year === this.$refs.input.oldYear) {
+                //   this.days[a][i].selected = true
+                // }
+
+                if (firstDay === nowDate.day &&
+                    this.currentDate.month === nowDate.month &&
+                    this.currentDate.year === nowDate.year) {
+                  this.days[a][i].today = true
+                }
+
+                firstDay++
+
+                if (i === 6) {
+                  a++
+                }
+              }
+            }
+          }
+
+        })
+      }
+    },
+    onCloseDatepicker () {
+      this.showDatepicker = false
     },
     create () {
       if (this.$refs.input.calendar) {
@@ -280,7 +373,8 @@ export default {
       this.$refs.input.position = this.$refs.input.getBoundingClientRect()
       this.$refs.input.calendar.style.left = this.$refs.input.position.left + window.scrollX + 'px'
 
-      if (this.$refs.input.position.top + this.$refs.input.position.height + this.$refs.input.calendar.offsetHeight > window.innerHeight) {
+      if (this.$refs.input.position.top + this.$refs.input.position.height + this.$refs.input.calendar.offsetHeight >
+          window.innerHeight) {
         this.$refs.input.calendar.style.top = this.$refs.input.position.top + window.scrollY -
             this.$refs.input.calendar.offsetHeight + 'px'
       } else {
@@ -496,7 +590,7 @@ export default {
              :readonly="readonly"
              :required="required"
              :disabled="disabled"
-             @click="create">
+             @focus="onShowDatepicker">
       <i v-if="clear"
          class="fa fa-circle-xmark absolute block right-0 top-0 my-4 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
          @click="onClear"/>
@@ -517,17 +611,56 @@ export default {
            :readonly="readonly"
            :required="required"
            :disabled="disabled"
-           @click="create">
+           @focus="onShowDatepicker">
     <i v-if="clear"
        class="fa fa-circle-xmark absolute block right-0 top-0 my-4 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
        @click="onClear"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
   </div>
+
+  <teleport v-if="showDatepicker" to="body">
+    <div class="app-datepicker">
+      <table>
+        <thead>
+        <tr>
+          <td colspan="4">
+            <select v-model="currentDate.month">
+              <option v-for="(i, k) in monthNames" :value="k">{{ i }}</option>
+            </select>
+          </td>
+          <td colspan="3">
+            <select v-model="currentDate.year">
+              <option
+                  v-for="i in Array.from({ length: (yearOffset * 2) + 1 }, (_, j) => (yearStart - yearOffset) + j)"
+                  :value="i">
+                {{ i }}
+              </option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th v-for="i in Array.from({ length: 7 }, (_, j) => this.dayNames[(this.startDay + j) % 7])"
+              :title="i">
+            {{ i.substring(0, dayChars) }}
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="w in days">
+          <td v-for="d in w" :data-today="d.today">
+            {{ d.value }}
+          </td>
+        </tr>
+        </tbody>
+        <tfoot></tfoot>
+      </table>
+    </div>
+  </teleport>
 </template>
 
 <style>
 .app-datepicker {
-  @apply absolute z-50 overflow-hidden bg-white dark:bg-gray-700 shadow-2xl rounded
+  @apply absolute z-50 top-0 overflow-hidden bg-white dark:bg-gray-700 shadow-2xl rounded
 }
 .app-datepicker table {
   @apply border-collapse border-spacing-0 w-full
