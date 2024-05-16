@@ -54,7 +54,7 @@ export default {
       }
     },
     '$store.state.actionUpdate' () {
-      if (this.$store.state.route === this.propRoute.path) {
+      if (this.$store.state.route === router.key(router.parse({ ...this.propRoute, params: this.$route['params'] }))) {
         switch (this.$store.state.action) {
           case 'create':
             this.createNode(this.$store.state.data, this.data)
@@ -99,9 +99,12 @@ export default {
         this.$emit('action', ...arguments)
       }
     },
-    get () {
+    get (update) {
       this.loading = true
-      this.data = null
+
+      if (!update) {
+        this.data = null
+      }
 
       axios.get(this.url, {
         params: {

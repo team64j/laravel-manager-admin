@@ -1,6 +1,6 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
-import { defineComponent, h, isReactive, markRaw, shallowReactive, shallowRef, toValue } from 'vue'
+import { markRaw } from 'vue'
 import router from '../../router'
 
 import('./GlobalTabs.css')
@@ -166,16 +166,19 @@ export default {
 
       <router-view v-slot="slot">
         <keep-alive-component :include="this.keys">
-          <component v-if="!slot.route?.meta?.['isIframe']" :key="$router.key($route)" :is="slot.Component"
+          <component v-if="!slot.route?.meta?.['isIframe']"
+                     :is="slot.Component"
+                     :key="$router.key(slot.route)"
                      @action="action"/>
         </keep-alive-component>
       </router-view>
 
-      <div
-          class="grow overflow-hidden app-global-tabs__frames"
+      <div class="grow overflow-hidden app-global-tabs__frames"
           v-for="{ path, matched: [{ components: { default: component } }] } in this.frames"
           v-show="$route.path === path">
-        <component :key="path" v-if="this.keys.includes(path)" :is="getComponent(component)"
+        <component v-if="this.keys.includes(path)"
+                   :is="getComponent(component)"
+                   :key="path"
                    @action="action"/>
       </div>
 

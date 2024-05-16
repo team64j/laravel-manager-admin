@@ -197,9 +197,6 @@ export default {
       event.currentTarget.removeEventListener('mouseup', this.splitterUp)
     },
     pushRouter (route, callback) {
-      if (typeof route === 'string' || !route.path) {
-        route = router.resolve(route)
-      }
       router.to(route).then(callback)
     },
     inputTreeSelect (event, context) {

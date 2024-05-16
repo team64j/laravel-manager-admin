@@ -85,7 +85,7 @@ export default {
             this.$store.dispatch('set', {
               action: action.action.split(':')[1],
               data: Object.assign({}, this.data),
-              route: this.$route['name'],
+              route: router.key(this.$route),
               actionUpdate: Date.now()
             })
           }).catch(({ response }) => {
@@ -122,7 +122,7 @@ export default {
             this.$store.dispatch('set', {
               action: action,
               data: Object.assign({}, this.data),
-              route: this.$route['name'],
+              route: router.key(this.$route),
               actionUpdate: Date.now()
             })
           }).catch(({ response }) => {
@@ -146,7 +146,7 @@ export default {
               this.$store.dispatch('set', {
                 action: 'delete',
                 data: Object.assign({}, this.data),
-                route: this.$route['name'],
+                route: router.key(this.$route),
                 actionUpdate: Date.now()
               })
 
@@ -191,7 +191,7 @@ export default {
         this.$emit('action', 'closeTab')
         return
       } else if (stay === 1) {
-        this.$emit('action', 'toTab', { name: this.$route['name'], params: { id: 'new' } })
+        this.$emit('action', 'toTab', { ...this.$route, params: { id: 'new' } })
         return
       }
 
