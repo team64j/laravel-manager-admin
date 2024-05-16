@@ -55,7 +55,7 @@ export default {
             data[i].attrs = {}
           }
 
-          data[i].attrs.data = this.findDataValue(keys)
+          data[i].attrs.data = this.findValue(keys, this.$props)
           data[i].attrs.onAction = this.action
         } else if (data[i]?.slots) {
           data[i].slots = this.setLayoutData(data[i].slots)
@@ -95,7 +95,7 @@ export default {
       } else if (this.data?.[attrs.key] !== undefined) {
         attrs.modelValue = this.data[attrs.key]
       } else if (~attrs.key.indexOf('.')) {
-        attrs.modelValue = this.findDataValue(attrs.key.split('.'))
+        attrs.modelValue = this.findValue(attrs.key.split('.'), this.$props)
       }
 
       if ((component?.extends?.props || component?.props)?.['meta']) {
@@ -121,38 +121,35 @@ export default {
       return h(component, __attrs, slots)
     },
     setDataValue (keys, value, data, first) {
-      if (!first && data && data[keys[0]] === undefined) {
-        data[keys[0]] = {}
+      const key = keys[0]
+
+      if (!first && data && data[key] === undefined) {
+        data[key] = {}
       }
 
-      keys.forEach((key, index) => {
-        if (data[key] !== undefined) {
-          if (keys[index + 1] !== undefined) {
-            keys.shift()
-            this.setDataValue(keys, value, data[key])
-          } else {
-            data[key] = value
-          }
+      if (data[key] !== undefined) {
+        if (keys[1] !== undefined) {
+          keys.shift()
+          this.setDataValue(keys, value, data[key])
+        } else {
+          data[key] = value
         }
-      })
+      }
     },
-    findDataValue (keys, data) {
-      let obj = {}
+    findValue (keys, data) {
+      const key = keys[0]
+      let value
 
-      data = data || this.$props
-
-      keys.forEach((key, index) => {
-        if (data[key] !== undefined) {
-          if (keys[index + 1] !== undefined) {
-            keys.shift()
-            obj = this.findDataValue(keys, data[key])
-          } else {
-            obj = data[key]
-          }
+      if (data[key] !== undefined) {
+        if (keys[1] !== undefined) {
+          keys.shift()
+          value = this.findValue(keys, data[key])
+        } else {
+          value = data[key]
         }
-      })
+      }
 
-      return obj
+      return value
     },
     setValue (key, value) {
       if (~key.indexOf('.')) {

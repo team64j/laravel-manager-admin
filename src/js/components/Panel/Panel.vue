@@ -212,22 +212,17 @@ export default {
       }
     },
     findValue (keys, data) {
-      let value = ''
+      const key = keys[0]
+      let value
 
-      if (!data) {
-        return value
-      }
-
-      keys.forEach((key, index) => {
-        if (data[key] !== undefined) {
-          if (keys[index + 1]) {
-            keys.shift()
-            value = this.findValue(keys, data[key])
-          } else {
-            value = data[key] ?? ''
-          }
+      if (data[key] !== undefined) {
+        if (keys[1] !== undefined) {
+          keys.shift()
+          value = this.findValue(keys, data[key])
+        } else {
+          value = data[key]
         }
-      })
+      }
 
       return value
     },
@@ -242,7 +237,7 @@ export default {
         attrs.modelValue = this.modelValue[data.model]
         attrs['onUpdate:modelValue'] = (value) => this.setDataValue(data.model.split('.'), value, this.modelValue, true)
       } else if (/\./.test(data.model)) {
-        attrs.modelValue = this.findDataValue(data.model.split('.'), this.modelValue)
+        attrs.modelValue = this.findDataValue(data.model.split('.'), this.modelValue || this.$props)
         attrs['onUpdate:modelValue'] = (value) => this.setDataValue(data.model.split('.'), value, this.modelValue, true)
       } else {
         attrs.modelValue = this.modelValue
@@ -277,22 +272,19 @@ export default {
       }
     },
     findDataValue (keys, data) {
-      let obj = {}
+      const key = keys[0]
+      let value
 
-      data = data || this.$props
-
-      keys.forEach((key, index) => {
-        if (data[key] !== undefined) {
-          if (keys[index + 1] !== undefined) {
-            keys.shift()
-            obj = this.findDataValue(keys, data[key])
-          } else {
-            obj = data[key]
-          }
+      if (data[key] !== undefined) {
+        if (keys[1] !== undefined) {
+          keys.shift()
+          value = this.findDataValue(keys, data[key])
+        } else {
+          value = data[key]
         }
-      })
+      }
 
-      return obj
+      return value
     },
     setDataValue (keys, value, data, first) {
       if (!first && data && data[keys[0]] === undefined) {

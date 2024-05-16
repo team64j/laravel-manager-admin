@@ -71,16 +71,20 @@ const actions = {
 
 const getters = {
   get: (state) => (key, def) => {
+    if (key === undefined && state[key] !== undefined) {
+      return state[key]
+    }
+
     if (/\./.test(key)) {
       const keys = key.split('.')
       const nameStore = keys.shift()
 
-      if (state[nameStore]) {
+      if (state[nameStore] !== undefined) {
         return findValue(keys, state[nameStore]) ?? def
       }
     }
 
-    return (key && state[key]) ?? def
+    return def
   }
 }
 
@@ -92,22 +96,17 @@ Object.entries(import.meta.glob('./*.js', { eager: true })).forEach(([path, defi
 })
 
 function findValue (keys, data) {
-  let value = undefined
+  const key = keys[0]
+  let value
 
-  if (!data) {
-    return value
-  }
-
-  keys.forEach((key, index) => {
-    if (data[key] !== undefined) {
-      if (keys[index + 1]) {
-        keys.shift()
-        value = findValue(keys, data[key])
-      } else {
-        value = data[key] ?? ''
-      }
+  if (data[key] !== undefined) {
+    if (keys[1] !== undefined) {
+      keys.shift()
+      value = findValue(keys, data[key])
+    } else {
+      value = data[key]
     }
-  })
+  }
 
   return value
 }

@@ -177,14 +177,14 @@ export default {
       })
     },
     setData (data, stay, url) {
-      this.url = url
-
       if (data?.['meta']?.['redirect']) {
         location.href = data['meta']['redirect']
+        return
       }
 
       if (data?.['meta']?.['reload']) {
         location.reload()
+        return
       }
 
       if (stay === 0) {
@@ -221,6 +221,8 @@ export default {
           })
         }
       }
+
+      this.url = url
 
       if (!this.currentComponent) {
         this.currentComponent = shallowRef(component)

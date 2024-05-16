@@ -106,7 +106,8 @@ const className = computed(() => {
       (
           (
               route['name'] === $data.config['route'] ||
-              route['path'] === $data.config['route'].replace(':id', route['params']['id'])
+              route['path'] ===
+              ($data.config['route']?.['path'] || $data.config['route']).replace(':id', route['params']['id'])
           ) && (
               parseInt(route['params']?.id?.toString()) === $props.node?.['id'] ||
               (
