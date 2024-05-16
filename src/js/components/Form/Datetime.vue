@@ -119,7 +119,7 @@ export default {
         watchEffect(() => {
           if (this.currentDate) {
             this.days = []
-            const date = new Date()
+            const date = new Date(this.currentDate.year + '-' + this.currentDate.month + '-' + this.currentDate.day)
             let firstDay = 1 - (7 + date.getDay() - this.startDay) % 7
             let a = 0
             const nowDate = {
@@ -625,7 +625,7 @@ export default {
         <tr>
           <td colspan="4">
             <select v-model="currentDate.month">
-              <option v-for="(i, k) in monthNames" :value="k">{{ i }}</option>
+              <option v-for="(i, k) in monthNames" :value="k + 1">{{ i }}</option>
             </select>
           </td>
           <td colspan="3">
