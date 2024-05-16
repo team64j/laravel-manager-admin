@@ -78,7 +78,7 @@ export default {
         loading: true
       })
 
-      axios[action.method](action.url, this.data).
+      axios[action.method](action.url, { ...this.data, ...(action.params || {}) }).
           then(({ data }) => {
             this.setData(data, stay)
 

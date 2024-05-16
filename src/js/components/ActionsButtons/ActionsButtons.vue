@@ -44,7 +44,7 @@ export default {
 
         if (to.href) {
           window.open(to.href)
-        } else {
+        } else if (to.path || to.name) {
           this.$emit('action', 'pushRouter', to)
         }
       } else if (this[name]) {
@@ -109,8 +109,9 @@ export default {
 
     propClasses (i) {
       const defaults = {
+        save: 'btn-green',
         delete: 'btn-red',
-        save: 'btn-green'
+        restore: 'btn-blue',
       }
 
       let value = ''
