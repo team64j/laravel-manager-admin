@@ -3,6 +3,7 @@ import { RouterView } from 'vue-router'
 import { Notifications } from '@kyvg/vue3-notification'
 import GlobalMenu from '../GlobalMenu/GlobalMenu.vue'
 import GlobalTabs from '../GlobalTabs/GlobalTabs.vue'
+import Datepicker from '../Datepicker/Datepicker.vue'
 import Component from '../Layout/Component.vue'
 import Tooltip from '../Tooltip/Tooltip.vue'
 import Search from '../Search/Search.vue'
@@ -12,7 +13,7 @@ import('./App.css')
 
 export default {
   name: 'App',
-  components: { Notifications, RouterView, Tooltip, GlobalMenu, GlobalTabs, Component, Search },
+  components: { Notifications, RouterView, Tooltip, Datepicker, GlobalMenu, GlobalTabs, Component, Search },
   data () {
     return {
       loaded: false,
@@ -240,6 +241,7 @@ export default {
       </div>
 
       <search ref="search"/>
+      <Datepicker ref="datepicker"/>
       <tooltip/>
     </template>
 
