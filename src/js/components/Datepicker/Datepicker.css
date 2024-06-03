@@ -31,9 +31,9 @@
 .app-datepicker tbody label span.app-datepicker-day__active {
     @apply opacity-100 cursor-pointer hover:bg-slate-100 dark:hover:bg-gray-600
 }
-.app-datepicker tbody label span.app-datepicker-day__current, .app-datepicker tbody label span.app-datepicker-day__active.app-datepicker-day__current {
-    @apply bg-green-500 text-white
+.app-datepicker tbody label span.app-datepicker-day__current {
+    @apply !bg-green-500 !text-white
 }
-.app-datepicker tbody label span.app-datepicker-day__active.app-datepicker-day__selected {
-    @apply bg-blue-600 text-white
+.app-datepicker tbody label span.app-datepicker-day__selected {
+    @apply !bg-blue-600 !text-white
 }

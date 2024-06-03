@@ -44,15 +44,22 @@ export default {
       days: []
     }
   },
+  mounted () {
+    document.addEventListener('mousedown', () => {
+      if (this.showDatepicker) {
+        this.destroy()
+      }
+    })
+  },
   methods: {
     make (instance) {
       this.instance = instance
-      this.currentDate = new Date()
 
       this.onShowDatepicker()
     },
     destroy () {
-      this.onCloseDatepicker()
+      this.showDatepicker = false
+      this.selectDatepicker = false
     },
     onClear (event) {
       this.$emit('action', 'clear:input', event, this)
@@ -88,13 +95,14 @@ export default {
         time = d[1] ?? ''
       }
 
+      this.currentDate = new Date()
+
       for (const p in patterns) {
         const reg = new RegExp(patterns[p])
 
         if (reg.test(date)) {
           const groups = date.match(reg).groups
-          this.currentDate = new Date()
-          this.currentDate.setFullYear(parseInt(groups['year']), parseInt(groups['month']), parseInt(groups['day']))
+          this.currentDate.setFullYear(parseInt(groups['year']), parseInt(groups['month']) - 1, parseInt(groups['day']))
 
           if (time) {
             const t = time.split(':')
@@ -123,16 +131,9 @@ export default {
 
       this.setDays()
     },
-    onCloseDatepicker () {
-      this.showDatepicker = this.selectDatepicker
-    },
     onSelectDatepicker () {
       this.showDatepicker = true
       this.selectDatepicker = true
-    },
-    setDatetime () {
-      this.showDatepicker = false
-      this.instance.model = this.currentDate.toLocaleDateString() + ' ' + this.currentDate.toLocaleTimeString()
     },
     setYear (event) {
       this.currentDate.setFullYear(event.target.value)
@@ -147,24 +148,23 @@ export default {
       this.setDays()
     },
     setTime (event) {
-      this.currentDate.setHours(...event.target.value.split(':'))
+      this.currentDate.setHours(...event.target.value.split(':').map(i => parseInt(i.replace(/[^\d+]/, '') || 0)))
+    },
+    setDatetime () {
+      this.showDatepicker = false
+      this.instance.model = this.currentDate.toLocaleDateString() + ' ' + this.currentDate.toLocaleTimeString()
     },
     setDays () {
-      const currentDate = new Date(
-          this.currentDate.getFullYear() + '-' + (this.currentDate.getMonth() + 1) + '-01')
-      let firstDay = 1 - (7 + currentDate.getDay() - this.startDay) % 7
-      let week = 0
+      this.instance.model = this.currentDate.toLocaleDateString() + ' ' + this.currentDate.toLocaleTimeString()
 
       const days = []
+      const currentDate = new Date(this.currentDate.getFullYear() + '-' + (this.currentDate.getMonth() + 1) + '-01')
+      let day = 1 - (7 + currentDate.getDay() - this.startDay) % 7
+      let week = 0
+
       this.daysInMonth[1] = currentDate.getFullYear() % 4 === 0 ? 29 : 28
 
-      const nowDate = {
-        year: (new Date).getFullYear(),
-        month: (new Date).getMonth(),
-        day: (new Date).getDate()
-      }
-
-      while (firstDay <= this.daysInMonth[currentDate.getMonth()]) {
+      while (day <= this.daysInMonth[currentDate.getMonth()]) {
         days[week] = []
 
         for (let i = 0; i <= 6; i++) {
@@ -174,17 +174,17 @@ export default {
             current: null
           }
 
-          if (firstDay <= this.daysInMonth[currentDate.getMonth()] && firstDay > 0) {
-            days[week][i].value = firstDay
+          if (day <= this.daysInMonth[currentDate.getMonth()] && day > 0) {
+            days[week][i].value = day
             days[week][i].active = true
           } else {
-            days[week][i].value = firstDay > 0
-                ? firstDay - this.daysInMonth[currentDate.getMonth()]
-                : (this.daysInMonth[currentDate.getMonth() - 1] || this.daysInMonth[11]) + firstDay
+            days[week][i].value = day > 0
+                ? day - this.daysInMonth[currentDate.getMonth()]
+                : (this.daysInMonth[currentDate.getMonth() - 1] || this.daysInMonth[11]) + day
           }
 
           if (
-              currentDate.getDate() === firstDay &&
+              days[week][i].value === this.currentDate.getDate() &&
               currentDate.getMonth() === this.currentDate.getMonth() &&
               currentDate.getFullYear() === this.currentDate.getFullYear()
           ) {
@@ -192,14 +192,14 @@ export default {
           }
 
           if (
-              firstDay === nowDate.day &&
-              currentDate.getMonth() === nowDate.month &&
-              currentDate.getFullYear() === nowDate.year
+              day === (new Date).getDate() &&
+              currentDate.getMonth() === (new Date).getMonth() &&
+              currentDate.getFullYear() === (new Date).getFullYear()
           ) {
             days[week][i].current = true
           }
 
-          firstDay++
+          day++
 
           if (i === 6) {
             week++
@@ -224,7 +224,7 @@ export default {
           <thead>
           <tr>
             <td colspan="5">
-              <select @input="setMonth">
+              <select @input="setMonth" class="py-0.5 px-1">
                 <option v-for="(i, k) in monthNames"
                         :value="k"
                         :selected="currentDate.getMonth() === k">
@@ -233,7 +233,7 @@ export default {
               </select>
             </td>
             <td colspan="2">
-              <select @input="setYear">
+              <select @input="setYear" class="py-0.5 px-1">
                 <option
                     v-for="i in Array.from({ length: (yearOffset * 2) + 1 }, (_, j) => (yearStart - yearOffset) + j)"
                     :value="i"
@@ -262,8 +262,8 @@ export default {
                        @input="setDay">
                 <span :class="[
                     i.active ? 'app-datepicker-day__active' : '',
-                    i.current ? 'app-datepicker-day__current' : '',
-                    i.selected ? 'app-datepicker-day__selected' : '',
+                    i.active && i.current ? 'app-datepicker-day__current' : '',
+                    i.active && i.selected ? 'app-datepicker-day__selected' : '',
                 ]">
                 {{ i.value }}
               </span>
@@ -274,10 +274,10 @@ export default {
           <tfoot>
           <tr>
             <td colspan="5">
-              <input type="text" :value="currentDate.toLocaleTimeString()" @input="setTime">
+              <input type="text" :value="currentDate.toLocaleTimeString()" @input="setTime" class="py-0.5 px-1">
             </td>
             <td colspan="2">
-              <button type="button" class="w-full justify-center btn-blue" @click="setDatetime">OK</button>
+              <button type="button" class="w-full justify-center btn-blue py-0.5 px-1" @click="setDatetime">OK</button>
             </td>
           </tr>
           </tfoot>

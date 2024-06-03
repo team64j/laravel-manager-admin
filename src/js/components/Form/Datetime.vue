@@ -32,7 +32,7 @@ export default {
       this.$root.$refs.datepicker.make(this)
     },
     onClose () {
-      this.$root.$refs.datepicker.destroy()
+      //this.$root.$refs.datepicker.destroy()
     }
   }
 }
@@ -63,7 +63,7 @@ export default {
              :readonly="readonly"
              :required="required"
              :disabled="disabled"
-             @focus="onShow"
+             @focus.stop.prevent="onShow"
              @blur="onClose">
       <i v-if="clear"
          class="fa fa-circle-xmark absolute block right-0 top-0 my-4 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
