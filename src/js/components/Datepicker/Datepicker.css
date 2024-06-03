@@ -1,5 +1,8 @@
 .app-datepicker {
-    @apply absolute z-50 top-0 overflow-hidden bg-white dark:bg-gray-700 shadow-2xl rounded
+    @apply absolute z-50 top-0 py-0.5
+}
+.app-datepicker__content {
+    @apply relative overflow-hidden bg-white dark:bg-gray-700 border shadow-2xl rounded
 }
 .app-datepicker table {
     @apply border-collapse border-spacing-0 w-full
@@ -11,7 +14,7 @@
     @apply py-1 px-0.5 first:pl-1 last:pr-1
 }
 .app-datepicker tbody th {
-    @apply bg-gray-600
+    @apply bg-slate-100 dark:bg-gray-600
 }
 .app-datepicker th:nth-child(6), .app-datepicker th:nth-child(7), .app-datepicker td:nth-child(6), .app-datepicker td:nth-child(7) {
     @apply text-rose-500
@@ -23,11 +26,14 @@
     @apply absolute w-0 h-0 invisible
 }
 .app-datepicker tbody label span {
-    @apply flex justify-center items-center w-full h-full
+    @apply flex justify-center items-center w-full h-full opacity-50 rounded transition
 }
-.app-datepicker tbody label input + span {
-    @apply cursor-pointer rounded transition
+.app-datepicker tbody label span.app-datepicker-day__active {
+    @apply opacity-100 cursor-pointer hover:bg-slate-100 dark:hover:bg-gray-600
 }
-.app-datepicker tbody label input:checked ~ span {
-    @apply bg-blue-600
+.app-datepicker tbody label span.app-datepicker-day__current, .app-datepicker tbody label span.app-datepicker-day__active.app-datepicker-day__current {
+    @apply bg-green-500 text-white
+}
+.app-datepicker tbody label span.app-datepicker-day__active.app-datepicker-day__selected {
+    @apply bg-blue-600 text-white
 }
