@@ -12,9 +12,10 @@ export default {
         left: 0,
         top: 0
       },
+      dateFormat: this.$store.getters.get('config.datetime_format') || 'dd-mm-YYYY',
       yearStart: new Date().getFullYear(),
       yearOffset: 10,
-      monthNames: [
+      monthNames: this.$store.getters.get('lang.dp_monthNames') || [
         'January',
         'February',
         'March',
@@ -29,7 +30,7 @@ export default {
         'December'
       ],
       daysInMonth: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
-      dayNames: [
+      dayNames: this.$store.getters.get('lang.dp_dayNames') || [
         'Sunday',
         'Monday',
         'Tuesday',
@@ -39,9 +40,23 @@ export default {
         'Saturday'
       ],
       dayChars: 2,
-      startDay: 1,
+      startDay: parseInt(this.$store.getters.get('lang.dp_startDay') || 1),
       currentDate: new Date(),
-      days: []
+      days: [],
+      patterns: {
+        'dd-mm-YYYY': '^(?<day>0[1-9]|[12][0-9]|3[01])-(?<month>0[1-9]|1[0-2])-(?<year>\\d{4})$',
+        'mm-dd-YYYY': '^(?<month>0[1-9]|1[0-2])-(?<day>0[1-9]|[12][0-9]|3[01])-(?<year>\\d{4})$',
+        'YYYY-dd-mm': '^(?<year>\\d{4})-(?<day>0[1-9]|[12][0-9]|3[01])-(?<month>0[1-9]|1[0-2])$',
+        'YYYY-mm-dd': '^(?<year>\\d{4})-(?<month>0[1-9]|1[0-2])-(?<day>0[1-9]|[12][0-9]|3[01])$',
+        'dd.mm.YYYY': '^(?<day>0[1-9]|[12][0-9]|3[01])\.(?<month>0[1-9]|1[0-2])\.(?<year>\\d{4})$',
+        'mm.dd.YYYY': '^(?<month>0[1-9]|1[0-2])\.(?<day>0[1-9]|[12][0-9]|3[01])\.(?<year>\\d{4})$',
+        'YYYY.dd.mm': '^(?<year>\\d{4})\.(?<day>0[1-9]|[12][0-9]|3[01])\.(?<month>0[1-9]|1[0-2])$',
+        'YYYY.mm.dd': '^(?<year>\\d{4})\.(?<month>0[1-9]|1[0-2])\.(?<day>0[1-9]|[12][0-9]|3[01])$',
+        'dd/mm/YYYY': '^(?<day>0[1-9]|[12][0-9]|3[01])\\/(?<month>0[1-9]|1[0-2])\\/(?<year>\\d{4})$',
+        'mm/dd/YYYY': '^(?<month>0[1-9]|1[0-2])\\/(?<day>0[1-9]|[12][0-9]|3[01])\\/(?<year>\\d{4})$',
+        'YYYY/dd/mm': '^(?<year>\\d{4})\\/(?<day>0[1-9]|[12][0-9]|3[01])\\/(?<month>0[1-9]|1[0-2])$',
+        'YYYY/mm/dd': '^(?<year>\\d{4})\\/(?<month>0[1-9]|1[0-2])\\/(?<day>0[1-9]|[12][0-9]|3[01])$'
+      }
     }
   },
   mounted () {
@@ -67,21 +82,6 @@ export default {
     onShowDatepicker () {
       this.showDatepicker = true
 
-      const patterns = {
-        'dd/mm/YYYY': '^(?<day>0[1-9]|[12][0-9]|3[01])\\/(?<month>0[1-9]|1[0-2])\\/(?<year>\\d{4})$',
-        'mm/dd/YYYY': '^(?<month>0[1-9]|1[0-2])\\/(?<day>0[1-9]|[12][0-9]|3[01])\\/(?<year>\\d{4})$',
-        'YYYY/dd/mm': '^(?<year>\\d{4})\\/(?<day>0[1-9]|[12][0-9]|3[01])\\/(?<month>0[1-9]|1[0-2])$',
-        'YYYY/mm/dd': '^(?<year>\\d{4})\\/(?<month>0[1-9]|1[0-2])\\/(?<day>0[1-9]|[12][0-9]|3[01])$',
-        'dd-mm-YYYY': '^(?<day>0[1-9]|[12][0-9]|3[01])-(?<month>0[1-9]|1[0-2])-(?<year>\\d{4})$',
-        'mm-dd-YYYY': '^(?<month>0[1-9]|1[0-2])-(?<day>0[1-9]|[12][0-9]|3[01])-(?<year>\\d{4})$',
-        'YYYY-dd-mm': '^(?<year>\\d{4})-(?<day>0[1-9]|[12][0-9]|3[01])-(?<month>0[1-9]|1[0-2])$',
-        'YYYY-mm-dd': '^(?<year>\\d{4})-(?<month>0[1-9]|1[0-2])-(?<day>0[1-9]|[12][0-9]|3[01])$',
-        'dd.mm.YYYY': '^(?<day>0[1-9]|[12][0-9]|3[01])\.(?<month>0[1-9]|1[0-2])\.(?<year>\\d{4})$',
-        'mm.dd.YYYY': '^(?<month>0[1-9]|1[0-2])\.(?<day>0[1-9]|[12][0-9]|3[01])\.(?<year>\\d{4})$',
-        'YYYY.dd.mm': '^(?<year>\\d{4})\.(?<day>0[1-9]|[12][0-9]|3[01])\.(?<month>0[1-9]|1[0-2])$',
-        'YYYY.mm.dd': '^(?<year>\\d{4})\.(?<month>0[1-9]|1[0-2])\.(?<day>0[1-9]|[12][0-9]|3[01])$'
-      }
-
       const d = (this.instance.model || '').toString().split(' ')
 
       let date
@@ -97,8 +97,8 @@ export default {
 
       this.currentDate = new Date()
 
-      for (const p in patterns) {
-        const reg = new RegExp(patterns[p])
+      for (const p in this.patterns) {
+        const reg = new RegExp(this.patterns[p])
 
         if (reg.test(date)) {
           const groups = date.match(reg).groups
@@ -137,26 +137,28 @@ export default {
     },
     setYear (event) {
       this.currentDate.setFullYear(event.target.value)
+      this.setDatetime()
       this.setDays()
     },
     setMonth (event) {
       this.currentDate.setMonth(event.target.value)
+      this.setDatetime()
       this.setDays()
     },
     setDay (event) {
       this.currentDate.setMonth(this.currentDate.getMonth(), event.target.value)
+      this.setDatetime()
       this.setDays()
     },
     setTime (event) {
       this.currentDate.setHours(...event.target.value.split(':').map(i => parseInt(i.replace(/[^\d+]/, '') || 0)))
     },
     setDatetime () {
-      this.showDatepicker = false
-      this.instance.model = this.currentDate.toLocaleDateString() + ' ' + this.currentDate.toLocaleTimeString()
+      this.instance.model = this.dateFormat.replace('dd', (this.currentDate.getDate() > 9 ? '' : '0') + this.currentDate.getDate()).
+          replace('mm', (this.currentDate.getMonth() > 9 ? '' : '0') + this.currentDate.getMonth()).
+          replace('YYYY', this.currentDate.getFullYear().toString()) + ' ' + this.currentDate.toLocaleTimeString()
     },
     setDays () {
-      this.instance.model = this.currentDate.toLocaleDateString() + ' ' + this.currentDate.toLocaleTimeString()
-
       const days = []
       const currentDate = new Date(this.currentDate.getFullYear() + '-' + (this.currentDate.getMonth() + 1) + '-01')
       let day = 1 - (7 + currentDate.getDay() - this.startDay) % 7
@@ -208,6 +210,10 @@ export default {
       }
 
       this.days = days
+    },
+    onSetDateTime () {
+      this.showDatepicker = false
+      this.setDatetime()
     }
   }
 }
@@ -277,7 +283,7 @@ export default {
               <input type="text" :value="currentDate.toLocaleTimeString()" @input="setTime" class="py-0.5 px-1">
             </td>
             <td colspan="2">
-              <button type="button" class="w-full justify-center btn-blue py-0.5 px-1" @click="setDatetime">OK</button>
+              <button type="button" class="w-full justify-center btn-blue py-0.5 px-1" @click="onSetDateTime">OK</button>
             </td>
           </tr>
           </tfoot>
