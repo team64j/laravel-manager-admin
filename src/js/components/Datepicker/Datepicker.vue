@@ -6,16 +6,17 @@ export default {
   data () {
     return {
       instance: null,
+      days: [],
+      currentDate: null,
       showDatepicker: false,
-      selectDatepicker: false,
       position: {
         left: 0,
         top: 0
       },
-      dateFormat: this.$store.getters.get('config.datetime_format') || 'dd-mm-YYYY',
+      dateFormat: this.$store.getters.get('config.datetime_format', 'dd-mm-YYYY'),
       yearStart: new Date().getFullYear(),
       yearOffset: 10,
-      monthNames: this.$store.getters.get('lang.dp_monthNames') || [
+      monthNames: this.$store.getters.get('lang.dp_monthNames', [
         'January',
         'February',
         'March',
@@ -28,9 +29,8 @@ export default {
         'October',
         'November',
         'December'
-      ],
-      daysInMonth: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
-      dayNames: this.$store.getters.get('lang.dp_dayNames') || [
+      ]),
+      dayNames: this.$store.getters.get('lang.dp_dayNames', [
         'Sunday',
         'Monday',
         'Tuesday',
@@ -38,11 +38,10 @@ export default {
         'Thursday',
         'Friday',
         'Saturday'
-      ],
-      dayChars: 2,
-      startDay: parseInt(this.$store.getters.get('lang.dp_startDay') || 1),
-      currentDate: new Date(),
-      days: [],
+      ]),
+      daysInMonth: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+      dayChars: 1,
+      startDay: parseInt(this.$store.getters.get('lang.dp_startDay', 1)),
       patterns: {
         'dd-mm-YYYY': '^(?<day>0[1-9]|[12][0-9]|3[01])-(?<month>0[1-9]|1[0-2])-(?<year>\\d{4})$',
         'mm-dd-YYYY': '^(?<month>0[1-9]|1[0-2])-(?<day>0[1-9]|[12][0-9]|3[01])-(?<year>\\d{4})$',
@@ -69,21 +68,6 @@ export default {
   methods: {
     make (instance) {
       this.instance = instance
-
-      this.onShowDatepicker()
-    },
-    destroy () {
-      this.showDatepicker = false
-      this.selectDatepicker = false
-    },
-    clear (ctx) {
-      ctx.model = ''
-    },
-    onClear (event) {
-      this.$emit('action', 'clear:input', event, this)
-    },
-    onShowDatepicker () {
-      this.showDatepicker = true
 
       const d = (this.instance.model || '').toString().split(' ')
 
@@ -116,6 +100,11 @@ export default {
         }
       }
 
+      this.yearStart = this.currentDate.getFullYear()
+      this.showDatepicker = true
+
+      this.setDays()
+
       this.$nextTick(() => {
         const position = this.instance.$refs.input.getBoundingClientRect()
         let top
@@ -131,37 +120,12 @@ export default {
           top: top + 'px'
         }
       })
-
-      this.setDays()
     },
-    onSelectDatepicker () {
-      this.showDatepicker = true
-      this.selectDatepicker = true
+    destroy () {
+      this.showDatepicker = false
     },
-    setYear (event) {
-      this.currentDate.setFullYear(event.target.value)
-      this.setDatetime()
-      this.setDays()
-    },
-    setMonth (event) {
-      this.currentDate.setMonth(event.target.value)
-      this.setDatetime()
-      this.setDays()
-    },
-    setDay (event) {
-      this.currentDate.setMonth(this.currentDate.getMonth(), event.target.value)
-      this.setDatetime()
-      this.setDays()
-    },
-    setTime (event) {
-      this.currentDate.setHours(...event.target.value.split(':').map(i => parseInt(i.replace(/[^\d+]/, '') || 0)))
-    },
-    setDatetime () {
-      this.instance.model =
-          this.dateFormat.replace('dd', (this.currentDate.getDate() > 9 ? '' : '0') + this.currentDate.getDate()).
-              replace('mm', (this.currentDate.getMonth() + 1 > 9 ? '' : '0') + (this.currentDate.getMonth() + 1)).
-              replace('YYYY', this.currentDate.getFullYear().toString()) +
-          ' ' + this.currentDate.toLocaleTimeString()
+    clear (ctx) {
+      ctx.model = ''
     },
     setDays () {
       const days = []
@@ -215,10 +179,34 @@ export default {
       }
 
       this.days = days
+      this.instance.model = this.getDate() + ' ' + this.getTime()
+    },
+    getDate () {
+      return this.dateFormat.replace('dd', (this.currentDate.getDate() > 9 ? '' : '0') + this.currentDate.getDate()).
+          replace('mm', (this.currentDate.getMonth() + 1 > 9 ? '' : '0') + (this.currentDate.getMonth() + 1)).
+          replace('YYYY', this.currentDate.getFullYear().toString())
+    },
+    getTime () {
+      return this.currentDate.getHours() + ':' + this.currentDate.getMinutes() + ':' + this.currentDate.getSeconds()
+    },
+    onSetYear (event) {
+      this.currentDate.setFullYear(event.target.value)
+      this.setDays()
+    },
+    onSetMonth (event) {
+      this.currentDate.setMonth(event.target.value)
+      this.setDays()
+    },
+    onSetDay (event) {
+      this.currentDate.setDate(event.target.value)
+      this.setDays()
+    },
+    onSetTime (event) {
+      this.currentDate.setHours(...event.target.value.split(':').map(i => parseInt(i.replace(/[^\d+]/, '') || 0)))
     },
     onSetDateTime () {
-      this.showDatepicker = false
-      this.setDatetime()
+      this.setDays()
+      this.destroy()
     }
   }
 }
@@ -229,13 +217,13 @@ export default {
     <div class="app-datepicker"
          ref="datepicker"
          :style="{ left: position.left, top: position.top }"
-         @mousedown.stop="onSelectDatepicker">
+         @mousedown.stop="() => null">
       <div class="app-datepicker__content">
         <table>
           <thead>
           <tr>
             <td colspan="5">
-              <select @input="setMonth" class="py-0.5 px-1">
+              <select @input="onSetMonth" class="py-0.5 px-1">
                 <option v-for="(i, k) in monthNames"
                         :value="k"
                         :selected="currentDate.getMonth() === k">
@@ -244,7 +232,7 @@ export default {
               </select>
             </td>
             <td colspan="2">
-              <select @input="setYear" class="py-0.5 px-1">
+              <select @input="onSetYear" class="py-0.5 px-1">
                 <option
                     v-for="i in Array.from({ length: (yearOffset * 2) + 1 }, (_, j) => (yearStart - yearOffset) + j)"
                     :value="i"
@@ -270,7 +258,7 @@ export default {
                        name="app-datepicker-day"
                        :value="i.value"
                        :checked="currentDate.getDate() === i.value"
-                       @input="setDay">
+                       @input="onSetDay">
                 <span :class="[
                     i.active ? 'app-datepicker-day__active' : '',
                     i.active && i.current ? 'app-datepicker-day__current' : '',
@@ -285,10 +273,11 @@ export default {
           <tfoot>
           <tr>
             <td colspan="5">
-              <input type="text" :value="currentDate.toLocaleTimeString()" @input="setTime" class="py-0.5 px-1">
+              <input type="text" :value="getTime()" @input="onSetTime" class="py-0.5 px-1">
             </td>
             <td colspan="2">
-              <button type="button" class="w-full justify-center btn-blue py-0.5 px-1" @click="onSetDateTime">OK
+              <button type="button" class="w-full justify-center btn-blue py-0.5 px-1" @click="onSetDateTime">
+                OK
               </button>
             </td>
           </tr>

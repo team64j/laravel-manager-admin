@@ -9,9 +9,6 @@ export default {
     data: {
       type: Object,
       default: {}
-    },
-    readonly: {
-      default: true
     }
   },
   computed: {
