@@ -154,9 +154,11 @@ export default {
       this.currentDate.setHours(...event.target.value.split(':').map(i => parseInt(i.replace(/[^\d+]/, '') || 0)))
     },
     setDatetime () {
-      this.instance.model = this.dateFormat.replace('dd', (this.currentDate.getDate() > 9 ? '' : '0') + this.currentDate.getDate()).
-          replace('mm', (this.currentDate.getMonth() > 9 ? '' : '0') + this.currentDate.getMonth()).
-          replace('YYYY', this.currentDate.getFullYear().toString()) + ' ' + this.currentDate.toLocaleTimeString()
+      this.instance.model =
+          this.dateFormat.replace('dd', (this.currentDate.getDate() > 9 ? '' : '0') + this.currentDate.getDate()).
+              replace('mm', (this.currentDate.getMonth() + 1 > 9 ? '' : '0') + (this.currentDate.getMonth() + 1)).
+              replace('YYYY', this.currentDate.getFullYear().toString()) +
+          ' ' + this.currentDate.toLocaleTimeString()
     },
     setDays () {
       const days = []
@@ -283,7 +285,8 @@ export default {
               <input type="text" :value="currentDate.toLocaleTimeString()" @input="setTime" class="py-0.5 px-1">
             </td>
             <td colspan="2">
-              <button type="button" class="w-full justify-center btn-blue py-0.5 px-1" @click="onSetDateTime">OK</button>
+              <button type="button" class="w-full justify-center btn-blue py-0.5 px-1" @click="onSetDateTime">OK
+              </button>
             </td>
           </tr>
           </tfoot>
