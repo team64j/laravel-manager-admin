@@ -25,8 +25,8 @@ export default {
     }
   },
   methods: {
-    onClear (event) {
-      this.$emit('action', 'clear:input', event, this)
+    onClear () {
+      this.model = ''
     },
     onShow () {
       this.$root.$refs.datepicker.make(this)
@@ -66,7 +66,7 @@ export default {
              @focus.stop.prevent="onShow"
              @blur="onClose">
       <i v-if="clear"
-         class="fa fa-circle-xmark absolute block right-0 top-0 my-4 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
+         class="fa fa-calendar-xmark absolute block right-0 top-0 m-2.5 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
          @click="onClear"/>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
@@ -88,7 +88,7 @@ export default {
            @focus="onShow"
            @blur="onClose">
     <i v-if="clear"
-       class="fa fa-circle-xmark absolute block right-0 top-0 my-4 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
+       class="fa fa-calendar-xmark absolute block right-0 top-0 m-2.5 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
        @click="onClear"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
   </div>

@@ -76,6 +76,9 @@ export default {
       this.showDatepicker = false
       this.selectDatepicker = false
     },
+    clear (ctx) {
+      ctx.model = ''
+    },
     onClear (event) {
       this.$emit('action', 'clear:input', event, this)
     },
