@@ -39,7 +39,7 @@ export default {
       // icon
       let icon = null
       if (this.model['values']) {
-        let value = this.model['value'] ?? this.$store.getters['get']('Storage.root.' + this.model['key'])
+        let value = this.model['value'] ?? this.$store.getters.get('Storage.root.' + this.model['key'])
         let item = this.model['values'].filter(i => i.value === value)[0]
 
         if (item === undefined) {
@@ -227,7 +227,7 @@ export default {
       this.$emit('action', ...arguments)
     },
     onClick () {
-      if (this.model['url'] && !this.$store.getters['get']('menuShow')) {
+      if (this.model['url'] && !this.$store.getters.get('menuShow')) {
         this.$emit('action', 'loadData', this.model['url'], this)
       }
     },
@@ -244,7 +244,7 @@ export default {
         return
       }
 
-      if (this.model['url'] && this.$store.getters['get']('menuShow')) {
+      if (this.model['url'] && this.$store.getters.get('menuShow')) {
         this.model['data'] = []
         clearTimeout(this.timer)
         this.timer = setTimeout(() => this.$emit('action', 'loadData', this.model['url'], this), 200)
