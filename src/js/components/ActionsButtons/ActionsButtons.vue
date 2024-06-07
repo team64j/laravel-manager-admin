@@ -144,9 +144,8 @@ export default {
   <div class="app-actions-buttons">
 
     <template v-for="i in data">
-      <div v-if="i.data" class="relative">
+      <div v-if="i.data" class="app-actions-buttons__group">
         <Button v-for="ii in i.data.filter((j, kk) => kk === stay)"
-                class="btn-green rounded-r-none"
                 :icon="ii.icon"
                 :value="propLang(i) + ' + ' + ii.title"
                 :loader="$store.getters.get('tabsLoading')"
@@ -159,12 +158,13 @@ export default {
         </Button>
 
         <Button
-            class="btn-green rounded-l-none relative app-actions-buttons__toggle"
-            :icon="`fa fa-angle-down fa-fw leading-[0] transition` + (isToggle ? ' transform rotate-180' : '')"
-            @click="isToggle=!isToggle"
-        />
+            class="app-actions-buttons__toggle"
+            :class="{ 'app-actions-buttons__toggle-active': isToggle }"
+            @click="isToggle=!isToggle">
+          <i class="fa fa-angle-down fa-fw"/>
+        </Button>
 
-        <div v-show="isToggle" class="app-actions-buttons__save-buttons shadow">
+        <div v-show="isToggle" class="app-actions-buttons__save-buttons">
           <Button v-for="ii in i.data.filter((j, kk) => kk !== stay)"
                   :icon="ii.icon"
                   :value="ii.title"
@@ -181,8 +181,7 @@ export default {
               :icon="propIcon(i)"
               :value="`<span>` + propLang(i) + `</span>`"
               :class="propClasses(i)"
-              @click="click($event, i)"
-      />
+              @click="click($event, i)"/>
 
     </template>
 
