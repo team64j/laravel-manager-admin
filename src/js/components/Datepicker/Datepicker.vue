@@ -223,7 +223,7 @@ export default {
           <thead>
           <tr>
             <td colspan="5">
-              <select @input="onSetMonth" class="py-0.5 px-1">
+              <select @input="onSetMonth">
                 <option v-for="(i, k) in monthNames"
                         :value="k"
                         :selected="currentDate.getMonth() === k">
@@ -232,7 +232,7 @@ export default {
               </select>
             </td>
             <td colspan="2">
-              <select @input="onSetYear" class="py-0.5 px-1">
+              <select @input="onSetYear">
                 <option
                     v-for="i in Array.from({ length: (yearOffset * 2) + 1 }, (_, j) => (yearStart - yearOffset) + j)"
                     :value="i"
@@ -273,10 +273,10 @@ export default {
           <tfoot>
           <tr>
             <td colspan="5">
-              <input type="text" :value="getTime()" @input="onSetTime" class="py-0.5 px-1">
+              <input type="text" :value="getTime()" @input="onSetTime">
             </td>
             <td colspan="2">
-              <button type="button" class="w-full justify-center btn-blue py-0.5 px-1" @click="onSetDateTime">
+              <button type="button" @click="onSetDateTime">
                 OK
               </button>
             </td>

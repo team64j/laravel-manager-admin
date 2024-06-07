@@ -37,3 +37,9 @@
 .app-datepicker tbody label span.app-datepicker-day__selected {
     @apply !bg-blue-600 !text-white
 }
+.app-datepicker select, .app-datepicker input, .app-datepicker button {
+    @apply py-0.5 px-1
+}
+.app-datepicker button {
+    @apply w-full justify-center btn-blue
+}
