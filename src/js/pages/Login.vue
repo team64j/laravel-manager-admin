@@ -76,21 +76,18 @@ export default {
         this.isCheckServer = false
       })
     },
-    showLanguages () {
-      this.isShowLanguages = !this.isShowLanguages
+    toggleModal (key) {
+      this[key] = !this[key]
     },
     selectLanguage (lang) {
       this.lang = lang
       this.$store.dispatch('set', { ['Storage.lang']: lang.key })
-      this.showLanguages()
-    },
-    showHostnames () {
-      this.isShowHostnames = !this.isShowHostnames
+      this.toggleModal('isShowLanguages')
     },
     selectHostname (item) {
       this.hostname = item.name
       this.$store.dispatch('set', { ['Storage.hostname']: this.hostname })
-      this.showHostnames()
+      this.toggleModal('isShowHostnames')
       this.checkServer()
     },
     removeHostname (item) {
@@ -100,7 +97,7 @@ export default {
       }
       this.hostnames = this.hostnames.filter(i => i.name !== item.name)
       this.$store.dispatch('set', { ['Storage.hostnames']: this.hostnames })
-      this.showHostnames()
+      this.toggleModal('isShowHostnames')
       this.checkServer()
     },
     login () {
@@ -130,59 +127,58 @@ export default {
 </script>
 
 <template>
-  <div class="app__page__login dark flex w-full h-full justify-center items-center bg-login text-xl">
-
+  <div class="app__page__login">
     <div
-        class="relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl px-10 py-8 shadow-lg w-[40rem] max-w-[95%]">
+        class="app__page__login-wrapper">
 
-      <div class="flex items-center justify-center">
-        <img src="../../img/logo.svg" :src="data['logo']" class="inline-block h-16" alt="logo">
-        <div class="text-4xl font-bold text-white ml-3 uppercase">Evo Admin</div>
+      <div class="app__page__login-logo">
+        <img src="../../img/logo.svg" :src="data['logo']" alt="logo">
+        <h1>Evo Admin</h1>
       </div>
 
-      <div class="text-base text-center font-normal">{{ data?.['siteName'] || `* * *` }}</div>
+      <div class="app__page__login-description">{{ data?.['siteName'] || `* * *` }}</div>
 
-      <div>
-        <label for="hostname" class="text-base">Manager API</label>
+      <div class="app__page__login-form-row">
+        <label for="hostname">Manager API</label>
 
-        <div class="flex mb-2 mx-[1px]">
-          <div v-if="data?.languages?.length" class="grow-0 flex -mx-[1px]">
+        <div class="app__page__login-form-group-api">
+          <div v-if="data?.languages?.length" class="app__page__login-form-group">
             <button type="button"
-                    class="h-full flex items-center border-2 py-2.5 px-3.5 !ring-0 !bg-transparent rounded-r-none focus:z-10"
-                    @click="showLanguages">
+                    class="rounded-r-none"
+                    @click="toggleModal('isShowLanguages')">
               {{ lang.key?.toUpperCase() }}
             </button>
           </div>
-          <div class="grow flex -mx-[1px]">
+          <div class="app__page__login-form-group app__page__login-form-hostname">
             <input v-model="hostname" type="text" id="hostname"
-                   class="border-2 py-2.5 px-3.5 !ring-0 !bg-transparent rounded-r-none z-[1] focus:z-10"
+                   class="rounded-r-none"
                    :class="[ errors['hostname'] ? '!border-rose-500' : '', data?.languages?.length ? 'rounded-l-none' : '']"
                    @keyup.enter="checkServer"
                    autocomplete="off">
           </div>
-          <div v-if="hostnames.length" class="grow-0 flex -mx-[1px]">
+          <div v-if="hostnames.length" class="app__page__login-form-group">
             <button type="button"
-                    class="border-2 py-2.5 px-3.5 !ring-0 !bg-transparent h-full flex items-center rounded-none focus:z-10"
-                    @click="showHostnames">
+                    class="rounded-none"
+                    @click="toggleModal('isShowHostnames')">
               <i class="fa fa-ellipsis fa-fw"/>
             </button>
           </div>
-          <div class="grow-0 flex -mx-[1px]">
+          <div class="app__page__login-form-group">
             <button type="button"
-                    class="border-2 py-2.5 w-14 !ring-0 !bg-transparent h-full flex items-center justify-center rounded-l-none focus:z-10"
+                    class="rounded-l-none"
                     :disabled="isCheckServer"
                     @click="checkServer">
-              <i v-if="isCheckServer"
-                 class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-              <i v-else class="fa fa-globe fa-fw" :class="[ connected ? 'text-green-500' : '']"/>
+              <i class="fa fa-globe fa-fw"
+                 :class="[ connected ? 'text-green-500' : '', isCheckServer? 'opacity-0' : '']"/>
+              <i v-if="isCheckServer" class="app__page__login-loader"/>
             </button>
           </div>
         </div>
       </div>
 
-      <div v-if="connected" class="pt-2">
-        <div class="mb-4">
-          <label for="username" class="text-base">{{ lang.user }}</label>
+      <template v-if="connected">
+        <div class="app__page__login-form-row">
+          <label for="username">{{ lang.user }}</label>
           <input v-model="form['username']"
                  type="text"
                  id="username"
@@ -193,67 +189,61 @@ export default {
                  @keyup.enter="login">
         </div>
 
-        <div class="mb-4">
-          <label for="password" class="text-base">{{ lang.password }}</label>
+        <div class="app__page__login-form-row">
+          <label for="password">{{ lang.password }}</label>
           <input v-model="form['password']" type="password"
                  id="password"
                  name="password"
-                 class="border-2 py-2.5 px-3.5 !ring-0 !bg-transparent"
                  :class="[ errors['password'] ? '!border-rose-500' : '']"
                  @keyup.enter="login">
         </div>
 
-        <div class="flex justify-between items-center">
-          <div class="inline-flex items-center">
-            <input v-model="form['remember']" type="checkbox" id="remember" name="remember" class="mr-2 h-6 w-6">
-            <label for="remember" class="text-lg">{{ lang.remember }}</label>
+        <div class="app__page__login-form-row app__page__login-form-row-login">
+          <div>
+            <input v-model="form['remember']" type="checkbox" id="remember" name="remember">
+            <label for="remember">{{ lang.remember }}</label>
           </div>
           <div>
-            <button type="button" class="btn-green !ring-0 py-2.5 px-6 flex items-center justify-center"
-                    :disabled="isLogin" @click="login">
-              <i v-if="isLogin"
-                 class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin absolute"/>
+            <button type="button" class="btn-green" :disabled="isLogin" @click="login">
               <span :class="[ isLogin ? 'opacity-0' : '' ]">{{ lang.login }}</span>
+              <i v-if="isLogin" class="app__page__login-loader"/>
             </button>
           </div>
         </div>
-      </div>
+      </template>
 
-      <div v-if="data?.version" class="text-sm text-gray-400 text-center mt-2 -mb-4">
+      <div v-if="data?.version" class="app__page__login-form-row app__page__login-version">
         {{ data.version }}
       </div>
 
       <transition>
-        <div v-if="isShowLanguages && data?.languages?.length"
-             class="absolute z-10 left-0 top-0 w-full h-full">
-          <div class="fixed left-0 top-0 right-0 bottom-0" @click="showLanguages"/>
-          <div class="relative bg-gray-800 text-white/80 rounded-xl p-8 h-full overflow-auto">
-            <i class="fa fa-close text-rose-600 absolute top-3 right-3 cursor-pointer" @click="showLanguages"/>
+        <div v-if="isShowLanguages && data?.languages?.length" class="app__page__login-modal">
+          <div class="app__page__login-modal-mask" @click="toggleModal('isShowLanguages')"/>
+          <div class="app__page__login-modal-body">
+            <i class="app__page__login-modal-close fa fa-close" @click="toggleModal('isShowLanguages')"/>
             <div v-for="i in data.languages"
-                 class="flex items-center px-4 py-1 hover:bg-blue-600 hover:text-white rounded cursor-pointer transition"
-                 :class="[lang.key === i.key ? 'bg-white/10 font-bold' : '']"
+                 class="app__page__login-modal-row"
+                 :class="[lang.key === i.key ? 'app__page__login-modal-row-selected' : '']"
                  @click="selectLanguage(i)">
-              <i class="fa fa-fw" :class="[lang.key === i.key ? 'fa-check -ml-1 mr-1' : '']"/>
-              {{ i.value }}
+              <i class="fa fa-check mr-1 fa-fw" :class="[lang.key !== i.key ? 'opacity-0' : '']"/>
+              <span class="grow">{{ i.value }}</span>
             </div>
           </div>
         </div>
       </transition>
 
       <transition>
-        <div v-if="isShowHostnames"
-             class="absolute z-10 left-0 top-0 w-full h-full">
-          <div class="fixed left-0 top-0 right-0 bottom-0" @click="showHostnames"/>
-          <div class="relative bg-gray-800 text-white/80 rounded-xl p-8 h-full overflow-auto">
-            <i class="fa fa-close text-rose-600 absolute top-3 right-3 cursor-pointer" @click="showHostnames"/>
+        <div v-if="isShowHostnames" class="app__page__login-modal">
+          <div class="app__page__login-modal-mask" @click="toggleModal('isShowHostnames')"/>
+          <div class="app__page__login-modal-body">
+            <i class="app__page__login-modal-close fa fa-close" @click="toggleModal('isShowHostnames')"/>
             <div v-for="i in hostnames"
-                 class="flex items-center px-4 py-1 hover:bg-blue-600 hover:text-white rounded cursor-pointer transition"
-                 :class="[hostname === i.name ? 'bg-white/10 font-bold' : '']"
+                 class="app__page__login-modal-row"
+                 :class="[hostname === i.name ? 'app__page__login-modal-row-selected' : '']"
                  @click="selectHostname(i)">
-              <i class="fa fa-fw" :class="[hostname === i.name ? 'fa-check -ml-1 mr-1' : '']"/>
+              <i class="fa fa-check mr-1 fa-fw" :class="[hostname !== i.name ? 'opacity-0' : '']"/>
               <span class="grow">{{ i.name }}</span>
-              <i class="fa fa-times-circle fa-fw opacity-25 hover:opacity-80 transition"
-                 @click.stop="removeHostname(i)"/>
+              <i class="fa fa-times-circle fa-fw app__page__login-modal-row-remove" @click.stop="removeHostname(i)"/>
             </div>
           </div>
         </div>
@@ -265,7 +255,79 @@ export default {
 
 <style scoped>
 .app__page__login {
-  @apply bg-center bg-cover;
+  @apply flex w-full h-full justify-center items-center text-xl bg-center bg-cover;
   background-image: url("../../img/login-background.jpg");
+}
+.app__page__login-wrapper {
+  @apply relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl px-10 py-8 shadow-lg w-[40rem] max-w-[95%]
+}
+.app__page__login-logo {
+  @apply flex items-center justify-center
+}
+.app__page__login-logo img {
+  @apply inline-block h-16
+}
+.app__page__login-logo h1 {
+  @apply text-4xl font-bold text-white ml-3 uppercase
+}
+.app__page__login-description {
+  @apply text-base text-center font-normal
+}
+.app__page__login-form-group-api {
+  @apply flex mb-2 mx-[1px] w-full
+}
+.app__page__login-form-row {
+  @apply mb-4 last:mb-0 flex flex-col justify-between items-center
+}
+.app__page__login-form-row-login {
+  @apply flex-row
+}
+.app__page__login-version {
+  @apply text-sm text-gray-400 text-center mt-2 !-mb-4
+}
+.app__page__login-form-row-login > div {
+  @apply flex items-center
+}
+.app__page__login-form-group {
+  @apply flex grow-0 -mx-[1px]
+}
+.app__page__login-form-hostname {
+  @apply grow
+}
+.app__page__login input {
+  @apply py-2.5 px-3.5 !ring-0 !bg-transparent border-2 focus:z-10 z-[1]
+}
+.app__page__login button {
+  @apply py-2.5 px-3.5 !ring-0 !bg-transparent border-2 focus:z-10 h-full flex items-center justify-center
+}
+.app__page__login input[type="checkbox"] {
+  @apply p-0 mr-2 h-6 w-6
+}
+.app__page__login label {
+  @apply w-full text-base
+}
+.app__page__login-loader {
+  @apply absolute inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin
+}
+.app__page__login-modal {
+  @apply absolute z-10 left-0 top-0 w-full h-full
+}
+.app__page__login-modal-mask {
+  @apply fixed left-0 top-0 right-0 bottom-0
+}
+.app__page__login-modal-body {
+  @apply relative bg-gray-800 text-white/80 rounded-xl p-8 h-full overflow-auto
+}
+.app__page__login-modal-close {
+  @apply text-rose-600 absolute top-3 right-3 cursor-pointer
+}
+.app__page__login-modal-row {
+  @apply flex items-center px-4 py-1 hover:bg-blue-600 hover:text-white rounded cursor-pointer transition
+}
+.app__page__login-modal-row-selected {
+  @apply bg-white/10 font-bold
+}
+.app__page__login-modal-row-remove {
+  @apply opacity-25 hover:opacity-80 transition
 }
 </style>
