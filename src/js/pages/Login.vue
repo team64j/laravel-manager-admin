@@ -225,8 +225,8 @@ export default {
                  class="app__page__login-modal-row"
                  :class="[lang.key === i.key ? 'app__page__login-modal-row-selected' : '']"
                  @click="selectLanguage(i)">
-              <i class="fa fa-check mr-1 fa-fw" :class="[lang.key !== i.key ? 'opacity-0' : '']"/>
-              <span class="grow">{{ i.value }}</span>
+              <i class="fa fa-check fa-fw app__page__login-modal-check"/>
+              <span class="app__page__login-modal-row-title">{{ i.value }}</span>
             </div>
           </div>
         </div>
@@ -241,8 +241,8 @@ export default {
                  class="app__page__login-modal-row"
                  :class="[hostname === i.name ? 'app__page__login-modal-row-selected' : '']"
                  @click="selectHostname(i)">
-              <i class="fa fa-check mr-1 fa-fw" :class="[hostname !== i.name ? 'opacity-0' : '']"/>
-              <span class="grow">{{ i.name }}</span>
+              <i class="fa fa-check fa-fw app__page__login-modal-check"/>
+              <span class="app__page__login-modal-row-title">{{ i.name }}</span>
               <i class="fa fa-times-circle fa-fw app__page__login-modal-row-remove" @click.stop="removeHostname(i)"/>
             </div>
           </div>
@@ -326,6 +326,12 @@ export default {
 }
 .app__page__login-modal-row-selected {
   @apply bg-white/10 font-bold
+}
+.app__page__login-modal-row:not(.app__page__login-modal-row-selected) > .app__page__login-modal-check {
+  @apply opacity-0
+}
+.app__page__login-modal-row-title {
+  @apply grow pl-1
 }
 .app__page__login-modal-row-remove {
   @apply opacity-25 hover:opacity-80 transition
