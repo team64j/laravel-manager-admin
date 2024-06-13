@@ -71,7 +71,7 @@ const actions = {
 
 const getters = {
   get: (state) => (key, def) => {
-    if (key === undefined && state[key] !== undefined) {
+    if (state[key] !== undefined) {
       return state[key]
     }
 

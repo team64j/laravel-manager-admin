@@ -294,11 +294,11 @@ export default {
 .app__page__login-form-hostname {
   @apply grow
 }
-.app__page__login input {
+.app__page__login input, .app__page__login .app__page__login-form-group-api button {
   @apply py-2.5 px-3.5 !ring-0 !bg-transparent border-2 focus:z-10 z-[1]
 }
 .app__page__login button {
-  @apply py-2.5 px-3.5 !ring-0 !bg-transparent border-2 focus:z-10 h-full flex items-center justify-center
+  @apply flex items-center justify-center py-2.5 px-7
 }
 .app__page__login input[type="checkbox"] {
   @apply p-0 mr-2 h-6 w-6
