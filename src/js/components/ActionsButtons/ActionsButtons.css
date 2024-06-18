@@ -14,7 +14,7 @@
     @apply relative
 }
 .app-actions-buttons .app-actions-buttons__group > button {
-    @apply btn-green rounded-r-none last-of-type:rounded-r last-of-type:rounded-l-none
+    @apply rounded-r-none last-of-type:rounded-r last-of-type:rounded-l-none
 }
 .app-actions-buttons .app-actions-buttons__toggle > i {
     @apply transition

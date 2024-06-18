@@ -4,7 +4,7 @@ import { compile, h, shallowReactive, toRaw } from 'vue'
 export default {
   name: 'Component',
   __isStatic: true,
-  props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class'],
+  props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'],
   methods: {
     action () {
       this.$emit('action', ...arguments)

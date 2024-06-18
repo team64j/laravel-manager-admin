@@ -41,5 +41,5 @@
     @apply py-0.5 px-1
 }
 .app-datepicker button {
-    @apply w-full justify-center btn-blue
+    @apply w-full justify-center
 }

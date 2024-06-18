@@ -3,6 +3,7 @@ import { h, shallowRef } from 'vue'
 import router from '../router'
 import Component from '../components/Layout/Component.vue'
 import Frame from '../components/Layout/Frame.vue'
+import Main from '../components/Layout/Main.vue'
 
 export default {
   name: 'DefaultPage',
@@ -200,6 +201,11 @@ export default {
       if (typeof data === 'string' || typeof data['layout'] === 'string') {
         this.data = data['layout'] ?? data
         component = Frame
+      } else if (typeof data['layout'] === 'object' && !Array.isArray(data['layout'])) {
+        this.$data['data'] = data['data']
+        this.$data['layout'] = data['layout']['attrs']
+        this.$data['meta'] = data['meta']
+        component = Main
       } else {
         Object.assign(this.$data, data)
         component = Component
