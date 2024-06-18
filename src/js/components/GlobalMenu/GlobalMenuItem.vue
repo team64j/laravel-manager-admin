@@ -34,7 +34,7 @@ export default {
     node () {
       let node
       let slots = []
-      let className = this.model['class'] || ''
+      let className = [this.model['class'] || '']
 
       // icon
       let icon = null
@@ -93,6 +93,11 @@ export default {
         )
       }
 
+      // disabled
+      if (this.model['disabled']) {
+        className.push('app-global-menu__disabled')
+      }
+
       // id
       if (this.model['id'] !== undefined) {
         slots.push(
@@ -145,7 +150,7 @@ export default {
       }
       // pagination
       else if (this.model['prev'] || this.model['next']) {
-        className += ' app-global-menu__pagination'
+        className.push('app-global-menu__pagination')
 
         node = h('div', {
           class: className,
@@ -179,7 +184,7 @@ export default {
       }
       // filter
       else if (this.model['filter'] !== undefined) {
-        className += ' app-global-menu__filter'
+        className.push('app-global-menu__filter')
 
         node = h('div', {
           class: className,

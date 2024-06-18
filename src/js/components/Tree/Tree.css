@@ -50,7 +50,7 @@
     @apply relative
 }
 .app-tree__node .app-tree__node-item {
-    @apply flex items-center pl-5 h-[1.8rem] w-full rounded hover:bg-slate-200/60 dark:hover:bg-gray-600/70
+    @apply flex items-center pl-5 h-8 w-full rounded hover:bg-slate-200/60 dark:hover:bg-gray-600/70
 }
 .app-tree__node .app-tree__node-item.app-tree__node-active {
     @apply bg-slate-200/40 dark:bg-gray-600/50
@@ -61,8 +61,12 @@
 .app-tree__node .app-tree__node-icon {
     @apply pl-1 cursor-pointer text-gray-400 dark:text-gray-200
 }
+.app-tree__node .app-tree__node-icon > i:first-of-type {
+    @apply inline-block w-7 h-8 leading-8;
+    font-size: 1.2rem;
+}
 .app-tree__node .app-tree__node-title {
-    @apply truncate px-1 grow cursor-pointer
+    @apply truncate px-1 grow text-gray-500 dark:text-gray-100 cursor-pointer
 }
 .app-tree__node .app-tree__node-append {
     @apply pr-1.5 text-sm opacity-80 whitespace-nowrap
@@ -77,8 +81,8 @@
     @apply text-blue-500 dark:text-blue-300
 }
 .app-tree__node .app-tree__node-muted .app-tree__node-title {
-    @apply italic opacity-70
+    @apply italic opacity-60
 }
 .app-tree__node .app-tree__node-deleted .app-tree__node-title {
-    @apply !text-rose-500 not-italic line-through
+    @apply !text-rose-600 opacity-100 not-italic line-through
 }

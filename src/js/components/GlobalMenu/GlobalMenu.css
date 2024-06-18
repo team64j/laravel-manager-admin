@@ -5,7 +5,7 @@
     @apply z-40
 }
 .app-global-menu::before {
-    @apply fixed left-0 top-0 right-0 bottom-0 bg-black/5 opacity-0 invisible transition-all;
+    @apply fixed left-0 top-0 right-0 bottom-0 bg-black/5 dark:bg-black/20 opacity-0 invisible transition-all;
     content: "";
 }
 .app-global-menu.app-global-menu__active::before {
@@ -58,6 +58,9 @@
 }
 .app-global-menu li .app-global-menu__locked {
     @apply text-rose-500 text-sm leading-[0] ml-2
+}
+.app-global-menu li .app-global-menu__disabled > .app-global-menu__title{
+    @apply text-rose-600 dark:text-rose-500
 }
 .app-global-menu li .app-global-menu__id {
     @apply ml-2 text-sm opacity-70
