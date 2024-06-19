@@ -16,15 +16,14 @@
 .app-actions-buttons .app-actions-buttons__group > button {
     @apply rounded-r-none last-of-type:rounded-r last-of-type:rounded-l-none
 }
+.app-actions-buttons .app-actions-buttons__toggle:not(:focus):not(:hover) {
+    @apply border-l border-l-white/20
+}
 .app-actions-buttons .app-actions-buttons__toggle > i {
     @apply transition
 }
 .app-actions-buttons .app-actions-buttons__toggle.app-actions-buttons__toggle-active > i {
     @apply rotate-180
-}
-.app-actions-buttons .app-actions-buttons__toggle::before {
-    @apply block absolute left-[-1px] top-[10%] h-[80%] w-[1px] bg-white/20;
-    content: "";
 }
 .app-actions-buttons .app-actions-buttons__save-buttons {
     @apply absolute left-0 top-full mt-0.5 w-full flex flex-col opacity-100 visible shadow transition

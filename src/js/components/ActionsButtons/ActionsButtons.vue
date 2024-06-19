@@ -147,6 +147,7 @@ export default {
       <div v-if="i.data" class="app-actions-buttons__group">
         <Button v-for="ii in i.data.filter((j, kk) => kk === stay)"
                 :icon="ii.icon"
+                :class="i.class"
                 :value="propLang(i) + ' + ' + ii.title"
                 :loader="$store.getters.get('tabsLoading')"
                 @click="click($event, i.action, stay)"
@@ -159,7 +160,7 @@ export default {
 
         <Button
             class="app-actions-buttons__toggle"
-            :class="{ 'app-actions-buttons__toggle-active': isToggle }"
+            :class="[i.class, isToggle ? 'app-actions-buttons__toggle-active' : '']"
             @click="isToggle=!isToggle">
           <i class="fa fa-angle-down fa-fw"/>
         </Button>
@@ -167,6 +168,7 @@ export default {
         <div v-show="isToggle" class="app-actions-buttons__save-buttons">
           <Button v-for="ii in i.data.filter((j, kk) => kk !== stay)"
                   :icon="ii.icon"
+                  :class="i.class"
                   :value="ii.title"
                   @mousedown.prevent="click($event, i.action, ii.stay)">
             <template #icon>
