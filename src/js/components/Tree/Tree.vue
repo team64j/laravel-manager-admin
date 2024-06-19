@@ -49,12 +49,12 @@ export default {
       deep: true
     },
     '$store.state.treeSelect' (select) {
-      if (this.$route['path'] === this.propRoute.path) {
+      if (this.$route['path'] === router.parse({ ...this.propRoute, ...this.$route }).path) {
         this.$el.querySelector('.app-tree__body').classList.toggle('focused', !!select)
       }
     },
     '$store.state.actionUpdate' () {
-      if (this.$store.state.route === router.key(router.parse({ ...this.propRoute, params: this.$route['params'] }))) {
+      if (this.$store.state.route === router.key(router.parse({ ...this.propRoute, ...this.$route }))) {
         switch (this.$store.state.action) {
           case 'create':
             this.createNode(this.$store.state.data, this.data)
@@ -130,14 +130,14 @@ export default {
     clickNode (event, node) {
       const id = this.nodeKey(node)
 
-      if (this.$store.getters.get('treeSelect') && this.$route['path'] === this.propRoute.path) {
+      if (this.$store.getters.get('treeSelect') && this.$route['path'] === router.parse({ ...this.propRoute, ...this.$route }).path) {
         const context = this.$store.getters.get('context')
         const event = this.$store.getters.get('event')
         context.loading = true
         this.loading = true
 
         const path = router.parse({
-          name: this.route,
+          path: this.route,
           params: {
             id: 'parents'
           }
