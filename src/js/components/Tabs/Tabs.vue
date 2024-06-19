@@ -118,7 +118,7 @@ export default {
     },
     isRenderer (tab) {
       return this.history || (tab.needUpdate && tab.id === this.active) ||
-          (!tab.needUpdate && ((this.loadOnce && !tab.loaded) || tab.loaded))
+          (!tab.needUpdate && ((this.loadOnce && !tab.loaded) || tab.loaded) || !this.loadOnce)
     },
     isShow (tab) {
       return tab.needUpdate || tab.id === this.active

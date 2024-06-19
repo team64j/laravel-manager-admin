@@ -123,7 +123,7 @@ html, body, #app {
  * Alerts
  */
 .app-alert {
-    @apply rounded p-4
+    @apply rounded p-4 text-gray-700 dark:text-gray-50
 }
 .app-alert__blue {
     @apply bg-blue-500/40

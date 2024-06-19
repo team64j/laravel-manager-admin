@@ -20,7 +20,7 @@
     @apply w-1.5 -ml-0.5
 }
 .app .app-resizer::after {
-    @apply absolute h-full w-0.5 transition
+    @apply absolute h-full w-0.5 bg-black/5 dark:bg-white/5 transition duration-100
 }
 .app .app-resizer:hover::after {
     @apply bg-blue-500
