@@ -66,7 +66,7 @@
     font-size: 1.2rem;
 }
 .app-tree__node .app-tree__node-title {
-    @apply truncate px-1 grow text-gray-500 dark:text-gray-100 cursor-pointer
+    @apply truncate px-1 grow cursor-pointer
 }
 .app-tree__node .app-tree__node-append {
     @apply pr-1.5 text-sm opacity-80 whitespace-nowrap
