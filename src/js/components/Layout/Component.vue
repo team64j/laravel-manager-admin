@@ -188,12 +188,11 @@ export default {
     updateProps (oldValue, newValue) {
       Object.assign(oldValue, newValue)
     }
+  },
+  setup () {
+    return function () {
+      return h(() => this.initLayout(), { onAction: this.action })
+    }
   }
 }
 </script>
-
-<template>
-  <div class="app-component grow flex flex-col h-full overflow-auto">
-    <component :is="() => initLayout()" @action="action"/>
-  </div>
-</template>

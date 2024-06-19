@@ -1,12 +1,12 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
-import { markRaw } from 'vue'
 import router from '../../router'
+import Frame from '../Layout/Frame.vue'
 
 import('./GlobalTabs.css')
 
 export default {
-  components: { KeepAliveComponent },
+  components: { KeepAliveComponent, Frame },
   watch: {
     $route (route) {
       this.addTab(route)
@@ -36,9 +36,6 @@ export default {
       } else {
         this.$emit('action', ...arguments)
       }
-    },
-    getComponent (component) {
-      return markRaw(component)
     },
     init () {
       router.getRoutes().filter(i => i?.meta?.fixed).map(i => this.addTab(router.parse(i)))
@@ -165,7 +162,7 @@ export default {
     <div class="grow flex overflow-hidden">
 
       <router-view v-slot="slot">
-        <keep-alive-component :include="this.keys">
+        <keep-alive-component :include="keys">
           <component v-if="!slot.route?.meta?.['isIframe']"
                      :is="slot.Component"
                      :key="$router.key(slot.route)"
@@ -173,13 +170,10 @@ export default {
         </keep-alive-component>
       </router-view>
 
-      <div class="grow overflow-hidden app-global-tabs__frames"
-          v-for="{ path, matched: [{ components: { default: component } }] } in this.frames"
-          v-show="$route.path === path">
-        <component v-if="this.keys.includes(path)"
-                   :is="getComponent(component)"
-                   :key="path"
-                   @action="action"/>
+      <div class="grow overflow-hidden app-global-tabs__frames">
+        <template v-for="{ path } in frames" :key="path">
+          <Frame v-if="keys.includes(path)" v-show="$route.path === path" @action="action"/>
+        </template>
       </div>
 
     </div>

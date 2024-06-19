@@ -33,7 +33,7 @@ export default {
 
     watch(
         () => store.state['Storage']['root']['dark'],
-        () => instance.ctx.message(instance.vnode.el)
+        () => instance['ctx'].message(instance.vnode.el)
     )
 
     const attrs = {
@@ -49,7 +49,7 @@ export default {
           meta: { title: event.target?.contentDocument?.title || title }
         })
 
-        instance.ctx.message(event.target)
+        instance['ctx'].message(event.target)
 
         window.addEventListener('message', event => {
           if (event.data.data) {
@@ -80,17 +80,17 @@ export default {
       const route = { ...router.currentRoute.value }
       route.query ??= {}
 
-      attrs.url = hostname
+      attrs.src = hostname
       route.query.token = token
 
       if (route['meta']['url']) {
-        attrs.url += route['meta']['url'] + (route['params']['id'] ? '/' + route['params']['id'] : '')
+        attrs.src += route['meta']['url'] + (route['params']['id'] ? '/' + route['params']['id'] : '')
       } else {
-        attrs.url += route['path']
+        attrs.src += route['path']
       }
 
       if (Object.values(route.query).length) {
-        attrs.url += '?' + new URLSearchParams(route.query)
+        attrs.src += '?' + new URLSearchParams(route.query)
       }
     }
 
