@@ -130,7 +130,8 @@ export default {
     clickNode (event, node) {
       const id = this.nodeKey(node)
 
-      if (this.$store.getters.get('treeSelect') && this.$route['path'] === router.parse({ ...this.propRoute, ...this.$route }).path) {
+      if (this.$store.getters.get('treeSelect') && this.$route['path'] ===
+          router.parse({ ...this.propRoute, ...this.$route }).path) {
         const context = this.$store.getters.get('context')
         const event = this.$store.getters.get('event')
         context.loading = true
