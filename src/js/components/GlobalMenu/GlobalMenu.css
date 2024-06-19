@@ -1,5 +1,5 @@
 .app-global-menu {
-    @apply relative bg-gray-700 text-slate-200
+    @apply relative bg-gray-700 text-gray-100
 }
 .app-global-menu.app-global-menu__active {
     @apply z-40
@@ -108,7 +108,7 @@
     @apply mt-1
 }
 .app-global-menu > ul > li > ul li.app-global-menu__parent > ul {
-    @apply absolute opacity-0 invisible top-full left-1.5 right-1.5 md:right-auto md:left-0 flex-col md:min-w-full md:w-[20rem] rounded py-1 shadow-2xl bg-white text-gray-950 dark:bg-gray-700 dark:text-slate-50 transition;
+    @apply absolute opacity-0 invisible top-full left-1.5 right-1.5 md:right-auto md:left-0 flex-col md:min-w-full md:w-[20rem] rounded py-1 shadow-2xl bg-white text-gray-950 dark:bg-gray-700 dark:text-gray-50 transition;
     max-height: calc(100vh - 3rem);
 }
 .app-global-menu > ul > li > ul > li ul ul {

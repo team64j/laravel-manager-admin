@@ -8,7 +8,7 @@ html {
     font-size: 13px;
 }
 body {
-    @apply text-gray-800 bg-slate-50 dark:bg-gray-700 dark:text-slate-100;
+    @apply text-gray-800 bg-slate-50 dark:bg-gray-700 dark:text-gray-100;
     font-size: 1rem;
     min-width: 320px;
 }
@@ -20,7 +20,7 @@ html, body, #app {
 }
 @layer base {
     *, ::before, ::after {
-        @apply border-slate-200 dark:border-slate-700
+        @apply border-gray-50 dark:border-gray-600
     }
     body {
         @apply text-gray-800 bg-white dark:text-gray-300 dark:bg-gray-700
@@ -29,7 +29,7 @@ html, body, #app {
      * Forms
      */
     [type='checkbox'], [type='radio'], [type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select, button, [type="button"], [role="button"] {
-        @apply appearance-none block w-full px-3 py-1.5 rounded bg-white border border-inherit dark:text-slate-200 dark:border-inherit dark:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-offset-0 focus:ring-blue-500 focus:outline-0 transition
+        @apply appearance-none block w-full px-3 py-1.5 rounded bg-white border border-inherit dark:text-gray-50 dark:border-inherit dark:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-offset-0 focus:ring-blue-500 focus:outline-0 transition
     }
 /*    .dark input, .dark select, .dark textarea, .dark button {
         color-scheme: dark
@@ -68,7 +68,7 @@ html, body, #app {
         background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22royalblue%22%20viewBox%3D%220%200%2024%2014%22%3E%3Cpath%20d%3D%22M24%202v1L13%2014a1%201%200%200%201-2%200L0%203a1%201%200%200%201%200-2l1-1a1%201%200%200%201%202%200l9%2010%209-10a1%201%200%200%201%202%200l1%201v1Z%22%2F%3E%3C%2Fsvg%3E");
     }
     button, [type="button"], [role="button"] {
-        @apply inline-flex w-auto px-3 py-1 cursor-pointer font-medium border hover:bg-slate-50 active:bg-slate-100 focus:bg-slate-50 focus:ring-blue-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 dark:focus:bg-gray-600
+        @apply inline-flex w-auto px-3 py-1 cursor-pointer font-medium border hover:bg-slate-50 active:bg-slate-50 focus:bg-slate-50 focus:ring-blue-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-600 dark:focus:bg-gray-600
     }
     .btn-lg, .input-lg {
         @apply px-6 py-3 rounded border-2 text-lg font-medium focus:ring-0

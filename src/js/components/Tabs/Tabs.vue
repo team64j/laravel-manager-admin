@@ -117,11 +117,11 @@ export default {
       }
     },
     isRenderer (tab) {
-      return this.history || (tab['needUpdate'] && tab.id === this.active) ||
-          (!tab['needUpdate'] && ((this.loadOnce && tab.loaded) || !this.loadOnce))
+      return this.history || (tab.needUpdate && tab.id === this.active) ||
+          (!tab.needUpdate && ((this.loadOnce && !tab.loaded) || tab.loaded))
     },
     isShow (tab) {
-      return tab['needUpdate'] || tab.id === this.active
+      return tab.needUpdate || tab.id === this.active
     },
     touch () {
       return false

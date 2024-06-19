@@ -2,13 +2,19 @@
     @apply grow flex flex-col overflow-hidden
 }
 .app-global-tabs__tab {
-    @apply relative inline-flex justify-between m-0.5 px-3 h-8 rounded text-slate-600 hover:text-slate-700 hover:bg-slate-300/50 dark:text-slate-300 dark:hover:text-slate-200 dark:hover:bg-gray-600/40 font-medium cursor-pointer select-none transition
+    @apply relative inline-flex justify-between m-0.5 px-3 h-8 rounded text-gray-600 hover:text-gray-700 hover:bg-gray-100/50 dark:text-gray-100 dark:hover:text-gray-50 dark:hover:bg-gray-600/40 font-medium cursor-pointer select-none transition
 }
 .app-global-tabs__tab.app-global-tabs__tab-active {
-    @apply bg-blue-600 text-slate-50 dark:bg-blue-600 dark:text-slate-50
+    @apply bg-blue-600 text-white dark:bg-blue-600 dark:text-gray-50
 }
 .app-global-tabs__tab .app-global-tabs__tab-icon {
-    @apply w-5 inline-flex justify-center items-center
+    @apply w-5 inline-flex justify-center items-center text-gray-700 dark:text-gray-200 transition
+}
+.app-global-tabs__tab:hover .app-global-tabs__tab-icon {
+    @apply text-gray-700 dark:text-gray-50
+}
+.app-global-tabs__tab.app-global-tabs__tab-active .app-global-tabs__tab-icon {
+    @apply text-white dark:text-white
 }
 .app-global-tabs__tab .app-global-tabs__tab-icon + .app-global-tabs__tab-title {
     @apply ml-2

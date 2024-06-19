@@ -1,5 +1,5 @@
 .app-tooltip {
-    @apply fixed z-[999] -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-slate-50/90 text-slate-800 dark:bg-gray-600/90 dark:text-slate-100 text-sm shadow transition-all
+    @apply fixed z-[999] -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-slate-50/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50 text-sm shadow transition-all
 }
 .app-tooltip .badge {
     @apply float-right ml-2 px-1.5 bg-blue-500 text-white rounded
@@ -8,7 +8,7 @@ i[data-tooltip] > *:not(.pointer-events-auto) {
     @apply pointer-events-none
 }
 i[data-tooltip]:not([class*="fa-"]) {
-    @apply cursor-help text-slate-300 dark:text-slate-500
+    @apply cursor-help text-gray-200 dark:text-gray-300
 }
 i[data-tooltip][data-type="error"] {
     @apply text-rose-500 dark:text-rose-500

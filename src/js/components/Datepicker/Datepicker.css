@@ -14,7 +14,7 @@
     @apply py-1 px-0.5 first:pl-1 last:pr-1
 }
 .app-datepicker tbody th {
-    @apply bg-slate-100 dark:bg-gray-600
+    @apply bg-gray-50 dark:bg-gray-600
 }
 .app-datepicker th:nth-child(6), .app-datepicker th:nth-child(7), .app-datepicker td:nth-child(6), .app-datepicker td:nth-child(7) {
     @apply text-rose-500
@@ -29,7 +29,7 @@
     @apply flex justify-center items-center w-full h-full opacity-50 rounded transition
 }
 .app-datepicker tbody label span.app-datepicker-day__active {
-    @apply opacity-100 cursor-pointer hover:bg-slate-100 dark:hover:bg-gray-600
+    @apply opacity-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600
 }
 .app-datepicker tbody label span.app-datepicker-day__current {
     @apply !bg-green-500 !text-white
