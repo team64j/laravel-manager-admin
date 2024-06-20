@@ -3,7 +3,6 @@ import { h, shallowRef } from 'vue'
 import router from '../router'
 import Component from '../components/Layout/Component.vue'
 import Frame from '../components/Layout/Frame.vue'
-import Main from '../components/Layout/Main.vue'
 
 export default {
   name: 'DefaultPage',

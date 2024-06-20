@@ -223,7 +223,7 @@ export default {
     <template v-if="layout">
       <global-menu :data="layout?.['menu']" @action="action"/>
 
-      <div class="app-main">
+      <div class="app-wrapper">
         <template v-if="layout?.['sidebar']">
           <div
               ref="sidebar"

@@ -1,7 +1,7 @@
 .app {
     @apply flex flex-col h-full w-full
 }
-.app-main {
+.app-wrapper {
     @apply grow flex flex-row overflow-hidden
 }
 .app .app-resizer {
@@ -41,7 +41,7 @@
     @apply p-0
 }
 .app .app-sidebar .app-tabs .app-tabs__rows {
-    @apply h-[2.35rem] border-b dark:border-b-gray-900
+    @apply h-[2.4rem] border-b dark:border-b-gray-900
 }
 .app .app-sidebar .app-tabs .app-tabs__row {
     @apply mx-0.5

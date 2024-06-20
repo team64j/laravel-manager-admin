@@ -452,7 +452,7 @@ export default {
 </script>
 
 <template>
-  <div class="app-panel overflow-hidden flex flex-col grow mx-4 mb-4 rounded bg-white dark:bg-gray-750">
+  <div class="app-panel overflow-hidden flex flex-col grow mx-4 rounded bg-white dark:bg-gray-750">
     <div v-if="data" class="app-panel__data grow overflow-auto">
       <table class="w-full" ref="table" :class="{ 'min-h-full': !data.length }">
         <thead v-if="columns?.length && columns.filter(column => column.label).length"
@@ -588,7 +588,7 @@ export default {
     </div>
 
     <div v-if="meta?.['pagination']?.['prev'] || meta?.['pagination']?.['next']"
-         class="app-panel__pagination p-4 grow-0 flex flex-row flex-wrap items-center select-none">
+         class="app-panel__pagination py-4 grow-0 flex flex-row flex-wrap items-center select-none">
       <div class="basis-auto grow">
         <a :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['prev'] }"
            class="btn-sm btn-gray transition"

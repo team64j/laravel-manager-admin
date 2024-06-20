@@ -20,6 +20,9 @@
     @apply pl-12
 }
 .app-tabs__page > .app-panel {
-    @apply -m-6 p-0 shadow-none;
-    height: calc(100% + 3rem);
+    @apply -m-6 -mt-4 p-0 shadow-none;
+    height: calc(100% + 2.5rem);
+}
+.app-panel.\!-mx-4 > .app-panel__pagination {
+    @apply px-4
 }
