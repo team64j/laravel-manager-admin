@@ -452,15 +452,14 @@ export default {
 </script>
 
 <template>
-  <div class="app-panel overflow-hidden flex flex-col grow mx-4 rounded bg-white dark:bg-gray-750">
-    <div v-if="data" class="app-panel__data grow overflow-auto">
-      <table class="w-full" ref="table" :class="{ 'min-h-full': !data.length }">
-        <thead v-if="columns?.length && columns.filter(column => column.label).length"
-               class="sticky top-0 z-10 bg-slate-100 dark:bg-gray-600">
+  <div class="app-panel">
+    <div v-if="data" class="app-panel__data">
+      <table ref="table" :class="{ 'min-h-full': !data.length }">
+        <thead v-if="columns?.length && columns.filter(column => column.label).length">
         <tr>
           <template v-for="column in columns">
             <th :style="{ width: column.width }">
-              <div class="px-2 py-1 first:pl-6 last:pr-6 truncate" :style="{ minWidth: column.width }">
+              <div :style="{ minWidth: column.width }">
                 {{ column.label ?? '' }}
               </div>
             </th>
@@ -468,12 +467,11 @@ export default {
         </tr>
         <tr v-if="this.filters" class="app-panel__filters">
           <th v-for="f in getColumnFilters()">
-            <div v-if="f" class="relative flex">
+            <div v-if="f">
 
               <template v-if="f?.type === 'date'">
                 <input type="date"
                        name="filter"
-                       class="py-0 px-1 mx-0.5 h-6 border-none font-normal focus:ring-2"
                        :value="f.data.from"
                        :min="f.data.min"
                        :max="f.data.to"
@@ -481,7 +479,6 @@ export default {
                        autocomplete="off">
                 <input type="date"
                        name="filter"
-                       class="py-0 px-1 mx-0.5 h-6 border-none font-normal focus:ring-2"
                        :value="f.data.to"
                        :min="f.data.from"
                        :max="f.data.max"
@@ -491,7 +488,6 @@ export default {
 
               <select v-else-if="f?.data"
                       @input="columnFilters($event, f)"
-                      class="py-0 pl-1 pr-6 mx-0.5 h-6 border-none font-normal focus:ring-2"
                       autocomplete="off">
                 <option v-for="o in f.data" :value="o.key" :selected="o.selected">{{ o.value }}</option>
               </select>
@@ -499,13 +495,10 @@ export default {
               <template v-else>
                 <input type="text"
                        name="filter"
-                       class="py-0 pl-1 pr-6 mx-0.5 h-6 border-none font-normal focus:ring-2"
                        @input="columnFilters($event, f)"
                        :value="$route?.query?.[f.name]" :placeholder="f.placeholder ?? '...'"
                        autocomplete="off">
-                <i v-if="$route?.query?.[f.name]"
-                   class="fa fa-remove absolute top-1 right-2 text-rose-600 cursor-pointer"
-                   @click="columnFilterClear()"/>
+                <i v-if="$route?.query?.[f.name]" class="fa fa-remove" @click="columnFilterClear()"/>
               </template>
 
             </div>
@@ -587,21 +580,20 @@ export default {
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </div>
 
-    <div v-if="meta?.['pagination']?.['prev'] || meta?.['pagination']?.['next']"
-         class="app-panel__pagination py-4 grow-0 flex flex-row flex-wrap items-center select-none">
-      <div class="basis-auto grow">
-        <a :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['prev'] }"
-           class="btn-sm btn-gray transition"
+    <div v-if="meta?.['pagination']?.['prev'] || meta?.['pagination']?.['next']" class="app-panel__pagination">
+      <div class="app-panel__pagination-arrows">
+        <button :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['prev'] }"
+           class="btn-sm btn-gray"
            @click="pagination(meta['pagination']['prev'])">
-          <i class="fa fa-angle-left fa-fw leading-[0]"/>
-        </a>
-        <a :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['next'] }"
-           class="btn-sm btn-gray ml-1 transition"
+          <i class="fa fa-angle-left fa-fw"/>
+        </button>
+        <button :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['next'] }"
+           class="btn-sm btn-gray ml-1"
            @click="pagination(meta['pagination']['next'])">
-          <i class="fa fa-angle-right fa-fw leading-[0]"/>
-        </a>
+          <i class="fa fa-angle-right fa-fw"/>
+        </button>
       </div>
-      <div class="basis-auto grow-0 whitespace-nowrap" v-if="meta['pagination']['info']">
+      <div class="app-panel__pagination-info" v-if="meta['pagination']['info']">
         {{ meta['pagination']['info'] }}
       </div>
     </div>

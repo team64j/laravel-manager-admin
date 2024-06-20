@@ -1,3 +1,27 @@
+.app-panel {
+    @apply overflow-hidden flex flex-col grow mx-4 rounded
+}
+.app-panel__data {
+    @apply grow overflow-auto
+}
+.app-panel__data table {
+    @apply w-full
+}
+.app-panel__data thead {
+    @apply sticky top-0 z-10 bg-slate-100 dark:bg-gray-600
+}
+.app-panel__data thead tr:first-of-type div {
+    @apply px-2 py-1 first:pl-6 last:pr-6 truncate
+}
+.app-panel__data .app-panel__filters div {
+    @apply relative flex p-0
+}
+.app-panel__data .app-panel__filters input, .app-panel__data .app-panel__filters select {
+    @apply py-0 px-1 mx-0.5 h-6 border-none font-normal focus:ring-2
+}
+.app-panel__data .app-panel__filters input + i {
+    @apply absolute top-1 right-2 text-rose-600 cursor-pointer
+}
 .app-panel__data thead > tr > th, .app-panel__data thead > tr > td {
     @apply border-r border-r-transparent last:border-0
 }
@@ -23,6 +47,18 @@
     @apply -m-6 -mt-4 p-0 shadow-none;
     height: calc(100% + 2.5rem);
 }
+.app-panel__pagination {
+    @apply py-4 grow-0 flex flex-row flex-wrap items-center select-none
+}
 .app-panel.\!-mx-4 > .app-panel__pagination {
     @apply px-4
+}
+.app-panel__pagination-arrows {
+    @apply basis-auto grow
+}
+.app-panel__pagination-arrows i {
+    @apply leading-[0]
+}
+.app-panel__pagination-info {
+    @apply basis-auto grow-0 whitespace-nowrap
 }
