@@ -1,5 +1,5 @@
 .app-actions-buttons {
-    @apply fixed z-10 flex rounded-b bg-white/60 dark:bg-gray-700/60 p-2 right-4
+    @apply fixed z-20 flex rounded-b bg-white/60 dark:bg-gray-700/60 p-2 right-4
 }
 .app-actions-buttons > button, .app-actions-buttons > div {
     @apply inline-flex mx-0.5

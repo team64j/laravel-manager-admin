@@ -1,5 +1,5 @@
 .app-global-menu {
-    @apply relative bg-gray-700 text-gray-100
+    @apply relative bg-gray-700 text-gray-100 border-b border-b-transparent dark:border-b-gray-900
 }
 .app-global-menu.app-global-menu__active {
     @apply z-40

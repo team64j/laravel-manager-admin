@@ -32,7 +32,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="value !== undefined" class="app-title w-full p-4">
+  <div v-if="value !== undefined" class="app-title w-full px-4 pt-2 pb-4">
     <h1 class="app-title h4 m-0 whitespace-nowrap flex items-center">
       <i v-if="icon || $route.meta.icon" class="mr-2 mt-1 w-6 text-center text-gray-600 dark:text-gray-200 shrink-0"
          :class="icon || $route.meta.icon"/>
