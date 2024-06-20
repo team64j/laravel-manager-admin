@@ -13,6 +13,9 @@
 .app-main__tabs .app-tabs .app-tabs__page {
     @apply px-0 pt-2 pb-0 bg-transparent dark:bg-transparent
 }
+.app-main__tabs .app-tabs__vertical > .app-tabs__rows ~ .app-tabs__page {
+    @apply pl-6
+}
 .app-main__tabs .app-tabs .app-tabs__page .app-panel {
     @apply m-0 h-full
 }
