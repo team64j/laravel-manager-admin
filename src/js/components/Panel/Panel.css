@@ -1,5 +1,5 @@
 .app-panel {
-    @apply overflow-hidden flex flex-col grow mx-4 rounded
+    @apply overflow-hidden flex flex-col grow mx-5 rounded
 }
 .app-panel__data {
     @apply grow overflow-auto
@@ -44,8 +44,7 @@
     @apply pl-12
 }
 .app-tabs__page > .app-panel {
-    @apply -m-6 -mt-4 p-0 shadow-none;
-    height: calc(100% + 2.5rem);
+    @apply p-0 mx-0 h-full shadow-none
 }
 .app-panel__pagination {
     @apply py-4 grow-0 flex flex-row flex-wrap items-center select-none

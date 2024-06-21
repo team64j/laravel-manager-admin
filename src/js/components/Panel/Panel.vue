@@ -74,6 +74,13 @@ export default {
         meta: data ? Object.assign({}, { pagination: this.meta['pagination'] }) : {}
       }, this)
 
+      this.$el.querySelector('.app-panel__data').style.overflow = 'scroll'
+
+      this.$el.querySelectorAll('thead > tr > th').forEach(i => {
+        i.style.maxWidth = i.clientWidth + 'px'
+        i.style.minWidth = i.clientWidth + 'px'
+      })
+
       axios.get(path, {
         params: query
       }).then(({ data }) => {
@@ -84,6 +91,13 @@ export default {
         if (data.meta?.filters) {
           data.filters = data.meta.filters
         }
+
+        this.$el.querySelector('.app-panel__data').style.overflow = null
+
+        this.$el.querySelectorAll('thead > tr > th').forEach(i => {
+          i.style.maxWidth = null
+          i.style.minWidth = null
+        })
 
         this.$emit('update:props', data)
       })
@@ -215,7 +229,7 @@ export default {
       const key = keys[0]
       let value
 
-      if (data[key] !== undefined) {
+      if (data?.[key] !== undefined) {
         if (keys[1] !== undefined) {
           keys.shift()
           value = this.findValue(keys, data[key])

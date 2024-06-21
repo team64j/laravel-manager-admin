@@ -5,12 +5,12 @@
     @apply grow flex flex-row overflow-hidden
 }
 .app .app-resizer {
-    @apply relative z-10 md:z-20 shrink-0 w-0 cursor-col-resize pointer-events-none lg:pointer-events-auto
+    @apply relative z-10 md:z-30 shrink-0 w-0 cursor-col-resize pointer-events-none lg:pointer-events-auto
 }
 .app .app-resizer > div {
     @apply fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize
 }
-.app .app-resizer:active > div {
+.app .app-resizer.active > div {
     @apply block
 }
 .app .app-resizer::before, .app .app-resizer::after {
@@ -41,10 +41,10 @@
     @apply p-0
 }
 .app .app-sidebar .app-tabs .app-tabs__rows {
-    @apply h-[2.4rem] border-b dark:border-b-gray-900
+    @apply px-0.5 h-[2.4rem] border-b dark:border-b-gray-900
 }
 .app .app-sidebar .app-tabs .app-tabs__row {
-    @apply mx-0.5
+    @apply mx-0
 }
 .app .app-sidebar .app-tabs .app-tabs__tab {
     @apply m-0.5 h-8 w-10
