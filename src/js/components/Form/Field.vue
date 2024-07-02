@@ -25,7 +25,8 @@ export default {
     requiredText: String,
     trueValue: { default: true },
     type: String,
-    value: [String, Number, Array, Object]
+    value: [String, Number, Array, Object],
+    keyValue: String,
   },
 
   computed: {

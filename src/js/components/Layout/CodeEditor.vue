@@ -1,11 +1,12 @@
 <template>
-  <div class="w-full mb-3" :class="props.class">
+  <div class="w-full pb-3" :class="[props.class, fullSize ? 'h-full' : '']">
     <div v-if="label" class="block font-bold mb-1">
       {{ label }}
       <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
     </div>
 
-    <div class="app-editor relative flex grow">
+    <div class="app-editor relative flex grow flex-col"
+         :class="[fullSize ? 'app-editor__fullsize' : '']">
 
       <div class="app-editor__settings">
         <i class="fas fa-expand fa-compress cursor-pointer app-editor__btn-fullscreen" @click="onClickFullscreen"/>
@@ -70,7 +71,8 @@ const props = defineProps({
   label: String,
   help: String,
   description: String,
-  lang: String
+  lang: String,
+  fullSize: Boolean
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -215,11 +217,17 @@ function onClickFullscreen () {
   @apply fixed z-50 left-0 top-0 right-0 bottom-0 bg-slate-100 dark:bg-gray-800;
   z-index: 90099;
 }
+.app-editor.app-editor__fullsize {
+  @apply h-full
+}
 </style>
 
 <style>
 .app-editor .ͼ1.cm-editor {
   @apply overflow-hidden w-full border bg-white dark:bg-gray-800 rounded transition-[border,box-shadow]
+}
+.app-editor.app-editor__fullsize .ͼ1.cm-editor {
+  @apply h-full
 }
 .app-editor .ͼ1.cm-editor.cm-focused {
   @apply border-blue-500 ring-1 ring-offset-0 ring-blue-500 outline-0

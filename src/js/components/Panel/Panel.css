@@ -1,8 +1,8 @@
 .app-panel {
-    @apply overflow-hidden flex flex-col grow mx-5 rounded
+    @apply overflow-hidden flex flex-col grow mx-5
 }
 .app-panel__data {
-    @apply grow overflow-auto
+    @apply grow overflow-auto rounded
 }
 .app-panel__data table {
     @apply w-full
@@ -60,4 +60,7 @@
 }
 .app-panel__pagination-info {
     @apply basis-auto grow-0 whitespace-nowrap
+}
+.app-section__content > .app-panel > .app-panel__data {
+    @apply rounded-none
 }

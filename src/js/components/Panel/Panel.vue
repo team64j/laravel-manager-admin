@@ -166,6 +166,17 @@ export default {
             this.getComponent(item[key]),
             this.getComponentAttributes(item[key])
         )
+      } else if (column.component) {
+        const component = structuredClone(column.component)
+
+        if (component?.attrs?.['keyValue'] !== undefined) {
+          component.attrs.value = item[component.attrs['keyValue']]
+        }
+
+        return h(
+            this.getComponent(component),
+            this.getComponentAttributes(component)
+        )
       }
 
       const slots = []
@@ -476,6 +487,10 @@ export default {
 
 <template>
   <div class="app-panel">
+    <div v-if="$slots['top']" class="mb-3">
+      <slot name="top"/>
+    </div>
+
     <div v-if="data" class="app-panel__data">
       <table ref="table" :class="{ 'min-h-full': !data.length }">
         <thead v-if="columns?.length && columns.filter(column => column.label).length">
