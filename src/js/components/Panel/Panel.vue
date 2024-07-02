@@ -48,6 +48,7 @@ export default {
       keyStorage: key,
       propUrl: this.url ?? (this.$route?.['meta']?.url || (this.$route['path'])) ?? null,
       filterTimer: 0,
+      filterValues: {},
       settings: this.$store.getters.get(`Session.${key}`, {})
     }
   },
@@ -376,6 +377,8 @@ export default {
             }
 
             filters.push(propFilters[i.name])
+          } else if (i.filter) {
+            filters.push({ name: i.name })
           } else {
             filters.push(null)
           }
@@ -428,6 +431,8 @@ export default {
 
           delete query['page']
 
+          this.filterValues = query
+
           if (this.history) {
             if (this.rerender) {
               this.$emit(
@@ -444,20 +449,24 @@ export default {
         }, delay)
       }
     },
-    columnFilterClear () {
+    columnFilterClear (name) {
+      if (this.filterValues[name] !== undefined) {
+        delete this.filterValues[name]
+      }
+
       if (this.propUrl) {
         if (this.history) {
           if (this.rerender) {
             this.$emit(
                 'action',
                 'pushRouter',
-                { query: {} }
+                { query: this.filterValues }
             )
           } else {
-            router.to({ query: {} }).then(() => this.get(null, []))
+            router.to({ query: this.filterValues }).then(() => this.get(null, []))
           }
         } else {
-          this.get({})
+          this.get(this.filterValues)
         }
       }
     }
@@ -510,9 +519,9 @@ export default {
                 <input type="text"
                        name="filter"
                        @input="columnFilters($event, f)"
-                       :value="$route?.query?.[f.name]" :placeholder="f.placeholder ?? '...'"
+                       :value="$route?.query?.[f.name] ?? filterValues?.[f.name]" :placeholder="f.placeholder ?? '...'"
                        autocomplete="off">
-                <i v-if="$route?.query?.[f.name]" class="fa fa-remove" @click="columnFilterClear()"/>
+                <i v-if="$route?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove" @click="columnFilterClear(f.name)"/>
               </template>
 
             </div>
