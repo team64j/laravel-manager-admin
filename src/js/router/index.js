@@ -103,6 +103,10 @@ router.key = (route, compareRoute) => {
  * @see router.resolve()
  */
 router.parse = (route) => {
+  if (!route) {
+    return null
+  }
+
   if (typeof route === 'string') {
     if (/^(http|https):\/\/[^ "]+$/.test(route)) {
       route = route.replace((store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, ''), '')

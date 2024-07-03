@@ -40,40 +40,62 @@ export default {
   },
   created () {
     if (this.history) {
-      this.active = null
-
-      this.data.forEach(i => {
-        const r = router.parse(i.route)
-        i.active = r['path'] === this.$route['path']
-
-        if (i.active) {
-          this.active = i.id
-          i.render = this.history || (i.needUpdate && i.id === this.active) ||
-              (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
-        }
-      })
-
-      this.$watch(
-          () => this.$route,
-          (route, oldRoute) => {
-            this.active = null
-
-            this.data.forEach(i => {
-              if (!i.route) {
+      if (typeof this.history === 'string') {
+        this.active = this.$route['params'][this.history]
+        this.data.forEach(i => i.active = i.render = i.id === this.active)
+        this.$watch(
+            () => this.$route['params'][this.history],
+            active => {
+              if (!active) {
                 return
               }
 
-              const r = router.parse(i.route)
-              i.active = i.render = r['path'] === false
-
-              if (r['path'] === route['path'] && !router.key(r, oldRoute)) {
-                i.route = route['fullPath']
-                this.select(i)
+              if (this.active !== active ||
+                  (this.active === active && ['delete', 'save', 'update'].includes(this.$store.state.action))) {
+                this.select(active)
               }
-            })
+            }
+        )
+      } else {
+        this.active = null
+
+        this.data.forEach(i => {
+          if (!i.route) {
+            return
           }
-      )
-    } else if (!this.data.some(i => i.id === this.active)) {
+
+          const r = router.parse(i.route)
+          i.active = r['path'] === this.$route['path']
+
+          if (i.active) {
+            this.active = i.id
+            i.render = this.history || (i.needUpdate && i.id === this.active) ||
+                (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
+          }
+        })
+
+        this.$watch(
+            () => this.$route,
+            (route, oldRoute) => {
+              this.active = null
+
+              this.data.forEach(i => {
+                if (!i.route) {
+                  return
+                }
+
+                const r = router.parse(i.route)
+                i.active = i.render = r['path'] === false
+
+                if (r['path'] === route['path'] && !router.key(r, oldRoute)) {
+                  i.route = route['fullPath']
+                  this.select(i)
+                }
+              })
+            }
+        )
+      }
+    } else if (!this.data.some(i => i.id === this.active) && this.data[0]) {
       this.active = this.data[0].id
       this.data[0].active = this.data[0].render = true
     } else {
@@ -108,14 +130,25 @@ export default {
       })
 
       if (this.history) {
-        const route = router.parse(tab.route)
+        if (typeof this.history === 'string') {
+          this.$emit('action', 'pushRouter', {
+            params: {
+              [this.history]: tab.id
+            },
+            meta: {
+              group: true
+            }
+          })
+        } else {
+          const route = router.parse(tab.route)
 
-        this.$emit('action', 'pushRouter', {
-          ...route,
-          meta: {
-            group: true
-          }
-        })
+          this.$emit('action', 'pushRouter', {
+            ...route,
+            meta: {
+              group: true
+            }
+          })
+        }
       }
     },
     init (index) {
