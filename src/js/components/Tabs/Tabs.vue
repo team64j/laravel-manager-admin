@@ -53,44 +53,26 @@ export default {
         }
       })
 
-      // this.$watch(
-      //     () => this.$route,
-      //     route => {
-      //       this.active = null
-      //
-      //       this.data.forEach(i => {
-      //         const r = router.parse(i.route)
-      //         i.active = i.render = r['path'] === false
-      //
-      //         if (r['path'] === route['path']) {
-      //           i.route = route['fullPath']
-      //           this.select(i)
-      //         }
-      //       })
-      //
-      //       // if (!route) {
-      //       //   return
-      //       // }
-      //       //
-      //       // console.log(this.data)
-      //       //
-      //       // this.data.forEach((tab, index) => {
-      //       //   if (!tab.route) {
-      //       //     return
-      //       //   }
-      //       //
-      //       //   const route = router.parse(tab.route)
-      //       //
-      //       //   if (route['path'] === active['path']) {
-      //       //     tab.active = route['path'] === active['path']
-      //       //   }
-      //       //
-      //       //   if (tab.active) {
-      //       //     this.select(tab, index)
-      //       //   }
-      //       // })
-      //     }
-      // )
+      this.$watch(
+          () => this.$route,
+          (route, oldRoute) => {
+            this.active = null
+
+            this.data.forEach(i => {
+              if (!i.route) {
+                return
+              }
+
+              const r = router.parse(i.route)
+              i.active = i.render = r['path'] === false
+
+              if (r['path'] === route['path'] && !router.key(r, oldRoute)) {
+                i.route = route['fullPath']
+                this.select(i)
+              }
+            })
+          }
+      )
     } else if (!this.data.some(i => i.id === this.active)) {
       this.active = this.data[0].id
       this.data[0].active = this.data[0].render = true
