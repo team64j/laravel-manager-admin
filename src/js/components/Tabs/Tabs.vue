@@ -38,6 +38,69 @@ export default {
       settings: {}
     }
   },
+  created () {
+    if (this.history) {
+      this.active = null
+
+      this.data.forEach(i => {
+        const r = router.parse(i.route)
+        i.active = r['path'] === this.$route['path']
+
+        if (i.active) {
+          this.active = i.id
+          i.render = this.history || (i.needUpdate && i.id === this.active) ||
+              (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
+        }
+      })
+
+      // this.$watch(
+      //     () => this.$route,
+      //     route => {
+      //       this.active = null
+      //
+      //       this.data.forEach(i => {
+      //         const r = router.parse(i.route)
+      //         i.active = i.render = r['path'] === false
+      //
+      //         if (r['path'] === route['path']) {
+      //           i.route = route['fullPath']
+      //           this.select(i)
+      //         }
+      //       })
+      //
+      //       // if (!route) {
+      //       //   return
+      //       // }
+      //       //
+      //       // console.log(this.data)
+      //       //
+      //       // this.data.forEach((tab, index) => {
+      //       //   if (!tab.route) {
+      //       //     return
+      //       //   }
+      //       //
+      //       //   const route = router.parse(tab.route)
+      //       //
+      //       //   if (route['path'] === active['path']) {
+      //       //     tab.active = route['path'] === active['path']
+      //       //   }
+      //       //
+      //       //   if (tab.active) {
+      //       //     this.select(tab, index)
+      //       //   }
+      //       // })
+      //     }
+      // )
+    } else if (!this.data.some(i => i.id === this.active)) {
+      this.active = this.data[0].id
+      this.data[0].active = this.data[0].render = true
+    } else {
+      this.data.forEach(i => i.active = i.render = i.id === this.active)
+    }
+  },
+  mounted () {
+    this.init(this.data.findIndex(tab => tab.id === this.active))
+  },
   computed: {
     class () {
       return [
@@ -47,143 +110,30 @@ export default {
       ]
     }
   },
-  created () {
-    this.data.forEach(tab => {
-      if (tab.route) {
-        tab.route = router.parse({ path: tab.route }).path
-      }
-    })
-
-    if (this.history) {
-      if (typeof this.history === 'string') {
-        this.active = this.$route['params'][this.history]
-        this.$watch(
-            () => this.$route['params'][this.history],
-            active => {
-              if (!active) {
-                return
-              }
-
-              if (this.active !== active ||
-                  (this.active === active && ['delete', 'save', 'update'].includes(this.$store.state.action))) {
-                this.select(active)
-              }
-            }
-        )
-      } else {
-        this.data.forEach(tab => {
-          if (tab.route === this.$route['path']) {
-            this.active = tab.id
-          }
-
-          tab.loaded = tab.active
-        })
-      }
-    } else {
-      this.data.forEach(tab => {
-        if (tab.active) {
-          this.active = tab.id
-        }
-
-        tab.loaded = tab.active
-      })
-    }
-
-    if (!this.active && this.data[0]) {
-      this.active = this.data[0].id
-      this.data[0].active = true
-      this.data[0].loaded = true
-    }
-
-    if (this.watch) {
-      if (this.$route['name']) {
-        this.$watch(
-            () => this.$route['name'],
-            active => {
-              if (!active) {
-                return
-              }
-
-              this.data.forEach((tab, index) => {
-                if (typeof tab.route === 'object') {
-                  tab.active = tab.route.some(i => i === active)
-                } else {
-                  tab.active = tab.route === active
-                }
-
-                if (tab.active) {
-                  this.select(tab, index)
-                }
-              })
-            }
-        )
-      }
-    }
-  },
-  mounted () {
-    this.init(this.data.findIndex(tab => tab.id === this.active))
-  },
-  updated () {
-    if (!this.data.some(tab => tab.id === this.active)) {
-      this.active = this.data?.[0].id
-    }
-  },
   methods: {
-    action () {
-      if (typeof this[arguments[0]] === 'function') {
-        this[arguments[0]](...Array.from(arguments).splice(1))
-      } else {
-        this.$emit('action', ...arguments)
-      }
-    },
-    isRenderer (tab) {
-      return this.history || (tab.needUpdate && tab.id === this.active) ||
-          (!tab.needUpdate && ((this.loadOnce && !tab.loaded) || tab.loaded) || !this.loadOnce)
-    },
-    isShow (tab) {
-      return tab.needUpdate || tab.id === this.active
-    },
-    touch () {
-      return false
+    show () {
+      return true
     },
     select (tab, index) {
-      if (typeof tab === 'string') {
-        const id = tab
-        tab = this.data.find(i => i.id === id)
-        index = this.data.findIndex(i => i.id === id)
-
-        if (!tab) {
-          return
-        }
-      }
-
       this.active = tab.id
       this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: this.active })
+      tab.loaded = this.loadOnce
 
-      this.init(index)
+      this.data.forEach(i => {
+        i.active = i.id === this.active
+        i.render = this.history || (i.needUpdate && i.id === this.active) ||
+            (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
+      })
 
       if (this.history) {
-        if (typeof this.history === 'string') {
-          this.$emit('action', 'pushRouter', {
-            params: {
-              [this.history]: tab.id
-            },
-            meta: {
-              group: true
-            }
-          })
-        } else if (tab.route) {
-          this.$emit('action', 'pushRouter', {
-            path: tab.route,
-            meta: {
-              group: true
-            }
-          })
-        }
-      }
+        const route = router.parse(tab.route)
 
-      if (this.loadOnce) {
-        tab.loaded = true
+        this.$emit('action', 'pushRouter', {
+          ...route,
+          meta: {
+            group: true
+          }
+        })
       }
     },
     init (index) {
@@ -253,11 +203,11 @@ export default {
 
     <div v-if="data.length > 1" class="app-tabs__rows">
       <div class="app-tabs__row" ref="row">
-        <div v-for="(tab, index) in data" :key="index" :data-tooltip="tab.title" class="app-tabs__tab"
-             :class="{ 'app-tabs__tab-active' : tab.id === active }"
-             @mousedown="select(tab, index)">
-          <i v-if="tab.icon" class="app-tabs__tab-icon" :class="tab.icon"/>
-          <span v-if="tab.name">{{ tab.name }}</span>
+        <div v-for="i in data" :data-tooltip="i.title" class="app-tabs__tab"
+             :class="{ 'app-tabs__tab-active' : i.id === active }"
+             @mousedown="select(i)">
+          <i v-if="i.icon" class="app-tabs__tab-icon" :class="i.icon"/>
+          <span v-if="i.name">{{ i.name }}</span>
         </div>
       </div>
 
@@ -267,14 +217,14 @@ export default {
       </template>
     </div>
 
-    <template v-for="tab in data" :key="tab.id">
+    <template v-for="i in data" :key="i.id">
       <div
-          v-if="isRenderer(tab)"
-          v-show="isShow(tab)"
-          :id="`tab-`+tab.id"
-          :class="tab.class"
+          v-if="i.render"
+          v-show="i.id === active"
+          :id="`tab-`+i.id"
+          :class="i.class"
           class="app-tabs__page">
-        <slot v-if="$slots[tab.id]" :name="tab.id"/>
+        <slot v-if="$slots[i.id]" :name="i.id"/>
         <div v-else class="grow flex items-center justify-center w-full h-full">
           <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
         </div>

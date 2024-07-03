@@ -103,8 +103,16 @@ router.key = (route, compareRoute) => {
  * @see router.resolve()
  */
 router.parse = (route) => {
-  if (/^(http|https):\/\/[^ "]+$/.test(route.path)) {
-    route.path = route.path.replace((store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, ''), '')
+  if (typeof route === 'string') {
+    if (/^(http|https):\/\/[^ "]+$/.test(route)) {
+      route = route.replace((store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, ''), '')
+    }
+
+    route = router.resolve(route)
+  } else {
+    if (/^(http|https):\/\/[^ "]+$/.test(route.path)) {
+      route.path = route.path.replace((store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, ''), '')
+    }
   }
 
   if (route.path && route.params) {

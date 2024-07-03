@@ -158,7 +158,9 @@ export default {
       this.$emit('action', 'closeTab')
     },
     pushRouter (route) {
-      route = router.parse(route)
+      if (!route.matched) {
+        route = router.parse(route)
+      }
 
       this.$emit(
           'action',
