@@ -158,11 +158,13 @@ export default {
       this.$emit('action', 'closeTab')
     },
     pushRouter (route) {
+      route = router.parse(route)
+
       this.$emit(
           'action',
           'pushRouter',
           route,
-          router.key(this.$route, router.parse(route)) && this.get
+          router.key(this.$route, route) && this.get
       )
     },
     inputChangeQuery (event, ctx) {

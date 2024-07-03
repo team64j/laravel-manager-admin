@@ -1,4 +1,6 @@
 <script>
+import router from '../../router'
+
 import('./Tabs.css')
 
 export default {
@@ -46,21 +48,37 @@ export default {
     }
   },
   created () {
-    if (this.history) {
-      this.active = this.$route['params'][this.history]
-      this.$watch(
-          () => this.$route['params'][this.history],
-          active => {
-            if (!active) {
-              return
-            }
+    this.data.forEach(tab => {
+      if (tab.route) {
+        tab.route = router.parse({ path: tab.route }).path
+      }
+    })
 
-            if (this.active !== active ||
-                (this.active === active && ['delete', 'save', 'update'].includes(this.$store.state.action))) {
-              this.select(active)
+    if (this.history) {
+      if (typeof this.history === 'string') {
+        this.active = this.$route['params'][this.history]
+        this.$watch(
+            () => this.$route['params'][this.history],
+            active => {
+              if (!active) {
+                return
+              }
+
+              if (this.active !== active ||
+                  (this.active === active && ['delete', 'save', 'update'].includes(this.$store.state.action))) {
+                this.select(active)
+              }
             }
+        )
+      } else {
+        this.data.forEach(tab => {
+          if (tab.route === this.$route['path']) {
+            this.active = tab.id
           }
-      )
+
+          tab.loaded = tab.active
+        })
+      }
     } else {
       this.data.forEach(tab => {
         if (tab.active) {
@@ -69,35 +87,37 @@ export default {
 
         tab.loaded = tab.active
       })
+    }
 
-      if (!this.active && this.data[0]) {
-        this.active = this.data[0].id
-        this.data[0].active = true
-        this.data[0].loaded = true
-      }
+    if (!this.active && this.data[0]) {
+      this.active = this.data[0].id
+      this.data[0].active = true
+      this.data[0].loaded = true
     }
 
     if (this.watch) {
-      this.$watch(
-          () => this.$route['name'],
-          active => {
-            if (!active) {
-              return
+      if (this.$route['name']) {
+        this.$watch(
+            () => this.$route['name'],
+            active => {
+              if (!active) {
+                return
+              }
+
+              this.data.forEach((tab, index) => {
+                if (typeof tab.route === 'object') {
+                  tab.active = tab.route.some(i => i === active)
+                } else {
+                  tab.active = tab.route === active
+                }
+
+                if (tab.active) {
+                  this.select(tab, index)
+                }
+              })
             }
-
-            this.data.forEach((tab, index) => {
-              if (typeof tab.route === 'object') {
-                tab.active = tab.route.some(i => i === active)
-              } else {
-                tab.active = tab.route === active
-              }
-
-              if (tab.active) {
-                this.select(tab, index)
-              }
-            })
-          }
-      )
+        )
+      }
     }
   },
   mounted () {
@@ -143,14 +163,23 @@ export default {
       this.init(index)
 
       if (this.history) {
-        this.$emit('action', 'pushRouter', {
-          params: {
-            [this.history]: tab.id
-          },
-          meta: {
-            group: true
-          }
-        })
+        if (typeof this.history === 'string') {
+          this.$emit('action', 'pushRouter', {
+            params: {
+              [this.history]: tab.id
+            },
+            meta: {
+              group: true
+            }
+          })
+        } else if (tab.route) {
+          this.$emit('action', 'pushRouter', {
+            path: tab.route,
+            meta: {
+              group: true
+            }
+          })
+        }
       }
 
       if (this.loadOnce) {

@@ -68,7 +68,7 @@ export default {
     get (query, data) {
       const url = router.parse(this.propUrl)
       const path = this.propUrl.split('?')[0]
-      query = Object.assign(url.query, query || this.$route?.['query'] || {})
+      query = Object.assign(url['query'], query || this.$route?.['query'] || {})
 
       this.$emit('update:props', {
         data: data,
@@ -274,7 +274,7 @@ export default {
 
       return attrs
     },
-    sortable (event, data) {
+    sortable (data) {
       const draggable = data?.draggable || this.draggable
 
       if (typeof draggable === 'string') {
@@ -359,7 +359,16 @@ export default {
                 url
             )
           } else {
-            router.to(url).then(() => this.get(url.query, []))
+            this.$emit(
+                'action',
+                'pushRouter',
+                url
+            )
+
+            this.$emit('update:props', {
+              data: [],
+              meta: Object.assign({}, { pagination: this.meta['pagination'] })
+            }, this)
           }
         } else {
           this.get(url.query, [])
@@ -445,14 +454,16 @@ export default {
           this.filterValues = query
 
           if (this.history) {
-            if (this.rerender) {
-              this.$emit(
-                  'action',
-                  'pushRouter',
-                  { query }
-              )
-            } else {
-              router.to({ query }).then(() => this.get(null, []))
+            this.$emit(
+                'action',
+                'pushRouter',
+                { query }
+            )
+            if (!this.rerender) {
+              this.$emit('update:props', {
+                data: [],
+                meta: Object.assign({}, { pagination: this.meta['pagination'] })
+              }, this)
             }
           } else {
             this.get(query)
@@ -467,14 +478,16 @@ export default {
 
       if (this.propUrl) {
         if (this.history) {
-          if (this.rerender) {
-            this.$emit(
-                'action',
-                'pushRouter',
-                { query: this.filterValues }
-            )
-          } else {
-            router.to({ query: this.filterValues }).then(() => this.get(null, []))
+          this.$emit(
+              'action',
+              'pushRouter',
+              { query: this.filterValues }
+          )
+          if (!this.rerender) {
+            this.$emit('update:props', {
+              data: [],
+              meta: Object.assign({}, { pagination: this.meta['pagination'] })
+            }, this)
           }
         } else {
           this.get(this.filterValues)
@@ -536,7 +549,8 @@ export default {
                        @input="columnFilters($event, f)"
                        :value="$route?.query?.[f.name] ?? filterValues?.[f.name]" :placeholder="f.placeholder ?? '...'"
                        autocomplete="off">
-                <i v-if="$route?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove" @click="columnFilterClear(f.name)"/>
+                <i v-if="$route?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove"
+                   @click="columnFilterClear(f.name)"/>
               </template>
 
             </div>
@@ -588,7 +602,7 @@ export default {
                        :list="category.data"
                        item-key="id"
                        tag="tbody"
-                       @end="sortable($event, category.data)">
+                       @end="sortable(category.data)">
               <template #item="{ element: item }">
                 <tr :class="{ 'disabled' : item.disabled, 'active': item['@active'] }"
                     @click="selectRow($event, item)">
@@ -621,13 +635,13 @@ export default {
     <div v-if="meta?.['pagination']?.['prev'] || meta?.['pagination']?.['next']" class="app-panel__pagination">
       <div class="app-panel__pagination-arrows">
         <button :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['prev'] }"
-           class="btn-sm btn-gray"
-           @click="pagination(meta['pagination']['prev'])">
+                class="btn-sm btn-gray"
+                @click="pagination(meta['pagination']['prev'])">
           <i class="fa fa-angle-left fa-fw"/>
         </button>
         <button :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['next'] }"
-           class="btn-sm btn-gray ml-1"
-           @click="pagination(meta['pagination']['next'])">
+                class="btn-sm btn-gray ml-1"
+                @click="pagination(meta['pagination']['next'])">
           <i class="fa fa-angle-right fa-fw"/>
         </button>
       </div>
