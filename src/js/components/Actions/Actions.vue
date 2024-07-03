@@ -1,11 +1,11 @@
 <script>
 import Button from '../Form/Button.vue'
 
-import('./ActionsButtons.css')
+import('./Actions.css')
 
 export default {
   __isStatic: true,
-  name: 'ActionsButtons',
+  name: 'Actions',
   components: { Button },
   emits: ['action'],
   props: {
@@ -141,10 +141,10 @@ export default {
 </script>
 
 <template>
-  <div class="app-actions-buttons">
+  <div class="app-actions">
 
     <template v-for="i in data">
-      <div v-if="i.data" class="app-actions-buttons__group">
+      <div v-if="i.data" class="app-actions__group">
         <Button v-for="ii in i.data.filter((j, kk) => kk === stay)"
                 :icon="ii.icon"
                 :class="i.class"
@@ -159,13 +159,13 @@ export default {
         </Button>
 
         <Button
-            class="app-actions-buttons__toggle"
-            :class="[i.class, isToggle ? 'app-actions-buttons__toggle-active' : '']"
+            class="app-actions__toggle"
+            :class="[i.class, isToggle ? 'app-actions__toggle-active' : '']"
             @click="isToggle=!isToggle">
           <i class="fa fa-angle-down fa-fw"/>
         </Button>
 
-        <div v-show="isToggle" class="app-actions-buttons__save-buttons">
+        <div v-show="isToggle" class="app-actions__save-buttons">
           <Button v-for="ii in i.data.filter((j, kk) => kk !== stay)"
                   :icon="ii.icon"
                   :class="i.class"

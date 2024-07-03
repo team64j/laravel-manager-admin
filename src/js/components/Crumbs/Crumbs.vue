@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 
 export default {
   __isStatic: true,
-  name: 'Breadcrumbs',
+  name: 'Crumbs',
   props: {
     data: Array
   },
@@ -14,7 +14,7 @@ export default {
     props.data.forEach(i => {
       if (i.to) {
         slots.push(h(RouterLink, {
-          class: 'app-breadcrumbs__item truncate max-w-48 hover:opacity-80',
+          class: 'app-crumbs__item truncate max-w-48 hover:opacity-80',
           title: i.title,
           to: i.to,
           'data-tooltip': i.tooltip,
@@ -22,7 +22,7 @@ export default {
         }))
       } else {
         slots.push(h('div', {
-          class: 'app-breadcrumbs__item truncate max-w-48 hover:opacity-80',
+          class: 'app-crumbs__item truncate max-w-48 hover:opacity-80',
           title: i.title,
           'data-tooltip': i.tooltip,
           innerHTML: i.name ?? i.title
@@ -32,7 +32,7 @@ export default {
           { class: 'fa fa-angle-right opacity-60 leading-[0] mx-4 last-of-type:hidden', style: { fontSize: '70%' } }))
     })
 
-    return () => h('div', { class: 'app-breadcrumbs flex items-center px-2 py-1 text-sm' }, slots)
+    return () => h('div', { class: 'app-crumbs flex items-center px-2 py-1 text-sm' }, slots)
   }
 }
 </script>
