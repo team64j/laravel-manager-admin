@@ -1,11 +1,11 @@
 <script>
-import { h, shallowRef } from 'vue'
+import { h } from 'vue'
 import router from '../router'
 import Component from '../components/Layout/Component.vue'
-import Frame from '../components/Layout/Frame.vue'
 
 export default {
   name: 'DefaultPage',
+  components: { Component },
   data () {
     return {
       url: null,
@@ -13,7 +13,7 @@ export default {
       meta: null,
       layout: null,
       errors: null,
-      currentComponent: null
+      loaded: false
     }
   },
   mounted () {
@@ -39,19 +39,10 @@ export default {
         }
       })
 
-      if (this.$route?.['meta']?.['isIframe']) {
-        this.url = url
-        if (!this.currentComponent) {
-          this.currentComponent = shallowRef(Frame)
-        }
-
-        return
-      }
-
       this.data = null
       this.meta = null
       this.errors = null
-      //this.currentComponent = null
+      this.loaded = true
 
       if (!this.$route['meta']['group']) {
         this.layout = null
@@ -199,43 +190,27 @@ export default {
         return
       }
 
-      let component
+      Object.assign(this.$data, data)
 
-      if (typeof data === 'string' || typeof data['layout'] === 'string') {
-        this.data = data['layout'] ?? data
-        component = Frame
-      }/* else if (typeof data['layout'] === 'object' && !Array.isArray(data['layout'])) {
-        this.$data['data'] = data['data']
-        this.$data['layout'] = data['layout']['attrs']
-        this.$data['meta'] = data['meta']
-        component = Main
-      }*/ else {
-        Object.assign(this.$data, data)
-        component = Component
+      const meta = {}
 
-        const meta = {}
+      if (data['meta']?.['title'] !== undefined) {
+        meta['title'] = data['meta']['title']
+      }
 
-        if (data['meta']?.['title'] !== undefined) {
-          meta['title'] = data['meta']['title']
-        }
+      if (data['meta']?.['icon'] !== undefined) {
+        meta['icon'] = data['meta']['icon']
+      }
 
-        if (data['meta']?.['icon'] !== undefined) {
-          meta['icon'] = data['meta']['icon']
-        }
-
-        if (Object.values(meta).length) {
-          this.$emit('action', 'setTab', {
-            key: this._.vnode.key,
-            meta
-          })
-        }
+      if (Object.values(meta).length) {
+        this.$emit('action', 'setTab', {
+          key: this._.vnode.key,
+          meta
+        })
       }
 
       this.url = url
-
-      if (!this.currentComponent) {
-        this.currentComponent = shallowRef(component)
-      }
+      this.loaded = true
     }
   },
   setup2 () {
@@ -243,8 +218,8 @@ export default {
       return h('div', {
             class: 'app-page__default w-full h-full flex flex-col overflow-auto'
           },
-          this.currentComponent ?
-              h(this.currentComponent, {
+          this.loaded ?
+              h(Component, {
                 url: this.url,
                 data: this.data,
                 meta: this.meta,
@@ -269,7 +244,7 @@ export default {
 
 <template>
   <div class="app-page__default w-full h-full flex flex-col overflow-auto">
-    <component v-if="this.currentComponent" :is="this.currentComponent"
+    <Component v-if="this.loaded"
                :url="url"
                :data="data"
                :meta="meta"

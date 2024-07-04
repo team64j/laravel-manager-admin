@@ -42,20 +42,20 @@ export default {
     if (this.history) {
       if (typeof this.history === 'string') {
         this.active = this.$route['params'][this.history]
-        this.data.forEach(i => i.active = i.render = i.id === this.active)
-        this.$watch(
-            () => this.$route['params'][this.history],
-            active => {
-              if (!active) {
-                return
-              }
-
-              if (this.active !== active ||
-                  (this.active === active && ['delete', 'save', 'update'].includes(this.$store.state.action))) {
-                this.select(active)
-              }
-            }
-        )
+        this.data.forEach(i => i.active = i.id === this.active)
+        //   this.$watch(
+        //       () => this.$route['params'][this.history],
+        //       active => {
+        //         if (!active) {
+        //           return
+        //         }
+        //
+        //         if (this.active !== active ||
+        //             (this.active === active && ['delete', 'save', 'update'].includes(this.$store.state.action))) {
+        //           this.select(active)
+        //         }
+        //       }
+        //   )
       } else {
         this.active = null
 
@@ -69,31 +69,28 @@ export default {
 
           if (i.active) {
             this.active = i.id
-            i.render = this.history || (i.needUpdate && i.id === this.active) ||
-                (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
           }
         })
 
-        this.$watch(
-            () => this.$route,
-            (route, oldRoute) => {
-              this.active = null
-
-              this.data.forEach(i => {
-                if (!i.route) {
-                  return
-                }
-
-                const r = router.parse(i.route)
-                i.active = i.render = r['path'] === false
-
-                if (r['path'] === route['path'] && !router.key(r, oldRoute)) {
-                  i.route = route['fullPath']
-                  this.select(i)
-                }
-              })
-            }
-        )
+        // this.$watch(
+        //     () => this.$route,
+        //     route => {
+        //       this.active = null
+        //
+        //       this.data.forEach(i => {
+        //         if (!i.route) {
+        //           return
+        //         }
+        //
+        //         const r = router.parse(i.route)
+        //         i.active = r['path'] === route['path']
+        //
+        //         if (i.active) {
+        //           this.select(i)
+        //         }
+        //       })
+        //     }
+        // )
       }
     } else if (!this.data.some(i => i.id === this.active) && this.data[0]) {
       this.active = this.data[0].id
@@ -115,8 +112,9 @@ export default {
     }
   },
   methods: {
-    show () {
-      return true
+    render (i) {
+      return this.history || (i.needUpdate && i.id === this.active) ||
+          (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
     },
     select (tab, index) {
       this.active = tab.id
@@ -124,9 +122,7 @@ export default {
       tab.loaded = this.loadOnce
 
       this.data.forEach(i => {
-        i.active = i.id === this.active
-        i.render = this.history || (i.needUpdate && i.id === this.active) ||
-            (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
+        i.active = i.id === tab.id
       })
 
       if (this.history) {
@@ -218,9 +214,9 @@ export default {
 
     <div v-if="data.length > 1" class="app-tabs__rows">
       <div class="app-tabs__row" ref="row">
-        <div v-for="i in data" :data-tooltip="i.title" class="app-tabs__tab"
+        <div v-for="(i, k) in data" :data-tooltip="i.title" class="app-tabs__tab"
              :class="{ 'app-tabs__tab-active' : i.id === active }"
-             @mousedown="select(i)">
+             @mousedown="select(i, k)">
           <i v-if="i.icon" class="app-tabs__tab-icon" :class="i.icon"/>
           <span v-if="i.name">{{ i.name }}</span>
         </div>
@@ -234,7 +230,7 @@ export default {
 
     <template v-for="i in data" :key="i.id">
       <div
-          v-if="i.render"
+          v-if="render(i)"
           v-show="i.id === active"
           :id="`tab-`+i.id"
           :class="i.class"

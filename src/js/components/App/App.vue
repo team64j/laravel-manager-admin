@@ -1,4 +1,5 @@
 <script>
+import { h } from 'vue'
 import { RouterView } from 'vue-router'
 import { Notifications } from '@kyvg/vue3-notification'
 import GlobalMenu from '../GlobalMenu/GlobalMenu.vue'
@@ -8,16 +9,21 @@ import Component from '../Layout/Component.vue'
 import Tooltip from '../Tooltip/Tooltip.vue'
 import Search from '../Search/Search.vue'
 import router from '../../router'
+import store from '../../store'
 
 import('./App.css')
 
 export default {
   name: 'App',
+  computed: {
+    store () {
+      return store
+    }
+  },
   components: { Notifications, RouterView, Tooltip, Datepicker, GlobalMenu, GlobalTabs, Component, Search },
   data () {
     return {
       loaded: false,
-      layout: null,
       sidebarWidth: this.$store.getters.get('Storage.sidebarWidth', 325)
     }
   },
@@ -29,7 +35,7 @@ export default {
       document.documentElement.classList.toggle('dark', value)
     },
     '$store.state.Storage.root.sidebarShow' (value) {
-      this.$refs.sidebar && this.$refs.sidebar.classList.toggle('app-sidebar-hidden', !value)
+      this.$el.classList.toggle('app-sidebar-hidden', !value)
     }
   },
   created () {
@@ -39,7 +45,8 @@ export default {
         'dark',
         this.$store.getters.get('Storage.root.dark', false)
     )
-
+  },
+  mounted () {
     /**
      * @see https://dennisreimann.de/articles/delegating-html-links-to-vue-router.html
      */
@@ -82,7 +89,6 @@ export default {
       }
     },
     bootstrap () {
-      this.layout = null
       this.loaded = false
 
       if (this.$store.getters.get('Storage.token')) {
@@ -124,7 +130,20 @@ export default {
               this.$.appContext.app.use(router)
             }
 
-            this.layout = response.layout
+            const slotStack = {}
+
+            response.layout.forEach(i => {
+              if (!slotStack[i.slot]) {
+                slotStack[i.slot] = []
+              }
+
+              slotStack[i.slot].push(h(Component, { layout: i, onAction: this.action }))
+            })
+
+            for (const i in slotStack) {
+              this.$.slots[i] = () => slotStack[i]
+            }
+
             this.loaded = true
           } else {
             this.login()
@@ -141,8 +160,8 @@ export default {
         this.$.appContext.app.use(router)
       }
 
-      this.layout = null
       this.loaded = true
+      this.$.slots = {}
       router.to('/login')
     },
     assets (assets) {
@@ -182,7 +201,7 @@ export default {
     splitterDown (event) {
       this.x = event.clientX
       this.w = this.sidebarWidth
-      this.$refs.sidebar.classList.add('app-sidebar-resize')
+      this.$el.classList.add('app-sidebar-resize')
       event.currentTarget.classList.add('active')
       event.currentTarget.addEventListener('mousemove', this.splitterMove)
       event.currentTarget.addEventListener('mouseup', this.splitterUp)
@@ -192,7 +211,7 @@ export default {
       this.$store.dispatch('Storage/set', { sidebarWidth: this.sidebarWidth })
     },
     splitterUp (event) {
-      this.$refs.sidebar.classList.remove('app-sidebar-resize')
+      this.$el.classList.remove('app-sidebar-resize')
       event.currentTarget.classList.remove('active')
       event.currentTarget.removeEventListener('mousemove', this.splitterMove)
       event.currentTarget.removeEventListener('mouseup', this.splitterUp)
@@ -217,34 +236,45 @@ export default {
 </script>
 
 <template>
-  <div v-if="loaded" class="app">
-    <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
-
-    <template v-if="layout">
-      <global-menu :data="layout?.['menu']" @action="action"/>
-
-      <div class="app-wrapper">
-        <template v-if="layout?.['sidebar']">
-          <div
-              ref="sidebar"
-              class="app-sidebar"
-              :class="{ 'app-sidebar-hidden': !$store.getters.get('Storage.root.sidebarShow', true) }"
-              :style="{ width: `${sidebarWidth}px` }"
-          >
-            <Component :layout="layout['sidebar']" @action="action"/>
+  <div v-if="loaded" class="app"
+       :class="{ 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
+    <template v-if="Object.values($slots).length">
+      <div v-if="$slots.top" class="grow-0 shrink-0 border-b dark:border-b-black/30">
+        <slot name="top"/>
+      </div>
+      <div class="grow flex flex-row overflow-hidden relative">
+        <div v-if="$slots.left" class="grow-0 shrink-0 border-r dark:border-r-black/30 w-10">
+          <slot name="left"/>
+        </div>
+        <div class="grow flex flex-row overflow-hidden">
+          <div v-if="$slots.sidebar" class="grow-0 shrink-0 app-sidebar" :style="{ width: `${sidebarWidth}px` }">
+            <slot name="sidebar"/>
           </div>
-          <div class="app-resizer" @mousedown="splitterDown">
+          <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
             <div/>
           </div>
-        </template>
-        <global-tabs @action="action"/>
+          <div v-if="$slots.main" class="grow flex flex-col overflow-hidden">
+            <slot name="main"/>
+          </div>
+        </div>
+        <div v-if="$slots.right" class="grow-0 shrink-0 border-l dark:border-l-black/30 w-10">
+          <slot name="right"/>
+        </div>
+      </div>
+      <div v-if="$slots.bottom" class="grow-0 shrink-0 border-t dark:border-t-black/30">
+        <slot name="bottom"/>
       </div>
 
       <search ref="search"/>
-      <Datepicker ref="datepicker"/>
-      <tooltip/>
+      <tooltip ref="tooltip"/>
+      <datepicker ref="datepicker"/>
     </template>
 
     <router-view v-else/>
+
+    <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
+  </div>
+  <div v-else class="flex flex-col h-full justify-center items-center">
+    <img src="../../../img/logo.svg" alt="" class="w-24 h-24 animate-ping">
   </div>
 </template>

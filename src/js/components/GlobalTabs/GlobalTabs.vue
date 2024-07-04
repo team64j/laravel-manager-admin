@@ -6,6 +6,8 @@ import Frame from '../Layout/Frame.vue'
 import('./GlobalTabs.css')
 
 export default {
+  name: 'GlobalTabs',
+  __isStatic: true,
   components: { KeepAliveComponent, Frame },
   watch: {
     $route (route) {

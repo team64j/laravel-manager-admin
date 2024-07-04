@@ -191,7 +191,7 @@ export default {
   },
   setup () {
     return function () {
-      return h(() => this.initLayout(), { onAction: this.action })
+      return h(() => this.initLayout()/*, { onAction: this.action }*/)
     }
   }
 }
