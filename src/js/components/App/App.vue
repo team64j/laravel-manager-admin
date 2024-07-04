@@ -243,7 +243,7 @@ export default {
         <slot name="top"/>
       </div>
       <div class="grow flex flex-row overflow-hidden relative">
-        <div v-if="$slots.left" class="grow-0 shrink-0 border-r dark:border-r-black/30 w-10">
+        <div v-if="$slots.left" class="grow-0 shrink-0 border-r dark:border-r-black/30">
           <slot name="left"/>
         </div>
         <div class="grow flex flex-row overflow-hidden">
@@ -257,7 +257,7 @@ export default {
             <slot name="main"/>
           </div>
         </div>
-        <div v-if="$slots.right" class="grow-0 shrink-0 border-l dark:border-l-black/30 w-10">
+        <div v-if="$slots.right" class="grow-0 shrink-0 border-l dark:border-l-black/30">
           <slot name="right"/>
         </div>
       </div>

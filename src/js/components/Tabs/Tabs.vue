@@ -27,7 +27,8 @@ export default {
     navigation: {
       type: Boolean,
       default: true
-    }
+    },
+    smallTabs: Boolean
   },
   data () {
     const keyStorage = `tabs.` + this.id.toLowerCase()
@@ -245,7 +246,7 @@ export default {
 </script>
 
 <template>
-  <div :id="id+`Tabs`" class="app-tabs" :class="this.class">
+  <div :id="id+`Tabs`" class="app-tabs" :class="[this.class, this.smallTabs ? 'app-tabs-small' : 'app-tabs-large']">
 
     <div v-if="data.length > 1" class="app-tabs__rows">
       <div class="app-tabs__row" ref="row">

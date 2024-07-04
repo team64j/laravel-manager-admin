@@ -37,21 +37,3 @@
 .app.app-sidebar-resize .app-sidebar {
     @apply transition-none
 }
-.app .app-sidebar .app-tabs {
-    @apply p-0
-}
-.app .app-sidebar .app-tabs .app-tabs__rows {
-    @apply px-0.5 h-[2.4rem] border-b dark:border-b-gray-900
-}
-.app .app-sidebar .app-tabs .app-tabs__row {
-    @apply mx-0
-}
-.app .app-sidebar .app-tabs .app-tabs__tab {
-    @apply m-0.5 h-8 w-10
-}
-.app .app-sidebar .app-tabs .app-tabs__tab:not(.app-tabs__tab-active):hover {
-    @apply hover:bg-gray-100/50 dark:hover:bg-gray-600/40
-}
-.app .app-sidebar .app-tabs .app-tabs__page {
-    @apply p-0 border-0 shadow-none rounded-none bg-inherit
-}

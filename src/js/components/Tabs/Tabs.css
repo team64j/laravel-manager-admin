@@ -1,8 +1,14 @@
 .app-tabs {
-    @apply flex flex-col grow content-start pb-4 overflow-hidden
+    @apply flex flex-col grow content-start overflow-hidden
+}
+.app-main .app-tabs, .app-page__default .app-tabs {
+    @apply pb-4
 }
 .app-tabs__rows {
-    @apply overflow-hidden relative h-11 w-full px-8 grow-0 shrink-0
+    @apply overflow-hidden relative h-11 w-full grow-0 shrink-0
+}
+.app-main .app-tabs__rows, .app-page__default .app-tabs__rows {
+    @apply px-8
 }
 .app-tabs__row {
     @apply relative overflow-hidden overflow-x-auto h-20 px-0 mx-0 flex flex-nowrap
@@ -29,7 +35,10 @@
     @apply opacity-20 pointer-events-none
 }
 .app-tabs .app-tabs__page {
-    @apply relative flex flex-wrap items-start content-start w-full overflow-auto grow px-5 py-2 rounded bg-white dark:bg-gray-750
+    @apply relative flex flex-wrap items-start content-start w-full overflow-auto grow bg-white dark:bg-gray-750
+}
+.app-main .app-tabs .app-tabs__page, .app-page__default .app-tabs .app-tabs__page {
+    @apply px-5 py-2
 }
 .app-tabs .app-tabs {
     @apply px-0
@@ -69,4 +78,22 @@
 }
 .app-tabs__vertical .app-tabs__prev, .app-tabs__vertical .app-tabs__next {
     @apply hidden
+}
+.app-tabs.app-tabs-small {
+    @apply p-0
+}
+.app-tabs.app-tabs-small .app-tabs__rows {
+    @apply px-0.5 h-[2.4rem] border-b dark:border-b-gray-900
+}
+.app-tabs.app-tabs-small .app-tabs__row {
+    @apply mx-0
+}
+.app-tabs.app-tabs-small .app-tabs__tab {
+    @apply m-0.5 h-8 w-10
+}
+.app-tabs.app-tabs-small .app-tabs__tab:not(.app-tabs__tab-active):hover {
+    @apply hover:bg-gray-100/50 dark:hover:bg-gray-600/40
+}
+.app-tabs.app-tabs-small .app-tabs__page {
+    @apply bg-inherit
 }
