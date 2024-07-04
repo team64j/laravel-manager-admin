@@ -43,6 +43,19 @@ export default {
       if (typeof this.history === 'string') {
         this.active = this.$route['params'][this.history]
         this.data.forEach(i => i.active = i.id === this.active)
+
+        this.$watch(
+            () => this.$route['params'][this.history],
+            active => {
+              if (!active) {
+                return
+              }
+
+              if (this.active !== active) {
+                this.active = active
+              }
+            }
+        )
         //   this.$watch(
         //       () => this.$route['params'][this.history],
         //       active => {
@@ -73,22 +86,42 @@ export default {
         })
 
         // this.$watch(
-        //     () => this.$route,
-        //     route => {
-        //       this.active = null
+        //     () => this.$route['params']['path'],
+        //     active => {
+        //       if (!active) {
+        //         return
+        //       }
         //
         //       this.data.forEach(i => {
-        //         if (!i.route) {
-        //           return
-        //         }
-        //
-        //         const r = router.parse(i.route)
-        //         i.active = r['path'] === route['path']
-        //
-        //         if (i.active) {
+        //         if (this.active !== active && i.id === active) {
         //           this.select(i)
         //         }
         //       })
+        //
+        //     }
+        // )
+
+        // this.$watch(
+        //     () => this.$route,
+        //     (route, routeOld) => {
+        //       if (isEqual(route.query, routeOld.query) && route.path === routeOld.path) {
+        //         console.log(route)
+        //       }
+        //
+        //       // this.active = null
+        //       //
+        //       // this.data.forEach(i => {
+        //       //   if (!i.route) {
+        //       //     return
+        //       //   }
+        //       //
+        //       //   const r = router.parse(i.route)
+        //       //   i.active = r['path'] === route['path']
+        //       //
+        //       //   if (i.active) {
+        //       //     this.select(i)
+        //       //   }
+        //       // })
         //     }
         // )
       }
@@ -145,6 +178,8 @@ export default {
             }
           })
         }
+      } else {
+        // ...
       }
     },
     init (index) {
