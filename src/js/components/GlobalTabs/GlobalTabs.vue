@@ -9,6 +9,7 @@ export default {
   name: 'GlobalTabs',
   __isStatic: true,
   components: { KeepAliveComponent, Frame },
+  emits: ['action'],
   watch: {
     $route (route) {
       this.addTab(route)

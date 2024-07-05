@@ -1,5 +1,6 @@
 <script>
 import router from '../../router'
+import { h } from 'vue'
 
 import('./Tabs.css')
 
@@ -132,6 +133,30 @@ export default {
     } else {
       this.data.forEach(i => i.active = i.render = i.id === this.active)
     }
+
+    // if (this.data.length > 1) {
+    //   const tabs = [
+    //     h('div', { class: 'app-tabs__rows' }, [
+    //       h('div', { class: 'app-tabs__row', ref: 'row' },
+    //           this.data.map((i, k) => {
+    //             return h('div', {
+    //               class: ['app-tabs__tab', i.id === this.active ? 'app-tabs__tab-active' : ''],
+    //               onMousedown: () => this.select(i, k)
+    //             }, [
+    //               i.icon ? h('i', { class: ['app-tabs__tab-icon', i.icon] }) : null,
+    //               i.name ? h('span', i.name) : null
+    //             ])
+    //           })
+    //       ),
+    //       this.navigation ? [
+    //         h('i', { class: 'fa fa-angle-left app-tabs__prev disabled', ref: 'prev', onMousedown: this.prev }),
+    //         h('i', { class: 'fa fa-angle-right app-tabs__next disabled', ref: 'next', onMousedown: this.next })
+    //       ] : null
+    //     ])
+    //   ]
+    //
+    //   this.$.slots['tabs'] = () => tabs
+    // }
   },
   mounted () {
     this.init(this.data.findIndex(tab => tab.id === this.active))
@@ -246,7 +271,9 @@ export default {
 </script>
 
 <template>
-  <div :id="id+`Tabs`" class="app-tabs" :class="[this.class, this.smallTabs ? 'app-tabs-small' : 'app-tabs-large']">
+  <div :id="id+`Tabs`" class="app-tabs" :class="[$attrs.class, smallTabs ? 'app-tabs-small' : 'app-tabs-large']">
+
+    <!--    <slot name="tabs"/>-->
 
     <div v-if="data.length > 1" class="app-tabs__rows">
       <div class="app-tabs__row" ref="row">

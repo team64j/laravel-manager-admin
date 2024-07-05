@@ -5,7 +5,7 @@
     @apply grow flex flex-row overflow-hidden
 }
 .app .app-resizer {
-    @apply relative z-10 md:z-30 shrink-0 w-0 cursor-col-resize pointer-events-none lg:pointer-events-auto
+    @apply relative z-10 md:z-30 shrink-0 w-0 cursor-col-resize hidden lg:block
 }
 .app .app-resizer > div {
     @apply fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize
@@ -36,4 +36,7 @@
 }
 .app.app-sidebar-resize .app-sidebar {
     @apply transition-none
+}
+#app-slot-top:empty, #app-slot-left:empty, #app-slot-sidebar:empty, #app-slot-main:empty, #app-slot-right:empty, #app-slot-bottom:empty {
+    @apply hidden
 }
