@@ -176,6 +176,7 @@ export default {
           (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
     },
     select (tab, index) {
+      this.init(index)
       this.active = tab.id
       this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: this.active })
       tab.loaded = this.loadOnce
