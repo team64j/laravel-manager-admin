@@ -1,6 +1,5 @@
 <script>
 import router from '../../router'
-import { h } from 'vue'
 
 import('./Tabs.css')
 
@@ -172,18 +171,17 @@ export default {
   },
   methods: {
     render (i) {
-      return this.history || (i.needUpdate && i.id === this.active) ||
-          (!i.needUpdate && ((this.loadOnce && !i.loaded) || i.loaded) || !this.loadOnce)
+      return this.history || (i.needUpdate && i.id === this.active) || !i.needUpdate
     },
     select (tab, index) {
       this.init(index)
-      this.active = tab.id
-      this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: this.active })
-      tab.loaded = this.loadOnce
 
       this.data.forEach(i => {
-        i.active = i.id === tab.id
+        i.active = false
       })
+
+      this.active = tab.id
+      this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: this.active })
 
       if (this.history) {
         if (typeof this.history === 'string') {
@@ -272,7 +270,7 @@ export default {
 </script>
 
 <template>
-  <div :id="id+`Tabs`" class="app-tabs" :class="[$attrs.class, smallTabs ? 'app-tabs-small' : 'app-tabs-large']">
+  <div :id="id+`Tabs`" class="app-tabs" :class="[this.class, smallTabs ? 'app-tabs-small' : 'app-tabs-large']">
 
     <!--    <slot name="tabs"/>-->
 
