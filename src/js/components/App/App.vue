@@ -422,7 +422,7 @@ export default {
   <div v-if="loaded" class="app"
        :class="{ 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
     <template v-if="Object.values($slots).length">
-      <div id="app-slot-top" class="grow-0 shrink-0 border-b dark:border-b-black/30">
+      <div id="app-slot-top" class="grow-0 shrink-0">
         <slot name="top"/>
       </div>
       <div class="grow flex flex-row overflow-hidden relative">
@@ -430,7 +430,7 @@ export default {
           <slot name="left"/>
         </div>
         <div class="grow flex flex-row overflow-hidden">
-          <div id="app-slot-sidebar" class="grow-0 shrink-0 app-sidebar" :style="{ width: `${sidebarWidth}px` }">
+          <div id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar" :style="{ width: `${sidebarWidth}px` }">
             <slot name="sidebar"/>
           </div>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">

@@ -1,14 +1,11 @@
 .app-tabs {
-    @apply flex flex-col grow content-start overflow-hidden
-}
-.app-main .app-tabs, .app-page__default .app-tabs {
-    @apply pb-4
+    @apply flex flex-col grow content-start px-4 pb-5 overflow-hidden
 }
 .app-tabs__rows {
     @apply overflow-hidden relative h-11 w-full grow-0 shrink-0
 }
 .app-main .app-tabs__rows, .app-page__default .app-tabs__rows {
-    @apply px-8
+    @apply px-6
 }
 .app-tabs__row {
     @apply relative overflow-hidden overflow-x-auto h-20 px-0 mx-0 flex flex-nowrap
@@ -26,19 +23,16 @@
     @apply absolute h-10 w-5 top-0 pt-1 flex items-center justify-center cursor-pointer select-none hover:text-blue-500
 }
 .app-tabs .app-tabs__prev {
-    @apply left-2
+    @apply left-0
 }
 .app-tabs .app-tabs__next {
-    @apply right-2
+    @apply right-0
 }
 .app-tabs .app-tabs__prev.app-tabs__disabled, .app-tabs .app-tabs__next.app-tabs__disabled {
     @apply opacity-20 pointer-events-none
 }
 .app-tabs .app-tabs__page {
-    @apply relative flex flex-wrap items-start content-start w-full overflow-auto grow bg-white dark:bg-gray-750
-}
-.app-main .app-tabs .app-tabs__page, .app-page__default .app-tabs .app-tabs__page {
-    @apply px-5 py-2
+    @apply relative flex flex-wrap items-start content-start w-full overflow-auto grow bg-white dark:bg-gray-750 rounded
 }
 .app-tabs .app-tabs {
     @apply px-0
@@ -71,10 +65,10 @@
     @apply h-auto w-full py-1 top-auto bottom-0
 }
 .app-tabs__vertical > .app-tabs__page {
-    @apply flex-col h-full p-0 shadow-none rounded-none overflow-auto flex-nowrap
+    @apply flex-col h-full !p-0 shadow-none rounded-none overflow-auto flex-nowrap
 }
 .app-tabs__vertical > .app-tabs__rows ~ .app-tabs__page {
-    @apply pl-5 bg-transparent
+    @apply !pl-5 pr-0 bg-transparent
 }
 .app-tabs__vertical .app-tabs__prev, .app-tabs__vertical .app-tabs__next {
     @apply hidden
@@ -83,7 +77,7 @@
     @apply p-0
 }
 .app-tabs.app-tabs-small .app-tabs__rows {
-    @apply px-0.5 h-[2.4rem] border-b dark:border-b-gray-900
+    @apply px-0.5 h-[2.4rem] bg-slate-100 dark:bg-gray-800
 }
 .app-tabs.app-tabs-small .app-tabs__row {
     @apply mx-0

@@ -42,7 +42,7 @@ export default {
       this.data = null
       this.meta = null
       this.errors = null
-      this.loaded = true
+      this.loaded = false
 
       if (!this.$route['meta']['group']) {
         this.layout = null
