@@ -47,7 +47,7 @@
     @apply p-0 mx-0 h-full shadow-none
 }
 .app-panel__pagination {
-    @apply py-4 grow-0 flex flex-row flex-wrap items-center select-none
+    @apply py-4 px-5 grow-0 flex flex-row flex-wrap items-center select-none
 }
 .app-panel.\!-mx-4 > .app-panel__pagination {
     @apply px-4
