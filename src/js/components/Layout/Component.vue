@@ -9,7 +9,7 @@ export default {
     action () {
       this.$emit('action', ...arguments)
     },
-    initLayout (layout) {
+    initLayout (layout, stack) {
       layout = toRaw(layout || this.setLayoutData())
 
       if (!layout) {
@@ -17,7 +17,16 @@ export default {
       }
 
       if (layout.component) {
-        return this.createComponent(layout)
+        if (layout.slot && stack) {
+          if (!stack[layout.slot]) {
+            stack[layout.slot] = []
+          }
+
+          stack[layout.slot].push(this.createComponent(layout))
+          return
+        }
+
+        return this.createComponent(layout, stack)
       }
 
       if (typeof layout === 'string') {
@@ -31,14 +40,15 @@ export default {
         let obj
         if (Array.isArray(layout)) {
           obj = []
-          layout.forEach(i => obj.push(this.initLayout(i)))
+          layout.forEach(i => obj.push(this.initLayout(i, stack)))
         } else {
           obj = {}
           for (let i in layout) {
-            const slots = this.initLayout(layout[i])
+            const slots = this.initLayout(layout[i], stack)
             obj[i] = () => slots
           }
         }
+
         return obj
       }
 
@@ -66,7 +76,7 @@ export default {
 
       return data
     },
-    createComponent (data) {
+    createComponent (data, stack) {
       let component
 
       try {
@@ -80,7 +90,7 @@ export default {
         return
       }
 
-      const slots = data.slots && this.initLayout(data.slots)
+      const slots = data.slots && this.initLayout(data.slots, stack)
       const attrs = toRaw(data.attrs || {})
 
       attrs.key = data.model || data.component.name || ''
