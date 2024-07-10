@@ -196,6 +196,8 @@ export default {
         } else {
           const route = router.parse(tab.route)
 
+          // router.to(route)
+
           this.$emit('action', 'pushRouter', {
             ...route,
             meta: {
