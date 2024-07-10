@@ -359,11 +359,14 @@ export default {
                 url
             )
           } else {
-            this.$emit(
-                'action',
-                'pushRouter',
-                url
-            )
+            router.to(url)
+            this.get(url.query, [])
+
+            // this.$emit(
+            //     'action',
+            //     'pushRouter',
+            //     url
+            // )
 
             this.$emit('update:props', {
               data: [],
