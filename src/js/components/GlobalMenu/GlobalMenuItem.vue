@@ -284,7 +284,7 @@ export default {
       event.currentTarget.classList.add('app-global-menu__hover')
     },
     onClick (event) {
-      if (this.data?.values) {
+      if (this.data?.values || this.data.to) {
         this.$emit('action', 'show', false)
         event.stopPropagation()
         return
