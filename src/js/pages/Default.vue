@@ -27,7 +27,7 @@ export default {
         this.$emit('action', ...arguments)
       }
     },
-    get () {
+    get (loaded) {
       const url = this.$route?.['meta']?.['url'] ? this.$route['meta']['url'] : this.$route['path']
 
       this.$emit('action', 'setTab', {
@@ -42,7 +42,7 @@ export default {
       this.data = null
       this.meta = null
       this.errors = null
-      this.loaded = false
+      this.loaded = loaded || false
 
       if (!this.$route['meta']['group']) {
         this.layout = null
@@ -157,14 +157,14 @@ export default {
           'action',
           'pushRouter',
           route,
-          router.key(this.$route, route) && this.get
+          () => router.key(this.$route, route) && this.get(true)
       )
     },
     inputChangeQuery (event, ctx) {
       const route = router.parse({
         query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: event.target.value })
       })
-      this.$emit('action', 'pushRouter', route, this.get)
+      this.$emit('action', 'pushRouter', route, () => this.get(true))
     },
     updateModelValue () {
       this.$emit('action', 'setTab', {
