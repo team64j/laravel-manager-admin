@@ -28,8 +28,8 @@ export default {
       <slot name="tabs"/>
     </div>
 
-    <div v-if="$slots['breadcrumbs']" class="app-main__breadcrumbs">
-      <slot name="breadcrumbs"/>
+    <div v-if="$slots['crumbs']" class="app-main__crumbs">
+      <slot name="crumbs"/>
     </div>
 
   </div>

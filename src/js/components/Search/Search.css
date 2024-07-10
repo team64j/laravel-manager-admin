@@ -1,5 +1,5 @@
 .app-search {
-    @apply flex justify-center items-baseline absolute z-30 left-0 top-0 right-0 bottom-0 p-5
+    @apply flex justify-center items-baseline absolute z-50 left-0 top-0 right-0 bottom-0 p-5
 }
 .app-search__back {
     @apply absolute left-0 top-0 right-0 bottom-0

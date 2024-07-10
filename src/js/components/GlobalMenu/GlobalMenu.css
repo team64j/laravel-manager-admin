@@ -1,14 +1,14 @@
 .app-global-menu {
     @apply relative bg-gray-700 text-gray-100
 }
-.app-global-menu.app-global-menu__active {
+.app-global-menu.app-global-menu--active {
     @apply z-40
 }
 .app-global-menu::before {
-    @apply fixed left-0 top-0 right-0 bottom-0 bg-black/5 dark:bg-black/20 opacity-0 invisible transition-all;
+    @apply fixed left-0 top-14 right-0 bottom-0 bg-black/5 dark:bg-black/20 opacity-0 invisible transition-all;
     content: "";
 }
-.app-global-menu.app-global-menu__active::before {
+.app-global-menu.app-global-menu--active::before {
     @apply opacity-100 visible
 }
 .app-global-menu > ul {
@@ -26,16 +26,16 @@
 .app-global-menu > ul > li > ul > li > * {
     @apply rounded
 }
-.app-global-menu > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li li.app-global-menu__hover > span {
+.app-global-menu > ul > li li:hover > a, .app-global-menu > ul > li li:hover > span, .app-global-menu > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li li.app-global-menu__hover > span {
     @apply bg-gray-600 dark:bg-gray-600 cursor-pointer
 }
 .app-global-menu li > a, .app-global-menu li > span {
-    @apply flex justify-center items-center py-2 px-2.5 md:px-4 w-full h-full
+    @apply flex justify-center items-center p-3 md:px-4 w-full h-full
 }
-.app-global-menu > ul > li > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > span {
+.app-global-menu > ul > li > ul > li li:hover > a, .app-global-menu > ul > li > ul > li li:hover > span, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > span {
     @apply bg-blue-600 text-white dark:bg-blue-600
 }
-.app-global-menu > ul > li > ul > li li.app-global-menu__hover > span.disabled {
+.app-global-menu > ul > li > ul > li li:hover > span.disabled, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > span.disabled {
     @apply bg-inherit text-inherit cursor-default
 }
 .app-global-menu li .app-global-menu__icon {
@@ -69,12 +69,12 @@
     @apply hidden md:inline-flex
 }
 .app-global-menu li .app-global-menu__toggle {
-    @apply ml-2 -mr-1 inline-flex items-center justify-center h-full opacity-70
+    @apply ml-2 -mr-3 -my-2 w-10 h-10 inline-flex items-center justify-center opacity-70
 }
 .app-global-menu li .app-global-menu__toggle i {
     @apply pointer-events-none transition
 }
-.app-global-menu.app-global-menu__active > ul > li > ul > li.app-global-menu__hover > * > .app-global-menu__toggle i {
+.app-global-menu.app-global-menu--active > ul > li > ul > li:hover > * > .app-global-menu__toggle i, .app-global-menu.app-global-menu--active > ul > li > ul > li.app-global-menu__hover > * > .app-global-menu__toggle i {
     @apply rotate-180
 }
 .app-global-menu > ul > li li li .app-global-menu__toggle i {
@@ -109,7 +109,7 @@
 }
 .app-global-menu > ul > li > ul li.app-global-menu__parent > ul {
     @apply absolute opacity-0 invisible top-full left-1.5 right-1.5 md:right-auto md:left-0 flex-col md:min-w-full md:w-[20rem] rounded py-1 shadow-2xl bg-white text-gray-950 dark:bg-gray-700 dark:text-gray-50 transition;
-    max-height: calc(100vh - 3rem);
+    max-height: calc(100vh - 4rem);
 }
 .app-global-menu > ul > li > ul > li ul ul {
     @apply overflow-auto overflow-x-hidden
@@ -118,8 +118,9 @@
     @apply md:left-auto md:right-0
 }
 .app-global-menu > ul > li > ul li li.app-global-menu__parent > ul {
-    @apply md:left-full top-0
+    @apply md:left-full top-0 left-0 right-0
 }
-.app-global-menu.app-global-menu__active li.app-global-menu__parent.app-global-menu__hover > ul {
-    @apply opacity-100 visible z-10
+.app-global-menu.app-global-menu--active li.app-global-menu__parent:hover > ul, .app-global-menu.app-global-menu--active li.app-global-menu__parent.app-global-menu__hover > ul {
+    @apply opacity-100 visible z-10;
+    max-height: calc(100vh - 4rem);
 }

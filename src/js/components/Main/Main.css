@@ -20,6 +20,6 @@
 .app-main__tabs > .app-tabs > .app-tabs__page .app-panel .app-panel__pagination {
     @apply px-0
 }
-.app-main__breadcrumbs {
-    @apply grow-0 border-t dark:border-t-gray-900
+.app-main__crumbs {
+    @apply grow-0 bg-slate-100 dark:bg-gray-750
 }

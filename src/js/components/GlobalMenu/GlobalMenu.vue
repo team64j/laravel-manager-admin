@@ -18,11 +18,11 @@ export default {
 
       if (target && target.closest('.app-global-menu')) {
         if (target.classList.contains('app-global-menu__parent')) {
-          this.show(!this.$el.classList.contains('app-global-menu__active'))
+          this.show(!this.$el.classList.contains('app-global-menu--active'))
         } else {
           this.show(false)
         }
-      } else if (this.$el.classList.contains('app-global-menu__active')) {
+      } else if (this.$el.classList.contains('app-global-menu--active')) {
         this.show(false)
       }
     })
@@ -36,7 +36,7 @@ export default {
       }
     },
     show (value = true) {
-      this.$el.classList.toggle('app-global-menu__active', value)
+      this.$el.classList.toggle('app-global-menu--active', value)
       this.$store.dispatch('set', { menuShow: value })
     },
     onNodeClick (data) {
@@ -102,6 +102,18 @@ export default {
       }).catch(() => {
         instance.loading = false
       })
+    },
+    setActiveClass (el) {
+      this.$el.querySelectorAll('.app-global-menu__hover').forEach(i => i.classList.remove('app-global-menu__hover'))
+
+      while (true) {
+        el.classList.add('app-global-menu__hover')
+        el = el.parentElement.closest('li')
+
+        if (!el) {
+          break
+        }
+      }
     }
   },
   setup (props) {

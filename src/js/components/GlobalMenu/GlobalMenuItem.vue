@@ -111,7 +111,10 @@ export default {
       if (this.loading) {
         slots.push(
             h('span', {
-                  class: 'app-global-menu__toggle'
+                  class: 'app-global-menu__toggle',
+                  onClick: this.onClickToggle,
+                  onMouseenter: this.onClickToggle,
+                  onMouseleave: this.onOut
                 },
                 h('i', {
                       class: 'inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin'
@@ -122,7 +125,10 @@ export default {
       } else if ((this.model['data']?.length && this.level) || this.model['url']) {
         slots.push(
             h('span', {
-              class: 'app-global-menu__toggle'
+                  class: 'app-global-menu__toggle',
+                  onClick: this.onClickToggle,
+                  onMouseenter: this.onClickToggle,
+                  onMouseleave: this.onOut
                 },
                 h('i', {
                   class: 'fa fa-angle-down fa-fw leading-[0]'
@@ -231,12 +237,32 @@ export default {
     action () {
       this.$emit('action', ...arguments)
     },
-    onClick () {
-      if (this.model['url'] && !this.$store.getters.get('menuShow')) {
-        this.$emit('action', 'loadData', this.model['url'], this)
+    onClick2 (event) {
+      if (this.$root['isMobile']) {
+        this.$emit('action', 'setActiveClass', event.currentTarget)
+        if (event.currentTarget.classList.contains('app-global-menu__parent')) {
+          if (this.model['url']) {
+            this.$emit('action', 'show', true)
+            this.$emit('action', 'loadData', this.model['url'], this)
+            event.preventDefault()
+          } else {
+            this.$emit('action', 'show', this.level <= 1)
+          }
+        } else {
+          this.$emit('action', 'show', false)
+        }
+        event.stopPropagation()
+      } else {
+        if (this.model['url'] && !this.$store.getters.get('menuShow')) {
+          this.$emit('action', 'loadData', this.model['url'], this)
+        }
       }
     },
-    onEnter (event) {
+    onEnter2 (event) {
+      if (this.$root['isMobile']) {
+        return
+      }
+
       event.currentTarget.parentElement.parentElement.querySelectorAll(':scope > ul > li.app-global-menu__hover').
           forEach(i => {
             if (this.$el !== i) {
@@ -256,6 +282,58 @@ export default {
       }
 
       event.currentTarget.classList.add('app-global-menu__hover')
+    },
+    onClick (event) {
+      if (this.data?.values) {
+        this.$emit('action', 'show', false)
+        event.stopPropagation()
+        return
+      }
+
+      if (this.$store.getters.get('menuShow')) {
+        this.onClickToggle(event)
+        this.$emit('action', 'show', false)
+      } else {
+        this.onClickToggle(event)
+        this.$emit('action', 'show', true)
+      }
+
+      event.stopPropagation()
+    },
+    onEnter (event) {
+      if (event.currentTarget.classList.contains('app-global-menu__hover')) {
+        return
+      }
+
+      this.$emit('action', 'setActiveClass', event.currentTarget)
+      if (this.model['url'] && this.model['data']) {
+        this.model['data'] = null
+      }
+    },
+    onClickToggle (event) {
+      if (this.$el.classList.contains('app-global-menu__hover') && this.model['url'] && this.model['data'] &&
+          event.type !== 'click') {
+        return
+      }
+
+      if (this.model['url']) {
+        // if (this.level <= 1 && event.type !== 'click') {
+        //   return
+        // }
+
+        this.$emit('action', 'setActiveClass', event.currentTarget)
+        if (this.model['data']) {
+          this.model['data'] = null
+        } else {
+          clearTimeout(this.timer)
+          this.timer = setTimeout(() => {
+            this.$emit('action', 'loadData', this.model['url'], this)
+            this.$emit('action', 'show', true)
+          }, 200)
+        }
+        event.stopPropagation()
+        event.preventDefault()
+      }
     },
     onOut () {
       if (this.model['url']) {

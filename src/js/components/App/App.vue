@@ -18,6 +18,9 @@ export default {
   computed: {
     store () {
       return store
+    },
+    isMobile () {
+      return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints']
     }
   },
   components: { Notifications, RouterView, Tooltip, Datepicker, GlobalMenu, GlobalTabs, Component, Search },
