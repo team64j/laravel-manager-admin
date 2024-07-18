@@ -132,7 +132,7 @@ export default {
 <template>
   <div class="app-global-tabs group">
 
-    <div class="grow-0">
+    <div class="grow-0 dark">
       <div class="relative h-[2.4rem] bg-slate-100 dark:bg-gray-800 overflow-hidden">
         <div class="relative flex flex-nowrap mx-0.5 min-h-[2.35rem] overflow-auto" ref="panel">
           <a v-for="(tab, i) in this.tabs"

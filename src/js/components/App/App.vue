@@ -1,5 +1,4 @@
 <script>
-import { compile, h, shallowReactive, toRaw } from 'vue'
 import { RouterView } from 'vue-router'
 import { Notifications } from '@kyvg/vue3-notification'
 import GlobalMenu from '../GlobalMenu/GlobalMenu.vue'
@@ -16,6 +15,9 @@ import('./App.css')
 export default {
   name: 'App',
   computed: {
+    Component () {
+      return Component
+    },
     store () {
       return store
     },
@@ -236,8 +238,8 @@ export default {
       </div>
       <div class="grow flex flex-row overflow-hidden relative">
         <div class="grow flex flex-row overflow-hidden">
-          <div id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar" :style="{ width: `${sidebarWidth}px` }">
-            <Component :layout="this.layout.find(i => i.slot === 'sidebar')" @action="action"/>
+          <div id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark" :style="{ width: `${sidebarWidth}px` }">
+            <component :is="Component" :layout="this.layout.find(i => i.slot === 'sidebar')" @action="action"/>
           </div>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
             <div/>

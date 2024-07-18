@@ -93,6 +93,10 @@ export default {
       const slots = data.slots && this.initLayout(data.slots, stack)
       const attrs = toRaw(data.attrs || {})
 
+      if (this.$props.class) {
+        attrs.class = (attrs.class ? attrs.class + ' ' : '') + this.$props.class
+      }
+
       attrs.key = data.model || data.component.name || ''
       attrs.modelValue = data?.attrs?.value
 
