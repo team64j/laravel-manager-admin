@@ -52,15 +52,20 @@ export default {
 
       let is = false
 
-      this.tabs.map(i => {
+      for (const i of this.tabs) {
         i.active = router.key(i, data)
 
         if (i.active) {
           is = true
           data.meta = i.meta
+
+          if (i.path !== data.path) {
+            // reload tab
+          }
+
           Object.assign(i, data)
         }
-      })
+      }
 
       if (!is && !data.meta['hidden']) {
         data.active = true
