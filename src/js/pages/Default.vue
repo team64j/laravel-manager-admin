@@ -40,12 +40,13 @@ export default {
       })
 
       if (reload) {
-        this.data = null
-        this.loaded = false
         this.meta = null
         this.errors = null
+
         if (!this.$route['meta']['group']) {
           this.layout = null
+          this.data = null
+          this.loaded = false
         }
       }
 
