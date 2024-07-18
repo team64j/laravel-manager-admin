@@ -11,7 +11,7 @@ export default {
   components: { KeepAliveComponent, Frame },
   emits: ['action'],
   watch: {
-    $route (route) {
+    '$route' (route) {
       this.addTab(route)
     }
   },
@@ -52,20 +52,15 @@ export default {
 
       let is = false
 
-      for (const i of this.tabs) {
+      this.tabs.forEach(i => {
         i.active = router.key(i, data)
 
         if (i.active) {
           is = true
           data.meta = i.meta
-
-          if (i.path !== data.path) {
-            // reload tab
-          }
-
           Object.assign(i, data)
         }
-      }
+      })
 
       if (!is && !data.meta['hidden']) {
         data.active = true

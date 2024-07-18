@@ -5,7 +5,6 @@ import Component from '../components/Layout/Component.vue'
 
 export default {
   name: 'DefaultPage',
-  components: { Component },
   data () {
     return {
       url: null,
@@ -221,7 +220,7 @@ export default {
       this.loaded = true
     }
   },
-  setup2 () {
+  setup () {
     return function () {
       return h('div', {
             class: 'app-page__default w-full h-full flex flex-col overflow-auto'
@@ -249,20 +248,3 @@ export default {
   }
 }
 </script>
-
-<template>
-  <div class="app-page__default w-full h-full flex flex-col overflow-auto">
-    <Component v-if="this.loaded"
-               :url="url"
-               :data="data"
-               :meta="meta"
-               :layout="layout"
-               :errors="errors"
-               @action="action"
-               @update:modelValue="updateModelValue"/>
-    <div v-else class="flex items-center justify-center grow">
-      <div
-          class="inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500 opacity-100"/>
-    </div>
-  </div>
-</template>
