@@ -26,7 +26,6 @@ export default {
   __isStatic: true,
   name: 'Textarea',
   extends: Field,
-
   props: {
     modelValue: {
       type: [null, Object, String, Number, Boolean],
@@ -41,8 +40,15 @@ export default {
       default: true
     }
   },
-
   computed: {
+    model: {
+      get () {
+        return this.value ?? this.modelValue ?? ''
+      },
+      set (value) {
+        this.$emit('update:modelValue', value, this)
+      }
+    },
     height () {
       const fs = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue('font-size'))
 

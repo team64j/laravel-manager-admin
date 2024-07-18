@@ -27,7 +27,7 @@ export default {
         this.$emit('action', ...arguments)
       }
     },
-    get () {
+    get (reload = true) {
       const url = this.$route?.['meta']?.['url'] ? this.$route['meta']['url'] : this.$route['path']
 
       this.$emit('action', 'setTab', {
@@ -39,13 +39,14 @@ export default {
         }
       })
 
-      this.data = null
-      this.meta = null
-      this.errors = null
-      this.loaded = false
-
-      if (!this.$route['meta']['group']) {
-        this.layout = null
+      if (reload) {
+        this.data = null
+        this.loaded = false
+        this.meta = null
+        this.errors = null
+        if (!this.$route['meta']['group']) {
+          this.layout = null
+        }
       }
 
       axios.get(url, {
@@ -161,6 +162,12 @@ export default {
       )
     },
     inputChangeQuery (event, ctx) {
+      const route = router.parse({
+        query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: event.target.value })
+      })
+      this.$emit('action', 'pushRouter', route, () => this.get(false))
+    },
+    inputReloadQuery (event, ctx) {
       const route = router.parse({
         query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: event.target.value })
       })

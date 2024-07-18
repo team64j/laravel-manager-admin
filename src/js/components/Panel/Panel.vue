@@ -503,7 +503,7 @@ export default {
 
 <template>
   <div class="app-panel">
-    <div v-if="$slots['top']" class="mb-3">
+    <div v-if="$slots['top']">
       <slot name="top"/>
     </div>
 
