@@ -35,20 +35,62 @@
         </div>
       </template>
 
-      <select v-else
-              v-model="model"
-              :id="ID"
-              @mousedown="onMousedown"
-              @change="onChange"
-              @focus="onFocus"
-              @blur="onBlur">
-        <template v-for="i in options">
-          <optgroup v-if="i.data" :label="i.name">
-            <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">{{ j.value }}</option>
-          </optgroup>
-          <option v-else :value="i.key" :selected="i.selected" :disabled="i.disabled">{{ i.value }}</option>
-        </template>
-      </select>
+      <!--      <select v-else
+                    v-model="model"
+                    :id="ID"
+                    @mousedown="onMousedown"
+                    @change="onChange"
+                    @focus="onFocus"
+                    @blur="onBlur">
+              <template v-for="i in options">
+                <optgroup v-if="i.data" :label="i.name">
+                  <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">{{ j.value }}</option>
+                </optgroup>
+                <option v-else :value="i.key" :selected="i.selected" :disabled="i.disabled">{{ i.value }}</option>
+              </template>
+            </select>-->
+
+      <template v-else>
+        <input type="text"
+               :value="options?.filter(i => i.data && i.data.some(j => j.key === modelValue) || i.key === modelValue).map(i => i.data ? i.data.find(j => j.key === modelValue) : i).map(i => i.value)[0]"
+               :id="ID" readonly
+               class="app-appearance-select cursor-pointer"
+               :placeholder="placeholder"
+               @change="onChange"
+               @mousedown="onMousedown"
+               @focus="onFocus"
+               @blur="onBlur"/>
+
+        <div v-show="options"
+             class="hidden absolute left-0 top-full w-full z-[1] border border-blue-500 mt-0 p-1 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
+             @mousedown.prevent="">
+
+          <template v-for="o in options">
+            <template v-if="o?.data">
+              <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
+              <checkbox-component
+                  v-model="model"
+                  :data="o.data"
+                  @update:modelValue="onUpdateModelValue"
+                  false-value=""
+                  class="px-5 relative"
+                  input-class="z-[-1] absolute left-0 right-0 top-0 w-auto h-full !m-0 border-none !bg-none"
+                  label-class="w-full"/>
+            </template>
+
+            <checkbox-component
+                v-else
+                v-model="model"
+                :data="[o]"
+                @update:modelValue="onUpdateModelValue"
+                false-value=""
+                class="px-3 relative"
+                input-class="z-[-1] absolute left-0 right-0 top-0 w-auto h-full !m-0 border-none !bg-none"
+                label-class="w-full"/>
+          </template>
+
+        </div>
+      </template>
 
       <template v-if="itemNew !== undefined">
         <input type="text" class="block w-full px-3 py-1 rounded" :id="`input-`+ID" @input="onInput"/>
@@ -68,7 +110,10 @@
             @blur="onBlur">
       <template v-for="i in options">
         <optgroup v-if="i.data" :label="i.name">
-          <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">{{ j.value }}</option>
+          <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">{{
+              j.value
+            }}
+          </option>
         </optgroup>
         <option v-else :value="i.key" :selected="i.selected" :disabled="i.disabled">{{ i.value }}</option>
       </template>
@@ -125,6 +170,8 @@ export default {
 
     onMousedown (event) {
       if (!this.url || event.target.classList.contains('opened') || this.multiple) {
+        event.target.classList.toggle('opened')
+        this.$emit('action', 'mousedown:select', event, this)
         return
       }
 
@@ -152,7 +199,7 @@ export default {
     onChange (event) {
       const target = event.target
 
-      if (target.value === this.itemNew) {
+      if (target.value === this.itemNew && target.options) {
         let value = target.dataset.value
 
         for (let i of target.options) {
@@ -171,7 +218,7 @@ export default {
         target.dataset.value = target.value
       }
 
-      this.$emit('action', this.emitInput || 'change:select', event, this)
+      this.$emit('action', this.emitInput || 'change:select', target.value, this)
     },
 
     onFocus (event) {
@@ -214,6 +261,10 @@ export default {
 
     onClickMultipleList (event) {
       event.currentTarget.previousElementSibling.focus()
+    },
+
+    onUpdateModelValue (value) {
+      this.$emit('action', this.emitInput || 'change:select', value, this)
     }
   }
 }
@@ -223,31 +274,24 @@ export default {
 select + input {
   @apply hidden absolute left-0 top-0 pr-8
 }
-
 select + input + i {
   @apply hidden
 }
-
 select optgroup {
   @apply font-bold bg-slate-100 dark:bg-gray-700
 }
-
 select option {
   @apply bg-white dark:bg-gray-800
 }
-
-input.active + div {
+input.active + div, input.opened + div {
   @apply block
 }
-
 .app-select__editable select + input {
   @apply block
 }
-
 .app-select__editable select {
   @apply opacity-0
 }
-
 .app-select__editable select + input + i {
   @apply absolute block right-0 top-0 my-2.5 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition
 }

@@ -17,6 +17,7 @@ export default {
     id: String,
     inputClass: [Array, Object, String],
     label: String,
+    labelClass: [Array, Object, String],
     modelValue: [null, Object, String, Number, Boolean],
     placeholder: String,
     readonly: Boolean,

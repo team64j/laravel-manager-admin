@@ -234,11 +234,12 @@ export default {
        :class="{ 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
     <template v-if="layout">
       <div id="app-slot-top" class="grow-0 shrink-0">
-        <global-menu :data="this.layout.find(i => i.slot === 'top').attrs.data" @action="action"/>
+        <component :is="Component" :layout="this.layout.find(i => i.slot === 'top')" @action="action"/>
       </div>
       <div class="grow flex flex-row overflow-hidden relative">
         <div class="grow flex flex-row overflow-hidden">
-          <div id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark" :style="{ width: `${sidebarWidth}px` }">
+          <div id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
+               :style="{ width: `${sidebarWidth}px` }">
             <component :is="Component" :layout="this.layout.find(i => i.slot === 'sidebar')" @action="action"/>
           </div>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">

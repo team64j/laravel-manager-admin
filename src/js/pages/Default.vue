@@ -161,15 +161,15 @@ export default {
           router.key(this.$route, route) && this.get
       )
     },
-    inputChangeQuery (event, ctx) {
+    inputChangeQuery (value, ctx) {
       const route = router.parse({
-        query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: event.target.value })
+        query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: value })
       })
       this.$emit('action', 'pushRouter', route, () => this.get(false))
     },
-    inputReloadQuery (event, ctx) {
+    inputReloadQuery (value, ctx) {
       const route = router.parse({
-        query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: event.target.value })
+        query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: value })
       })
       this.$emit('action', 'pushRouter', route, this.get)
     },
