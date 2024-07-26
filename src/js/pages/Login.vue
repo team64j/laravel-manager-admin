@@ -127,7 +127,7 @@ export default {
 </script>
 
 <template>
-  <div class="app__page__login">
+  <div class="app__page__login dark">
     <div
         class="app__page__login-wrapper">
 
@@ -144,28 +144,28 @@ export default {
         <div class="app__page__login-form-group-api">
           <div v-if="data?.languages?.length" class="app__page__login-form-group">
             <button type="button"
-                    class="rounded-r-none"
+                    class="rounded-r-none bg-transparent dark:bg-transparent"
                     @click="toggleModal('isShowLanguages')">
               {{ lang.key?.toUpperCase() }}
             </button>
           </div>
           <div class="app__page__login-form-group app__page__login-form-hostname">
             <input v-model="hostname" type="text" id="hostname"
-                   class="rounded-r-none"
+                   class="rounded-r-none bg-transparent dark:bg-transparent"
                    :class="[ errors['hostname'] ? '!border-rose-500' : '', data?.languages?.length ? 'rounded-l-none' : '']"
                    @keyup.enter="checkServer"
                    autocomplete="off">
           </div>
           <div v-if="hostnames.length" class="app__page__login-form-group">
             <button type="button"
-                    class="rounded-none"
+                    class="rounded-none bg-transparent dark:bg-transparent"
                     @click="toggleModal('isShowHostnames')">
               <i class="fa fa-ellipsis fa-fw"/>
             </button>
           </div>
           <div class="app__page__login-form-group">
             <button type="button"
-                    class="rounded-l-none"
+                    class="rounded-l-none bg-transparent dark:bg-transparent"
                     :disabled="isCheckServer"
                     @click="checkServer">
               <i class="fa fa-globe fa-fw"
@@ -183,7 +183,7 @@ export default {
                  type="text"
                  id="username"
                  name="username"
-                 class="border-2 py-2.5 px-3.5 !ring-0 !bg-transparent"
+                 class="bg-transparent dark:bg-transparent"
                  :class="[ errors['username'] ? '!border-rose-500' : '']"
                  autocomplete="username"
                  @keyup.enter="login">
@@ -194,6 +194,7 @@ export default {
           <input v-model="form['password']" type="password"
                  id="password"
                  name="password"
+                 class="bg-transparent dark:bg-transparent"
                  :class="[ errors['password'] ? '!border-rose-500' : '']"
                  @keyup.enter="login">
         </div>
@@ -295,7 +296,7 @@ export default {
   @apply grow
 }
 .app__page__login input, .app__page__login .app__page__login-form-group-api button {
-  @apply py-2.5 px-3.5 !ring-0 !bg-transparent border-2 focus:z-10 z-[1]
+  @apply py-2.5 px-3.5 border-2 focus:z-10 z-[1]
 }
 .app__page__login button {
   @apply flex items-center justify-center py-2.5 px-7

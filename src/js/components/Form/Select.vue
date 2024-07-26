@@ -9,61 +9,24 @@
       <slot name="label"/>
     </div>
     <div class="relative">
-      <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2">
+      <div v-if="loading" class="absolute z-10 left-2 top-2">
         <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
 
       <template v-if="multiple">
-        <input type="text" v-model="model" :id="ID" readonly
+        <input type="text"
+               :value="firstValue"
+               :id="ID"
+               ref="input"
+               readonly
                class="block relative w-full px-3 py-1 rounded app-appearance-select cursor-pointer"
                :placeholder="placeholder"
-               @mousedown="onClickMultipleInput"
-               @blur="onBlurMultipleInput"/>
+               @mousedown="onMousedown"
+               @blur="onBlur"/>
         <div
             class="absolute left-0 top-full w-full hidden z-[1] border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
             @click="onClickMultipleList"
-            @mousedown.prevent.stop="onClickMultipleList">
-
-          <template v-if="options?.[0]?.data">
-            <div v-for="i in options" class="py-1">
-              <div class="px-3 pt-1 pb-0.5 font-bold">{{ i.name }}</div>
-              <checkbox-component v-model="model" :data="i.data" class="px-3 py-0.5"/>
-            </div>
-          </template>
-
-          <checkbox-component v-else v-model="model" :data="options" class="px-3 py-0.5"/>
-        </div>
-      </template>
-
-      <!--      <select v-else
-                    v-model="model"
-                    :id="ID"
-                    @mousedown="onMousedown"
-                    @change="onChange"
-                    @focus="onFocus"
-                    @blur="onBlur">
-              <template v-for="i in options">
-                <optgroup v-if="i.data" :label="i.name">
-                  <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">{{ j.value }}</option>
-                </optgroup>
-                <option v-else :value="i.key" :selected="i.selected" :disabled="i.disabled">{{ i.value }}</option>
-              </template>
-            </select>-->
-
-      <template v-else>
-        <input type="text"
-               :value="options?.filter(i => i.data && i.data.some(j => j.key === modelValue) || i.key === modelValue).map(i => i.data ? i.data.find(j => j.key === modelValue) : i).map(i => i.value)[0]"
-               :id="ID" readonly
-               class="app-appearance-select cursor-pointer"
-               :placeholder="placeholder"
-               @change="onChange"
-               @mousedown="onMousedown"
-               @focus="onFocus"
-               @blur="onBlur"/>
-
-        <div v-show="options"
-             class="hidden absolute left-0 top-full w-full z-[1] border border-blue-500 mt-0 p-1 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
-             @mousedown.prevent="">
+            @mousedown.prevent="onClickMultipleList">
 
           <template v-for="o in options">
             <template v-if="o?.data">
@@ -71,10 +34,8 @@
               <checkbox-component
                   v-model="model"
                   :data="o.data"
-                  @update:modelValue="onUpdateModelValue"
                   false-value=""
-                  class="px-5 relative"
-                  input-class="z-[-1] absolute left-0 right-0 top-0 w-auto h-full !m-0 border-none !bg-none"
+                  class="pl-3 py-0.5"
                   label-class="w-full"/>
             </template>
 
@@ -82,25 +43,63 @@
                 v-else
                 v-model="model"
                 :data="[o]"
-                @update:modelValue="onUpdateModelValue"
                 false-value=""
-                class="px-3 relative"
-                input-class="z-[-1] absolute left-0 right-0 top-0 w-auto h-full !m-0 border-none !bg-none"
+                class="pl-3 py-0.5"
                 label-class="w-full"/>
           </template>
-
         </div>
       </template>
 
-      <template v-if="itemNew !== undefined">
-        <input type="text" class="block w-full px-3 py-1 rounded" :id="`input-`+ID" @input="onInput"/>
-        <i class="fa fa-circle-xmark" @click="onClickClear"/>
+      <template v-else>
+        <div v-show="itemNew === model">
+          <input type="text" :id="`input-`+ID" autofocus @input="onInput"/>
+          <i class="fa fa-circle-xmark absolute top-3 right-3" @click="onClickClear"/>
+        </div>
+
+        <input v-show="itemNew !== model"
+               type="text"
+               :value="firstValue"
+               :id="ID"
+               ref="input"
+               readonly
+               class="app-appearance-select cursor-pointer"
+               :placeholder="placeholder"
+               @mousedown="onMousedown"
+               @blur="onBlur"/>
+
+        <div
+            class="absolute left-0 top-full w-full hidden z-[1] border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
+            @mousedown.prevent="">
+
+          <template v-for="o in options">
+            <template v-if="o?.data">
+              <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
+              <radio-component
+                  v-model="model"
+                  :data="o.data"
+                  false-value=""
+                  class="pl-3 py-0.5"
+                  label-class="w-full"/>
+            </template>
+
+            <radio-component
+                v-else
+                v-model="model"
+                :data="[o]"
+                false-value=""
+                class="pl-3 py-0.5"
+                label-class="w-full"/>
+          </template>
+        </div>
       </template>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
     <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </div>
-  <template v-else>
+  <div v-else class="relative">
+    <div v-if="loading" class="absolute z-10 left-2 top-2">
+      <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+    </div>
     <select v-model="model"
             :id="ID"
             :multiple="multiple"
@@ -120,42 +119,84 @@
     </select>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
     <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
-  </template>
+  </div>
 </template>
 
 <script>
 import CheckboxComponent from './Checkbox.vue'
+import RadioComponent from './Radio.vue'
 import Field from './Field.vue'
 
 export default {
   __isStatic: true,
   name: 'Select',
   extends: Field,
-  components: { CheckboxComponent },
-
+  components: { CheckboxComponent, RadioComponent },
   props: {
     multiple: Boolean,
     load: Boolean,
-    url: String,
-    itemNew: String
+    url: String
   },
-
   data () {
     return {
-      options: this.data || []
+      options: this.data || [],
+      lastModelValue: this.modelValue
     }
   },
-
   created () {
-    if ((this.multiple || this.load) && this.url) {
+    if (this.load && this.url) {
       this.get()
     }
   },
+  computed: {
+    model: {
+      get () {
+        const value = this.value ?? this.modelValue ?? ''
+        return this.multiple && !Array.isArray(value) ? [value] : value
+      },
+      set (value) {
+        this.$emit('update:modelValue', value, this)
+      }
+    },
+    firstValue () {
+      const values = []
 
+      this.options?.forEach(i => {
+        if (i.data) {
+          values.push(...i.data)
+        } else {
+          values.push(i)
+        }
+      })
+
+      const value = this.multiple ?
+          values.filter(i => (Array.isArray(this.modelValue) ?
+                  this.modelValue :
+                  [this.modelValue]
+          ).includes(i.key)).map(i => i.value) :
+          values.filter(i => this.modelValue === i.key && this.itemNew !== i.key).map(i => i.value)
+
+      if (value.toString() !== this.itemNew) {
+        this.lastModelValue = this.model
+      }
+
+      return value
+    }
+  },
   methods: {
-    get () {
-      if (!this.model) {
-        this.model = []
+    closest (el, parent) {
+      while (el) {
+        if (el === parent) {
+          return el
+        }
+        el = el.parentElement
+      }
+    },
+    get (callback) {
+      this.loading = true
+
+      if (this.multiple) {
+        this.model = Array.isArray(this.model) ? this.model : [this.model]
       }
 
       this.url && axios.get(this.url, {
@@ -165,11 +206,14 @@ export default {
       }).then(r => {
         this.loading = false
         this.options = r.data.data
+
+        if (callback) {
+          callback()
+        }
       })
     },
-
     onMousedown (event) {
-      if (!this.url || event.target.classList.contains('opened') || this.multiple) {
+      if (!this.url || event.target.classList.contains('opened')) {
         event.target.classList.toggle('opened')
         this.$emit('action', 'mousedown:select', event, this)
         return
@@ -191,11 +235,9 @@ export default {
         this.$emit('action', 'mousedown:select', event, this)
       })
     },
-
     onBlur (event) {
       event.target.classList.remove('opened')
     },
-
     onChange (event) {
       const target = event.target
 
@@ -220,51 +262,20 @@ export default {
 
       this.$emit('action', this.emitInput || 'change:select', target.value, this)
     },
-
     onFocus (event) {
       if (event.target.parentElement.classList.contains('app-select__editable')) {
         event.target.nextElementSibling.focus()
       }
     },
-
     onInput (event) {
-      if (event.target.value.length) {
-        event.target.classList.add('active')
-      } else {
-        event.target.classList.remove('active')
-      }
-      this.$emit('update:modelValue', event.target.value, this.itemNew)
+      this.$emit('update:modelValue', event.target.value, this)
     },
-
-    onClickClear (event) {
-      const input = event.target.parentElement.querySelector('input'),
-          select = event.target.parentElement.querySelector('select')
-      input.value = ''
-      input.classList.remove('active')
-      event.target.parentElement.classList.remove('app-select__editable')
-      select.value = select.dataset.value
-      this.$emit('update:modelValue', select.value, this)
-      this.$emit('update:modelValue', '', this.itemNew)
+    onClickClear () {
+      this.model = this.lastModelValue
     },
-
-    onClickMultipleInput (event) {
-      if (!event.target.classList.contains('active')) {
-        this.get()
-      }
-
-      event.target.classList.toggle('active')
-    },
-
-    onBlurMultipleInput (event) {
-      setTimeout(() => event.target !== document.activeElement && event.target.classList.remove('active'), 10)
-    },
-
-    onClickMultipleList (event) {
-      event.currentTarget.previousElementSibling.focus()
-    },
-
-    onUpdateModelValue (value) {
-      this.$emit('action', this.emitInput || 'change:select', value, this)
+    onClickMultipleList () {
+      this.$refs.input.focus()
+      this.$refs.input.classList.add('opened')
     }
   }
 }

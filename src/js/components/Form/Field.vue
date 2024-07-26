@@ -1,6 +1,6 @@
 <script>
 export default {
-  emits: ['action', 'update:modelValue'],
+  emits: ['action', 'update:modelValue', 'update:props'],
 
   props: {
     class: [Array, Object, String],
@@ -28,6 +28,7 @@ export default {
     type: String,
     value: [String, Number, Array, Object],
     keyValue: String,
+    itemNew: String,
   },
 
   computed: {

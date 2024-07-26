@@ -1,7 +1,7 @@
 <template>
   <div v-if="label" class="w-full mb-3" :class="$props.class">
     <template v-if="!data">
-      <label class="flex items-center " :class="[ disabled ? 'cursor-no-drop' : 'cursor-pointer' ]">
+      <label class="inline-flex items-center " :class="[ disabled ? 'cursor-no-drop' : 'cursor-pointer', labelClass ]">
         <input v-model="model"
                :id="ID"
                :value="value"
@@ -25,7 +25,7 @@
         <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
       </div>
       <div v-for="(i, k) in data">
-        <label :key="k" class="flex items-center cursor-pointer">
+        <label :key="k" class="flex items-center cursor-pointer" :class="labelClass">
           <input v-model="model"
                  :id="ID+`_`+i.key"
                  :class="inputClass"
@@ -34,7 +34,7 @@
                  :false-value="falseValue"
                  type="checkbox"
                  class="mr-2">
-          <span :class="labelClass">{{ i.value }}</span>
+          <span class="truncate">{{ i.value }}</span>
         </label>
       </div>
     </template>
@@ -53,7 +53,7 @@
       <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
     </template>
     <div v-for="(i, k) in data" v-else :class="$props.class">
-      <label :key="k" class="flex items-center cursor-pointer">
+      <label :key="k" class="inline-flex items-center cursor-pointer" :class="labelClass">
         <input v-model="model"
                :id="ID+`_`+i.key"
                :class="inputClass"
@@ -62,7 +62,7 @@
                :false-value="falseValue"
                type="checkbox"
                class="mr-2">
-        <span :class="labelClass">{{ i.value }}</span>
+        <span class="truncate">{{ i.value }}</span>
       </label>
     </div>
   </template>
