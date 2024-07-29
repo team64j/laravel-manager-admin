@@ -4,22 +4,24 @@
 .app-main__actions, .app-main__title {
     @apply grow-0
 }
-.app-main__tabs {
-    @apply grow flex overflow-hidden
+.app-main__sidebar {
+    @apply grow-0 shrink-0 w-80 relative
 }
-.app-main__tabs > .app-tabs > .app-tabs__page {
-    @apply p-5 bg-white dark:bg-gray-750
-}
-.app-main__tabs > .app-tabs > .app-tabs__page > div:last-of-type {
-    @apply mb-0 pb-0
-}
-.app-main__tabs > .app-tabs > .app-tabs__page .app-panel {
-    @apply -m-5 overflow-hidden;
-    height: calc(100% + 1.25rem);
-}
-.app-main__tabs > .app-tabs > .app-tabs__page .app-panel .app-panel__pagination {
-    @apply px-5 pb-0
+.app-main__main {
+    @apply grow overflow-hidden
 }
 .app-main__crumbs {
     @apply grow-0 bg-slate-100 dark:bg-gray-750
+}
+.app-main__resizer {
+    @apply absolute top-0 right-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-500 transition
+}
+.app-main__resizer:active {
+    @apply bg-blue-500 transition-none
+}
+.app-main__resizer::after {
+    @apply block w-2 -mx-0.5 h-full content-[""]
+}
+.app-main__resizer:active::before {
+    @apply fixed z-10 left-0 top-0 right-0 bottom-0 cursor-col-resize content-[""]
 }
