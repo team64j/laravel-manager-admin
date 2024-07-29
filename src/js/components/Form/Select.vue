@@ -34,18 +34,22 @@
               <checkbox-component
                   v-model="model"
                   :data="o.data"
+                  @update:modelValue="onUpdateModelValue"
                   false-value=""
-                  class="pl-3 py-0.5"
-                  label-class="w-full"/>
+                  class="pl-0.5 pt-[1px] last:pb-[1px]"
+                  label-class="w-full pl-5"
+                  :as-button="true"/>
             </template>
 
             <checkbox-component
                 v-else
                 v-model="model"
                 :data="[o]"
+                @update:modelValue="onUpdateModelValue"
                 false-value=""
-                class="pl-3 py-0.5"
-                label-class="w-full"/>
+                class="pl-0.5 pt-[1px] last:pb-[1px]"
+                label-class="w-full pl-2"
+                :as-button="true"/>
           </template>
         </div>
       </template>
@@ -77,18 +81,22 @@
               <radio-component
                   v-model="model"
                   :data="o.data"
+                  @update:modelValue="onUpdateModelValue"
                   false-value=""
-                  class="pl-3 py-0.5"
-                  label-class="w-full"/>
+                  class="pl-0.5 pt-[1px] last:pb-[1px]"
+                  label-class="w-full pl-5"
+                  :as-button="true"/>
             </template>
 
             <radio-component
                 v-else
                 v-model="model"
                 :data="[o]"
+                @update:modelValue="onUpdateModelValue"
                 false-value=""
-                class="pl-3 py-0.5"
-                label-class="w-full"/>
+                class="pl-0.5 pt-[1px] last:pb-[1px]"
+                label-class="w-full pl-2"
+                :as-button="true"/>
           </template>
         </div>
       </template>
@@ -109,12 +117,13 @@
             @blur="onBlur">
       <template v-for="i in options">
         <optgroup v-if="i.data" :label="i.name">
-          <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">{{
-              j.value
-            }}
+          <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">
+            {{ j.value }}
           </option>
         </optgroup>
-        <option v-else :value="i.key" :selected="i.selected" :disabled="i.disabled">{{ i.value }}</option>
+        <option v-else :value="i.key" :selected="i.selected" :disabled="i.disabled">
+          {{ i.value }}
+        </option>
       </template>
     </select>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
@@ -211,6 +220,9 @@ export default {
           callback()
         }
       })
+    },
+    onUpdateModelValue (value) {
+      this.$emit('action', this.emitInput || 'change:select', value, this)
     },
     onMousedown (event) {
       if (!this.url || event.target.classList.contains('opened')) {
