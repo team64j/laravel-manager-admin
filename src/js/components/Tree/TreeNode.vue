@@ -109,7 +109,7 @@ const className = computed(() => {
               route['path'] ===
               ($data.config['route']?.['path'] || $data.config['route']).replace(':id', route['params']['id'])
           ) && (
-              parseInt(route['params']?.id?.toString()) === $props.node?.['id'] ||
+              route['params']?.id?.toString() === $props.node?.['id'].toString() ||
               (
                   route['params']?.['id'] && route['params']['id'] === $props.node?.['key']
               )
@@ -166,9 +166,9 @@ function action () {
           <i v-if="node['data']?.length"
              :class="$data.config['icons']['default-folder-open'] ?? 'far fa-folder-open'"
              class="fa-fw pl-0.5 w-5"/>
-          <i v-else-if="node['data'] === null" :class="$data.config['icons']['default-folder'] ?? 'far fa-folder'"
+          <i v-else
+             :class="$data.config['icons']['default-folder'] ?? 'far fa-folder'"
              class="fa-fw w-5"/>
-          <i v-else :class="$data.config['icons']['default-folder'] ?? 'far fa-folder'" class="fa-fw w-5"/>
         </template>
         <i v-else class="far fa-file fa-fw"/>
         <i v-if="node['locked']" class="fa fa-lock text-sm text-rose-500 bottom-0 right-0 absolute"/>
