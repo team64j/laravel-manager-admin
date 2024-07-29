@@ -1,5 +1,5 @@
 <script>
-import { compile, h, reactive } from 'vue'
+import { compile, h, reactive, watch } from 'vue'
 import draggable from 'vuedraggable'
 import router from '../../router'
 
@@ -55,6 +55,15 @@ export default {
   mounted () {
     if (this.url) {
       this.get()
+    }
+
+    if (this.url && this.history) {
+      watch(
+          () => this.$route['params'][this.history],
+          (a, b) => {
+            a && b && b !== this.$route['params'][this.history] && this.get()
+          }
+      )
     }
   },
   methods: {
