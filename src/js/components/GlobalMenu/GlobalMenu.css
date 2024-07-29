@@ -81,10 +81,10 @@
     @apply -rotate-90
 }
 .app-global-menu li .app-global-menu__pagination {
-    @apply flex grow items-center px-3 py-2 text-blue-500 dark:text-blue-400 text-sm select-none
+    @apply flex grow items-center px-3 py-2 text-gray-500 dark:text-gray-100 text-sm select-none
 }
 .app-global-menu li .app-global-menu__pagination .app-global-menu__prev, .app-global-menu li .app-global-menu__pagination .app-global-menu__next {
-    @apply px-2 py-1 rounded text-blue-500 cursor-pointer hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-white/10
+    @apply flex items-center justify-center w-6 h-6 rounded cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10
 }
 .app-global-menu li .app-global-menu__pagination .app-global-menu__prev[disabled], .app-global-menu li .app-global-menu__pagination .app-global-menu__next[disabled] {
     @apply opacity-20 pointer-events-none
