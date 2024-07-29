@@ -18,7 +18,7 @@ export default {
       let w = Math.max(Math.min(event.clientX - this.$refs.resizer.x, this.$el.offsetWidth / 2), 50)
       this.$refs.resizer.parentElement.style.width = w + 'px'
     },
-    onMouseupResizer (event) {
+    onMouseupResizer () {
       this.$refs.resizer.removeEventListener('mousemove', this.onMousemoveResizer)
       this.$refs.resizer.removeEventListener('mouseup', this.onMouseupResizer)
     }

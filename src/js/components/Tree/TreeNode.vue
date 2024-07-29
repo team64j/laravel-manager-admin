@@ -163,9 +163,12 @@ function action () {
            @contextmenu.prevent="$emit('action', 'buildContextMenu', $event, node)">
         <i v-if="icon" class="fa-fw" :class="icon"/>
         <template v-else-if="node['data'] !== undefined || node['category']">
-          <i v-if="node['data']?.length" class="far fa-folder-open fa-fw pl-0.5 w-5"/>
-          <i v-else-if="node['data'] === null" class="fa fa-folder fa-fw w-5"/>
-          <i v-else class="far fa-folder fa-fw w-5"/>
+          <i v-if="node['data']?.length"
+             :class="$data.config['icons']['default-folder-open'] ?? 'far fa-folder-open'"
+             class="fa-fw pl-0.5 w-5"/>
+          <i v-else-if="node['data'] === null" :class="$data.config['icons']['default-folder'] ?? 'far fa-folder'"
+             class="fa-fw w-5"/>
+          <i v-else :class="$data.config['icons']['default-folder'] ?? 'far fa-folder'" class="fa-fw w-5"/>
         </template>
         <i v-else class="far fa-file fa-fw"/>
         <i v-if="node['locked']" class="fa fa-lock text-sm text-rose-500 bottom-0 right-0 absolute"/>
