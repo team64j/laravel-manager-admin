@@ -525,12 +525,12 @@ export default {
 </script>
 
 <template>
-  <div class="app-panel">
+  <div class="app-panel" :class="{ ['app-panel__view-' + this.view]: this.view }">
     <div v-if="$slots['top']">
       <slot name="top"/>
     </div>
 
-    <div v-if="data" class="app-panel__data" :class="{ ['app-panel__data-view__' + this.view]: this.view }">
+    <div v-if="data" class="app-panel__data">
       <table ref="table" :class="{ 'min-h-full': !data.length }">
         <thead v-if="columns?.length && columns.filter(column => column.label).length">
         <tr>
@@ -585,7 +585,7 @@ export default {
         </thead>
 
         <tbody v-if="!data.length">
-        <tr class="pointer-events-none">
+        <tr class="pointer-events-none !max-w-full">
           <td :colspan="columns?.length || 1" class="text-center p-5">
             <div v-if="meta?.['message']">
               {{ meta?.['message'] }}

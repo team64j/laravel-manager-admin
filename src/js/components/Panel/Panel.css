@@ -43,23 +43,29 @@
 .app-panel__data .app-panel__category + tbody:not(.app-panel__category) > tr td:first-of-type {
     @apply pl-12
 }
-.app-panel__data.app-panel__data-view__icons {
-    @apply flex
+.app-panel__view-icons {
+    @apply grow
 }
-.app-panel__data.app-panel__data-view__icons thead {
+.app-panel__view-icons .app-panel__data, .app-panel__view-icons .app-panel__data table {
+    @apply grow
+}
+.app-panel__view-icons .app-panel__data thead {
     @apply hidden
 }
-.app-panel__data.app-panel__data-view__icons tbody {
-    @apply flex flex-wrap items-center
+.app-panel__view-icons .app-panel__data tbody {
+    @apply flex flex-wrap items-stretch w-full
 }
-.app-panel__data.app-panel__data-view__icons tr {
-    @apply flex flex-col grow shrink items-center max-w-56
+.app-panel__view-icons .app-panel__data tr {
+    @apply flex flex-col grow shrink items-center justify-center max-w-56 max-h-full h-56
 }
-.app-panel__data.app-panel__data-view__icons td {
-    @apply py-0 !px-2 first:pt-2 last:pb-2
+.app-panel__view-icons .app-panel__data td {
+    @apply flex justify-center w-full py-0 !px-2 first:pt-2 last:pb-2
 }
-.app-panel__data.app-panel__data-view__icons img {
-    @apply max-w-full
+.app-panel__view-icons .app-panel__data i {
+    @apply text-6xl text-gray-400 dark:text-gray-300
+}
+.app-panel__view-icons .app-panel__data img {
+    @apply w-auto h-auto max-w-20 max-h-20
 }
 .app-tabs__page > .app-panel {
     @apply p-0 mx-0 h-full shadow-none

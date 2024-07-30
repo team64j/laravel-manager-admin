@@ -236,7 +236,7 @@ function onClickFullscreen () {
   @apply rounded
 }
 .app-editor .ͼ1 .cm-content {
-  @apply grow !basis-0 max-w-full whitespace-pre-line break-words break-all
+  @apply grow !basis-0 max-w-full whitespace-pre-wrap break-words break-all
 }
 .app-editor.app-editor__fullscreen > textarea, .app-editor.app-editor__fullscreen .v-codemirror, .app-editor.app-editor__fullscreen .v-codemirror .cm-editor {
   @apply !h-full text-lg
