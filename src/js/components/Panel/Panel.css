@@ -43,6 +43,24 @@
 .app-panel__data .app-panel__category + tbody:not(.app-panel__category) > tr td:first-of-type {
     @apply pl-12
 }
+.app-panel__data.app-panel__data-view__icons {
+    @apply flex
+}
+.app-panel__data.app-panel__data-view__icons thead {
+    @apply hidden
+}
+.app-panel__data.app-panel__data-view__icons tbody {
+    @apply flex flex-wrap items-center
+}
+.app-panel__data.app-panel__data-view__icons tr {
+    @apply flex flex-col grow shrink items-center max-w-56
+}
+.app-panel__data.app-panel__data-view__icons td {
+    @apply py-0 !px-2 first:pt-2 last:pb-2
+}
+.app-panel__data.app-panel__data-view__icons img {
+    @apply max-w-full
+}
 .app-tabs__page > .app-panel {
     @apply p-0 mx-0 h-full shadow-none
 }

@@ -20,6 +20,7 @@ export default {
       default: []
     },
     meta: Object,
+    layout: Object,
     modelValue: null,
     columns: {
       type: Array,
@@ -39,7 +40,8 @@ export default {
       default: (props) => props?.meta?.draggable
     },
     history: [Boolean, String],
-    rerender: Boolean
+    rerender: Boolean,
+    view: [String, Array]
   },
   data () {
     const key = `panel.` + this.id.toLowerCase()
@@ -61,7 +63,7 @@ export default {
       watch(
           () => this.$route['params'][this.history],
           (a, b) => {
-            a && b && b !== this.$route['params'][this.history] && this.get()
+            a !== undefined && b !== undefined && b !== this.$route['params'][this.history] && this.get()
           }
       )
     }
@@ -116,6 +118,10 @@ export default {
       })
     },
     selectRow (event, item, route) {
+      if (item.route) {
+        route = item.route
+      }
+
       if (!event.ctrlKey) {
         this.data.map(i => {
           if (i.data) {
@@ -524,7 +530,7 @@ export default {
       <slot name="top"/>
     </div>
 
-    <div v-if="data" class="app-panel__data">
+    <div v-if="data" class="app-panel__data" :class="{ ['app-panel__data-view__' + this.view]: this.view }">
       <table ref="table" :class="{ 'min-h-full': !data.length }">
         <thead v-if="columns?.length && columns.filter(column => column.label).length">
         <tr>
@@ -638,7 +644,7 @@ export default {
 
             <tbody v-else>
             <tr v-for="item in category.data" @click="selectRow($event, item)"
-                :class="{ 'disabled' : item.disabled, 'active': item['@active'] }">
+                :class="{ 'disabled' : item.disabled, 'active': item['@active'], 'cursor-pointer': item.route }">
               <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
             </tbody>
