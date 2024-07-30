@@ -40,7 +40,7 @@ export default {
         let obj
         if (Array.isArray(layout)) {
           obj = []
-          layout.forEach(i => obj.push(this.initLayout(i, stack)))
+          layout.forEach(i => i && obj.push(this.initLayout(i, stack)))
         } else {
           obj = {}
           for (let i in layout) {
@@ -121,8 +121,8 @@ export default {
       }
 
       (component.extends?.emits ?? component.emits ?? []).forEach(emit => {
-        if (emit === 'action'/* &&
-            !(component.extends?.methods?.action ?? component.methods?.action)*/) {
+        if (emit === 'action' && !attrs['onAction'] &&
+            !(component.extends?.methods?.action ?? component.methods?.action)) {
           attrs['onAction'] ??= this.action
         } else if (emit === 'update:props' &&
             !(component.extends?.methods?.updateProps ?? component.methods?.updateProps)) {
