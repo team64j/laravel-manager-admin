@@ -31,7 +31,7 @@ export default {
     },
     url: String,
     route: {
-      type: String,
+      type: [String, Object],
       default: (props) => props?.meta?.route
     },
     draggable: {
@@ -73,6 +73,9 @@ export default {
       } else {
         this.$emit('action', ...arguments)
       }
+    },
+    key (data) {
+      return data['id'] ?? data['key']
     },
     get (query, data) {
       const url = router.parse(this.propUrl)
@@ -126,12 +129,17 @@ export default {
       item['@active'] = !item['@active']
 
       if (route) {
-        this.$emit('action', 'pushRouter', {
-          path: route,
-          params: {
-            id: item.id
-          }
-        })
+        if (typeof route === 'object') {
+          router.to({
+            ...route,
+            params: item
+          })
+        } else {
+          this.$emit('action', 'pushRouter', {
+            path: route,
+            params: item
+          })
+        }
       }
     },
     cells (item) {

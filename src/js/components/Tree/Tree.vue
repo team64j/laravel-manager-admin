@@ -170,18 +170,14 @@ export default {
       if (event.ctrlKey && this.routeList) {
         this.$parent.$emit('action', 'pushRouter', {
           path: this.routeList,
-          params: {
-            id
-          }
+          params: node
         })
       } else {
         const route = node['route'] || this.propRoute
 
         router.to({
           ...route,
-          params: {
-            id
-          }
+          params: node
         })
       }
     },

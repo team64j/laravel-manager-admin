@@ -14,6 +14,9 @@ const $data = reactive({
   config: inject('config')
 })
 
+const keyId = $data.config['settings']['keyId'] ?? 'id'
+const keyTitle = $data.config['settings']['keyTitle'] ?? 'title'
+
 const title = computed(() => {
   if ($data.config['aliases']?.['title']) {
     const aliases = typeof $data.config['aliases']['title'] === 'object'
@@ -27,7 +30,7 @@ const title = computed(() => {
     }
   }
 
-  return $props.node['title'] ?? $props.node[$data.config['settings']['keyTitle']] ?? $props.node['id']
+  return $props.node[keyTitle] ?? $props.node[keyId]
 })
 
 const icon = computed(() => {
@@ -39,8 +42,8 @@ const icon = computed(() => {
     return
   }
 
-  if ($data.config['icons'][$props.node['id']]) {
-    return $data.config['icons'][$props.node['id']]
+  if ($data.config['icons'][$props.node[keyId]]) {
+    return $data.config['icons'][$props.node[keyId]]
   }
 
   if ($data.config['icons'][$props.node['type']]) {
@@ -107,11 +110,13 @@ const className = computed(() => {
           (
               route['name'] === $data.config['route'] ||
               route['path'] ===
-              ($data.config['route']?.['path'] || $data.config['route']).replace(':id', route['params']['id'])
+              ($data.config['route']?.['path'] || $data.config['route']).replace(':' + keyId, route['params'][keyId])
           ) && (
-              route['params']?.id?.toString() === $props.node?.['id'].toString() ||
               (
-                  route['params']?.['id'] && route['params']['id'] === $props.node?.['key']
+                  route['params']?.[keyId]?.toString() === $props.node?.[keyId]?.toString()
+              ) ||
+              (
+                  route['params']?.[keyId] && route['params']?.[keyId]?.toString() === $props.node?.[keyId]?.toString()
               )
           ) && (
               !$props.node['folder'] && $props.node['category'] || !$props.node['category']
