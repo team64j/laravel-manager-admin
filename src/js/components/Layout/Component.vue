@@ -121,8 +121,8 @@ export default {
       }
 
       (component.extends?.emits ?? component.emits ?? []).forEach(emit => {
-        if (emit === 'action' && !attrs['onAction'] &&
-            !(component.extends?.methods?.action ?? component.methods?.action)) {
+        if (emit === 'action'/* &&
+            !(component.extends?.methods?.action ?? component.methods?.action)*/) {
           attrs['onAction'] ??= this.action
         } else if (emit === 'update:props' &&
             !(component.extends?.methods?.updateProps ?? component.methods?.updateProps)) {

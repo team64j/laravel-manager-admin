@@ -5,6 +5,7 @@ export default {
   name: 'Main',
   __isStatic: true,
   props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'],
+  emits: ['action'],
   methods: {
     action () {
       this.$emit('action', ...arguments)

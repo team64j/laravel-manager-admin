@@ -164,7 +164,11 @@ export default {
       }
 
       if (node['category']) {
-        return this.toggleNode(node)
+        this.toggleNode(node)
+
+        if (!node['folder']) {
+          return
+        }
       }
 
       if (event.ctrlKey && this.routeList) {

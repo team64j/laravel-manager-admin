@@ -274,8 +274,6 @@ export default {
 <template>
   <div :id="id+`Tabs`" class="app-tabs" :class="[this.class, smallTabs ? 'app-tabs-small' : 'app-tabs-large']">
 
-    <!--    <slot name="tabs"/>-->
-
     <div v-if="data.length > 1" class="app-tabs__rows">
       <div class="app-tabs__row" ref="row">
         <div v-for="(i, k) in data" :data-tooltip="i.title" class="app-tabs__tab"

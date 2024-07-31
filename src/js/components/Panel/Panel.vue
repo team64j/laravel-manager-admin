@@ -48,7 +48,6 @@ export default {
 
     return {
       keyStorage: key,
-      propUrl: this.url ?? (this.$route?.['meta']?.url || (this.$route['path'])) ?? null,
       filterTimer: 0,
       filterValues: {},
       settings: this.$store.getters.get(`Session.${key}`, {})
@@ -59,13 +58,18 @@ export default {
       this.get()
     }
 
-    if (this.url && this.history) {
+    if (this.history) {
       watch(
           () => this.$route['params'][this.history],
           (a, b) => {
-            a !== undefined && b !== undefined && b !== this.$route['params'][this.history] && this.get()
+            a !== undefined && b !== undefined && b !== this.$route['params'][this.history] && this.get({}, [])
           }
       )
+    }
+  },
+  computed: {
+    propUrl () {
+      return this.url ?? (this.$route?.['meta']?.url || (this.$route['path'])) ?? null
     }
   },
   methods: {
@@ -80,23 +84,24 @@ export default {
       return data['id'] ?? data['key']
     },
     get (query, data) {
-      const url = router.parse(this.propUrl)
-      const path = this.propUrl.split('?')[0]
-      query = Object.assign(url['query'], query || this.$route?.['query'] || {})
+      const route = router.parse(this.propUrl)
+      query = Object.assign(route.query, query || this.$route?.['query'] || {})
 
       this.$emit('update:props', {
         data: data,
         meta: data ? Object.assign({}, { pagination: this.meta['pagination'] }) : {}
       }, this)
 
-      this.$el.querySelector('.app-panel__data').style.overflow = 'scroll'
+      if (this.$refs.data) {
+        this.$refs.data.style.overflow = 'scroll'
+      }
 
       this.$el.querySelectorAll('thead > tr > th').forEach(i => {
         i.style.maxWidth = i.clientWidth + 'px'
         i.style.minWidth = i.clientWidth + 'px'
       })
 
-      axios.get(path, {
+      axios.get(route.path, {
         params: query
       }).then(({ data }) => {
         if (data.meta?.columns) {
@@ -107,7 +112,9 @@ export default {
           data.filters = data.meta.filters
         }
 
-        this.$el.querySelector('.app-panel__data').style.overflow = null
+        if (this.$refs.data) {
+          this.$refs.data.style.overflow = null
+        }
 
         this.$el.querySelectorAll('thead > tr > th').forEach(i => {
           i.style.maxWidth = null
@@ -250,7 +257,7 @@ export default {
         } else {
           for (const i in column.values) {
             for (const j in column.values[i]) {
-              if (item[i].toString() === j.toString()) {
+              if (item[i]?.toString() === j.toString()) {
                 return h({ template: column.values[i][j] })
               }
             }
@@ -384,12 +391,6 @@ export default {
           } else {
             router.to(url)
             this.get(url.query, [])
-
-            // this.$emit(
-            //     'action',
-            //     'pushRouter',
-            //     url
-            // )
 
             this.$emit('update:props', {
               data: [],
@@ -530,7 +531,7 @@ export default {
       <slot name="top"/>
     </div>
 
-    <div v-if="data" class="app-panel__data">
+    <div v-if="data" class="app-panel__data" ref="data">
       <table ref="table" :class="{ 'min-h-full': !data.length }">
         <thead v-if="columns?.length && columns.filter(column => column.label).length">
         <tr>
@@ -618,9 +619,7 @@ export default {
             <tr v-for="item in category.data" @click="selectRow($event, item, category.route || route)"
                 class="cursor-pointer"
                 :class="{ 'disabled' : item.disabled, 'active': item['@active'] }">
-              <template v-for="cell in cells(item)">
-                <component :is="cell"/>
-              </template>
+              <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
             </tbody>
 
