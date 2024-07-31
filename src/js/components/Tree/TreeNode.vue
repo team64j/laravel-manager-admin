@@ -30,7 +30,7 @@ const title = computed(() => {
     }
   }
 
-  return $props.node[keyTitle] ?? $props.node[keyId]
+  return $props.node['title'] ?? $props.node[keyTitle] ?? $props.node[keyId]
 })
 
 const icon = computed(() => {
@@ -130,7 +130,7 @@ const className = computed(() => {
 })
 
 const tooltip = computed(() => {
-  const template = typeof $props.node?.['templates'] !== 'undefined'
+  const template = typeof $props.node?.['templates'] !== undefined
       ? ($props.node?.['templates']?.['title'] || '')
       : $data.config['templates']?.['title']
 
