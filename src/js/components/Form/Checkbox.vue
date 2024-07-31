@@ -1,5 +1,5 @@
 <template>
-  <div v-if="label" class="w-full mb-3" :class="$props.class">
+  <div v-if="label" class="w-full" :class="$props.class">
     <template v-if="!data">
       <label class="inline-flex items-center " :class="[labelClass, _labelClass]">
         <input v-model="model"

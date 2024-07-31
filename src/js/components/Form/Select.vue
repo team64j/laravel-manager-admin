@@ -1,5 +1,5 @@
 <template>
-  <div v-if="label" class="w-full mb-3" :class="$props.class">
+  <div v-if="label" class="w-full" :class="$props.class">
     <div class="mb-1">
       <label :for="ID" class="font-bold cursor-pointer">
         {{ label }}
@@ -24,7 +24,7 @@
                @mousedown="onMousedown"
                @blur="onBlur"/>
         <div
-            class="absolute left-0 top-full w-full hidden z-[1] border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
+            class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
             @click="onClickMultipleList"
             @mousedown.prevent="onClickMultipleList">
 
@@ -72,7 +72,7 @@
                @blur="onBlur"/>
 
         <div
-            class="absolute left-0 top-full w-full hidden z-[1] border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
+            class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
             @mousedown.prevent="">
 
           <template v-for="o in options">

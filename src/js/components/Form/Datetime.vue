@@ -36,7 +36,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="label" class="w-full mb-3" :class="$props.class">
+  <div v-if="label" class="w-full" :class="$props.class">
     <div class="mb-1">
       <label :for="ID" class="font-bold cursor-pointer">
         {{ label }}
