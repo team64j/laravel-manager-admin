@@ -113,7 +113,7 @@ export default {
   @apply relative
 }
 .app-input__number .app-input__plus, .app-input__number .app-input__minus {
-  @apply absolute hidden cursor-default md:flex justify-center items-center right-0 w-8 h-1/2 text-gray-300 hover:text-blue-600
+  @apply absolute hidden cursor-default md:flex justify-center items-center right-0 w-8 h-1/2 text-gray-300 hover:text-blue-500
 }
 .app-input__number .app-input__plus {
   @apply top-0 pt-2

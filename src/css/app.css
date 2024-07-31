@@ -61,8 +61,11 @@ html, body, #app {
         background-size: 0.8em;
         background-position: calc(100% - 0.5em) center;
     }
+    select:hover, input[list]:hover, .app-appearance-select:hover {
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22rgb%2899%20139%20241%29%22%20viewBox%3D%220%200%2024%2014%22%3E%3Cpath%20d%3D%22M24%202v1L13%2014a1%201%200%200%201-2%200L0%203a1%201%200%200%201%200-2l1-1a1%201%200%200%201%202%200l9%2010%209-10a1%201%200%200%201%202%200l1%201v1Z%22%2F%3E%3C%2Fsvg%3E");
+    }
     select:focus, input[list]:focus, .app-appearance-select:focus {
-        background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22royalblue%22%20viewBox%3D%220%200%2024%2014%22%3E%3Cpath%20d%3D%22M24%202v1L13%2014a1%201%200%200%201-2%200L0%203a1%201%200%200%201%200-2l1-1a1%201%200%200%201%202%200l9%2010%209-10a1%201%200%200%201%202%200l1%201v1Z%22%2F%3E%3C%2Fsvg%3E");
+        background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22rgb%2899%20139%20241%29%22%20viewBox%3D%220%200%2025%2016%22%3E%0A%20%20%3Cpath%20d%3D%22M25%2013v-1L14%201a1%201%200%200%200-2%200L1%2012a1%201%200%200%200%200%202l1%201a1%201%200%201%200%202%200l9-10%209%2010a1%201%200%200%200%202%200l1-1v-1Z%22%2F%3E%0A%3C%2Fsvg%3E");
     }
     button, [type="button"], [role="button"] {
         @apply inline-flex w-auto px-3 py-1 cursor-pointer font-medium border hover:bg-slate-50 active:bg-slate-50 focus:bg-slate-50 focus:ring-blue-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-600 dark:focus:bg-gray-600

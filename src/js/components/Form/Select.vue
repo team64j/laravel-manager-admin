@@ -22,6 +22,7 @@
                class="block relative w-full px-3 py-1 rounded app-appearance-select cursor-pointer"
                :placeholder="placeholder"
                @mousedown="onMousedown"
+               @focus="onFocus"
                @blur="onBlur"/>
         <div
             class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
@@ -69,6 +70,7 @@
                class="app-appearance-select cursor-pointer"
                :placeholder="placeholder"
                @mousedown="onMousedown"
+               @focus="onFocus"
                @blur="onBlur"/>
 
         <div
@@ -112,8 +114,8 @@
             :id="ID"
             :multiple="multiple"
             @mousedown="onMousedown"
-            @change="onChange"
             @focus="onFocus"
+            @change="onChange"
             @blur="onBlur">
       <template v-for="i in options">
         <optgroup v-if="i.data" :label="i.name">
@@ -224,6 +226,7 @@ export default {
     onUpdateModelValue (value) {
       this.$emit('action', this.emitInput || 'change:select', value, this)
     },
+    onFocus () {},
     onMousedown (event) {
       if (!this.url || event.target.classList.contains('opened')) {
         event.target.classList.toggle('opened')
@@ -273,11 +276,6 @@ export default {
       }
 
       this.$emit('action', this.emitInput || 'change:select', target.value, this)
-    },
-    onFocus (event) {
-      if (event.target.parentElement.classList.contains('app-select__editable')) {
-        event.target.nextElementSibling.focus()
-      }
     },
     onInput (event) {
       this.$emit('update:modelValue', event.target.value, this)
