@@ -107,7 +107,7 @@ export default {
 
       this.$nextTick(() => {
         const position = this.instance.$refs.input.getBoundingClientRect()
-        let top
+        let top, left = position.left
 
         if (position.top + position.height + this.$refs.datepicker.offsetHeight + 10 > window.innerHeight) {
           top = position.top - this.$refs.datepicker.offsetHeight
@@ -115,8 +115,12 @@ export default {
           top = position.top + position.height
         }
 
+        if (position.left + this.$refs.datepicker.offsetWidth + 10 > window.innerWidth) {
+          left = window.innerWidth - this.$refs.datepicker.offsetWidth - 10
+        }
+
         this.position = {
-          left: position.left + 'px',
+          left: left + 'px',
           top: top + 'px'
         }
       })
