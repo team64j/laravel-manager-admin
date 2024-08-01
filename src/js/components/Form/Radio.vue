@@ -24,7 +24,7 @@
         <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
       </div>
       <div v-for="(i, k) in data">
-        <label :key="k" class="flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
+        <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
           <input v-model="model"
                  :id="ID+`_`+i.key"
                  :class="inputClass"
