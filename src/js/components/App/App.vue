@@ -51,6 +51,30 @@ export default {
         'dark',
         this.$store.getters.get('Storage.root.dark', false)
     )
+
+    // window['confirm'] = (message) => {
+    //   const promise = new Promise(async function(resolve, reject) {
+    //     const dialog = document.createElement('div')
+    //     dialog.className = 'fixed flex flex-wrap justify-center rounded z-50 bg-white dark:bg-gray-600 top-1/2 left-1/2 w-96 max-w-full h-auto max-h-full -translate-x-1/2 -translate-y-1/2 p-5 shadow-xl'
+    //     dialog.innerHTML = `<div class="grow w-full pb-3">${message}</div>`
+    //
+    //     const btnCancel  = document.createElement('button')
+    //     btnCancel.className = 'btn-sm mx-1 px-4 border-none'
+    //     btnCancel.innerHTML = 'Cancel'
+    //     btnCancel.onclick = () => resolve(false)
+    //
+    //     const btnOk = document.createElement('button')
+    //     btnOk.className = 'btn-sm btn-green mx-1 px-4 border-none'
+    //     btnOk.innerHTML = 'OK'
+    //     btnOk.onclick = () => resolve(true)
+    //
+    //     dialog.append(btnCancel, btnOk)
+    //
+    //     document.body.append(dialog)
+    //   })
+    //
+    //   return promise
+    // }
   },
   mounted () {
     /**
