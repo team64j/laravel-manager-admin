@@ -109,14 +109,14 @@ export default {
         const position = this.instance.$refs.input.getBoundingClientRect()
         let top, left = position.left
 
-        if (position.top + position.height + this.$refs.datepicker.offsetHeight + 10 > window.innerHeight) {
+        if (position.top + position.height + this.$refs.datepicker.offsetHeight + 16 > window.innerHeight) {
           top = position.top - this.$refs.datepicker.offsetHeight
         } else {
           top = position.top + position.height
         }
 
-        if (position.left + this.$refs.datepicker.offsetWidth + 10 > window.innerWidth) {
-          left = window.innerWidth - this.$refs.datepicker.offsetWidth - 10
+        if (position.left + this.$refs.datepicker.offsetWidth + 16 > window.innerWidth) {
+          left = window.innerWidth - this.$refs.datepicker.offsetWidth - 16
         }
 
         this.position = {
