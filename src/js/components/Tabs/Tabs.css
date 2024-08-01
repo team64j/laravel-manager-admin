@@ -34,9 +34,6 @@
 .app-tabs .app-tabs__page {
     @apply relative flex flex-wrap items-start content-start w-full overflow-auto grow bg-white dark:bg-gray-750 rounded
 }
-.app-tabs .app-tabs {
-    @apply px-0
-}
 .app-tabs__vertical {
     @apply flex-row p-0 h-auto self-stretch overflow-visible
 }
