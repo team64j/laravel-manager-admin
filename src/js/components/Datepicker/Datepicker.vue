@@ -14,6 +14,7 @@ export default {
         top: 0
       },
       dateFormat: this.$store.getters.get('config.datetime_format', 'dd-mm-YYYY'),
+      timeFormat: 'H:i:s',
       yearStart: new Date().getFullYear(),
       yearOffset: 10,
       monthNames: this.$store.getters.get('lang.dp_monthNames', [
@@ -186,12 +187,24 @@ export default {
       this.instance.model = this.getDate() + ' ' + this.getTime()
     },
     getDate () {
-      return this.dateFormat.replace('dd', (this.currentDate.getDate() > 9 ? '' : '0') + this.currentDate.getDate()).
-          replace('mm', (this.currentDate.getMonth() + 1 > 9 ? '' : '0') + (this.currentDate.getMonth() + 1)).
-          replace('YYYY', this.currentDate.getFullYear().toString())
+      return this.dateFormat.replace(
+          /dd|mm|YYYY/g,
+          a => ({
+            dd: this.currentDate.getDate().toString().padStart(2, '0'),
+            mm: (this.currentDate.getMonth() + 1).toString().padStart(2, '0'),
+            YYYY: this.currentDate.getFullYear()
+          }[a])
+      )
     },
     getTime () {
-      return this.currentDate.getHours() + ':' + this.currentDate.getMinutes() + ':' + this.currentDate.getSeconds()
+      return this.timeFormat.replace(
+          /[His]/g,
+          a => ({
+            H: this.currentDate.getHours().toString().padStart(2, '0'),
+            i: this.currentDate.getMinutes().toString().padStart(2, '0'),
+            s: this.currentDate.getSeconds().toString().padStart(2, '0')
+          }[a])
+      )
     },
     onSetYear (event) {
       this.currentDate.setFullYear(event.target.value)

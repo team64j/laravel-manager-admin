@@ -10,8 +10,8 @@
 .app-datepicker th, .app-datepicker td {
     @apply text-center;
 }
-.app-datepicker thead th, .app-datepicker tfoot td {
-    @apply py-1 px-0.5 first:pl-1 last:pr-1
+.app-datepicker thead td, .app-datepicker tfoot td {
+    @apply px-1 first:pl-2 last:pr-2 py-2
 }
 .app-datepicker tbody th {
     @apply bg-gray-50 dark:bg-gray-600
