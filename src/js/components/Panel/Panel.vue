@@ -41,6 +41,7 @@ export default {
     },
     history: [Boolean, String],
     rerender: Boolean,
+    contextMenu: Object,
     view: [String, Array]
   },
   data () {
@@ -50,7 +51,11 @@ export default {
       keyStorage: key,
       filterTimer: 0,
       filterValues: {},
-      settings: this.$store.getters.get(`Session.${key}`, {})
+      settings: this.$store.getters.get(`Session.${key}`, {}),
+      idContextMenu: null,
+      showContextMenu: false,
+      dataContextMenu: [],
+      classContextMenu: null,
     }
   },
   mounted () {
@@ -66,6 +71,12 @@ export default {
           }
       )
     }
+
+    document.addEventListener('click', () => {
+      if (this.showContextMenu) {
+        this.showContextMenu = false
+      }
+    })
   },
   computed: {
     propUrl () {
@@ -520,6 +531,76 @@ export default {
           this.get(this.filterValues)
         }
       }
+    },
+    buildContextMenu (event, node) {
+      this.idContextMenu = this.key(node)
+      this.showContextMenu = false
+      this.dataContextMenu = []
+      const contextMenu = node['contextMenu'] !== undefined ? node['contextMenu'] : this.contextMenu
+
+      if (!contextMenu) {
+        return
+      }
+
+      this.classContextMenu = contextMenu?.class ?? null
+
+      contextMenu?.actions.forEach(action => {
+        if (action.hidden) {
+          for (const h in action.hidden) {
+            if (node[h] === action.hidden[h]) {
+              return
+            }
+          }
+        }
+
+        if (action.split) {
+          this.dataContextMenu.push({
+            split: true
+          })
+        } else {
+          this.dataContextMenu.push({
+            title: action.title,
+            icon: action.icon,
+            to: action.to,
+            node
+          })
+        }
+      })
+
+      this.showContextMenu = true
+
+      this.$nextTick(() => {
+        let top = event.clientY + 16
+        let left = event.clientX + 16
+
+        if (left + this.$refs.ctx.offsetWidth + 16 > window.innerWidth) {
+          left -= this.$refs.ctx.offsetWidth + 16
+        }
+
+        if (top + this.$refs.ctx.offsetHeight + 16 > window.innerHeight) {
+          top -= this.$refs.ctx.offsetHeight + 16
+        }
+
+        this.$refs.ctx.style.top = top + `px`
+        this.$refs.ctx.style.left = left + `px`
+      })
+    },
+    clickContextMenu (item) {
+      if (item.to) {
+        item.to.query ??= {}
+        item.to.params ??= {}
+        const route = { ...item.to }
+        Object.assign(route.params, item.node)
+        if (item.to?.target) {
+          axios.head(router.parse({ ...item.to }).fullPath).then(r => {
+            r.request.responseURL && window.open(r.request.responseURL, item.to.target)
+          }).catch(r => {
+            r.request.responseURL && window.open(r.request.responseURL, item.to.target)
+          })
+        } else {
+          router.to(route)
+        }
+      }
     }
   }
 }
@@ -601,7 +682,8 @@ export default {
           <tbody v-if="category.name && category.data.length" class="app-panel__category">
           <tr class="cursor-pointer hover:text-blue-500"
               :class="{ closed: this.hasClosedCategory(category) }"
-              @mousedown="toggleCategory(category)">
+              @mousedown="toggleCategory(category)"
+              @contextmenu.prevent="buildContextMenu($event, category)">
             <td class="px-4 pt-3 pb-1 border-b-2 font-bold"
                 :colspan="columns?.length || Object.values(category.data[0]).length">
               <span class="toggle">
@@ -616,9 +698,11 @@ export default {
 
           <template v-if="category.data && !this.hasClosedCategory(category)">
             <tbody v-if="category.route || route">
-            <tr v-for="item in category.data" @click="selectRow($event, item, category.route || route)"
+            <tr v-for="item in category.data"
+                @click="selectRow($event, item, category.route || route)"
                 class="cursor-pointer"
-                :class="{ 'disabled' : item.disabled, 'active': item['@active'] }">
+                :class="{ 'disabled' : item.disabled, 'active': item['@active'] }"
+                @contextmenu.prevent="buildContextMenu($event, category)">
               <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
             </tbody>
@@ -630,7 +714,8 @@ export default {
                        @end="sortable(category.data)">
               <template #item="{ element: item }">
                 <tr :class="{ 'disabled' : item.disabled, 'active': item['@active'] }"
-                    @click="selectRow($event, item)">
+                    @click="selectRow($event, item)"
+                    @contextmenu.prevent="buildContextMenu($event, item)">
                   <template v-for="cell in cells(item)">
                     <component :is="cell"
                                @action="action"
@@ -643,7 +728,8 @@ export default {
 
             <tbody v-else>
             <tr v-for="item in category.data" @click="selectRow($event, item)"
-                :class="{ 'disabled' : item.disabled, 'active': item['@active'], 'cursor-pointer': item.route }">
+                :class="{ 'disabled' : item.disabled, 'active': item['@active'], 'cursor-pointer': item.route }"
+                @contextmenu.prevent="buildContextMenu($event, item)">
               <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
             </tbody>
@@ -674,6 +760,22 @@ export default {
         {{ meta['pagination']['info'] }}
       </div>
     </div>
+
+    <transition>
+      <div v-if="showContextMenu && dataContextMenu.length" ref="ctx" class="app-panel__context-menu"
+           :class="classContextMenu">
+        <template v-for="i in dataContextMenu">
+          <div v-if="i.split" class="app-panel__context-menu__split"/>
+          <div v-else-if="i.title && Object.values(i).length === 1" class="app-panel__context-menu__item">
+            {{ i.title }}
+          </div>
+          <div v-else class="app-panel__context-menu__item" @mousedown="clickContextMenu(i)">
+            <i v-if="i.icon" :class="i.icon" class="fa fa-fw"/>
+            {{ i.title }}
+          </div>
+        </template>
+      </div>
+    </transition>
 
   </div>
 </template>

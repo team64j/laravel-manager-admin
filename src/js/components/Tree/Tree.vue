@@ -106,9 +106,22 @@ export default {
         this.data = null
       }
 
+      const settings = this.propSettings
+
+
+      if (this.propSettings['history'] && this.$route['params'][this.propSettings['history']] !== undefined) {
+        if (settings['opened'] === undefined) {
+          settings['opened'] = []
+        }
+
+        if (!~settings['opened'].indexOf(this.$route['params'][this.propSettings['history']])) {
+          settings['opened'].push(this.$route['params'][this.propSettings['history']])
+        }
+      }
+
       axios.get(this.url, {
         params: {
-          settings: this.propSettings
+          settings
         }
       }).then(({ data }) => {
         this.data = data['data']
@@ -124,11 +137,11 @@ export default {
         this.loading = false
       })
     },
-    nodeKey (node) {
+    key (node) {
       return node['id'] ?? node['key']
     },
     clickNode (event, node) {
-      const id = this.nodeKey(node)
+      const id = this.key(node)
 
       if (this.$store.getters.get('treeSelect') && this.$route['path'] ===
           router.parse({ ...this.propRoute, ...this.$route }).path) {
@@ -188,7 +201,7 @@ export default {
     toggleNode (node) {
       const opened = [...this.propSettings.opened || []]
 
-      const id = this.nodeKey(node)
+      const id = this.key(node)
       const index = opened.indexOf(id)
 
       if (node['data']?.length) {
@@ -231,7 +244,7 @@ export default {
       }
 
       data.forEach(i => {
-        if (this.nodeKey(i) === this.nodeKey(node) &&
+        if (this.key(i) === this.key(node) &&
             (!i?.route?.path || i.route.path === router.currentRoute.value.fullPath)) {
           for (const j in node) {
             if (node[j] !== undefined) {
@@ -262,7 +275,7 @@ export default {
         }
 
         if (node['data']?.length) {
-          const index = opened.indexOf(this.nodeKey(node))
+          const index = opened.indexOf(this.key(node))
 
           if (~index) {
             opened.splice(index, 1)
@@ -276,7 +289,7 @@ export default {
         node['loading'] = true
         axios.get(node['meta']['pagination']['next'], {
           params: {
-            settings: Object.assign({}, this.propSettings, { parent: this.nodeKey(node) })
+            settings: Object.assign({}, this.propSettings, { parent: this.key(node) })
           }
         }).then(({ data }) => {
           if (data['data']) {
@@ -292,7 +305,7 @@ export default {
       }
     },
     buildContextMenu (event, node) {
-      this.idContextMenu = this.nodeKey(node)
+      this.idContextMenu = this.key(node)
       this.showContextMenu = false
       this.dataContextMenu = []
       const contextMenu = node['contextMenu'] !== undefined ? node['contextMenu'] : this.contextMenu

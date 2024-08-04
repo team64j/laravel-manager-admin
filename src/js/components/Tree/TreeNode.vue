@@ -118,9 +118,9 @@ const className = computed(() => {
               (
                   route['params']?.[keyId] && route['params']?.[keyId]?.toString() === $props.node?.[keyId]?.toString()
               )
-          ) && (
+          )/* && (
               !$props.node['folder'] && $props.node['category'] || !$props.node['category']
-          )
+          )*/
       )
   ) {
     c.push('app-tree__node-active')
