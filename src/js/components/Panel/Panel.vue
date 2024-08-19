@@ -15,13 +15,15 @@ export default {
       type: String,
       default: 'v-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36)
     },
+    modelValue: null,
     data: {
       type: Array,
-      default: []
+      default (props) {
+        return props.modelValue ?? []
+      }
     },
     meta: Object,
     layout: Object,
-    modelValue: null,
     columns: {
       type: Array,
       default: (props) => props?.meta?.columns ?? []
@@ -183,13 +185,18 @@ export default {
         }
       } else {
         for (const i in item) {
-          const style = item[i].style
+          const slots = []
+          const style = item[i]?.style
 
           if (style?.width) {
             delete style.width
           }
 
-          items.push(h(`td`, { style }, [h(compile(item[i].toString()))]))
+          if (item[i] !== null) {
+            slots.push(h(compile(item[i]?.toString())))
+          }
+
+          items.push(h(`td`, { style }, slots))
         }
       }
 
