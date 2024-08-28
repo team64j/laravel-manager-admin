@@ -124,11 +124,11 @@ export default {
         if (emit === 'action'/* &&
             !(component.extends?.methods?.action ?? component.methods?.action)*/) {
           attrs['onAction'] ??= this.action
-        } else if (emit === 'update:props' &&
-            !(component.extends?.methods?.updateProps ?? component.methods?.updateProps)) {
+        } else if (emit === 'update:props'/* &&
+            !(component.extends?.methods?.updateProps ?? component.methods?.updateProps)*/) {
           attrs['onUpdate:props'] = (args) => this.updateProps(__attrs, args)
-        } else if (emit === 'update:modelValue' &&
-            !(component.extends?.methods?.updateModelValue ?? component.methods?.updateModelValue)) {
+        } else if (emit === 'update:modelValue'/* &&
+            !(component.extends?.methods?.updateModelValue ?? component.methods?.updateModelValue)*/) {
           attrs['onUpdate:modelValue'] = this.updateModelValue
         }
       })
