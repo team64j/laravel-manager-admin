@@ -9,6 +9,7 @@ import Tooltip from '../Tooltip/Tooltip.vue'
 import Search from '../Search/Search.vue'
 import router from '../../router'
 import store from '../../store'
+import Logo from '../Layout/Logo.vue'
 
 import('./App.css')
 
@@ -25,7 +26,7 @@ export default {
       return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints']
     }
   },
-  components: { Notifications, RouterView, Tooltip, Datepicker, GlobalMenu, GlobalTabs, Component, Search },
+  components: { Logo, Notifications, RouterView, Tooltip, Datepicker, GlobalMenu, GlobalTabs, Component, Search },
   data () {
     return {
       layout: null,
@@ -285,6 +286,6 @@ export default {
     <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
   </div>
   <div v-else class="flex flex-col h-full justify-center items-center">
-    <img src="../../../img/logo.svg" alt="" class="w-24 h-24 animate-ping">
+    <logo class="w-24 h-24 animate-ping"/>
   </div>
 </template>

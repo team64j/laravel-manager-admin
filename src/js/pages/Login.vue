@@ -1,8 +1,10 @@
 <script>
 import router from '../router'
+import Logo from '../components/Layout/Logo.vue'
 
 export default {
   name: 'Login',
+  components: { Logo },
   data () {
     return {
       form: {},
@@ -132,7 +134,8 @@ export default {
         class="app__page__login-wrapper">
 
       <div class="app__page__login-logo">
-        <img src="../../img/logo.svg" :src="data['logo']" alt="logo">
+        <img v-if="data['logo']" :src="data['logo']" alt="logo">
+        <logo v-else/>
         <h1>Evo Admin</h1>
       </div>
 
@@ -265,7 +268,7 @@ export default {
 .app__page__login-logo {
   @apply flex items-center justify-center
 }
-.app__page__login-logo img {
+.app__page__login-logo img, .app__page__login-logo svg {
   @apply inline-block h-16
 }
 .app__page__login-logo h1 {
