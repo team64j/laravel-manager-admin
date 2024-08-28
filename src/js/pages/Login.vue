@@ -134,7 +134,7 @@ export default {
         class="app__page__login-wrapper">
 
       <div class="app__page__login-logo">
-        <img v-if="data['logo']" :src="data['logo']" alt="logo">
+        <img v-if="data?.logo" :src="data.logo" alt="logo">
         <logo v-else/>
         <h1>Evo Admin</h1>
       </div>
