@@ -1,5 +1,5 @@
 <script>
-import { h } from 'vue'
+import { defineAsyncComponent, defineComponent, h } from 'vue'
 import router from '../router'
 import Component from '../components/Layout/Component.vue'
 
@@ -225,24 +225,26 @@ export default {
       return h('div', {
             class: 'app-page__default w-full h-full flex flex-col overflow-auto'
           },
-          this.loaded ?
-              h(Component, {
-                url: this.url,
-                data: this.data,
-                meta: this.meta,
-                layout: this.layout,
-                errors: this.errors,
-                onAction: this.action,
-                'onUpdate:modelValue': this.updateModelValue
-              }) :
-              h('div', { class: 'flex items-center justify-center grow' },
-                  h('div', {
-                    class: 'inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500 opacity-0',
-                    onVnodeMounted (ctx) {
-                      setTimeout(() => ctx.el.classList.remove('opacity-0'), 100)
-                    }
-                  })
-              )
+          [
+            this.loaded ?
+                h(Component, {
+                  url: this.url,
+                  data: this.data,
+                  meta: this.meta,
+                  layout: this.layout,
+                  errors: this.errors,
+                  onAction: this.action,
+                  'onUpdate:modelValue': this.updateModelValue
+                }) :
+                h('div', { class: 'flex items-center justify-center grow' },
+                    h('div', {
+                      class: 'inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500 opacity-0',
+                      onVnodeMounted (ctx) {
+                        setTimeout(() => ctx.el.classList.remove('opacity-0'), 100)
+                      }
+                    })
+                )
+          ]
       )
     }
   }

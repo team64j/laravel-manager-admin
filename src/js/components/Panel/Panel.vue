@@ -96,13 +96,13 @@ export default {
     key (data) {
       return data['id'] ?? data['key']
     },
-    get (query, data) {
+    get (query, params) {
       const route = router.parse(this.propUrl)
       query = Object.assign(route.query, query || this.$route?.['query'] || {})
 
       this.$emit('update:props', {
-        data: data,
-        meta: data ? Object.assign({}, { pagination: this.meta['pagination'] }) : {}
+        data: params,
+        meta: params ? Object.assign({}, { pagination: this.meta['pagination'] }) : {}
       }, this)
 
       if (this.$refs.data) {
@@ -117,12 +117,19 @@ export default {
       axios.get(route.path, {
         params: query
       }).then(({ data }) => {
+        const props = {
+          data: data.data,
+          meta: data.meta
+        }
+
         if (data.meta?.columns) {
-          data.columns = data.meta.columns
+          props.columns = data.meta.columns
+          delete data.meta.columns
         }
 
         if (data.meta?.filters) {
-          data.filters = data.meta.filters
+          props.filters = data.meta.filters
+          delete data.meta.filters
         }
 
         if (this.$refs.data) {
@@ -134,7 +141,7 @@ export default {
           i.style.minWidth = null
         })
 
-        this.$emit('update:props', data)
+        this.$emit('update:props', props)
       })
     },
     selectRow (event, item, route) {

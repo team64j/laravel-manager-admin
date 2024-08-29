@@ -1,8 +1,8 @@
 <script>
-import { compile, h } from 'vue'
+import { compile, h, shallowReactive, toRaw } from 'vue'
 
 export default {
-  name: 'Component',
+  name: 'ComponentOld',
   __isStatic: true,
   props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'],
   methods: {
@@ -10,7 +10,7 @@ export default {
       this.$emit('action', ...arguments)
     },
     initLayout (layout, stack) {
-      layout = layout || this.setLayoutData()
+      layout = toRaw(layout || this.setLayoutData())
 
       if (!layout) {
         return
@@ -55,7 +55,7 @@ export default {
       return layout
     },
     setLayoutData (data) {
-      data = data || this.layout
+      data = data || toRaw(this.layout)
 
       for (let i in data) {
         if (typeof data[i]?.data === 'string') {
@@ -91,7 +91,7 @@ export default {
       }
 
       const slots = data.slots && this.initLayout(data.slots, stack)
-      const attrs = data.attrs || {}
+      const attrs = toRaw(data.attrs || {})
 
       if (this.$props.class) {
         attrs.class = (attrs.class ? attrs.class + ' ' : '') + this.$props.class
@@ -121,16 +121,21 @@ export default {
       }
 
       (component.extends?.emits ?? component.emits ?? []).forEach(emit => {
-        if (emit === 'action') {
+        if (emit === 'action'/* &&
+            !(component.extends?.methods?.action ?? component.methods?.action)*/) {
           attrs['onAction'] ??= this.action
-        } else if (emit === 'update:props') {
-          attrs['onUpdate:props'] = (args) => this.updateProps(attrs, args)
-        } else if (emit === 'update:modelValue') {
+        } else if (emit === 'update:props'/* &&
+            !(component.extends?.methods?.updateProps ?? component.methods?.updateProps)*/) {
+          attrs['onUpdate:props'] = (args) => this.updateProps(__attrs, args)
+        } else if (emit === 'update:modelValue'/* &&
+            !(component.extends?.methods?.updateModelValue ?? component.methods?.updateModelValue)*/) {
           attrs['onUpdate:modelValue'] = this.updateModelValue
         }
       })
 
-      return h(component, attrs, slots)
+      const __attrs = shallowReactive(attrs)
+
+      return h(component, __attrs, slots)
     },
     setDataValue (keys, value, data, first) {
       const key = keys[0]
@@ -203,7 +208,7 @@ export default {
   },
   setup () {
     return function () {
-      return h(() => this.initLayout())
+      return h(() => this.initLayout()/*, { onAction: this.action }*/)
     }
   }
 }

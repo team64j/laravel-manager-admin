@@ -1,11 +1,13 @@
 <script>
 import router from '../../router'
+import store from '../../store'
+import { h, onMounted, reactive, ref, watch } from 'vue'
 
 import('./Tabs.css')
 
 export default {
-  __isStatic: true,
-  //name: 'Tabs',
+  //__isStatic: true,
+  name: 'Tabs',
   emits: ['action'],
   props: {
     id: {
@@ -27,198 +29,63 @@ export default {
     navigation: {
       type: Boolean,
       default: true
-    }
+    },
+    smallTabs: Boolean
   },
-  data () {
-    const keyStorage = `tabs.` + this.id.toLowerCase()
-
-    return {
-      keyStorage,
-      active: this.$store.getters.get(`Session.${keyStorage}`, null),
-      settings: {}
-    }
-  },
-  computed: {
-    class () {
-      return [
-        this.vertical ? 'app-tabs__vertical' : '',
-        this.navigation ? 'app-tabs__with-navigation' : '',
-        this.data.length === 1 ? 'app-tabs__without-rows' : ''
-      ]
-    }
-  },
-  created () {
-    this.data.forEach(tab => {
-      if (tab.route) {
-        tab.route = router.parse({ path: tab.route }).path
-      }
+  setup (props, { emit, slots }) {
+    const keyStorage = `tabs.` + props.id.toLowerCase()
+    const refRows = ref()
+    const refPrev = ref()
+    const refNext = ref()
+    const data = reactive({
+      active: store.getters.get(`Session.${keyStorage}`, null)
     })
 
-    if (this.history) {
-      if (typeof this.history === 'string') {
-        this.active = this.$route['params'][this.history]
-        this.$watch(
-            () => this.$route['params'][this.history],
-            active => {
-              if (!active) {
+    if (props.history) {
+      if (typeof props.history === 'string') {
+        data.active = router.currentRoute.value.params[props.history]
+        props.data.forEach(i => i.active = i.render = i.id === data.active)
+
+        watch(
+            () => router.currentRoute.value.params[props.history],
+            a => {
+              if (!a) {
                 return
               }
 
-              if (this.active !== active ||
-                  (this.active === active && ['delete', 'save', 'update'].includes(this.$store.state.action))) {
-                this.select(active)
+              if (data.active !== a) {
+                data.active = a
               }
             }
         )
       } else {
-        this.data.forEach(tab => {
-          if (tab.route === this.$route['path']) {
-            this.active = tab.id
+        data.active = null
+
+        props.data.forEach(i => {
+          if (!i.route) {
+            return
           }
 
-          tab.loaded = tab.active
+          if (router.parse(i.route)['path'] === router.currentRoute.value.path) {
+            data.active = i.id
+          }
         })
       }
+    } else if (!props.data.some(i => i.id === data.active) && props.data[0]) {
+      data.active = props.data[0].id
+      props.data[0].active = props.data[0].render = true
     } else {
-      this.data.forEach(tab => {
-        if (tab.active) {
-          this.active = tab.id
-        }
-
-        tab.loaded = tab.active
-      })
+      props.data.forEach(i => i.active = i.render = i.id === data.active)
     }
 
-    if (!this.active && this.data[0]) {
-      this.active = this.data[0].id
-      this.data[0].active = true
-      this.data[0].loaded = true
-    }
-
-    if (this.watch) {
-      if (this.$route['name']) {
-        this.$watch(
-            () => this.$route['name'],
-            active => {
-              if (!active) {
-                return
-              }
-
-              this.data.forEach((tab, index) => {
-                if (typeof tab.route === 'object') {
-                  tab.active = tab.route.some(i => i === active)
-                } else {
-                  tab.active = tab.route === active
-                }
-
-                if (tab.active) {
-                  this.select(tab, index)
-                }
-              })
-            }
-        )
-      } else {
-        // this.$watch(
-        //     () => this.$route,
-        //     active => {
-        //       if (!active) {
-        //         return
-        //       }
-        //
-        //       this.data.forEach((tab, index) => {
-        //         if (!tab.route) {
-        //           return
-        //         }
-        //
-        //         const route = router.parse(tab.route)
-        //
-        //         if (route['path'] === active['path']) {
-        //           tab.active = route['path'] === active['path']
-        //         }
-        //
-        //         if (tab.active) {
-        //           this.select(tab, index)
-        //         }
-        //       })
-        //     }
-        // )
-      }
-    }
-  },
-  mounted () {
-    this.init(this.data.findIndex(tab => tab.id === this.active))
-  },
-  updated () {
-    if (!this.data.some(tab => tab.id === this.active)) {
-      this.active = this.data?.[0].id
-    }
-  },
-  methods: {
-    action () {
-      if (typeof this[arguments[0]] === 'function') {
-        this[arguments[0]](...Array.from(arguments).splice(1))
-      } else {
-        this.$emit('action', ...arguments)
-      }
-    },
-    isRenderer (tab) {
-      return this.history || (tab.needUpdate && tab.id === this.active) ||
-          (!tab.needUpdate && ((this.loadOnce && !tab.loaded) || tab.loaded) || !this.loadOnce)
-    },
-    isShow (tab) {
-      return tab.needUpdate || tab.id === this.active
-    },
-    touch () {
-      return false
-    },
-    select (tab, index) {
-      if (typeof tab === 'string') {
-        const id = tab
-        tab = this.data.find(i => i.id === id)
-        index = this.data.findIndex(i => i.id === id)
-
-        if (!tab) {
-          return
-        }
-      }
-
-      this.active = tab.id
-      this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: this.active })
-
-      this.init(index)
-
-      if (this.history) {
-        if (typeof this.history === 'string') {
-          this.$emit('action', 'pushRouter', {
-            params: {
-              [this.history]: tab.id
-            },
-            meta: {
-              group: true
-            }
-          })
-        } else if (tab.route) {
-          this.$emit('action', 'pushRouter', {
-            path: tab.route,
-            meta: {
-              group: true
-            }
-          })
-        }
-      }
-
-      if (this.loadOnce) {
-        tab.loaded = true
-      }
-    },
-    init (index) {
+    const init = (index) => {
       let right = 0,
           width = 0
 
-      if (this.$refs.row) {
-        this.$refs.row.styles = getComputedStyle(this.$refs.row)
+      if (refRows.value) {
+        refRows.value.styles = getComputedStyle(refRows.value)
 
-        this.$refs.row.querySelectorAll('.app-tabs__tab').forEach((t, i) => {
+        refRows.value.querySelectorAll('.app-tabs__tab').forEach((t, i) => {
           t.styles = getComputedStyle(t)
 
           if (i <= index) {
@@ -230,81 +97,175 @@ export default {
           }
         })
 
-        if (this.$refs.row.scrollLeft > right) {
-          this.$refs.row.scrollLeft = right
+        if (refRows.value.scrollLeft > right) {
+          refRows.value.scrollLeft = right
         }
 
-        if (this.$refs.row.offsetWidth < width) {
-          this.$refs.row.scrollLeft = width - this.$refs.row.offsetWidth
+        if (refRows.value.offsetWidth < width) {
+          refRows.value.scrollLeft = width - refRows.value.offsetWidth
         }
       }
 
-      if (this.$refs.prev) {
+      if (refPrev.value) {
         if (index) {
-          this.$refs.prev.classList.remove('app-tabs__disabled')
+          refPrev.value.classList.remove('app-tabs__disabled')
         } else {
-          this.$refs.prev.classList.add('app-tabs__disabled')
+          refPrev.value.classList.add('app-tabs__disabled')
         }
       }
 
-      if (this.$refs.next) {
-        if (this.data[index + 1]) {
-          this.$refs.next.classList.remove('app-tabs__disabled')
+      if (refNext.value) {
+        if (props.data[index + 1]) {
+          refNext.value.classList.remove('app-tabs__disabled')
         } else {
-          this.$refs.next.classList.add('app-tabs__disabled')
+          refNext.value.classList.add('app-tabs__disabled')
         }
       }
-    },
-    prev () {
-      const index = this.data.findIndex(tab => tab.id === this.active) - 1
+    }
 
-      if (this.data[index]) {
-        this.select(this.data[index], index)
-      }
-    },
-    next () {
-      const index = this.data.findIndex(tab => tab.id === this.active) + 1
+    const onPrev = () => {
+      const index = props.data.findIndex(i => i.id === data.active) - 1
 
-      if (this.data[index]) {
-        this.select(this.data[index], index)
+      if (props.data[index]) {
+        select(props.data[index], index)
       }
+    }
+
+    const onNext = () => {
+      const index = props.data.findIndex(i => i.id === data.active) + 1
+
+      if (props.data[index]) {
+        select(props.data[index], index)
+      }
+    }
+
+    const select = (tab, index) => {
+      init(index)
+
+      props.data.forEach(i => i.active = i.render = i.id === tab.id)
+
+      data.active = tab.id
+
+      store.dispatch('set', { [`Session.${keyStorage}`]: tab.id })
+
+      if (props.history) {
+        if (typeof props.history === 'string') {
+          this.$emit('action', 'pushRouter', {
+            params: {
+              [props.history]: tab.id
+            },
+            meta: {
+              group: true
+            }
+          })
+        } else {
+          emit('action', 'pushRouter', {
+            ...router.parse(tab.route),
+            meta: {
+              group: true
+            }
+          })
+        }
+      }
+    }
+
+    const render = (i) => {
+      return props.history || (i.needUpdate && i.id === data.active) || !i.needUpdate
+    }
+
+    onMounted(() => init(props.data.findIndex(i => i.id === data.active)))
+
+    return () => {
+      const slotTabs = []
+
+      if (props.data.length > 1) {
+        const slotRows = [
+          h('div',
+              {
+                class: 'app-tabs__row',
+                ref: refRows
+              },
+              props.data.map((i, k) => h('div',
+                      {
+                        class: [
+                          'app-tabs__tab',
+                          i.id === data.active ? 'app-tabs__tab-active' : ''
+                        ],
+                        'data-tooltip': i.title,
+                        onMousedown: () => select(i, k)
+                      },
+                      [
+                        i.icon ? h('i', { class: ['app-tabs__tab-icon', i.icon] }) : null,
+                        i.name ? h('span', i.name) : null
+                      ]
+                  )
+              )
+          )
+        ]
+
+        if (props.navigation) {
+          slotRows.push(
+              h('i', {
+                ref: refPrev,
+                class: 'fa fa-angle-left app-tabs__prev disabled',
+                onMousedown: onPrev
+              }),
+              h('i', {
+                ref: refNext,
+                class: 'fa fa-angle-right app-tabs__next disabled',
+                onMousedown: onNext
+              })
+          )
+        }
+
+        slotTabs.push(
+            h('div',
+                {
+                  class: 'app-tabs__rows'
+                },
+                slotRows
+            )
+        )
+      }
+
+      slotTabs.push(
+          ...props.data.filter(i => render(i)).map(i => h('div',
+              {
+                id: props.id + `Tab-` + i.id,
+                class: [
+                  'app-tabs__page',
+                  i.class
+                ],
+                style: i.id !== data.active ? { display: 'none' } : void 0
+              },
+              slots[i.id] && slots[i.id](i) || h('div', {
+                class: 'grow flex items-center justify-center w-full h-full'
+              }, [
+                h('i',
+                    {
+                      class: 'inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin'
+                    }
+                )
+              ])
+          ))
+      )
+
+      console.log(props.data.length)
+
+      return h('div',
+          {
+            id: props.id + 'Tabs',
+            class: [
+              'app-tabs',
+              props.vertical ? 'app-tabs__vertical' : '',
+              props.smallTabs ? 'app-tabs-small' : 'app-tabs-large',
+              props.navigation ? 'app-tabs__with-navigation' : '',
+              props.data.length === 1 ? 'app-tabs__without-rows' : ''
+            ]
+          },
+          slotTabs
+      )
     }
   }
 }
 </script>
-
-<template>
-  <div :id="id+`Tabs`" class="app-tabs" :class="this.class">
-
-    <div v-if="data.length > 1" class="app-tabs__rows">
-      <div class="app-tabs__row" ref="row">
-        <div v-for="(tab, index) in data" :key="index" :data-tooltip="tab.title" class="app-tabs__tab"
-             :class="{ 'app-tabs__tab-active' : tab.id === active }"
-             @mousedown="select(tab, index)">
-          <i v-if="tab.icon" class="app-tabs__tab-icon" :class="tab.icon"/>
-          <span v-if="tab.name">{{ tab.name }}</span>
-        </div>
-      </div>
-
-      <template v-if="navigation">
-        <i class="fa fa-angle-left app-tabs__prev disabled" @mousedown="prev" ref="prev"/>
-        <i class="fa fa-angle-right app-tabs__next disabled" @mousedown="next" ref="next"/>
-      </template>
-    </div>
-
-    <template v-for="tab in data" :key="tab.id">
-      <div
-          v-if="isRenderer(tab)"
-          v-show="isShow(tab)"
-          :id="`tab-`+tab.id"
-          :class="tab.class"
-          class="app-tabs__page">
-        <slot v-if="$slots[tab.id]" :name="tab.id"/>
-        <div v-else class="grow flex items-center justify-center w-full h-full">
-          <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-        </div>
-      </div>
-    </template>
-
-  </div>
-</template>
