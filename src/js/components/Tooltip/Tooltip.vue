@@ -46,16 +46,20 @@ export default {
         return
       }
 
-      this.el = event.target.closest('[data-tooltip]')
-      this.position = this.el.getBoundingClientRect()
-      this.html = this.el.getAttribute('data-tooltip')
+      event.preventDefault()
+
+      const el = event.target.closest('[data-tooltip]')
+
+      this.el = true
+      this.position = el.getBoundingClientRect()
+      this.html = el.getAttribute('data-tooltip')
           // .replace(/<br ?\/?>/g, '\n').replace(/&/g, "&amp;")
           // .replace(/</g, "&lt;")
           // .replace(/>/g, "&gt;")
           // .replace(/"/g, "&quot;")
           // .replace(/'/g, "&#039;")
           .replace(/\r\n|\r|\n/g, '<br>')
-      this.type = this.el.getAttribute('data-type')
+      this.type = el.getAttribute('data-type')
 
       this.$nextTick(() => {
         this.top = this.position.top + this.position.height

@@ -1,5 +1,5 @@
 <script>
-import { compile, h, reactive, watch } from 'vue'
+import { compile, h, reactive, toRaw, watch } from 'vue'
 import draggable from 'vuedraggable'
 import router from '../../router'
 
@@ -222,7 +222,7 @@ export default {
             this.getComponentAttributes(item[key])
         )
       } else if (column.component) {
-        const component = structuredClone(column.component)
+        const component = structuredClone(toRaw(column.component))
 
         if (component?.attrs?.['keyValue'] !== undefined) {
           component.attrs.value = item[component.attrs['keyValue']]
