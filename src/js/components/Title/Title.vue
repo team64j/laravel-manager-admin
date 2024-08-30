@@ -1,5 +1,5 @@
 <script>
-import { h, reactive } from 'vue'
+import { h, reactive, Transition } from 'vue'
 import router from '../../router'
 
 export default {
@@ -15,7 +15,7 @@ export default {
   setup (props) {
     const route = router.currentRoute.value
     const value = props.modelValue ?? props.title ?? route?.meta?.['title']
-    const id = props.id || route.params['id'] && parseInt(route.params['id'])
+    const id = props.id || route.params['id'] && parseInt(route.params['id'].toString()) || undefined
     const data = reactive({
       show: false
     })
@@ -46,19 +46,13 @@ export default {
             }
           })
         ]),
-        // h(Transition, {
-        //   slots: {
-        //     default: [
-        //       h('div', {
-        //         class: 'app-alert app-alert__blue mt-3',
-        //         style: !data.show ? { display: 'none' } : undefined
-        //       }, props.help)]
-        //   }
-        // }),
-        props.help && h('div', {
-          class: 'app-alert app-alert__blue mt-3',
-          style: !data.show ? { display: 'none' } : undefined,
-          innerHTML: props.help
+        props.help && h(Transition, {
+          mode: 'in-out'
+        }, {
+          default: (() => data.show && h('div', {
+            class: 'app-alert app-alert__blue mt-3',
+            innerHTML: props.help
+          }))
         })
       ]))
     }
