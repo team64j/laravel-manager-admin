@@ -1,23 +1,22 @@
 <script>
-import { defineComponent } from 'vue'
+import { h } from 'vue'
 
-export default defineComponent({
+export default {
   __isStatic: true,
   name: 'Media',
-
   props: {
     data: Object,
     modelValue: [String, Object]
+  },
+  setup (props) {
+    return () => h('div', {
+      class: 'border'
+    }, [
+      ~props.data['type'].indexOf('image/') && h('img', {
+        src: props.data['url'],
+        class: 'w-auto h-auto max-w-full max-h-full'
+      })
+    ])
   }
-})
+}
 </script>
-
-<template>
-  <div class="border">
-    <img v-if="~data['type'].indexOf('image/')" :src="data['url']" alt="" class="w-auto h-auto max-w-full max-h-full">
-  </div>
-</template>
-
-<style scoped>
-
-</style>

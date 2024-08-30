@@ -4,19 +4,20 @@ import { compile, h } from 'vue'
 export default {
   __isStatic: true,
   name: 'RenderString',
-
   props: {
     string: {
       required: true,
       type: String
     }
   },
-
-  render (props) {
-    let string = props.string
-    string = string.replace(/href=/g, 'to=').replace(/<a(.*?)>/g, '<router-link$1>').replace(/(<\/a>)/g, '</router-link>')
-
-    return h(compile(string))
+  setup (props) {
+    return () => h(
+        compile(
+            props.string.replace(/href=/g, 'to=').
+                replace(/<a(.*?)>/g, '<router-link$1>').
+                replace(/(<\/a>)/g, '</router-link>')
+        )
+    )
   }
 }
 </script>
