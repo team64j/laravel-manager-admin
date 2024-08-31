@@ -21,7 +21,6 @@ export default {
 
   data () {
     return {
-      isToggle: false,
       stay: this.$store.getters['Storage/get']('stay') || 0,
     }
   },
@@ -73,7 +72,6 @@ export default {
     },
 
     save ({ stay }) {
-      this.isToggle = false
       this.stay = stay
       this.$store.dispatch('Storage/set', ['stay', stay])
       this.$emit('action', 'save', ...arguments)
@@ -160,17 +158,16 @@ export default {
 
         <Button
             class="app-actions__toggle"
-            :class="[i.class, isToggle ? 'app-actions__toggle-active' : '']"
-            @click="isToggle=!isToggle">
+            :class="i.class">
           <i class="fa fa-angle-down fa-fw"/>
         </Button>
 
-        <div v-show="isToggle" class="app-actions__save-buttons">
+        <div class="app-actions__save-buttons">
           <Button v-for="ii in i.data.filter((j, kk) => kk !== stay)"
                   :icon="ii.icon"
                   :class="i.class"
                   :value="ii.title"
-                  @mousedown.prevent="click($event, i.action, ii.stay)">
+                  @mousedown="click($event, i.action, ii.stay)">
             <template #icon>
               <i :class="i.icon"/>
               <i class="fa fa-plus fa-fw"/>

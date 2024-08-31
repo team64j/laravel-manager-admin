@@ -22,11 +22,14 @@
 .app-actions .app-actions__toggle > i {
     @apply transition
 }
-.app-actions .app-actions__toggle.app-actions__toggle-active > i {
+.app-actions .app-actions__toggle:focus > i {
     @apply rotate-180
 }
 .app-actions .app-actions__save-buttons {
-    @apply absolute left-0 top-full mt-0.5 w-full flex flex-col opacity-100 visible shadow transition
+    @apply absolute left-0 top-full mt-0.5 w-full hidden flex-col opacity-100 visible shadow transition
+}
+.app-actions .app-actions__toggle:focus ~ .app-actions__save-buttons {
+    @apply flex
 }
 .app-actions .app-actions__save-buttons button {
     @apply border-t-0 rounded-none first:rounded-t last:rounded-b
