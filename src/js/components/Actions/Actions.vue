@@ -156,9 +156,7 @@ export default {
           </template>
         </Button>
 
-        <Button
-            class="app-actions__toggle"
-            :class="i.class">
+        <Button class="app-actions__toggle" :class="i.class">
           <i class="fa fa-angle-down fa-fw"/>
         </Button>
 
