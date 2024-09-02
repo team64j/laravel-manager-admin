@@ -7,7 +7,7 @@ import { h, reactive, ref, renderSlot, watch } from 'vue'
 export default {
   __isStatic: true,
   name: 'Tabs',
-  emits: ['action'],
+  emits: ['action', 'update:props'],
   props: {
     id: {
       type: String,
@@ -93,6 +93,8 @@ export default {
             }
           })
         } else {
+          //router.to(tab.route)
+          // emit('update:props', props)
           emit('action', 'pushRouter', {
             ...router.parse(tab.route),
             meta: {
