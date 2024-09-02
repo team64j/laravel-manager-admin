@@ -52,7 +52,7 @@ export default {
 
               const index = props.data.findIndex(i => i.id === a)
 
-              if (data.index !== index) {
+              if (index >= 0 && data.index !== index) {
                 data.index = index
               }
             }
@@ -85,7 +85,7 @@ export default {
 
       if (props.history) {
         if (typeof props.history === 'string') {
-          this.$emit('action', 'pushRouter', {
+          emit('action', 'pushRouter', {
             params: {
               [props.history]: tab.id
             },
