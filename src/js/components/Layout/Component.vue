@@ -1,62 +1,13 @@
 <script>
-import { compile, h } from 'vue'
+import { compile, getCurrentInstance, h, nextTick } from 'vue'
 
 export default {
   name: 'Component',
   __isStatic: true,
   props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'],
-  methods: {
-    action () {
-      this.$emit('action', ...arguments)
-    },
-    initLayout (layout, stack) {
-      layout = layout || this.setLayoutData()
-
-      if (!layout) {
-        return
-      }
-
-      if (layout.component) {
-        if (layout.slot && stack) {
-          if (!stack[layout.slot]) {
-            stack[layout.slot] = []
-          }
-
-          stack[layout.slot].push(this.createComponent(layout))
-          return
-        }
-
-        return this.createComponent(layout, stack)
-      }
-
-      if (typeof layout === 'string') {
-        layout = layout.replace(/href=/g, 'to=').
-            replace(/<a(.*?)>/g, '<router-link$1>').
-            replace(/(<\/a>)/g, '</router-link>')
-        return h(compile(layout))
-      }
-
-      if (typeof layout === 'object') {
-        let obj
-        if (Array.isArray(layout)) {
-          obj = []
-          layout.forEach(i => i && obj.push(this.initLayout(i, stack)))
-        } else {
-          obj = {}
-          for (let i in layout) {
-            const slots = this.initLayout(layout[i], stack)
-            obj[i] = () => slots
-          }
-        }
-
-        return obj
-      }
-
-      return layout
-    },
-    setLayoutData (data) {
-      data = data || this.layout
-
+  emits: ['action'],
+  setup (props, { emit }) {
+    function layoutData (data) {
       for (let i in data) {
         if (typeof data[i]?.data === 'string') {
           const keys = data[i].data.split('.')
@@ -65,23 +16,58 @@ export default {
             data[i].attrs = {}
           }
 
-          data[i].attrs.data = this.findValue(keys, this.$props)
-          data[i].attrs.onAction = this.action
+          data[i].attrs.data = findValue(keys, props)
+          data[i].attrs.onAction = (...args) => emit('action', ...args)
         } else if (data[i]?.slots) {
-          data[i].slots = this.setLayoutData(data[i].slots)
+          data[i].slots = layoutData(data[i].slots)
         } else if (Array.isArray(data[i])) {
-          data[i] = this.setLayoutData(data[i])
+          data[i] = layoutData(data[i])
         }
       }
 
       return data
-    },
-    createComponent (data, stack) {
+    }
+
+    function layout (data) {
+      if (!data) {
+        return
+      }
+
+      data = layoutData(data)
+
+      if (data.component) {
+        return createComponent(data)
+      }
+
+      if (typeof data === 'string') {
+        return h(compile(data.replace(/href=/g, 'to=').
+            replace(/<a(.*?)>/g, '<router-link$1>').
+            replace(/(<\/a>)/g, '</router-link>')))
+      }
+
+      if (typeof data === 'object') {
+        let obj
+        if (Array.isArray(data)) {
+          obj = data.filter(i => i).map(i => layout(i))
+        } else {
+          obj = {}
+          for (let i in data) {
+            obj[i] = () => layout(data[i])
+          }
+        }
+
+        return obj
+      }
+
+      return data
+    }
+
+    function createComponent (data) {
       let component
 
       try {
-        component = this.$.appContext.components[data.component] ||
-            (data.component && (new Function('return ' + data.component + '')).call(this))
+        component = app._.appContext.components[data.component] ||
+            (data.component && (new Function('return ' + data.component + '')).call(getCurrentInstance()))
       } catch (exception) {
         return
       }
@@ -90,11 +76,11 @@ export default {
         return
       }
 
-      const slots = data.slots && this.initLayout(data.slots, stack)
+      const slots = data.slots && layout(data.slots)
       const attrs = data.attrs || {}
 
-      if (this.$props.class) {
-        attrs.class = (attrs.class ? attrs.class + ' ' : '') + this.$props.class
+      if (props.class) {
+        attrs.class = (attrs.class ? attrs.class + ' ' : '') + props.class
       }
 
       attrs.key = data.model || data.component.name || ''
@@ -102,37 +88,66 @@ export default {
 
       if (attrs.key === 'data') {
         if (!attrs.data) {
-          attrs.data = this.data
+          attrs.data = props.data
         } else {
-          attrs.modelValue = this.data
+          attrs.modelValue = props.data
         }
-      } else if (this.data?.[attrs.key] !== undefined) {
-        attrs.modelValue = this.data[attrs.key]
-      } else if (~attrs.key.indexOf('.')) {
-        attrs.modelValue = this.findValue(attrs.key.split('.'), this.$props)
+      } else if (props.data?.[attrs.key] !== undefined) {
+        attrs.modelValue = props.data[attrs.key]
+      } else if (attrs.key.includes('.')) {
+        attrs.modelValue = findValue(attrs.key.split('.'), props)
       }
 
       if ((component?.extends?.props || component?.props)?.['meta']) {
-        attrs.meta = attrs.meta ?? this.meta
+        attrs.meta = attrs.meta ?? props.meta
       }
 
       if ((component?.extends?.props || component?.props)?.['error']) {
-        attrs.error = this.errors?.[attrs.key]
+        attrs.error = props.errors?.[attrs.key]
       }
 
-      (component.extends?.emits ?? component.emits ?? []).forEach(emit => {
-        if (emit === 'action') {
-          attrs['onAction'] ??= this.action
-        } else if (emit === 'update:props') {
-          attrs['onUpdate:props'] = (args) => this.updateProps(attrs, args)
-        } else if (emit === 'update:modelValue') {
-          attrs['onUpdate:modelValue'] = this.updateModelValue
+      (component.extends?.emits ?? component.emits ?? []).forEach(e => {
+        if (e === 'action') {
+          attrs['onAction'] ??= (...args) => emit('action', ...args)
+        } else if (e === 'update:props') {
+          attrs['onUpdate:props'] = (args) => updateProps(attrs, args)
+        } else if (e === 'update:modelValue') {
+          attrs['onUpdate:modelValue'] = updateModelValue
         }
       })
 
       return h(component, attrs, slots)
-    },
-    setDataValue (keys, value, data, first) {
+    }
+
+    function findValue (keys, data) {
+      const key = keys[0]
+      let value
+
+      if (data[key] !== undefined) {
+        if (keys[1] !== undefined) {
+          keys.shift()
+          value = findValue(keys, data[key])
+        } else {
+          value = data[key]
+        }
+      }
+
+      return value
+    }
+
+    function setValue (key, value) {
+      if (key.includes('.')) {
+        if (props.data[key] !== undefined) {
+          props.data[key] = value
+        } else {
+          setDataValue(key.split('.'), value, props, true)
+        }
+      } else {
+        props.data[key] = value
+      }
+    }
+
+    function setDataValue (keys, value, data, first) {
       const key = keys[0]
 
       if (!first && data && data[key] === undefined) {
@@ -142,69 +157,42 @@ export default {
       if (data[key] !== undefined) {
         if (keys[1] !== undefined) {
           keys.shift()
-          this.setDataValue(keys, value, data[key])
+          setDataValue(keys, value, data[key])
         } else {
           data[key] = value
         }
       }
-    },
-    findValue (keys, data) {
-      const key = keys[0]
-      let value
+    }
 
-      if (data[key] !== undefined) {
-        if (keys[1] !== undefined) {
-          keys.shift()
-          value = this.findValue(keys, data[key])
-        } else {
-          value = data[key]
-        }
-      }
-
-      return value
-    },
-    setValue (key, value) {
-      if (~key.indexOf('.')) {
-        if (this.data[key] !== undefined) {
-          this.data[key] = value
-        } else {
-          this.setDataValue(key.split('.'), value, this.$props, true)
-        }
-      } else {
-        this.data[key] = value
-      }
-    },
-    updateModelValue (value, instance) {
+    function updateModelValue (value, instance) {
       if (!instance) {
         return
       }
 
       const key = typeof instance === 'object' ? instance._.vnode.key : instance
 
-      this.setValue(key, value)
+      setValue(key, value)
 
       if (instance?.relation?.['key']) {
         const empty = !(Array.isArray(value) ? value.length : (!isNaN(parseFloat(value))
             && !isNaN(value - 0)) ? parseFloat(value) : value)
 
-        this.setValue(instance.relation['key'],
+        setValue(instance.relation['key'],
             empty ? instance.relation['falseValue'] : instance.relation['trueValue'])
 
         if (empty && instance.relation['notEmpty']) {
-          this.$nextTick(() => this.setValue(key, instance.trueValue))
+          nextTick(() => setValue(key, instance.trueValue))
         }
       }
 
-      this.$emit('update:modelValue', ...arguments)
-    },
-    updateProps (oldValue, newValue) {
+      emit('update:modelValue', ...arguments)
+    }
+
+    function updateProps (oldValue, newValue) {
       Object.assign(oldValue, newValue)
     }
-  },
-  setup () {
-    return function () {
-      return h(() => this.initLayout())
-    }
+
+    return () => layout(props.layout)
   }
 }
 </script>
