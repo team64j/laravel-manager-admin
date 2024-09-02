@@ -58,7 +58,6 @@ export default {
             }
         )
       } else {
-
         props.data.forEach((i, k) => {
           if (!i.route) {
             return
