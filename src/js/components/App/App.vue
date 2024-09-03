@@ -236,7 +236,7 @@ export default {
       event.currentTarget.removeEventListener('mouseup', this.splitterUp)
     },
     pushRouter (route, callback) {
-      router.to(route).then(callback)
+      this.$nextTick(() => router.to(route).then(callback))
     },
     inputTreeSelect (event, context) {
       this.$store.dispatch('set', { event, context })

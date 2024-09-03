@@ -1,7 +1,8 @@
 <script>
-import Button from '../Form/Button.vue'
-
 import('./Actions.css')
+import { h } from 'vue'
+import store from '../../store'
+import Button from '../Form/Button.vue'
 
 export default {
   __isStatic: true,
@@ -9,178 +10,90 @@ export default {
   components: { Button },
   emits: ['action'],
   props: {
-    data: {
-      type: Array,
-      default: ['cancel', 'delete', 'restore', 'copy', 'view', 'save']
-    },
-    lang: Object,
-    classes: Object,
-    to: Object,
-    icon: Object
+    data: Array
   },
-
-  data () {
-    return {
-      stay: this.$store.getters['Storage/get']('stay') || 0,
-    }
-  },
-
-  methods: {
-    click (event, action, stay) {
-      const to = action.to || this?.to?.[action]
-      let name = action.action || action
-
-      this.$store.dispatch('set', { action })
-
-      if (typeof name === 'object') {
-        this.custom({ event, stay, action: name })
-      }
-
-      if (to) {
-        if (to.close) {
-          this.$emit('action', 'closeTab')
+  setup (props, { emit }) {
+    function click (params, stay) {
+      if (params.to) {
+        if (params.to.href) {
+          window.open(params.to.href)
+        } else if (params.to.path) {
+          emit('action', 'pushRouter', params.to)
         }
 
-        if (to.href) {
-          window.open(to.href)
-        } else if (to.path || to.name) {
-          this.$emit('action', 'pushRouter', to)
+        if (params.to.close) {
+          emit('action', 'closeTab')
         }
-      } else if (this[name]) {
-        this[name]({ event, stay, action })
-      }
-    },
 
-    custom () {
-      this.$emit('action', 'custom', ...arguments)
-    },
-
-    cancel () {
-      this.$emit('action', 'cancel', ...arguments)
-    },
-
-    delete () {
-      this.$emit('action', 'delete', ...arguments)
-    },
-
-    clear () {
-      this.$emit('action', 'clear', ...arguments)
-    },
-
-    restore () {
-      this.$emit('action', 'restore', ...arguments)
-    },
-
-    save ({ stay }) {
-      this.stay = stay
-      this.$store.dispatch('Storage/set', ['stay', stay])
-      this.$emit('action', 'save', ...arguments)
-    },
-
-    copy () {
-      this.$emit('action', 'copy', arguments)
-    },
-
-    view () {
-      this.$emit('action', 'view', arguments)
-    },
-
-    new () {
-      if (this.to['new']) {
-        this.$emit('action', 'pushRouter', this.to['new'])
-      } else {
-        this.$emit('action', 'new', arguments)
-      }
-    },
-
-    propLang (i) {
-      let value = ''
-      let action = i
-
-      if (typeof i === 'object') {
-        value = i.title
-        action = i.action
+        return
       }
 
-      return value || this?.lang?.[action] || ''
-    },
+      params = params.action ?? { action: params }
 
-    propClasses (i) {
-      const defaults = {
-        save: 'btn-green',
-        delete: 'btn-red',
-        restore: 'btn-blue',
+      if (typeof params === 'string') {
+        params = {
+          action: params
+        }
       }
 
-      let value = ''
-      let action = i
-
-      if (typeof i === 'object') {
-        value = i.class
-        action = i.action
+      if (stay !== undefined) {
+        store.dispatch('Storage/set', ['stay', stay])
       }
 
-      return value || this?.classes?.[action] || defaults[action] || ''
-    },
-
-    propIcon (i) {
-      let value = ''
-      let action = i
-
-      if (typeof i === 'object') {
-        value = i.icon
-        action = i.action
-      }
-
-      return value || this?.icon?.[action] || ''
+      emit('action', 'submit', { ...params, stay })
     }
+
+    return props.data.length && (() => {
+      const stay = store.getters['Storage/get']('stay') || 0
+
+      return h('div', {
+        class: 'app-actions'
+      }, props.data.map(i => {
+        if (i.data) {
+          return h('div', {
+                class: 'app-actions__group'
+              },
+              [].concat(i.data.filter((j, k) => k === stay).map(j => {
+                return h(Button, {
+                  icon: j.icon,
+                  class: i.class,
+                  value: i.title + ' + ' + j.title,
+                  loader: store.getters.get('tabsLoading'),
+                  onClick: () => click(i)
+                })
+              })).concat(
+                  h(Button, {
+                    class: ['app-actions__toggle', i.class]
+                  }, () => [
+                    h('i', { class: 'fa fa-angle-down fa-fw' })
+                  ])
+              ).concat(h('div', {
+                class: 'app-actions__save-buttons'
+              }, i.data.filter((j, k) => k !== stay).map(j => {
+                return h(Button, {
+                  icon: j.icon,
+                  class: i.class,
+                  value: j.title,
+                  loader: store.getters.get('tabsLoading'),
+                  onMousedown: () => click(i, j.stay)
+                }, {
+                  icon: () => [
+                    h('i', { class: i.icon }),
+                    h('i', { class: 'fa fa-plus fa-fw' })
+                  ]
+                })
+              })))
+          )
+        } else {
+          return h(Button, {
+            icon: i.icon,
+            value: '<span>' + i.title + '</span>',
+            class: i.class,
+            onClick: () => click(i)
+          })
+        }
+      }))
+    })
   }
 }
 </script>
-
-<template>
-  <div class="app-actions">
-
-    <template v-for="i in data">
-      <div v-if="i.data" class="app-actions__group">
-        <Button v-for="ii in i.data.filter((j, kk) => kk === stay)"
-                :icon="ii.icon"
-                :class="i.class"
-                :value="propLang(i) + ' + ' + ii.title"
-                :loader="$store.getters.get('tabsLoading')"
-                @click="click($event, i.action, stay)"
-        >
-          <template #icon>
-            <i :class="i.icon"/>
-            <i class="fa fa-plus fa-fw"/>
-          </template>
-        </Button>
-
-        <Button class="app-actions__toggle" :class="i.class">
-          <i class="fa fa-angle-down fa-fw"/>
-        </Button>
-
-        <div class="app-actions__save-buttons">
-          <Button v-for="ii in i.data.filter((j, kk) => kk !== stay)"
-                  :icon="ii.icon"
-                  :class="i.class"
-                  :value="ii.title"
-                  @mousedown="click($event, i.action, ii.stay)">
-            <template #icon>
-              <i :class="i.icon"/>
-              <i class="fa fa-plus fa-fw"/>
-            </template>
-          </Button>
-        </div>
-      </div>
-
-      <Button v-else
-              :icon="propIcon(i)"
-              :value="`<span>` + propLang(i) + `</span>`"
-              :class="propClasses(i)"
-              @click="click($event, i)"/>
-
-    </template>
-
-  </div>
-</template>

@@ -5,8 +5,12 @@ export default {
   name: 'Component',
   __isStatic: true,
   props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'],
-  emits: ['action'],
+  emits: ['action', 'update:modelValue', 'update:props'],
   setup (props, { emit }) {
+    function action (...args) {
+      emit('action', ...args)
+    }
+
     function layoutData (data) {
       for (let i in data) {
         if (typeof data[i]?.data === 'string') {
@@ -16,8 +20,8 @@ export default {
             data[i].attrs = {}
           }
 
-          data[i].attrs.data = findValue(keys, props)
-          data[i].attrs.onAction = (...args) => emit('action', ...args)
+          data[i].attrs.modelValue = findValue(keys, props)
+          data[i].attrs.onAction = action
         } else if (data[i]?.slots) {
           data[i].slots = layoutData(data[i].slots)
         } else if (Array.isArray(data[i])) {
@@ -66,7 +70,7 @@ export default {
       let component
 
       try {
-        component = app._.appContext.components[data.component] ||
+        component = app.$.appContext.components[data.component] ||
             (data.component && (new Function('return ' + data.component + '')).call(getCurrentInstance()))
       } catch (exception) {
         return
@@ -84,18 +88,15 @@ export default {
       }
 
       attrs.key = data.model || data.component.name || ''
-      attrs.modelValue = data?.attrs?.value
 
       if (attrs.key === 'data') {
-        if (!attrs.data) {
-          attrs.data = props.data
-        } else {
-          attrs.modelValue = props.data
-        }
+        attrs.modelValue = props.data
       } else if (props.data?.[attrs.key] !== undefined) {
         attrs.modelValue = props.data[attrs.key]
       } else if (attrs.key.includes('.')) {
         attrs.modelValue = findValue(attrs.key.split('.'), props)
+      } else {
+        attrs.modelValue = data?.attrs?.value
       }
 
       if ((component?.extends?.props || component?.props)?.['meta']) {
@@ -108,7 +109,7 @@ export default {
 
       (component.extends?.emits ?? component.emits ?? []).forEach(e => {
         if (e === 'action') {
-          attrs['onAction'] ??= (...args) => emit('action', ...args)
+          attrs['onAction'] ??= action
         } else if (e === 'update:props') {
           attrs['onUpdate:props'] = (args) => updateProps(attrs, args)
         } else if (e === 'update:modelValue') {

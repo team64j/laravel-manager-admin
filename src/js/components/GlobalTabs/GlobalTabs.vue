@@ -2,6 +2,7 @@
 import KeepAliveComponent from './KeepAlive'
 import router from '../../router'
 import Frame from '../Layout/Frame.vue'
+import { mergeWith } from 'lodash'
 
 import('./GlobalTabs.css')
 
@@ -74,9 +75,9 @@ export default {
 
       if (data.key) {
         const index = this.keys.indexOf(data.key)
-        index > -1 && window._.mergeWith(this.tabs[index], data)
+        index > -1 && mergeWith(this.tabs[index], data)
       } else {
-        this.tabs.map(i => i.active && window._.mergeWith(i, data))
+        this.tabs.map(i => i.active && mergeWith(i, data))
       }
     },
     closeTab (callback) {
