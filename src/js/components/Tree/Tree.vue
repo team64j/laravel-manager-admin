@@ -3,6 +3,7 @@ import { provide } from 'vue'
 import TreeNode from './TreeNode.vue'
 import TreeMenuItem from './TreeMenuItem.vue'
 import router from '../../router'
+import store from '../../store'
 
 import('./Tree.css')
 
@@ -44,28 +45,32 @@ export default {
   watch: {
     propSettings: {
       handler (data) {
-        this.$store.dispatch('set', { [`Session.${this.keyStorage}`]: data })
+        store.dispatch('set', { [`Session.${this.keyStorage}`]: data })
       },
       deep: true
     },
     '$store.state.treeSelect' (select) {
-      if (this.$route['path'] === router.parse({ ...this.propRoute, ...this.$route }).path) {
+      const route = router.currentRoute.value
+
+      if (route['path'] === router.parse({ ...this.propRoute, ...route }).path) {
         this.$el.querySelector('.app-tree__body').classList.toggle('focused', !!select)
       }
     },
     '$store.state.actionUpdate' () {
-      if (this.$store.state.route === router.key(router.parse({ ...this.propRoute, ...this.$route }))) {
-        switch (this.$store.state.action) {
+      const route = router.currentRoute.value
+
+      if (store.state['route'] === route['path']) {
+        switch (store.state['action']) {
           case 'create':
-            this.createNode(this.$store.state.data, this.data)
+            this.createNode(store.state['data'], this.data)
             break
 
           case 'update':
-            this.updateNode(this.$store.state.data, this.data)
+            this.updateNode(store.state['data'], this.data)
             break
 
           case 'delete':
-            this.deleteNode(this.$store.state.data, this.data)
+            this.deleteNode(store.state['data'], this.data)
             break
         }
       }
@@ -81,7 +86,7 @@ export default {
       route: this.route
     })
 
-    Object.assign(this.propSettings, this.$store.getters.get(`Session.${this.keyStorage}`, {}))
+    Object.assign(this.propSettings, store.getters.get(`Session.${this.keyStorage}`, {}))
 
     this.get()
 
@@ -100,6 +105,7 @@ export default {
       }
     },
     get (update) {
+      const route = router.currentRoute.value
       this.loading = true
 
       if (!update) {
@@ -108,14 +114,13 @@ export default {
 
       const settings = this.propSettings
 
-
-      if (this.propSettings['history'] && this.$route['params'][this.propSettings['history']] !== undefined) {
+      if (this.propSettings['history'] && route['params'][this.propSettings['history']] !== undefined) {
         if (settings['opened'] === undefined) {
           settings['opened'] = []
         }
 
-        if (!~settings['opened'].indexOf(this.$route['params'][this.propSettings['history']])) {
-          settings['opened'].push(this.$route['params'][this.propSettings['history']])
+        if (!~settings['opened'].indexOf(route['params'][this.propSettings['history']])) {
+          settings['opened'].push(route['params'][this.propSettings['history']])
         }
       }
 
@@ -141,12 +146,13 @@ export default {
       return node['id'] ?? node['key']
     },
     clickNode (event, node) {
+      const route = router.currentRoute.value
       const id = this.key(node)
 
-      if (this.$store.getters.get('treeSelect') && this.$route['path'] ===
-          router.parse({ ...this.propRoute, ...this.$route }).path) {
-        const context = this.$store.getters.get('context')
-        const event = this.$store.getters.get('event')
+      if (store.getters.get('treeSelect') && route['path'] ===
+          router.parse({ ...this.propRoute, ...route }).path) {
+        const context = store.getters.get('context')
+        const event = store.getters.get('event')
         context.loading = true
         this.loading = true
 
@@ -155,16 +161,16 @@ export default {
           params: {
             id: 'parents'
           }
-        }).path + '/' + this.$route['params']['id'] + '/' + id
+        }).path + '/' + route['params']['id'] + '/' + id
 
         axios.get(path).then(({ data: { data } }) => {
           context.loading = false
           context.model = data['id']
           this.lastSelectValue = data['id'] + ' - ' + data['title']
-          this.$store.dispatch('set', { treeSelect: false })
+          store.dispatch('set', { treeSelect: false })
         }).catch(() => {
           setTimeout(() => event.target.classList.add('focus'), 0)
-          this.$store.dispatch('set', { treeSelect: true })
+          store.dispatch('set', { treeSelect: true })
         }).finally(() => {
           context.loading = false
           this.loading = false
@@ -237,8 +243,8 @@ export default {
       this.propSettings.opened = opened
     },
     updateNode (node, data) {
-      if (this.$store.getters.get('treeSelect')) {
-        this.$store.dispatch('remove', 'treeSelect')
+      if (store.getters.get('treeSelect')) {
+        store.dispatch('remove', 'treeSelect')
         this.get()
         return
       }

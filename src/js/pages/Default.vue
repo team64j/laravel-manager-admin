@@ -59,7 +59,55 @@ export default {
           data: Object.assign({}, $data.data, route.query)
         }).
             then(r => {
-              r?.data && setData(r.data, stay, r.request.responseURL, action)
+              if (r.data) {
+                const route = router.currentRoute.value
+
+                if (r.data?.['meta']?.['redirect']) {
+                  location.href = r.data['meta']['redirect']
+                  return
+                }
+
+                if (r.data?.['meta']?.['reload']) {
+                  location.reload()
+                  return
+                }
+
+                if (stay === 0) {
+                  emit('action', 'closeTab')
+                  return
+                } else if (stay === 1) {
+                  emit('action', 'toTab', { ...route, params: { id: 'new' } })
+                  return
+                }
+
+                Object.assign($data, r.data, { url: r.request.responseURL })
+
+                const meta = {}
+
+                if (r.data['meta']?.['title'] !== undefined) {
+                  meta['title'] = r.data['meta']['title']
+                }
+
+                if (r.data['meta']?.['icon'] !== undefined) {
+                  meta['icon'] = r.data['meta']['icon']
+                }
+
+                if (Object.values(meta).length) {
+                  emit('action', 'setTab', {
+                    key: instance._.vnode.key,
+                    meta
+                  })
+                }
+
+                store.dispatch('set', {
+                  action,
+                  data: r.data?.data,
+                  route: router.currentRoute.value.path,
+                  actionUpdate: Date.now()
+                })
+
+                loaded.value = true
+              }
             }).catch(({ response }) => {
           if (response?.data.errors) {
             $data.errors = response.data.errors
@@ -98,57 +146,6 @@ export default {
       }
     }
 
-    function setData (data, stay, url, action) {
-      const route = router.currentRoute.value
-
-      if (data?.['meta']?.['redirect']) {
-        location.href = data['meta']['redirect']
-        return
-      }
-
-      if (data?.['meta']?.['reload']) {
-        location.reload()
-        return
-      }
-
-      if (stay === 0) {
-        emit('action', 'closeTab')
-        return
-      } else if (stay === 1) {
-        emit('action', 'toTab', { ...route, params: { id: 'new' } })
-        return
-      }
-
-      Object.assign($data, data)
-
-      const meta = {}
-
-      if (data['meta']?.['title'] !== undefined) {
-        meta['title'] = data['meta']['title']
-      }
-
-      if (data['meta']?.['icon'] !== undefined) {
-        meta['icon'] = data['meta']['icon']
-      }
-
-      if (Object.values(meta).length) {
-        emit('action', 'setTab', {
-          key: instance._.vnode.key,
-          meta
-        })
-      }
-
-      $data.url = url
-      loaded.value = true
-
-      store.dispatch('set', {
-        action,
-        data: $data.data,
-        route: router.key(route),
-        actionUpdate: Date.now()
-      })
-    }
-
     function action () {
       if (typeof methods[arguments[0]] === 'function') {
         methods[arguments[0]](...Array.from(arguments).splice(1))
@@ -171,7 +168,11 @@ export default {
         [
           loaded.value ?
               h(Component, {
-                ...$data,
+                url: $data.url,
+                data: $data.data,
+                meta: $data.meta,
+                layout: $data.layout,
+                errors: $data.errors,
                 onAction: action,
                 'onUpdate:modelValue': updateModelValue
               }) :
