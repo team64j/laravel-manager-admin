@@ -1,22 +1,35 @@
 <script>
-import { getCurrentInstance, h, onMounted, reactive, ref } from 'vue'
+import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
 import router from '../router'
 import store from '../store'
 import Component from '../components/Layout/Component.vue'
 
 export default {
   name: 'DefaultPage',
+  components: { Component },
   setup (props, { emit }) {
     const instance = getCurrentInstance()['ctx']
 
     const loaded = ref(false)
 
-    const $data = reactive({
+    const data = reactive({
       url: null,
       data: null,
       meta: null,
       layout: null,
-      errors: null
+      errors: null,
+      onAction () {
+        if (typeof methods[arguments[0]] === 'function') {
+          methods[arguments[0]](...Array.from(arguments).splice(1))
+        } else {
+          emit('action', ...arguments)
+        }
+      },
+      'onUpdate:modelValue' () {
+        emit('action', 'setTab', {
+          changed: true
+        })
+      }
     })
 
     const methods = {
@@ -46,17 +59,17 @@ export default {
           key: instance._.vnode.key,
           loading: true,
           meta: {
-            title: $data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
+            title: data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
           }
         })
 
-        $data.errors = null
+        data.errors = null
 
         axios({
           method,
           url,
           params: route.query,
-          data: Object.assign({}, $data.data, route.query)
+          data: Object.assign({}, data.data, route.query)
         }).
             then(r => {
               if (r.data) {
@@ -80,7 +93,7 @@ export default {
                   return
                 }
 
-                Object.assign($data, r.data, { url: r.request.responseURL })
+                Object.assign(data, r.data, { url: r.request.responseURL })
 
                 const meta = {}
 
@@ -110,7 +123,7 @@ export default {
               }
             }).catch(({ response }) => {
           if (response?.data.errors) {
-            $data.errors = response.data.errors
+            data.errors = response.data.errors
           }
         }).finally(() => {
           emit('action', 'setTab', {
@@ -146,46 +159,19 @@ export default {
       }
     }
 
-    function action () {
-      if (typeof methods[arguments[0]] === 'function') {
-        methods[arguments[0]](...Array.from(arguments).splice(1))
-      } else {
-        emit('action', ...arguments)
-      }
-    }
-
-    function updateModelValue () {
-      emit('action', 'setTab', {
-        changed: true
-      })
-    }
-
     onMounted(methods.submit)
 
-    return () => h('div', {
-          class: 'app-page__default w-full h-full flex flex-col overflow-auto'
-        },
-        [
-          loaded.value ?
-              h(Component, {
-                url: $data.url,
-                data: $data.data,
-                meta: $data.meta,
-                layout: $data.layout,
-                errors: $data.errors,
-                onAction: action,
-                'onUpdate:modelValue': updateModelValue
-              }) :
-              h('div', { class: 'flex items-center justify-center grow' },
-                  h('div', {
-                    class: 'inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500 opacity-0',
-                    onVnodeMounted (ctx) {
-                      setTimeout(() => ctx.el.classList.remove('opacity-0'), 100)
-                    }
-                  })
-              )
-        ]
-    )
+    return { loaded, data }
   }
 }
 </script>
+
+<template>
+  <div class="app-page__default w-full h-full flex flex-col overflow-auto">
+    <Component v-if="loaded" v-bind="data"/>
+    <div v-else class="flex items-center justify-center grow">
+      <div
+          class="inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500"/>
+    </div>
+  </div>
+</template>
