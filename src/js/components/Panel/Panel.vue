@@ -182,10 +182,6 @@ export default {
         for (const i in this.columns) {
           const style = this.columns[i].style
 
-          if (style?.width) {
-            delete style.width
-          }
-
           items.push(h('td', {
             style
           }, this.value(item, this.columns[i])))
@@ -194,10 +190,6 @@ export default {
         for (const i in item) {
           const slots = []
           const style = item[i]?.style
-
-          if (style?.width) {
-            delete style.width
-          }
 
           if (item[i] !== null) {
             slots.push(h(compile(item[i]?.toString())))

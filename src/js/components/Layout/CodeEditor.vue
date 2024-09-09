@@ -235,6 +235,9 @@ function onClickFullscreen () {
 .app-editor .ͼ1 .cm-scroller {
   @apply rounded
 }
+.app-editor .ͼ1 .cm-gutters {
+  @apply border-none
+}
 .app-editor .ͼ1 .cm-content {
   @apply grow !basis-0 max-w-full whitespace-pre-wrap break-words break-all
 }
