@@ -80,7 +80,7 @@
     @apply mx-0
 }
 .app-tabs.app-tabs-small .app-tabs__tab {
-    @apply m-0.5 h-8 w-10
+    @apply my-[2px] mx-[2px] h-8 w-10
 }
 .app-tabs.app-tabs-small .app-tabs__tab:not(.app-tabs__tab-active):hover {
     @apply hover:bg-gray-100/50 dark:hover:bg-gray-600/40
