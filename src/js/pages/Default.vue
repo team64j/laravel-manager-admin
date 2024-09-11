@@ -93,7 +93,13 @@ export default {
                   return
                 }
 
-                Object.assign(data, r.data, { url: r.request.responseURL })
+                Object.assign(data, {
+                  url: r.request.responseURL,
+                  data: r.data['data'],
+                  meta: r.data['meta'],
+                  layout: r.data['layout'],
+                  errors: r.data['errors']
+                })
 
                 const meta = {}
 

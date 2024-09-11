@@ -26,13 +26,13 @@
 .app-global-menu > ul > li > ul > li > * {
     @apply rounded
 }
-.app-global-menu > ul > li li:hover > a, .app-global-menu > ul > li li:hover > span, .app-global-menu > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li li.app-global-menu__hover > span {
+.app-global-menu > ul > li li:hover > a, .app-global-menu > ul > li > ul > li:hover > span, .app-global-menu > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li > ul > li.app-global-menu__hover > span {
     @apply bg-gray-600 dark:bg-gray-600 cursor-pointer
 }
 .app-global-menu li > a, .app-global-menu li > span {
     @apply flex justify-center items-center p-3 md:px-4 w-full h-full
 }
-.app-global-menu > ul > li > ul > li li:hover > a, .app-global-menu > ul > li > ul > li li:hover > span, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > span {
+.app-global-menu > ul > li > ul > li li:hover > a, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > a {
     @apply bg-blue-600 text-white dark:bg-blue-600
 }
 .app-global-menu > ul > li > ul > li li:hover > span.disabled, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > span.disabled {
