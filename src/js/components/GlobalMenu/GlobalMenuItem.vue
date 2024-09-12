@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { computed, getCurrentInstance, h, ref, useAttrs } from 'vue'
+import { computed, getCurrentInstance, h } from 'vue'
 import { RouterLink } from 'vue-router'
 import store from '../../store'
 
@@ -96,11 +96,7 @@ const props = defineProps({
 
 const emit = defineEmits(['action'])
 
-const attrs = useAttrs()
-
 let timer = 0
-let loading = ref(false)
-let filter = ref(null)
 
 const classes = computed(() => {
   const classes = [props.data['class'] || '']
@@ -123,9 +119,7 @@ const classes = computed(() => {
   return classes
 })
 
-const action = (...args) => {
-  emit('action', ...args)
-}
+const action = (...args) => emit('action', ...args)
 
 const onClick = (event) => {
   if (props.data['values'] || props.data['to']) {
@@ -159,7 +153,7 @@ const onClickToggle = (event) => {
     } else {
       clearTimeout(timer)
       timer = setTimeout(() => {
-        emit('action', 'loadData', props.data['url'], instance['ctx'], loading)
+        emit('action', 'loadData', props.data['url'], instance)
         emit('action', 'show', true)
       }, 200)
     }
@@ -202,28 +196,28 @@ const onOut = () => {
 
 const onClear = () => {
   instance.parent['ctx'].filter = null
-  emit('action', 'loadData', null, instance.parent['ctx'], loading)
+  emit('action', 'loadData', null, instance.parent)
 }
 
 const onInput = (event) => {
   clearTimeout(timer)
   timer = setTimeout(() => {
     instance.parent['ctx'].filter = event.target.value
-    emit('action', 'loadData', null, instance.parent['ctx'], loading)
+    emit('action', 'loadData', null, instance.parent)
   }, 500)
 }
 
 const onPrev = (event) => {
   if (props.data['prev']) {
     event.stopPropagation()
-    emit('action', 'loadData', props.data['prev'], instance.parent['ctx'], loading)
+    emit('action', 'loadData', props.data['prev'], instance.parent)
   }
 }
 
 const onNext = (event) => {
   if (props.data['next']) {
     event.stopPropagation()
-    emit('action', 'loadData', props.data['next'], instance.parent['ctx'], loading)
+    emit('action', 'loadData', props.data['next'], instance.parent)
   }
 }
 
@@ -297,7 +291,7 @@ const items = () => {
     )
   }
 
-  if (loading.value) {
+  if (instance['ctx'].data.loading) {
     slots.push(
         h('span', {
               class: 'app-global-menu__toggle',
@@ -328,8 +322,4 @@ const items = () => {
 
   return slots
 }
-
-defineExpose({
-  filter
-})
 </script>

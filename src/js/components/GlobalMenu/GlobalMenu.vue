@@ -39,15 +39,15 @@ const methods = {
       }
     }
   },
-  loadData (url, ctx, loading) {
-    url ??= ctx.data['url']
-    loading.value = true
-    ctx.data['data'] = []
+  loadData (url, inst) {
+    url ??= inst.ctx.data['url']
+    inst.ctx.data['loading'] = true
+    inst.ctx.data['data'] = []
 
     const params = {}
 
-    if (ctx.filter !== undefined) {
-      params.filter = ctx.filter
+    if (inst.ctx.filter !== undefined) {
+      params.filter = inst.ctx.filter
     }
 
     axios.get(url, {
@@ -60,11 +60,11 @@ const methods = {
         prepend.push(...data['meta']['prepend'])
       }
 
-      if (pagination?.['total'] > pagination?.['per'] || ctx.filter) {
-        prepend.push({ filter: ctx.filter || '' })
+      if (pagination?.['total'] > pagination?.['per'] || inst.ctx.filter) {
+        prepend.push({ filter: inst.ctx.filter || '' })
       }
 
-      ctx.data['data'] = [].concat(prepend, (data['data'] || []).map(i => {
+      inst.ctx.data['data'] = [].concat(prepend, (data['data'] || []).map(i => {
         i.to = {
           path: data['meta']['route'].replace(':id', i.id)
         }
@@ -73,7 +73,7 @@ const methods = {
       }))
 
       if (pagination?.['prev'] || pagination?.['next']) {
-        ctx.data['data'].push({
+        inst.ctx.data['data'].push({
           total: pagination['total'] ?? null,
           info: pagination['info'] ?? null,
           prev: pagination['prev'] ?? null,
@@ -81,9 +81,9 @@ const methods = {
         })
       }
 
-      loading.value = false
+      inst.ctx.data['loading'] = false
     }).catch(() => {
-      loading.value = false
+      inst.ctx.data['loading'] = false
     })
   }
 }
