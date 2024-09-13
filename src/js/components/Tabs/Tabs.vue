@@ -1,8 +1,8 @@
 <script>
 import('./Tabs.css')
+import { h, reactive, ref, renderSlot, watch } from 'vue'
 import router from '../../router'
 import store from '../../store'
-import { h, reactive, ref, renderSlot, watch } from 'vue'
 
 export default {
   __isStatic: true,
@@ -37,6 +37,10 @@ export default {
     const data = reactive({
       index: props.data.findIndex(i => i.id === store.getters.get(`Session.${keyStorage}`, null))
     })
+
+    let positionX = 0
+    let scrollLeft = 0
+    let dragging = ref(false)
 
     if (props.history) {
       if (typeof props.history === 'string') {
@@ -75,7 +79,36 @@ export default {
       props.data.forEach((i, k) => i.active = i.render = k === data.index)
     }
 
+    const init = () => {
+      let right = 0,
+          width = 0
+
+      refRows.value.querySelectorAll('.app-tabs__tab').forEach((t, i) => {
+        t.styles = getComputedStyle(t)
+
+        if (i <= data.index) {
+          width += t.offsetWidth + parseFloat(t.styles.marginLeft) + parseFloat(t.styles.marginRight)
+
+          if (i < data.index) {
+            right += t.offsetWidth + parseFloat(t.styles.marginLeft)
+          }
+        }
+      })
+
+      if (refRows.value.scrollLeft > right) {
+        refRows.value.scrollLeft = right
+      }
+
+      if (refRows.value.offsetWidth < width) {
+        refRows.value.scrollLeft = width - refRows.value.offsetWidth
+      }
+    }
+
     const select = (tab, index) => {
+      if (dragging.value) {
+        return
+      }
+
       props.data.forEach((i, k) => i.active = i.render = k === index)
 
       data.index = index
@@ -103,6 +136,32 @@ export default {
           })
         }
       }
+
+      init()
+    }
+
+    const drag = event => {
+      dragging.value = false
+      positionX = event.clientX
+      scrollLeft = refRows.value.scrollLeft
+      refRows.value.addEventListener('mousemove', move)
+      document.addEventListener('mouseup', end)
+    }
+
+    const move = event => {
+      const l = positionX - event.clientX
+      if (Math.abs(l)) {
+        dragging.value = true
+        refRows.value.scrollLeft = scrollLeft + l
+      }
+    }
+
+    const end = (event) => {
+      refRows.value.removeEventListener('mousemove', move)
+      document.removeEventListener('mouseup', end)
+      setTimeout(() => dragging.value = false, 10)
+      event.preventDefault()
+      event.stopPropagation()
     }
 
     return () => h('div',
@@ -113,7 +172,8 @@ export default {
             props.vertical ? 'app-tabs__vertical' : '',
             props.smallTabs ? 'app-tabs-small' : 'app-tabs-large',
             props.navigation ? 'app-tabs__with-navigation' : '',
-            props.data.length === 1 ? 'app-tabs__without-rows' : ''
+            props.data.length === 1 ? 'app-tabs__without-rows' : '',
+            dragging.value ? 'app-tabs__dragging' : ''
           ]
         },
         [
@@ -126,30 +186,7 @@ export default {
                     {
                       class: 'app-tabs__row',
                       ref: refRows,
-                      onVnodeUpdated (ctx) {
-                        let right = 0,
-                            width = 0
-
-                        ctx.el.querySelectorAll('.app-tabs__tab').forEach((t, i) => {
-                          t.styles = getComputedStyle(t)
-
-                          if (i <= data.index) {
-                            width += t.offsetWidth + parseFloat(t.styles.marginLeft) + parseFloat(t.styles.marginRight)
-
-                            if (i < data.index) {
-                              right += t.offsetWidth + parseFloat(t.styles.marginLeft)
-                            }
-                          }
-                        })
-
-                        if (ctx.el.scrollLeft > right) {
-                          ctx.el.scrollLeft = right
-                        }
-
-                        if (ctx.el.offsetWidth < width) {
-                          ctx.el.scrollLeft = width - refRows.value.offsetWidth
-                        }
-                      }
+                      onMousedown: drag
                     },
                     props.data.map((i, k) => h('div',
                             {
@@ -158,7 +195,7 @@ export default {
                                 k === data.index ? 'app-tabs__tab-active' : ''
                               ],
                               'data-tooltip': i.title,
-                              onMousedown: () => select(i, k)
+                              onClick: () => select(i, k)
                             },
                             [
                               i.icon ? h('i', { class: ['app-tabs__tab-icon', i.icon] }) : null,
@@ -167,7 +204,7 @@ export default {
                         )
                     )
                 ),
-                props.navigation && [
+                /*props.navigation && [
                   h('i', {
                     class: 'fa fa-angle-left app-tabs__prev disabled',
                     onVnodeUpdated (ctx) {
@@ -194,7 +231,7 @@ export default {
                       }
                     }
                   })
-                ]
+                ]*/
               ].filter(i => i)
           ),
           ...props.data.map((i, k) => {
