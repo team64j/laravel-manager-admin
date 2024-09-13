@@ -11,7 +11,7 @@
     @apply relative overflow-hidden overflow-x-auto h-20 px-0 -mx-0.5 flex flex-nowrap
 }
 .app-tabs .app-tabs__tab {
-    @apply flex items-center justify-center mx-0.5 px-4 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none text-center font-medium hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
+    @apply flex items-center justify-center mx-0.5 px-4 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none border-0 ring-0 text-center font-medium bg-transparent hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
 }
 .app-tabs.app-tabs__dragging * {
     @apply cursor-w-resize
