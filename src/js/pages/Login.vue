@@ -53,14 +53,18 @@ export default {
           return
         }
 
-        this.data = r.data['meta'] || {}
+        this.data = r.data['data'] || {}
 
-        if (this.data.version) {
+        if (this.data['siteName']) {
+          document.title = this.data['siteName'].toString()
+        }
+
+        if (this.data['version']) {
           this.connected = true
           this.$nextTick(() => this.$el.querySelector('[name="username"]').focus())
         }
 
-        if (this.data.languages?.length) {
+        if (this.data['languages']?.length) {
           this.lang = this.data.languages.filter(
               i => i.key === (this.$store.getters.get('Storage.lang') || 'en'))[0] ?? {}
         }
