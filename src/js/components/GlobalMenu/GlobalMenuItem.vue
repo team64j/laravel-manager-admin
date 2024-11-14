@@ -153,7 +153,7 @@ const onClickToggle = (event) => {
     } else {
       clearTimeout(timer)
       timer = setTimeout(() => {
-        emit('action', 'loadData', props.data['url'], instance)
+        emit('action', 'loadData', props.data['url'], props)
         emit('action', 'show', true)
       }, 200)
     }
@@ -195,29 +195,29 @@ const onOut = () => {
 }
 
 const onClear = () => {
-  instance.parent['ctx'].filter = null
-  emit('action', 'loadData', null, instance.parent)
+  instance.parent.props.filter = null
+  emit('action', 'loadData', null, instance.parent.props)
 }
 
 const onInput = (event) => {
   clearTimeout(timer)
   timer = setTimeout(() => {
-    instance.parent['ctx'].filter = event.target.value
-    emit('action', 'loadData', null, instance.parent)
+    instance.parent.props.filter = event.target.value
+    emit('action', 'loadData', null, instance.parent.props)
   }, 500)
 }
 
 const onPrev = (event) => {
   if (props.data['prev']) {
     event.stopPropagation()
-    emit('action', 'loadData', props.data['prev'], instance.parent)
+    emit('action', 'loadData', props.data['prev'], instance.parent.props)
   }
 }
 
 const onNext = (event) => {
   if (props.data['next']) {
     event.stopPropagation()
-    emit('action', 'loadData', props.data['next'], instance.parent)
+    emit('action', 'loadData', props.data['next'], instance.parent.props)
   }
 }
 
@@ -291,7 +291,7 @@ const items = () => {
     )
   }
 
-  if (instance['ctx'].data.loading) {
+  if (props.data['loading']) {
     slots.push(
         h('span', {
               class: 'app-global-menu__toggle',

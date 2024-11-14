@@ -96,10 +96,10 @@
     @apply relative w-full px-3 py-1
 }
 .app-global-menu li .app-global-menu__filter input {
-    @apply pl-2 pr-6 py-0.5 mt-[1px]
+    @apply pl-2 pr-6 py-1.5 mt-[1px]
 }
 .app-global-menu li .app-global-menu__filter .app-global-menu__clear {
-    @apply text-rose-500 cursor-pointer absolute z-10 top-3 right-6
+    @apply text-rose-500 cursor-pointer absolute z-10 top-4 right-6
 }
 .app-global-menu > ul > li > ul > li.app-global-menu__parent {
     @apply md:relative
