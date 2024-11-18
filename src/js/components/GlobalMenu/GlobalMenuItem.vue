@@ -5,19 +5,12 @@
       @mouseenter="onEnter"
       @mouseleave="onOut">
 
-    <a v-if="data['href']"
-       :href="data['href']"
-       target="_blank"
+    <a v-if="data['href'] || data['to'] || (data['data'] && level || data['values'] || data['url'])"
        :class="classes"
-       :data-tooltip="data['title']">
+       :data-tooltip="data['title']"
+       @click="onClickNode">
       <component :is="items"/>
     </a>
-
-    <router-link v-else-if="data['to']" :to="data['to']"
-                 :class="classes"
-                 :data-tooltip="data['title']">
-      <component :is="items"/>
-    </router-link>
 
     <span v-else-if="data['prev'] || data['next']"
           :class="classes"
@@ -52,23 +45,14 @@
           autofocus
           @input="onInput"/>
 
-      <i :class="['fa fa-remove app-global-menu__clear', data['filter'] ? '' : 'hidden']"
-         @click="onClear"/>
+      <i :class="['fa fa-remove app-global-menu__clear', data['filter'] ? '' : 'hidden']" @click="onClear"/>
     </span>
 
-    <a v-else-if="data['data'] && level || data['values'] || data['url']"
-       :class="classes"
-       :data-tooltip="data['title']"
-       @click="onClickNode">
-      <component :is="items"/>
-    </a>
-
-    <span v-else-if="items.length"
+    <span v-else-if="data['name']"
           :class="classes"
           :data-tooltip="data['title']"
-          @click="onClickNode">
-      <component :is="items"/>
-    </span>
+          @click="onClickNode"
+          v-html="data['name']"/>
 
     <ul v-if="data['data']?.length">
       <global-menu-item v-for="(i, k) in data['data']" :data="i" :key="k" :level="level+1" @action="action"/>
@@ -78,8 +62,8 @@
 
 <script setup>
 import { computed, getCurrentInstance, h } from 'vue'
-import { RouterLink } from 'vue-router'
 import store from '../../store'
+import router from '../../router'
 
 const instance = getCurrentInstance()
 
@@ -163,17 +147,27 @@ const onClickToggle = (event) => {
 }
 
 const onClickNode = () => {
-  if (props.data['values']) {
-    const value = store.getters['get']('Storage.root.' + props.data['key'])
+  switch (true) {
+    case !!props.data['href']:
+      window.open(props.data['href'])
+      break
 
-    for (let i in props.data['values']) {
-      i = parseInt(i)
-      if (value === props.data['values'][i].value) {
-        const item = props.data['values'][i + 1] ?? props.data['values'][0]
-        store.dispatch('set', { ['Storage.root.' + props.data['key']]: item.value })
-        break
+    case !!props.data['to']:
+      router.to(props.data['to'])
+      break
+
+    case !!props.data['values']:
+      const value = store.getters['get']('Storage.root.' + props.data['key'])
+
+      for (let i in props.data['values']) {
+        i = parseInt(i)
+        if (value === props.data['values'][i].value) {
+          const item = props.data['values'][i + 1] ?? props.data['values'][0]
+          store.dispatch('set', { ['Storage.root.' + props.data['key']]: item.value })
+          break
+        }
       }
-    }
+      break
   }
 }
 
