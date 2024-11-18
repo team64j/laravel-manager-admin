@@ -678,8 +678,8 @@ export default {
             <div v-if="meta?.['message']">
               {{ meta?.['message'] }}
             </div>
-            <i v-else-if="url"
-               class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+            <i v-else
+               class="inline-block rounded-full border-2 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-5 w-5 animate-spin"/>
           </td>
         </tr>
         </tbody>
@@ -746,7 +746,7 @@ export default {
     </div>
 
     <div v-else class="flex grow items-center justify-center text-center p-5 w-full">
-      <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+      <i class="inline-block rounded-full border-2 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-5 w-5 animate-spin"/>
     </div>
 
     <div v-if="meta?.['pagination']?.['prev'] || meta?.['pagination']?.['next']" class="app-panel__pagination">
