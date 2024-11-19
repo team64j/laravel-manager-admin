@@ -12,16 +12,16 @@
     @apply opacity-100 visible
 }
 .app-global-menu > ul {
-    @apply md:justify-between px-1
+    @apply lg:justify-between px-1
 }
 .app-global-menu ul, .app-global-menu li {
-    @apply flex md:grow cursor-default
+    @apply flex lg:grow cursor-default
 }
 .app-global-menu > ul > li li {
     @apply flex items-center justify-between transition
 }
 .app-global-menu > ul > li {
-    @apply grow md:grow-0 my-1 rounded
+    @apply grow lg:grow-0 my-1 rounded
 }
 .app-global-menu > ul > li > ul, .app-global-menu > ul > li > ul > li {
     @apply grow
@@ -33,7 +33,7 @@
     @apply bg-gray-600 dark:bg-gray-600 cursor-pointer
 }
 .app-global-menu li > a, .app-global-menu li > span {
-    @apply flex justify-center items-center p-3 md:px-4 w-full h-full
+    @apply flex justify-center items-center p-3 lg:px-4 w-full h-full
 }
 .app-global-menu > ul > li > ul > li li.app-global-menu__hover > a {
     @apply bg-blue-600 text-white dark:bg-blue-600
@@ -54,7 +54,7 @@
     @apply grow truncate
 }
 .app-global-menu > ul > li > ul > li > a .app-global-menu__title, .app-global-menu > ul > li > ul > li > span .app-global-menu__title {
-    @apply hidden md:inline-block
+    @apply hidden lg:inline-block
 }
 .app-global-menu li .app-global-menu__icon + .app-global-menu__title {
     @apply ml-3
@@ -69,7 +69,7 @@
     @apply ml-2 text-sm opacity-70
 }
 .app-global-menu > ul > li ul > li > span .app-global-menu__toggle, .app-global-menu > ul > li > ul > li > a .app-global-menu__toggle {
-    @apply hidden md:inline-flex
+    @apply hidden lg:inline-flex
 }
 .app-global-menu li .app-global-menu__toggle {
     @apply ml-2 -mr-3 -my-2 w-10 h-10 inline-flex items-center justify-center opacity-70
@@ -108,30 +108,30 @@
     @apply text-rose-500 cursor-pointer absolute z-10 top-4 right-6
 }
 .app-global-menu > ul > li > ul > li.app-global-menu__parent {
-    @apply md:relative
+    @apply lg:relative
 }
 .app-global-menu > ul > li > ul > li.app-global-menu__parent > ul {
     @apply mt-1
 }
 .app-global-menu > ul > li > ul li.app-global-menu__parent > ul {
-    @apply absolute opacity-0 invisible top-full left-1.5 right-1.5 md:right-auto md:left-0 flex-col md:min-w-full md:w-[20rem] rounded py-1 shadow-2xl bg-white text-gray-950 dark:bg-gray-700 dark:text-gray-50 transition;
+    @apply absolute opacity-0 invisible top-full left-1.5 right-1.5 lg:right-auto lg:left-0 flex-col lg:min-w-full lg:w-[20rem] rounded py-1 shadow-2xl bg-white text-gray-950 dark:bg-gray-700 dark:text-gray-50 transition;
     max-height: calc(100vh - 4rem);
 }
 .app-global-menu > ul > li > ul > li ul ul {
     @apply overflow-auto overflow-x-hidden
 }
 .app-global-menu > ul > li:last-of-type li.app-global-menu__parent > ul {
-    @apply md:left-auto md:right-0
+    @apply lg:left-auto lg:right-0
 }
 .app-global-menu > ul > li > ul li li.app-global-menu__parent > ul {
-    @apply md:left-full top-0 left-0 right-0
+    @apply lg:left-full top-0 left-0 right-0
 }
 .app-global-menu.app-global-menu--active li.app-global-menu__parent.app-global-menu__hover > ul {
     @apply opacity-100 visible z-10 max-h-[calc(100vh_-_4rem)]
 }
 .app-global-menu.app-global-menu--active > ul > li li.app-global-menu__parent.app-global-menu__hover > ul {
-    @apply h-[calc(100vh_-_4rem)] md:h-auto
+    @apply h-[calc(100vh_-_4rem)] lg:h-auto
 }
 .app-global-menu__back {
-    @apply -top-1 -mt-1 sticky z-10 bg-inherit cursor-pointer
+    @apply -top-1 -mt-1 mb-1 sticky z-10 bg-inherit cursor-pointer
 }

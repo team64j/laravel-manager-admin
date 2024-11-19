@@ -224,7 +224,7 @@ export default {
       this.$refs.mid.addEventListener('touchend', this.onTouchendSidebar)
     },
     onTouchmoveSidebar (event) {
-      if (window.innerWidth < 990) {
+      if (window.innerWidth < 1024) {
         this.sl = null
 
         if (event.touches[0].clientX - this.sx < 0) {

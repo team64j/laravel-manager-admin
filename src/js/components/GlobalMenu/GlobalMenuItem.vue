@@ -10,8 +10,7 @@
 
     <a v-if="data['href'] || data['to'] || (data['data'] && level || data['values'] || data['url'])"
        :class="classes"
-       :data-tooltip="data['title']"
-       @click="onClickNode">
+       :data-tooltip="data['title']">
 
       <template v-if="icon">
         <img v-if="/^https?:\/\/?/.test(icon)" :src="icon" alt="">
@@ -73,13 +72,12 @@
     <span v-else-if="data['name']"
           :class="classes"
           :data-tooltip="data['title']"
-          @click="onClickNode"
           v-html="data['name']"/>
 
     <ul v-if="data['data']?.length">
       <li class="app-global-menu__back" v-if="showBack">
         <a @click.stop="props.data['data'] = null">
-          <i class="fa fa-arrow-left"/>
+          <i class="fa fa-arrow-left"/>&nbsp;
         </a>
       </li>
       <global-menu-item v-for="(i, k) in data['data']" :data="i" :key="k" :level="level+1" @action="action"/>
@@ -145,7 +143,7 @@ const icon = computed(() => {
 })
 
 const showBack = computed(() => {
-  return window.innerWidth < 990 && props.level > 1
+  return window.innerWidth < 1024 && props.level > 1
 })
 
 const action = (...args) => emit('action', ...args)
@@ -163,28 +161,11 @@ const load = () => {
 }
 
 const onClick = () => {
-  if (props.data['values'] || props.data['to']) {
-    emit('action', 'show', false)
-    return
-  }
-
-  if (store.getters.get('menuShow')) {
-    emit('action', 'show', false)
-  } else {
-    emit('action', 'show', true)
-    load()
-  }
-}
-
-const onClickToggle = (event) => {
-  if (props.level > 1) {
-    load()
-    event.stopPropagation()
-  }
-}
-
-const onClickNode = () => {
   switch (true) {
+    case props.data['values'] || props.data['to']:
+      emit('action', 'show', false)
+      break
+
     case !!props.data['href']:
       window.open(props.data['href'])
       break
@@ -205,6 +186,22 @@ const onClickNode = () => {
         }
       }
       break
+  }
+
+  if (store.getters.get('menuShow')) {
+    emit('action', 'show', false)
+  } else {
+    emit('action', 'show', true)
+    load()
+  }
+}
+
+const onClickToggle = (event) => {
+  clearTimeout(timer)
+
+  if (props.level > 1) {
+    load()
+    event.stopPropagation()
   }
 }
 

@@ -5,12 +5,10 @@
 @tailwind utilities;
 @tailwind variants;
 html {
-    font-size: 13px;
+    @apply text-[14px] lg:text-[13px]
 }
 body {
-    @apply text-gray-800 bg-slate-50 dark:bg-gray-700 dark:text-gray-100;
-    font-size: 1rem;
-    min-width: 320px;
+    @apply text-[1rem] min-w-[320px] text-gray-800 bg-slate-50 dark:bg-gray-700 dark:text-gray-100
 }
 .dark body {
     color-scheme: dark
@@ -35,8 +33,7 @@ html, body, #app {
         @apply border-blue-500 dark:border-blue-500 ring-1 ring-offset-0 ring-blue-500 outline-0
     }
     [type='checkbox'], [type='radio'] {
-        @apply inline-block w-4 h-4 p-0 shrink-0 rounded bg-contain bg-no-repeat checked:bg-center focus:ring-1 checked:bg-blue-600 checked:border-blue-600 dark:checked:bg-blue-600 dark:checked:border-blue-600 transition-all;
-        background-position: center -1em;
+        @apply inline-block w-4 h-4 p-0 shrink-0 rounded bg-contain bg-no-repeat bg-[center_-1rem] checked:bg-center focus:ring-1 checked:bg-blue-600 checked:border-blue-600 dark:checked:bg-blue-600 dark:checked:border-blue-600 transition-all;
         background-size: 80%;
     }
     [type='radio'] {
@@ -83,7 +80,7 @@ html, body, #app {
         @apply inline-flex items-center text-sm px-2 py-1 min-h-[2rem] rounded whitespace-nowrap select-none cursor-pointer transition
     }
     .btn-sm:disabled {
-        cursor: none;
+        @apply cursor-none
     }
     .btn-green {
         @apply bg-green-500 border-transparent text-white hover:bg-green-600 active:bg-green-600 focus:bg-green-600 focus:border-green-500 focus:ring-green-500 dark:bg-green-600 dark:border-transparent dark:hover:bg-green-700 dark:active:bg-green-700 dark:focus:bg-green-700 dark:focus:border-green-500 dark:focus:ring-green-500
