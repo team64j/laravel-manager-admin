@@ -217,6 +217,55 @@ export default {
         }
       })
     },
+    onTouchstartSidebar (event) {
+      this.sx = event.touches[0].clientX
+      this.sl = null
+      this.$refs.mid.addEventListener('touchmove', this.onTouchmoveSidebar)
+      this.$refs.mid.addEventListener('touchend', this.onTouchendSidebar)
+    },
+    onTouchmoveSidebar (event) {
+      if (window.innerWidth < 990) {
+        this.sl = null
+
+        if (event.touches[0].clientX - this.sx < 0) {
+          this.sl = false
+          if (store.getters.get('Storage.root.sidebarShow')) {
+            let x = event.touches[0].clientX - this.sx
+
+            if (Math.abs(x) > this.$refs.sidebar.offsetWidth) {
+              x = -this.$refs.sidebar.offsetWidth
+            }
+
+            this.$refs.sidebar.style.transform = 'translateX(' + x + 'px)'
+            this.$refs.sidebar.style.transition = 'none'
+          }
+        } else if (this.sx < 40) {
+          this.sl = true
+          if (!store.getters.get('Storage.root.sidebarShow')) {
+            let x = this.$refs.sidebar.offsetWidth - (event.touches[0].clientX - this.sx)
+
+            if (x < 0) {
+              x = 0
+            }
+
+            this.$refs.sidebar.style.transform = 'translateX(-' + x + 'px)'
+            this.$refs.sidebar.style.transition = 'none'
+          }
+        }
+      }
+    },
+    onTouchendSidebar (event) {
+      let x = event.changedTouches[0].clientX - this.sx
+
+      if (Math.abs(x) > this.$refs.sidebar.offsetWidth / 2) {
+        this.sl !== null && store.dispatch('set', { ['Storage.root.sidebarShow']: this.sl })
+      }
+
+      this.$refs.mid.removeEventListener('touchmove', this.onTouchmoveSidebar)
+      this.$refs.mid.removeEventListener('touchend', this.onTouchendSidebar)
+      this.$refs.sidebar.style.transform = null
+      this.$refs.sidebar.style.transition = null
+    },
     splitterDown (event) {
       this.x = event.clientX
       this.w = this.sidebarWidth
@@ -261,16 +310,16 @@ export default {
       <div id="app-slot-top" class="grow-0 shrink-0">
         <component :is="Component" :layout="this.layout.find(i => i.slot === 'top')" @action="action"/>
       </div>
-      <div class="grow flex flex-row overflow-hidden relative">
+      <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div class="grow flex flex-row overflow-hidden">
-          <div id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
+          <div ref="sidebar" id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
                :style="{ width: `${sidebarWidth}px` }">
             <component :is="Component" :layout="this.layout.find(i => i.slot === 'sidebar')" @action="action"/>
           </div>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
             <div/>
           </div>
-          <div id="app-slot-main" class="grow flex flex-col overflow-hidden">
+          <div id="app-slot-main" class="grow flex flex-col overflow-hidden app-main">
             <global-tabs @action="action"/>
           </div>
         </div>

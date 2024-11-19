@@ -28,14 +28,8 @@
 .app .app-sidebar {
     @apply shrink-0 absolute md:relative z-30 flex grow-0 w-96 h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition-all
 }
-.app .app-sidebar::before {
-    @apply md:hidden content-[""] bg-black/10 fixed left-0 top-14 right-0 bottom-0
-}
 .app.app-sidebar-hidden .app-sidebar {
-    @apply !w-0
-}
-.app.app-sidebar-hidden .app-sidebar::before {
-    @apply hidden
+    @apply -translate-x-full md:!w-0 md:translate-x-0 md:border-0
 }
 .app.app-sidebar-hidden .app-resizer {
     @apply hidden
@@ -44,5 +38,11 @@
     @apply transition-none
 }
 #app-slot-top:empty, #app-slot-left:empty, #app-slot-sidebar:empty, #app-slot-main:empty, #app-slot-right:empty, #app-slot-bottom:empty {
+    @apply hidden
+}
+.app .app-main::after {
+    @apply md:hidden content-[""] z-20 fixed left-0 top-14 right-0 bottom-0
+}
+.app.app-sidebar-hidden .app-main::after {
     @apply hidden
 }
