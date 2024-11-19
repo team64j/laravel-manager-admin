@@ -9,7 +9,28 @@
        :class="classes"
        :data-tooltip="data['title']"
        @click="onClickNode">
-      <component :is="items"/>
+
+      <template v-if="icon">
+        <img v-if="/^https?:\/\/?/.test(icon)" :src="icon" alt="">
+        <span v-else-if="icon[0] === '<'" v-html="icon"/>
+        <i v-else :class="'app-global-menu__icon ' + icon"/>
+      </template>
+
+      <span v-if="props.data['name']" class="app-global-menu__title" v-html="props.data['name']"/>
+
+      <i v-if="props.data['locked']" class="app-global-menu__locked fa fa-lock"/>
+
+      <span v-if="props.data['id'] !== undefined" class="app-global-menu__id" v-html="props.data['id']"/>
+
+      <span v-if="props.data['loading'] || ((props.data['data']?.length && props.level) || props.data['url'])"
+            class="app-global-menu__toggle"
+            @click="onClickToggle"
+            @mouseenter="onClickToggle"
+            @mouseleave="onOut">
+        <i v-if="props.data['loading']"
+           class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+        <i v-else class="fa fa-angle-down fa-fw leading-[0]"/>
+      </span>
     </a>
 
     <span v-else-if="data['prev'] || data['next']"
@@ -61,7 +82,7 @@
 </template>
 
 <script setup>
-import { computed, getCurrentInstance, h } from 'vue'
+import { computed, getCurrentInstance } from 'vue'
 import store from '../../store'
 import router from '../../router'
 
@@ -103,6 +124,25 @@ const classes = computed(() => {
   return classes
 })
 
+const icon = computed(() => {
+  let icon = null
+  if (props.data['values']) {
+    let value = props.data['value'] ?? store.getters.get('Storage.root.' + props.data['key'])
+    let item = props.data['values'].filter(i => i.value === value)[0]
+
+    if (item === undefined) {
+      item = props.data['values'][0]
+      store.dispatch('set', { ['Storage.root.' + props.data['key']]: item.value })
+    }
+
+    props.data['icon'] = item.icon ?? props.data['icon']
+    props.data['name'] = item.name
+    props.data['title'] = item.title
+  }
+
+  return icon ?? props.data['icon']
+})
+
 const action = (...args) => emit('action', ...args)
 
 const onClick = (event) => {
@@ -130,7 +170,7 @@ const onClickToggle = (event) => {
   }
 
   if (props.data['url']) {
-    emit('action', 'setActiveClass', event.currentTarget)
+    emit('action', 'setActiveClass', event.target)
 
     if (props.data['data']) {
       props.data['data'] = null
@@ -172,11 +212,11 @@ const onClickNode = () => {
 }
 
 const onEnter = (event) => {
-  if (event.currentTarget.classList.contains('app-global-menu__hover')) {
+  if (event.target.classList.contains('app-global-menu__hover')) {
     return
   }
 
-  emit('action', 'setActiveClass', event.currentTarget)
+  emit('action', 'setActiveClass', event.target)
   if (props.data['url'] && props.data['data']) {
     props.data['data'] = null
   }
@@ -213,107 +253,5 @@ const onNext = (event) => {
     event.stopPropagation()
     emit('action', 'loadData', props.data['next'], instance.parent.props)
   }
-}
-
-const items = () => {
-  let slots = []
-
-  // icon
-  let icon = null
-  if (props.data['values']) {
-    let value = props.data['value'] ?? store.getters.get('Storage.root.' + props.data['key'])
-    let item = props.data['values'].filter(i => i.value === value)[0]
-
-    if (item === undefined) {
-      item = props.data['values'][0]
-      store.dispatch('set', { ['Storage.root.' + props.data['key']]: item.value })
-    }
-
-    props.data['icon'] = item.icon ?? props.data['icon']
-    props.data['name'] = item.name
-    props.data['title'] = item.title
-  }
-
-  icon = icon ?? props.data['icon']
-
-  if (icon) {
-    if (/^https?:\/\/?/.test(icon)) {
-      slots.push(
-          h('img', {
-            src: icon
-          })
-      )
-    } else if (icon[0] === '<') {
-      slots.push(
-          h('span', {
-            innerHTML: icon
-          })
-      )
-    } else {
-      slots.push(
-          h('i', {
-            class: 'app-global-menu__icon ' + icon
-          })
-      )
-    }
-  }
-
-  // name
-  if (props.data['name']) {
-    slots.push(
-        h('span', {
-          class: 'app-global-menu__title',
-          innerText: props.data['name']
-        })
-    )
-  }
-
-  // locked
-  if (props.data['locked']) {
-    slots.push(
-        h('i', { class: 'app-global-menu__locked fa fa-lock' })
-    )
-  }
-
-  // id
-  if (props.data['id'] !== undefined) {
-    slots.push(
-        h('span', {
-          class: 'app-global-menu__id',
-          innerText: props.data['id']
-        })
-    )
-  }
-
-  if (props.data['loading']) {
-    slots.push(
-        h('span', {
-              class: 'app-global-menu__toggle',
-              onClick: onClickToggle,
-              onMouseenter: onClickToggle,
-              onMouseleave: onOut
-            },
-            h('i', {
-                  class: 'inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin'
-                }
-            )
-        )
-    )
-  } else if ((props.data['data']?.length && props.level) || props.data['url']) {
-    slots.push(
-        h('span', {
-              class: 'app-global-menu__toggle',
-              onClick: onClickToggle,
-              onMouseenter: onClickToggle,
-              onMouseleave: onOut
-            },
-            h('i', {
-              class: 'fa fa-angle-down fa-fw leading-[0]'
-            })
-        )
-    )
-  }
-
-  return slots
 }
 </script>

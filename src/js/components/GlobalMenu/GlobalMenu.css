@@ -26,16 +26,16 @@
 .app-global-menu > ul > li > ul > li > * {
     @apply rounded
 }
-.app-global-menu > ul > li li:hover > a, .app-global-menu > ul > li > ul > li:hover > span, .app-global-menu > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li > ul > li.app-global-menu__hover > span {
+.app-global-menu > ul > li li.app-global-menu__hover > a, .app-global-menu > ul > li > ul > li.app-global-menu__hover > span {
     @apply bg-gray-600 dark:bg-gray-600 cursor-pointer
 }
 .app-global-menu li > a, .app-global-menu li > span {
     @apply flex justify-center items-center p-3 md:px-4 w-full h-full
 }
-.app-global-menu > ul > li > ul > li li:hover > a, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > a {
+.app-global-menu > ul > li > ul > li li.app-global-menu__hover > a {
     @apply bg-blue-600 text-white dark:bg-blue-600
 }
-.app-global-menu > ul > li > ul > li li:hover > span.disabled, .app-global-menu > ul > li > ul > li li.app-global-menu__hover > span.disabled {
+.app-global-menu > ul > li > ul > li li.app-global-menu__hover > span.disabled {
     @apply bg-inherit text-inherit cursor-default
 }
 .app-global-menu li .app-global-menu__icon {
@@ -74,7 +74,7 @@
 .app-global-menu li .app-global-menu__toggle i {
     @apply pointer-events-none transition
 }
-.app-global-menu.app-global-menu--active > ul > li > ul > li:hover > * > .app-global-menu__toggle i, .app-global-menu.app-global-menu--active > ul > li > ul > li.app-global-menu__hover > * > .app-global-menu__toggle i {
+.app-global-menu.app-global-menu--active > ul > li > ul > li.app-global-menu__hover > * > .app-global-menu__toggle i {
     @apply rotate-180
 }
 .app-global-menu > ul > li li li .app-global-menu__toggle i {
@@ -120,7 +120,7 @@
 .app-global-menu > ul > li > ul li li.app-global-menu__parent > ul {
     @apply md:left-full top-0 left-0 right-0
 }
-.app-global-menu.app-global-menu--active li.app-global-menu__parent:hover > ul, .app-global-menu.app-global-menu--active li.app-global-menu__parent.app-global-menu__hover > ul {
+.app-global-menu.app-global-menu--active li.app-global-menu__parent.app-global-menu__hover > ul {
     @apply opacity-100 visible z-10;
     max-height: calc(100vh - 4rem);
 }
