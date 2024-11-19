@@ -28,8 +28,14 @@
 .app .app-sidebar {
     @apply shrink-0 absolute md:relative z-30 flex grow-0 w-96 h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition-all
 }
+.app .app-sidebar::before {
+    @apply md:hidden content-[""] bg-black/10 fixed left-0 top-14 right-0 bottom-0
+}
 .app.app-sidebar-hidden .app-sidebar {
     @apply !w-0
+}
+.app.app-sidebar-hidden .app-sidebar::before {
+    @apply hidden
 }
 .app.app-sidebar-hidden .app-resizer {
     @apply hidden

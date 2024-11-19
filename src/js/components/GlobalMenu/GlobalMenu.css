@@ -15,13 +15,16 @@
     @apply md:justify-between px-1
 }
 .app-global-menu ul, .app-global-menu li {
-    @apply flex grow cursor-default
+    @apply flex md:grow cursor-default
 }
 .app-global-menu > ul > li li {
-    @apply flex items-center justify-between grow transition
+    @apply flex items-center justify-between transition
 }
 .app-global-menu > ul > li {
     @apply grow md:grow-0 my-1 rounded
+}
+.app-global-menu > ul > li > ul, .app-global-menu > ul > li > ul > li {
+    @apply grow
 }
 .app-global-menu > ul > li > ul > li > * {
     @apply rounded
@@ -65,7 +68,7 @@
 .app-global-menu li .app-global-menu__id {
     @apply ml-2 text-sm opacity-70
 }
-.app-global-menu > ul > li ul > li > span .app-global-menu__toggle {
+.app-global-menu > ul > li ul > li > span .app-global-menu__toggle, .app-global-menu > ul > li > ul > li > a .app-global-menu__toggle {
     @apply hidden md:inline-flex
 }
 .app-global-menu li .app-global-menu__toggle {
@@ -81,6 +84,9 @@
     @apply -rotate-90
 }
 .app-global-menu li .app-global-menu__pagination {
+    @apply -bottom-1 -mb-1 mt-auto sticky bg-inherit
+}
+.app-global-menu li .app-global-menu__pagination > span {
     @apply flex grow items-center px-3 py-2 text-gray-500 dark:text-gray-100 text-sm select-none
 }
 .app-global-menu li .app-global-menu__pagination .app-global-menu__prev, .app-global-menu li .app-global-menu__pagination .app-global-menu__next {
@@ -121,6 +127,11 @@
     @apply md:left-full top-0 left-0 right-0
 }
 .app-global-menu.app-global-menu--active li.app-global-menu__parent.app-global-menu__hover > ul {
-    @apply opacity-100 visible z-10;
-    max-height: calc(100vh - 4rem);
+    @apply opacity-100 visible z-10 max-h-[calc(100vh_-_4rem)]
+}
+.app-global-menu.app-global-menu--active > ul > li li.app-global-menu__parent.app-global-menu__hover > ul {
+    @apply h-[calc(100vh_-_4rem)] md:h-auto
+}
+.app-global-menu__back {
+    @apply -top-1 -mt-1 sticky z-10 bg-inherit cursor-pointer
 }

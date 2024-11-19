@@ -31,12 +31,14 @@ const methods = {
         forEach(i => i.classList.remove('app-global-menu__hover'))
 
     while (true) {
-      el.classList.add('app-global-menu__hover')
-      el = el.parentElement.closest('li')
+      el = el?.closest('li')
 
       if (!el) {
         break
       }
+
+      el.classList.add('app-global-menu__hover')
+      el = el.parentElement
     }
   },
   loadData (url, p) {

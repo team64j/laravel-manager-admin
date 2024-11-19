@@ -1,7 +1,10 @@
 <template>
-  <li :class="{ 'app-global-menu__parent': data?.['data']?.length || data?.['url'] }"
+  <li :class="{
+    'app-global-menu__parent': data?.['data']?.length || data?.['url'],
+    'app-global-menu__pagination': props.data['prev'] || props.data['next']
+  }"
       :data-level="level"
-      @click="onClick"
+      @click.stop="onClick"
       @mouseenter="onEnter"
       @mouseleave="onOut">
 
@@ -13,7 +16,7 @@
       <template v-if="icon">
         <img v-if="/^https?:\/\/?/.test(icon)" :src="icon" alt="">
         <span v-else-if="icon[0] === '<'" v-html="icon"/>
-        <i v-else :class="'app-global-menu__icon ' + icon"/>
+        <i v-else class="app-global-menu__icon" :class="icon"/>
       </template>
 
       <span v-if="props.data['name']" class="app-global-menu__title" v-html="props.data['name']"/>
@@ -23,10 +26,8 @@
       <span v-if="props.data['id'] !== undefined" class="app-global-menu__id" v-html="props.data['id']"/>
 
       <span v-if="props.data['loading'] || ((props.data['data']?.length && props.level) || props.data['url'])"
-            class="app-global-menu__toggle"
             @click="onClickToggle"
-            @mouseenter="onClickToggle"
-            @mouseleave="onOut">
+            class="app-global-menu__toggle">
         <i v-if="props.data['loading']"
            class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
         <i v-else class="fa fa-angle-down fa-fw leading-[0]"/>
@@ -39,7 +40,7 @@
 
       <button class="app-global-menu__prev"
               :disabled="props.data['prev'] ? undefined : 'disabled'"
-              @click="onPrev">
+              @click.stop="onPrev">
         <i class="fa fa-chevron-left"/>
       </button>
 
@@ -47,7 +48,7 @@
 
       <button class="app-global-menu__next"
               :disabled="props.data['next'] ? undefined : 'disabled'"
-              @click="onNext">
+              @click.stop="onNext">
         <i class="fa fa-chevron-right"/>
       </button>
     </span>
@@ -76,6 +77,11 @@
           v-html="data['name']"/>
 
     <ul v-if="data['data']?.length">
+      <li class="app-global-menu__back" v-if="showBack">
+        <a @click.stop="props.data['data'] = null">
+          <i class="fa fa-arrow-left"/>
+        </a>
+      </li>
       <global-menu-item v-for="(i, k) in data['data']" :data="i" :key="k" :level="level+1" @action="action"/>
     </ul>
   </li>
@@ -111,11 +117,6 @@ const classes = computed(() => {
     classes.push('app-global-menu__disabled')
   }
 
-  // pagination
-  if (props.data['prev'] || props.data['next']) {
-    classes.push('app-global-menu__pagination')
-  }
-
   // filter
   if (props.data['filter'] !== undefined) {
     classes.push('app-global-menu__filter')
@@ -143,46 +144,42 @@ const icon = computed(() => {
   return icon ?? props.data['icon']
 })
 
+const showBack = computed(() => {
+  return window.innerWidth < 990 && props.level > 1
+})
+
 const action = (...args) => emit('action', ...args)
 
-const onClick = (event) => {
+const load = () => {
+  if (props.data['url'] && store.getters.get('menuShow')) {
+    props.data['data'] = null
+
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      emit('action', 'loadData', props.data['url'], props)
+      emit('action', 'show', true)
+    }, 200)
+  }
+}
+
+const onClick = () => {
   if (props.data['values'] || props.data['to']) {
     emit('action', 'show', false)
-    event.stopPropagation()
     return
   }
 
   if (store.getters.get('menuShow')) {
-    onClickToggle(event)
     emit('action', 'show', false)
   } else {
-    onClickToggle(event)
     emit('action', 'show', true)
+    load()
   }
-
-  event.stopPropagation()
 }
 
 const onClickToggle = (event) => {
-  if (instance.vnode.el.classList.contains('app-global-menu__hover') && props.data['url'] && props.data['data'] &&
-      event.type !== 'click') {
-    return
-  }
-
-  if (props.data['url']) {
-    emit('action', 'setActiveClass', event.target)
-
-    if (props.data['data']) {
-      props.data['data'] = null
-    } else {
-      clearTimeout(timer)
-      timer = setTimeout(() => {
-        emit('action', 'loadData', props.data['url'], props)
-        emit('action', 'show', true)
-      }, 200)
-    }
+  if (props.level > 1) {
+    load()
     event.stopPropagation()
-    event.preventDefault()
   }
 }
 
@@ -215,22 +212,14 @@ const onEnter = (event) => {
   if (event.target.classList.contains('app-global-menu__hover')) {
     return
   }
-
   emit('action', 'setActiveClass', event.target)
-  if (props.data['url'] && props.data['data']) {
-    props.data['data'] = null
-  }
+  load()
 }
 
 const onOut = () => {
   if (props.data['url']) {
     clearTimeout(timer)
   }
-}
-
-const onClear = () => {
-  instance.parent.props.filter = null
-  emit('action', 'loadData', null, instance.parent.props)
 }
 
 const onInput = (event) => {
@@ -241,16 +230,19 @@ const onInput = (event) => {
   }, 500)
 }
 
-const onPrev = (event) => {
+const onClear = () => {
+  instance.parent.props.filter = null
+  emit('action', 'loadData', null, instance.parent.props)
+}
+
+const onPrev = () => {
   if (props.data['prev']) {
-    event.stopPropagation()
     emit('action', 'loadData', props.data['prev'], instance.parent.props)
   }
 }
 
-const onNext = (event) => {
+const onNext = () => {
   if (props.data['next']) {
-    event.stopPropagation()
     emit('action', 'loadData', props.data['next'], instance.parent.props)
   }
 }
