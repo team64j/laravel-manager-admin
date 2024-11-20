@@ -1,7 +1,7 @@
 <template>
   <li :class="{
     'app-global-menu__parent': data?.['data']?.length || data?.['url'],
-    'app-global-menu__pagination': props.data['prev'] || props.data['next']
+    'app-global-menu__pagination': data['prev'] || data['next'],
   }"
       :data-level="level"
       @click.stop="onClick"
@@ -18,16 +18,16 @@
         <i v-else class="app-global-menu__icon" :class="icon"/>
       </template>
 
-      <span v-if="props.data['name']" class="app-global-menu__title" v-html="props.data['name']"/>
+      <span v-if="data['name']" class="app-global-menu__title" v-html="data['name']"/>
 
-      <i v-if="props.data['locked']" class="app-global-menu__locked fa fa-lock"/>
+      <i v-if="data['locked']" class="app-global-menu__locked fa fa-lock"/>
 
-      <span v-if="props.data['id'] !== undefined" class="app-global-menu__id" v-html="props.data['id']"/>
+      <span v-if="data['id'] !== undefined" class="app-global-menu__id" v-html="data['id']"/>
 
-      <span v-if="props.data['loading'] || ((props.data['data']?.length && props.level) || props.data['url'])"
+      <span v-if="data['loading'] || ((data['data']?.length && level) || data['url'])"
             @click="onClickToggle"
             class="app-global-menu__toggle">
-        <i v-if="props.data['loading']"
+        <i v-if="data['loading']"
            class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
         <i v-else class="fa fa-angle-down fa-fw leading-[0]"/>
       </span>
@@ -38,7 +38,7 @@
           :data-tooltip="data['title']">
 
       <button class="app-global-menu__prev"
-              :disabled="props.data['prev'] ? undefined : 'disabled'"
+              :disabled="data['prev'] ? undefined : 'disabled'"
               @click.stop="onPrev">
         <i class="fa fa-chevron-left"/>
       </button>
@@ -46,7 +46,7 @@
       <span>{{ data['info'] ?? data['total'] }}</span>
 
       <button class="app-global-menu__next"
-              :disabled="props.data['next'] ? undefined : 'disabled'"
+              :disabled="data['next'] ? undefined : 'disabled'"
               @click.stop="onNext">
         <i class="fa fa-chevron-right"/>
       </button>
@@ -76,7 +76,7 @@
 
     <ul v-if="data['data']?.length">
       <li class="app-global-menu__back" v-if="showBack">
-        <a @click.stop="props.data['data'] = null">
+        <a @click.stop="data['data'] = null">
           <i class="fa fa-arrow-left"/>&nbsp;
         </a>
       </li>
@@ -109,6 +109,11 @@ let timer = 0
 
 const classes = computed(() => {
   const classes = [props.data['class'] || '']
+
+  // loading
+  if (props.data['loading']) {
+    classes.push('app-global-menu__loading')
+  }
 
   // disabled
   if (props.data['disabled']) {
@@ -143,7 +148,7 @@ const icon = computed(() => {
 })
 
 const showBack = computed(() => {
-  return window.innerWidth < 1024 && props.level > 1
+  return instance.root.proxy['isMobile'] && props.level > 1
 })
 
 const action = (...args) => emit('action', ...args)
@@ -155,60 +160,74 @@ const load = () => {
     clearTimeout(timer)
     timer = setTimeout(() => {
       emit('action', 'loadData', props.data['url'], props)
-      emit('action', 'show', true)
     }, 200)
   }
 }
 
-const onClick = () => {
-  switch (true) {
-    case props.data['values'] || props.data['to']:
-      emit('action', 'show', false)
-      break
+const onClick = (event) => {
+  if (props.data['href']) {
+    window.open(props.data['href'])
 
-    case !!props.data['href']:
-      window.open(props.data['href'])
-      break
+    return emit('action', 'show', false)
+  } else if (props.data['to']) {
+    router.to(props.data['to'])
 
-    case !!props.data['to']:
-      router.to(props.data['to'])
-      break
+    return emit('action', 'show', false)
+  } else if (props.data['values']) {
+    const value = store.getters['get']('Storage.root.' + props.data['key'])
 
-    case !!props.data['values']:
-      const value = store.getters['get']('Storage.root.' + props.data['key'])
-
-      for (let i in props.data['values']) {
-        i = parseInt(i)
-        if (value === props.data['values'][i].value) {
-          const item = props.data['values'][i + 1] ?? props.data['values'][0]
-          store.dispatch('set', { ['Storage.root.' + props.data['key']]: item.value })
-          break
-        }
+    for (let i in props.data['values']) {
+      i = parseInt(i)
+      if (value === props.data['values'][i].value) {
+        const item = props.data['values'][i + 1] ?? props.data['values'][0]
+        store.dispatch('set', { ['Storage.root.' + props.data['key']]: item.value })
+        break
       }
-      break
+    }
+
+    return emit('action', 'show', false)
   }
 
-  if (store.getters.get('menuShow')) {
-    emit('action', 'show', false)
-  } else {
-    emit('action', 'show', true)
-    load()
+  let show = true
+
+  if (instance.root.proxy['isMobile']) {
+    if (store.getters.get('menuShow')) {
+      if (event.currentTarget.classList.contains('app-global-menu__hover')) {
+        show = false
+      } else {
+        show = props.level <= 1
+      }
+    }
+  } else if (store.getters.get('menuShow')) {
+    show = false
+  }
+
+  emit('action', 'show', show)
+  emit('action', 'setActiveClass', event.target)
+
+  if (show) {
+    load(event)
   }
 }
 
 const onClickToggle = (event) => {
   clearTimeout(timer)
 
+  if (instance.root.proxy['isMobile']) {
+    emit('action', 'setActiveClass', event.target)
+  }
+
   if (props.level > 1) {
-    load()
+    load(event)
     event.stopPropagation()
   }
 }
 
 const onEnter = (event) => {
-  if (event.target.classList.contains('app-global-menu__hover')) {
+  if (instance.root.proxy['isMobile'] || event.target.classList.contains('app-global-menu__hover')) {
     return
   }
+
   emit('action', 'setActiveClass', event.target)
   load()
 }

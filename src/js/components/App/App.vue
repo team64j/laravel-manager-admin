@@ -23,7 +23,8 @@ export default {
       return store
     },
     isMobile () {
-      return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints']
+      return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints'] || window.innerWidth <
+          1024
     }
   },
   components: { Logo, Notifications, RouterView, Tooltip, Datepicker, GlobalMenu, GlobalTabs, Component, Search },

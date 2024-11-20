@@ -83,6 +83,12 @@
 .app-global-menu > ul > li li li .app-global-menu__toggle i {
     @apply -rotate-90
 }
+.app-global-menu.app-global-menu--active > ul > li > ul > li > .app-global-menu__loading .app-global-menu__toggle {
+    @apply inline-flex -ml-2 lg:inline-flex lg:ml-2
+}
+.app-global-menu.app-global-menu--active > ul > li > ul > li > .app-global-menu__loading .app-global-menu__icon {
+    @apply hidden lg:inline-flex
+}
 .app-global-menu li .app-global-menu__pagination {
     @apply -bottom-1 -mb-1 mt-auto sticky bg-inherit
 }
