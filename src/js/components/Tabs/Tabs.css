@@ -38,7 +38,7 @@
     @apply opacity-20 pointer-events-none
 }
 .app-tabs .app-tabs__page {
-    @apply relative flex flex-wrap items-start content-start mx-2 mb-2 rounded overflow-auto grow bg-white dark:bg-gray-600/40
+    @apply relative flex flex-wrap items-start content-start rounded overflow-auto grow bg-white dark:bg-gray-700
 }
 .app-tabs__vertical {
     @apply flex-row p-0 h-auto self-stretch overflow-visible

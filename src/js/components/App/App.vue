@@ -189,13 +189,13 @@ export default {
         switch (i.rel) {
           case 'plugin':
             import(/* @vite-ignore */i.src).then(j => {
-              Vue.use(j.default)
+              window['app']._.appContext.app.use(j.default)
             })
             break
 
           case 'component':
             import(/* @vite-ignore */i.src).then(j => {
-              Vue.component(j.default.name, j.default)
+              window['app']._.appContext.app.component(j.default.name, j.default)
             })
             break
 
@@ -314,7 +314,7 @@ export default {
       <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div class="grow flex flex-row overflow-hidden">
           <div ref="sidebar" id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
-               :style="{ width: `${sidebarWidth}px` }">
+               :style="{ width: sidebarWidth + `px` }">
             <component :is="Component" :layout="this.layout.find(i => i.slot === 'sidebar')" @action="action"/>
           </div>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">

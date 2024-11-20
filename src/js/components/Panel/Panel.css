@@ -1,5 +1,5 @@
 .app-panel {
-    @apply overflow-hidden flex flex-col grow mx-5
+    @apply overflow-hidden flex flex-col grow
 }
 .app-panel .app-panel__data {
     @apply grow overflow-auto rounded
