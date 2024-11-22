@@ -42,6 +42,7 @@ export default {
 
         const url = route?.['meta']?.['url'] ? route['meta']['url'] : route['path']
         const isNumericId = !isNaN(route['params']['id'] - 0)
+        const isNew = route['params']['id'] === 'new'
 
         if (action === 'cancel') {
           emit('action', 'closeTab')
@@ -73,8 +74,6 @@ export default {
         }).
             then(r => {
               if (r.data) {
-                const route = router.currentRoute.value
-
                 if (r.data?.['meta']?.['redirect']) {
                   location.href = r.data['meta']['redirect']
                   return
@@ -89,7 +88,8 @@ export default {
                   emit('action', 'closeTab')
                   return
                 } else if (stay === 1) {
-                  emit('action', 'toTab', { ...route, params: { id: 'new' } })
+                  emit('action', 'closeTab')
+                  router.to({ params: { id: 'new' } })
                   return
                 }
 

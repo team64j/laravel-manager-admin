@@ -59,7 +59,7 @@ export default {
                   class: i.class,
                   value: i.title + ' + ' + j.title,
                   loader: store.getters.get('tabsLoading'),
-                  onClick: () => click(i)
+                  onClick: () => click(i, j.stay)
                 })
               })).concat(
                   h(Button, {

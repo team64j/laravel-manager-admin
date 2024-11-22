@@ -40,6 +40,10 @@ axios.interceptors['request'].use(
       }
     })
 
+    if (config.method === 'post' && params.id === 'new') {
+      config.url = config.url.replace('/' + params.id, '')
+    }
+
     config.url = config.url.replace(/(\/?:\w+)/, '').replace(/^\w+:\/\/[^\/]+/, '').replace(/(\(.*?\))/g, '')
 
     return config
