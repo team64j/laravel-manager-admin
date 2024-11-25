@@ -40,7 +40,7 @@ axios.interceptors['request'].use(
       }
     })
 
-    if (config.method === 'post' && params.id === 'new') {
+    if (config.method === 'post' && params.id?.toString() === '0') {
       config.url = config.url.replace('/' + params.id, '')
     }
 

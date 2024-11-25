@@ -42,7 +42,6 @@ export default {
 
         const url = route?.['meta']?.['url'] ? route['meta']['url'] : route['path']
         const isNumericId = !isNaN(route['params']['id'] - 0)
-        const isNew = route['params']['id'] === 'new'
 
         if (action === 'cancel') {
           emit('action', 'closeTab')
@@ -89,7 +88,7 @@ export default {
                   return
                 } else if (stay === 1) {
                   emit('action', 'closeTab')
-                  router.to({ params: { id: 'new' } })
+                  router.to({ params: { id: 0 } })
                   return
                 }
 
