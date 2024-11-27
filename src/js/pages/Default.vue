@@ -65,6 +65,16 @@ export default {
 
         data.errors = null
 
+        for (const i in data.layout) {
+          if (data.layout[i].slots) {
+            for (const o in data.layout[i].slots) {
+              if (data.layout[i].slots[o]?.attrs?.url) {
+                delete data.layout[i].slots[o]
+              }
+            }
+          }
+        }
+
         axios({
           method,
           url,
