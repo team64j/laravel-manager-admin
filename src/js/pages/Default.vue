@@ -101,13 +101,23 @@ export default {
                 })
 
                 const meta = {}
+                const tab = data.layout.find(i => i.component === 'AppGlobalTab')
 
-                if (r.data['meta']?.['title'] !== undefined) {
-                  meta['title'] = r.data['meta']['title']
-                }
+                if (tab) {
+                  meta['title'] = tab.attrs.title
+                  meta['icon'] = tab.attrs.icon
+                } else {
+                  if (r.data['meta']?.['title'] !== undefined) {
+                    meta['title'] = r.data['meta']['title']
+                  } else if (r.data['data']?.['title'] !== undefined) {
+                    meta['title'] = r.data['data']['title']
+                  }
 
-                if (r.data['meta']?.['icon'] !== undefined) {
-                  meta['icon'] = r.data['meta']['icon']
+                  if (r.data['meta']?.['icon'] !== undefined) {
+                    meta['icon'] = r.data['meta']['icon']
+                  } else if (r.data['data']?.['icon'] !== undefined) {
+                    meta['icon'] = r.data['data']['icon']
+                  }
                 }
 
                 if (Object.values(meta).length) {
