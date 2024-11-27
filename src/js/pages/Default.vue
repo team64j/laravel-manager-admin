@@ -41,7 +41,7 @@ export default {
         }
 
         const url = route?.['meta']?.['url'] ? route['meta']['url'] : route['path']
-        const isNumericId = !isNaN(route['params']['id'] - 0)
+        const isNumericId = !isNaN(route['params']['id'] - 0) && route['params']['id'] > 0
 
         if (action === 'cancel') {
           emit('action', 'closeTab')
