@@ -197,8 +197,7 @@ export default {
         })
       } else {
         const route = node['route'] || this.propRoute
-
-        router.to({
+        this.$parent.$emit('action', 'pushRouter', {
           ...route,
           params: node
         })

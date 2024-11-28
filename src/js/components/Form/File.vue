@@ -64,20 +64,23 @@ export default {
       this.$emit('action', 'mousedown:input', event, this)
     },
 
-    onClick () {
-      this.$root.$refs.layout.$refs.window.open({
-        key: 'FilesFromInput',
-        currentRoute: this.$router.resolve({ name: 'Files' }),
-        context: this,
-        title: 'files',
-        icon: 'far fa-folder-open',
-        width: '85%',
-        height: '85%',
-        class: 'bg-white dark:bg-gray-700 dark:text-gray-100',
-        attrs: {
-          id: 'Files' + this.type
-        }
-      })
+    onClick (event) {
+      if (this.emitClick) {
+        return this.$emit('action', this.emitClick, event, this)
+      }
+      // this.$root.$refs.layout.$refs.window.open({
+      //   key: 'FilesFromInput',
+      //   currentRoute: this.$router.resolve({ name: 'Files' }),
+      //   context: this,
+      //   title: 'files',
+      //   icon: 'far fa-folder-open',
+      //   width: '85%',
+      //   height: '85%',
+      //   class: 'bg-white dark:bg-gray-700 dark:text-gray-100',
+      //   attrs: {
+      //     id: 'Files' + this.type
+      //   }
+      // })
     }
   }
 }

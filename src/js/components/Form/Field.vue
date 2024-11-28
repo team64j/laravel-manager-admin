@@ -14,6 +14,7 @@ export default {
     errorClass: String,
     falseValue: { default: false },
     help: String,
+    url: String,
     id: String,
     inputClass: [Array, Object, String],
     label: String,

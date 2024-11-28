@@ -63,7 +63,13 @@ export default {
                 })
               })).concat(
                   h(Button, {
-                    class: ['app-actions__toggle', i.class]
+                    class: ['app-actions__toggle', i.class],
+                    onMousedown (event) {
+                      if (event.currentTarget === document.activeElement) {
+                        event.currentTarget.blur()
+                        event.preventDefault()
+                      }
+                    }
                   }, () => [
                     h('i', { class: 'fa fa-angle-down fa-fw' })
                   ])

@@ -96,7 +96,7 @@
     @apply flex grow items-center px-3 py-2 text-gray-500 dark:text-gray-100 text-sm select-none
 }
 .app-global-menu li .app-global-menu__pagination .app-global-menu__prev, .app-global-menu li .app-global-menu__pagination .app-global-menu__next {
-    @apply flex items-center justify-center w-6 h-6 rounded cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10
+    @apply flex items-center justify-center w-6 h-6 rounded cursor-pointer border-none text-blue-500 hover:bg-slate-100 dark:hover:bg-white/10
 }
 .app-global-menu li .app-global-menu__pagination .app-global-menu__prev[disabled], .app-global-menu li .app-global-menu__pagination .app-global-menu__next[disabled] {
     @apply opacity-20 pointer-events-none
@@ -138,6 +138,6 @@
 .app-global-menu.app-global-menu--active > ul > li li.app-global-menu__parent.app-global-menu__hover > ul {
     @apply h-[calc(100vh_-_4rem)] lg:h-auto
 }
-.app-global-menu__back {
-    @apply -top-1 -mt-1 mb-1 sticky z-10 bg-inherit cursor-pointer
+.app-global-menu .app-global-menu__back {
+    @apply -top-1 -mt-1 mb-1 sticky z-10 bg-inherit hover:bg-slate-50 dark:hover:bg-gray-600 cursor-pointer text-blue-500
 }

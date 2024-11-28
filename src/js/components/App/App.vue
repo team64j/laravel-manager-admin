@@ -10,29 +10,41 @@ import Search from '../Search/Search.vue'
 import router from '../../router'
 import store from '../../store'
 import Logo from '../Layout/Logo.vue'
+import Modal from '../Modal/Modal.vue'
 
 import('./App.css')
 
 export default {
   name: 'App',
   computed: {
+    route () {
+      return router.currentRoute.value
+    },
     Component () {
       return Component
     },
     store () {
       return store
-    },
-    isMobile () {
-      return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints'] || window.innerWidth <
-          1024
     }
   },
-  components: { Logo, Notifications, RouterView, Tooltip, Datepicker, GlobalMenu, GlobalTabs, Component, Search },
+  components: {
+    Logo,
+    Notifications,
+    RouterView,
+    Tooltip,
+    Datepicker,
+    GlobalMenu,
+    GlobalTabs,
+    Component,
+    Search,
+    Modal
+  },
   data () {
     return {
       layout: null,
       loaded: false,
-      sidebarWidth: this.$store.getters.get('Storage.sidebarWidth', 325)
+      sidebarWidth: this.$store.getters.get('Storage.sidebarWidth', 26),
+      isMobile: this.calcIsMobile()
     }
   },
   watch: {
@@ -48,6 +60,13 @@ export default {
   },
   created () {
     this.bootstrap()
+
+    window.addEventListener('resize', event => {
+      const check = this.calcIsMobile()
+      if (check !== this.isMobile) {
+        this.isMobile = check
+      }
+    })
 
     document.documentElement.classList.toggle(
         'dark',
@@ -269,14 +288,15 @@ export default {
     },
     splitterDown (event) {
       this.x = event.clientX
-      this.w = this.sidebarWidth
+      this.w = this.convertRemToPixels(this.sidebarWidth)
       this.$el.classList.add('app-sidebar-resize')
       event.currentTarget.classList.add('active')
       event.currentTarget.addEventListener('mousemove', this.splitterMove)
       event.currentTarget.addEventListener('mouseup', this.splitterUp)
     },
     splitterMove (event) {
-      this.sidebarWidth = Math.min(Math.max(this.w - (this.x - event.clientX), 64), window.innerWidth * .64)
+      this.sidebarWidth = this.convertPixelsToRem(
+          Math.min(Math.max(this.w - (this.x - event.clientX), 64), window.innerWidth * .64))
       this.$store.dispatch('Storage/set', { sidebarWidth: this.sidebarWidth })
     },
     splitterUp (event) {
@@ -287,6 +307,17 @@ export default {
     },
     pushRouter (route, callback) {
       this.$nextTick(() => router.to(route).then(callback))
+    },
+    calcIsMobile () {
+      return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints'] ||
+          window.innerWidth <
+          1024
+    },
+    convertRemToPixels (rem) {
+      return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
+    },
+    convertPixelsToRem (px) {
+      return px / parseFloat(getComputedStyle(document.documentElement).fontSize)
     },
     inputTreeSelect (event, context) {
       this.$store.dispatch('set', { event, context })
@@ -299,6 +330,11 @@ export default {
         input.classList.add('focus')
         this.$store.dispatch('set', { treeSelect: true })
       }
+    },
+    'modal:component' (event, ctx) {
+      if (ctx['url']) {
+        this.$refs.modal.setUrl(ctx['url']).open()
+      }
     }
   }
 }
@@ -309,13 +345,15 @@ export default {
        :class="{ 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
     <template v-if="layout">
       <div id="app-slot-top" class="grow-0 shrink-0">
-        <component :is="Component" :layout="this.layout.find(i => i.slot === 'top')" @action="action"/>
+        <component :is="Component" :currentRoute="route" :layout="this.layout.find(i => i.slot === 'top')"
+                   @action="action"/>
       </div>
       <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div class="grow flex flex-row overflow-hidden">
           <div ref="sidebar" id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
-               :style="{ width: sidebarWidth + `px` }">
-            <component :is="Component" :layout="this.layout.find(i => i.slot === 'sidebar')" @action="action"/>
+               :style="{ width: sidebarWidth + `rem` }">
+            <component :is="Component" :currentRoute="route" :layout="this.layout.find(i => i.slot === 'sidebar')"
+                       @action="action"/>
           </div>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
             <div/>
@@ -326,6 +364,7 @@ export default {
         </div>
       </div>
 
+      <modal ref="modal"/>
       <search ref="search"/>
       <tooltip ref="tooltip"/>
       <datepicker ref="datepicker"/>

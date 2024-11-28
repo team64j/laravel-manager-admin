@@ -4,7 +4,7 @@ import { compile, getCurrentInstance, h, nextTick } from 'vue'
 export default {
   name: 'Component',
   __isStatic: true,
-  props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'],
+  props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url', 'currentRoute'],
   emits: ['action', 'update:modelValue', 'update:props'],
   setup (props, { emit }) {
     function action (...args) {
@@ -88,6 +88,7 @@ export default {
       }
 
       attrs.key = data.model || data.component.name || ''
+      attrs.currentRoute = props.currentRoute
 
       if (attrs.key === 'data') {
         attrs.modelValue = props.data
