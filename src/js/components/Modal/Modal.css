@@ -8,7 +8,7 @@
     @apply absolute flex flex-col rounded bg-white dark:bg-gray-700 shadow-lg w-4/5 h-4/5 min-w-60 min-h-60 max-w-[98%] max-h-[98%] resize overflow-hidden transition-opacity
 }
 .app-modal__header {
-    @apply flex cursor-grab active:cursor-grabbing
+    @apply flex bg-white/5 cursor-grab active:cursor-grabbing
 }
 .app-modal__main {
     @apply grow flex

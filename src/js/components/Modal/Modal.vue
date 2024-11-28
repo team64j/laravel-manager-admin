@@ -1,5 +1,4 @@
 <script>
-import { h } from 'vue'
 import Component from '../Layout/Component.vue'
 import router from '../../router'
 
@@ -8,10 +7,12 @@ import ('./Modal.css')
 export default {
   __isStatic: true,
   name: 'Modal',
+  components: { Component },
   data () {
     return {
       show: false,
       title: '',
+      icon: '',
       component: null,
       componentProps: {}
     }
@@ -35,22 +36,24 @@ export default {
 
       return this
     },
-    setComponent (component) {
-      this.component = component
+    setUrl (route) {
+      if (typeof route === 'string') {
+        route = router.parse(route)
+      }
 
-      return this
-    },
-    setUrl (url) {
-      axios.get(url).then(({ data }) => {
-        this.componentProps = null
-        this.component ??= h(Component)
-        setTimeout(() => this.componentProps = data, 0)
+      this.component = true
+
+      axios.get(route.fullPath).then(({ data }) => {
+        data.currentRoute = route
+        this.componentProps = data
+        this.icon = data.meta['icon']
+        this.title = data.meta['fullTitle'] || data.meta['title']
       })
 
       return this
     },
     pushRouter (route) {
-      this.setUrl(router.parse(route).fullPath)
+      this.setUrl(router.parse(route))
     },
     onMousedown (event) {
       document.addEventListener('mousemove', this.onMousemove)
@@ -81,18 +84,21 @@ export default {
   <transition name="fade">
     <teleport to="body" v-if="show">
       <div class="app-modal">
-        <div class="app-modal__overlay" @click="this.show=!this.show"></div>
+        <div class="app-modal__overlay" @click="this.show=!this.show"/>
         <div class="app-modal__wrap" ref="modal">
           <div class="app-modal__header">
-            <div class="grow" v-html="title" @mousedown="onMousedown"></div>
-            <button type="button" class="btn-red" @click="close">
-              <i class="fa fa-close"></i>
+            <div v-if="icon" class="pl-4 flex items-center">
+              <i :class="icon"/>
+            </div>
+            <div class="grow px-4 py-1" v-html="title" @mousedown="onMousedown"/>
+            <button type="button" class="btn-red items-center" @click="close">
+              <i class="fa fa-close"/>
             </button>
           </div>
           <div class="app-modal__main">
-            <component v-if="this.component" :is="this.component" v-bind="componentProps" @action="action"/>
+            <Component v-if="this.component" v-bind="componentProps" @action="action"/>
           </div>
-          <div class="app-modal__footer"></div>
+          <div class="app-modal__footer"/>
         </div>
       </div>
     </teleport>

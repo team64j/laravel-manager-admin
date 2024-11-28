@@ -68,9 +68,9 @@ export default {
 
     if (this.history) {
       watch(
-          () => this.$route['params'][this.history],
+          () => this.currentRoute['params'][this.history],
           (a, b) => {
-            a !== undefined && b !== undefined && b !== this.$route['params'][this.history] && this.get({}, [])
+            a !== undefined && b !== undefined && b !== this.currentRoute['params'][this.history] && this.get({}, [])
           }
       )
     }
@@ -83,7 +83,7 @@ export default {
   },
   computed: {
     propUrl () {
-      return this.url ?? (this.$route?.['meta']?.url || (this.$route['path'])) ?? null
+      return this.url ?? (this.currentRoute?.['meta']?.url || (this.currentRoute['path'])) ?? null
     }
   },
   methods: {
@@ -99,7 +99,7 @@ export default {
     },
     get (query, params) {
       const route = router.parse(this.propUrl)
-      query = Object.assign(route.query, query || this.$route?.['query'] || {})
+      query = Object.assign(route.query, query || this.currentRoute?.['query'] || {})
 
       this.$emit('update:props', {
         data: params,
@@ -164,7 +164,7 @@ export default {
 
       if (route) {
         if (typeof route === 'object') {
-          router.to({
+          this.$emit('action', 'pushRouter', {
             ...route,
             params: item
           })
@@ -487,7 +487,7 @@ export default {
 
       if (this.propUrl) {
         this.filterTimer = setTimeout(() => {
-          const query = Object.assign({}, this.$route['query'] || {})
+          const query = Object.assign({}, this.currentRoute['query'] || {})
           if (value !== '') {
             query[name] = value
           } else {
