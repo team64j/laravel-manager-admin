@@ -88,7 +88,10 @@ export default {
       }
 
       attrs.key = data.model || data.component.name || ''
-      attrs.currentRoute = props.currentRoute
+
+      if (component.props?.['currentRoute']) {
+        attrs.currentRoute = props.currentRoute ?? data.currentRoute
+      }
 
       if (attrs.key === 'data') {
         attrs.modelValue = props.data

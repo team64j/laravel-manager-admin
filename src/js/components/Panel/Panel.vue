@@ -44,7 +44,8 @@ export default {
     history: [Boolean, String],
     rerender: Boolean,
     contextMenu: Object,
-    view: [String, Array]
+    view: [String, Array],
+    currentRoute: Object
   },
   data () {
     const key = `panel.` + this.id.toLowerCase()
@@ -209,10 +210,7 @@ export default {
       }
 
       if (item[key]?.component) {
-        return h(
-            this.getComponent(item[key]),
-            this.getComponentAttributes(item[key])
-        )
+        return this.getComponent(item[key])
       } else if (column.component) {
         const component = structuredClone(toRaw(column.component))
 
@@ -220,10 +218,7 @@ export default {
           component.attrs.value = item[component.attrs['keyValue']]
         }
 
-        return h(
-            this.getComponent(component),
-            this.getComponentAttributes(component)
-        )
+        return this.getComponent(component)
       }
 
       const slots = []
@@ -300,11 +295,14 @@ export default {
       return value
     },
     getComponent (data) {
-      return this.$root.$.appContext.components[data.component]
-    },
-    getComponentAttributes (data) {
+      const component = this.$root.$.appContext.components[data.component]
+
       const attrs = reactive({ ...(data.attrs || {}) })
       attrs.key = data.model
+
+      if (component.props?.['currentRoute']) {
+        attrs.currentRoute = this.currentRoute
+      }
 
       if (this.modelValue?.[data.model] !== undefined) {
         attrs.modelValue = this.modelValue[data.model]
@@ -319,7 +317,10 @@ export default {
 
       attrs['onAction'] = (...args) => this.$emit('action', ...args)
 
-      return attrs
+      return h(
+          component,
+          attrs
+      )
     },
     sortable (data) {
       const draggable = data?.draggable || this.draggable

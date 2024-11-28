@@ -7,6 +7,7 @@ import Component from '../components/Layout/Component.vue'
 export default {
   name: 'DefaultPage',
   components: { Component },
+  props: ['currentRoute'],
   setup (props, { emit }) {
     const instance = getCurrentInstance()['ctx']
 
@@ -193,7 +194,7 @@ export default {
 
 <template>
   <div class="app-page__default w-full h-full flex flex-col overflow-auto">
-    <Component v-if="loaded" v-bind="data"/>
+    <Component v-if="loaded" v-bind="data" :currentRoute="currentRoute"/>
     <div v-else class="flex items-center justify-center grow">
       <div
           class="inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500"/>

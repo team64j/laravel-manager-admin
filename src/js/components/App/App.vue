@@ -17,11 +17,8 @@ import('./App.css')
 export default {
   name: 'App',
   computed: {
-    route () {
+    currentRoute () {
       return router.currentRoute.value
-    },
-    Component () {
-      return Component
     },
     store () {
       return store
@@ -345,21 +342,21 @@ export default {
        :class="{ 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
     <template v-if="layout">
       <div id="app-slot-top" class="grow-0 shrink-0">
-        <component :is="Component" :currentRoute="route" :layout="this.layout.find(i => i.slot === 'top')"
+        <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'top')"
                    @action="action"/>
       </div>
       <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div class="grow flex flex-row overflow-hidden">
           <div ref="sidebar" id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
                :style="{ width: sidebarWidth + `rem` }">
-            <component :is="Component" :currentRoute="route" :layout="this.layout.find(i => i.slot === 'sidebar')"
+            <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'sidebar')"
                        @action="action"/>
           </div>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
             <div/>
           </div>
           <div id="app-slot-main" class="grow flex flex-col overflow-hidden app-main">
-            <global-tabs @action="action"/>
+            <global-tabs :currentRoute="currentRoute" @action="action"/>
           </div>
         </div>
       </div>

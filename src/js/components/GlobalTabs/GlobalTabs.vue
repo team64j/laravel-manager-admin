@@ -16,6 +16,9 @@ export default {
       this.addTab(route)
     }
   },
+  props: {
+    currentRoute: Object
+  },
   data () {
     return {
       tabs: [],
@@ -170,6 +173,7 @@ export default {
           <component v-if="!slot.route?.meta?.['isIframe']"
                      :is="slot.Component"
                      :key="$router.key(slot.route)"
+                     :currentRoute="currentRoute"
                      @action="action"/>
         </keep-alive-component>
       </router-view>
