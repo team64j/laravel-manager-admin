@@ -44,7 +44,8 @@ export default {
     history: [Boolean, String],
     rerender: Boolean,
     contextMenu: Object,
-    view: [String, Array],
+    view: String,
+    views: [Object, Array],
     currentRoute: Object
   },
   data () {
@@ -59,6 +60,7 @@ export default {
       showContextMenu: false,
       dataContextMenu: [],
       classContextMenu: null,
+      propView: this.view
     }
   },
   mounted () {
@@ -613,15 +615,29 @@ export default {
           router.to(route)
         }
       }
+    },
+    clickView (i) {
+      this.propView = i.key
     }
   }
 }
 </script>
 
 <template>
-  <div class="app-panel" :class="{ ['app-panel__view-' + this.view]: this.view }">
+  <div class="app-panel" :class="{ ['app-panel__view-' + this.propView]: this.propView }">
     <div v-if="$slots['top']">
       <slot name="top"/>
+    </div>
+
+    <div v-if="views" class="flex justify-end px-5 pb-2">
+      <button v-for="i in views"
+              type="button"
+              :class="{ 'btn-blue': this.propView === i.key }"
+              class="btn-sm ml-1 inline-flex items-center"
+              @click="clickView(i)">
+        <i v-if="i.icon" :class="i.icon" class="mr-1"/>
+        <span>{{ i.value }}</span>
+      </button>
     </div>
 
     <div v-if="data" class="app-panel__data" ref="data">

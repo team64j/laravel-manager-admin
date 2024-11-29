@@ -38,7 +38,7 @@ export default {
       <slot name="title"/>
     </div>
 
-    <div class="flex grow">
+    <div class="flex grow overflow-auto">
       <div v-if="$slots['sidebar']" class="app-main__sidebar">
         <div class="app-main__resizer" ref="resizer" @mousedown="onMousedownResizer"/>
         <slot name="sidebar"/>

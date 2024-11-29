@@ -11,7 +11,7 @@
     @apply flex bg-white/5 cursor-grab active:cursor-grabbing
 }
 .app-modal__main {
-    @apply grow flex
+    @apply grow flex overflow-auto
 }
 .app-modal__footer {
     @apply flex
