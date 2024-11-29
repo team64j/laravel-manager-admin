@@ -295,7 +295,8 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
-  smallTabs: Boolean
+  smallTabs: Boolean,
+  currentRoute: Object
 })
 const slots = defineSlots()
 const emit = defineEmits(['action', 'update:props'])
@@ -319,11 +320,11 @@ const classes = computed(() => [
 
 if (props.history) {
   if (typeof props.history === 'string') {
-    index.value = props.data.findIndex(i => i.id === router.currentRoute.value.params[props.history])
+    index.value = props.data.findIndex(i => i.id === props.currentRoute.params[props.history])
     props.data.forEach(i => i.active = i.render = i.id === index.value)
 
     watch(
-        () => router.currentRoute.value.params[props.history],
+        () => props.currentRoute.params[props.history],
         a => {
           if (!a) {
             return
@@ -342,7 +343,7 @@ if (props.history) {
         return
       }
 
-      if (router.parse(i.route)['path'] === router.currentRoute.value.path) {
+      if (router.parse(i.route)['path'] === props.currentRoute.path) {
         index.value = k
       }
     })
