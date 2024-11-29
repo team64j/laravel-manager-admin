@@ -330,7 +330,7 @@ export default {
     },
     'modal:component' (event, ctx) {
       if (ctx['url']) {
-        this.$refs.modal.setUrl(ctx['url']).open()
+        this.$refs.modal.setOwner(ctx).setUrl(ctx['url']).open()
       }
     }
   }

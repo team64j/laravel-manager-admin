@@ -38,7 +38,7 @@ export default {
         if (route) {
           route = router.parse(route)
         } else {
-          route = router.currentRoute.value
+          route = props.currentRoute
         }
 
         const url = route?.['meta']?.['url'] ? route['meta']['url'] : route['path']
@@ -141,7 +141,7 @@ export default {
                 store.dispatch('set', {
                   action,
                   data: r.data?.data,
-                  route: router.currentRoute.value.path,
+                  route: props.currentRoute.path,
                   actionUpdate: Date.now()
                 })
 
@@ -159,27 +159,15 @@ export default {
           })
         })
       },
-      pushRouter (route) {
-        if (!route.matched) {
-          route = router.parse(route)
-        }
-
-        emit(
-            'action',
-            'pushRouter',
-            route,
-            router.key(router.currentRoute.value, route) && methods.submit
-        )
-      },
       inputReloadQuery (value, ctx) {
         const route = router.parse({
-          query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: value })
+          query: Object.assign({}, props.currentRoute.query, { [ctx._.vnode.key]: value })
         })
         emit('action', 'pushRouter', route, () => methods.submit({}, true))
       },
       inputChangeQuery (value, ctx) {
         const route = router.parse({
-          query: Object.assign({}, router.currentRoute.value.query, { [ctx._.vnode.key]: value })
+          query: Object.assign({}, props.currentRoute.query, { [ctx._.vnode.key]: value })
         })
         emit('action', 'pushRouter', route, () => methods.submit({}, true))
       }

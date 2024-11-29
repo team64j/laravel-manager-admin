@@ -176,6 +176,11 @@ export default {
         }
       }
     },
+    dblClickRow (event, item) {
+      if (item['dbClick']) {
+        this.$emit('action', item['dbClick'], item)
+      }
+    },
     cells (item) {
       const items = []
 
@@ -707,6 +712,7 @@ export default {
             <tbody v-if="category.route || route">
             <tr v-for="item in category.data"
                 @click="selectRow($event, item, category.route || route)"
+                @dblclick="dblClickRow($event, item)"
                 class="cursor-pointer"
                 :class="{ 'disabled' : item.disabled, 'active': item['@active'] }"
                 @contextmenu.prevent="buildContextMenu($event, category)">
@@ -722,6 +728,7 @@ export default {
               <template #item="{ element: item }">
                 <tr :class="{ 'disabled' : item.disabled, 'active': item['@active'] }"
                     @click="selectRow($event, item)"
+                    @dblclick="dblClickRow($event, item)"
                     @contextmenu.prevent="buildContextMenu($event, item)">
                   <template v-for="cell in cells(item)">
                     <component :is="cell"
@@ -734,7 +741,9 @@ export default {
             </draggable>
 
             <tbody v-else>
-            <tr v-for="item in category.data" @click="selectRow($event, item)"
+            <tr v-for="item in category.data"
+                @click="selectRow($event, item)"
+                @dblclick="dblClickRow($event, item)"
                 :class="{ 'disabled' : item.disabled, 'active': item['@active'], 'cursor-pointer': item.route }"
                 @contextmenu.prevent="buildContextMenu($event, item)">
               <component v-for="cell in cells(item)" :is="cell"/>

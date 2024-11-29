@@ -13,8 +13,10 @@ export default {
       show: false,
       title: '',
       icon: '',
-      component: null,
-      componentProps: {}
+      owner: null,
+      componentLoaded: false,
+      componentProps: {},
+      currentRoute: null
     }
   },
   methods: {
@@ -30,9 +32,16 @@ export default {
     },
     close () {
       this.show = false
+      this.owner = null
+      this.componentLoaded = false
     },
-    setTitle (title) {
-      this.title = title
+    setTitle (value) {
+      this.title = value
+
+      return this
+    },
+    setOwner (value) {
+      this.owner = value
 
       return this
     },
@@ -41,14 +50,16 @@ export default {
         route = router.parse(route)
       }
 
-      this.component = true
+      this.currentRoute = route
 
-      axios.get(route.fullPath).then(({ data }) => {
-        data.currentRoute = route
-        this.componentProps = data
-        this.icon = data.meta['icon']
-        this.title = data.meta['fullTitle'] || data.meta['title']
-      })
+      if (!this.componentLoaded) {
+        axios.get(route.fullPath).then(({ data }) => {
+          this.componentLoaded = true
+          this.componentProps = data
+          this.icon = data.meta['icon']
+          this.title = data.meta['title']
+        })
+      }
 
       return this
     },
@@ -75,6 +86,12 @@ export default {
       document.removeEventListener('mousemove', this.onMousemove)
       document.removeEventListener('mouseup', this.onMouseup)
       this.$refs.modal.classList.remove('opacity-50')
+    },
+    'modal:select' (data) {
+      if (this.owner) {
+        this.owner.model = data.value
+        this.close()
+      }
     }
   }
 }
@@ -96,7 +113,7 @@ export default {
             </button>
           </div>
           <div class="app-modal__main">
-            <Component v-if="this.component" v-bind="componentProps" @action="action"/>
+            <Component v-if="this.componentLoaded" v-bind="componentProps" :currentRoute="currentRoute" @action="action"/>
           </div>
           <div class="app-modal__footer"/>
         </div>
