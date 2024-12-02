@@ -338,15 +338,12 @@ if (props.history) {
         }
     )
   } else {
-    props.data.forEach((i, k) => {
-      if (!i.route) {
-        return
-      }
+    index.value = props.data.findIndex(i => router.parse(i?.route)['path'] === props.currentRoute.path)
 
-      if (router.parse(i.route)['path'] === props.currentRoute.path) {
-        index.value = k
-      }
-    })
+    watch(
+        () => props.currentRoute.path,
+        a => index.value = props.data.findIndex(i => router.parse(i?.route)['path'] === a)
+    )
   }
 } else if (!props.data.some((i, k) => k === index.value) && props.data[0]) {
   index.value = 0

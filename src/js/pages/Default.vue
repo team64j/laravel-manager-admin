@@ -1,5 +1,5 @@
 <script>
-import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
+import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
 import router from '../router'
 import store from '../store'
 import Component from '../components/Layout/Component.vue'
@@ -174,6 +174,11 @@ export default {
     }
 
     onMounted(methods.submit)
+
+    watch(
+        () => props.currentRoute.path,
+        () => props.currentRoute.meta['group'] && methods.submit()
+    )
 
     return { loaded, data }
   }
