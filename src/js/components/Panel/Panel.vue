@@ -629,13 +629,13 @@ export default {
       <slot name="top"/>
     </div>
 
-    <div v-if="views" class="flex justify-end px-5 pb-2">
+    <div v-if="views" class="flex justify-end px-5 pb-2" :class="{ 'border-b': this.propView === 'icon' }">
       <button v-for="i in views"
               type="button"
               :class="{ 'btn-blue': this.propView === i.key }"
               class="btn-sm ml-1 inline-flex items-center"
               @click="clickView(i)">
-        <i v-if="i.icon" :class="i.icon" class="mr-1"/>
+        <i v-if="i.icon" :class="[i.icon, i.value ? 'mr-1' : '']"/>
         <span>{{ i.value }}</span>
       </button>
     </div>
