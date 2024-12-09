@@ -92,5 +92,8 @@
     @apply hover:bg-gray-100/50 dark:hover:bg-gray-600/40
 }
 .app-tabs.app-tabs-small .app-tabs__page {
-    @apply m-0 bg-inherit
+    @apply m-0 p-0 bg-inherit
+}
+.app-tabs.app-tabs-small.app-tabs__vertical .app-tabs__rows ~ .app-tabs__page  {
+    @apply !p-0
 }
