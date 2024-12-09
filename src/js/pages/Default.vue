@@ -7,7 +7,12 @@ import Component from '../components/Layout/Component.vue'
 export default {
   name: 'DefaultPage',
   components: { Component },
-  props: ['currentRoute'],
+  props: {
+    currentRoute: {
+      type: Object,
+      default: router.currentRoute.value
+    }
+  },
   setup (props, { emit }) {
     const instance = getCurrentInstance()['ctx']
 
@@ -41,7 +46,7 @@ export default {
           route = props.currentRoute
         }
 
-        const url = route?.['meta']?.['url'] ? route['meta']['url'] : route['path']
+        const url = route?.['meta']?.['url'] ? route['meta']['url'] : route?.['path']
         const isNumericId = !isNaN(route['params']['id'] - 0) && route['params']['id'] > 0
 
         if (action === 'cancel') {
@@ -176,7 +181,7 @@ export default {
     onMounted(methods.submit)
 
     watch(
-        () => props.currentRoute.path,
+        () => props.currentRoute?.path,
         () => props.currentRoute.meta['group'] && methods.submit()
     )
 
