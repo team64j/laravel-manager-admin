@@ -1,5 +1,5 @@
 <script setup>
-import { defineOptions, defineProps, ref } from 'vue'
+import { computed, defineOptions, defineProps, ref, watch } from 'vue'
 import store from '../../store'
 import router from '../../router'
 
@@ -27,10 +27,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  navigation: {
-    type: Boolean,
-    default: true
-  },
   smallTabs: Boolean,
   currentRoute: Object
 })
@@ -43,7 +39,14 @@ const keyStorage = `tabs_` + props.id.toLowerCase()
 
 store.dispatch('set', { [keyStorage]: store.getters.get(`Session.${keyStorage}`, 0) })
 
-const index = store.getters.get(keyStorage, 0)
+const index = computed({
+  set (value) {
+    store.dispatch('set', { [keyStorage]: value })
+  },
+  get () {
+    return store.getters.get(keyStorage, 0)
+  }
+})
 
 let positionX = 0
 let scrollLeft = 0
@@ -134,13 +137,53 @@ const select = (tab, key) => {
 
   init()
 }
+
+if (props.history) {
+  if (typeof props.history === 'string') {
+    store.dispatch('set', { [keyStorage]: store.getters.get(`Session.${keyStorage}`, 0) })
+    index.value = props.data.findIndex(i => i.id === props.currentRoute.params[props.history])
+    props.data.forEach(i => i.active = i.render = i.id === index.value)
+
+    watch(
+        () => props.currentRoute.params[props.history],
+        a => {
+          if (!a) {
+            return
+          }
+
+          const key = props.data.findIndex(i => i.id === a)
+
+          if (key >= 0 && index.value !== key) {
+            index.value = key
+          }
+        }
+    )
+  } else {
+    index.value = props.data.findIndex(i => router.parse(i?.route)['path'] === props.currentRoute.path)
+
+    watch(
+        () => props.currentRoute.path,
+        a => index.value = props.data.findIndex(i => router.parse(i?.route)['path'] === a)
+    )
+  }
+} else if (!props.data.some((i, k) => k === index.value) && props.data[0]) {
+  index.value = 0
+  props.data[0].active = props.data[0].render = true
+} else {
+  props.data.forEach((i, k) => i.active = i.render = k === index.value)
+}
+
+const classes = computed(() => [
+  props.vertical ? 'app-tabs__rows__vertical' : '',
+  props.smallTabs ? 'app-tabs__rows-small' : 'app-tabs__rows-large'
+])
 </script>
 
 <template>
-  <div v-if="data.length > 1" class="app-tabs__rows">
+  <div v-if="data.length > 1" class="app-tabs__rows" :class="classes">
     <div class="app-tabs__row" ref="refRows" @mousedown="drag">
       <button v-for="(i, k) in data"
-              :class="['app-tabs__tab', k === store.getters.get(keyStorage, 0) ? 'app-tabs__tab-active' : '']"
+              :class="['app-tabs__tab', k === index ? 'app-tabs__tab-active' : '']"
               :data-tooltip="i.title"
               @click="select(i, k)">
         <i v-if="i.icon" :class="['app-tabs__tab-icon', i.icon]"/>

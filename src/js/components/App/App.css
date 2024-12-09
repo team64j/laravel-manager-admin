@@ -26,7 +26,7 @@
     @apply bg-blue-500
 }
 .app .app-sidebar {
-    @apply shrink-0 absolute lg:relative z-30 flex grow-0 w-96 h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition lg:transition-[width]
+    @apply shrink-0 absolute lg:relative z-30 flex grow-0 w-96 max-w-full lg:max-w-[75%] h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition lg:transition-[width]
 }
 .app.app-sidebar-hidden .app-sidebar {
     @apply -translate-x-full lg:!w-0 lg:translate-x-0 lg:border-0

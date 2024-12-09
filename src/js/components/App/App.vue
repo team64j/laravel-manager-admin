@@ -341,23 +341,25 @@ export default {
   <div v-if="loaded" class="app"
        :class="{ 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
     <template v-if="layout">
-      <div id="app-slot-top" class="grow-0 shrink-0">
+      <div id="app-slot-top" class="grow-0 shrink-0 z-40 shadow">
         <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'top')"
                    @action="action"/>
       </div>
       <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
-        <div class="grow flex flex-row overflow-hidden">
-          <div ref="sidebar" id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
-               :style="{ width: sidebarWidth + `rem` }">
-            <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'sidebar')"
-                       @action="action"/>
-          </div>
-          <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
-            <div/>
-          </div>
-          <div id="app-slot-main" class="grow flex flex-col overflow-hidden app-main">
-            <global-tabs :currentRoute="currentRoute" @action="action"/>
-          </div>
+        <div ref="left" id="app-slot-left" class="grow-0 shrink-0 flex-col dark">
+          <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'left')"
+                     @action="action"/>
+        </div>
+        <div ref="sidebar" id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
+             :style="{ width: sidebarWidth + `rem` }">
+          <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'sidebar')"
+                     @action="action"/>
+        </div>
+        <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
+          <div/>
+        </div>
+        <div id="app-slot-main" class="grow flex flex-col overflow-hidden app-main">
+          <global-tabs :currentRoute="currentRoute" @action="action"/>
         </div>
       </div>
 
