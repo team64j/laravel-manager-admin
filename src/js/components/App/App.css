@@ -5,7 +5,7 @@
     @apply grow flex flex-row overflow-hidden
 }
 .app .app-resizer {
-    @apply relative z-10 lg:z-30 shrink-0 w-0 cursor-col-resize hidden lg:block
+    @apply absolute right-0 top-0 bottom-0 z-10 lg:z-30 shrink-0 w-0 cursor-col-resize hidden lg:block
 }
 .app .app-resizer > div {
     @apply fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize
@@ -27,6 +27,9 @@
 }
 .app .app-sidebar {
     @apply shrink-0 absolute lg:relative z-30 flex grow-0 w-96 max-w-full lg:max-w-[75%] h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition lg:transition-[width]
+}
+.app .app-left:not(:empty) + .app-sidebar {
+    @apply left-auto
 }
 .app.app-sidebar-hidden .app-sidebar {
     @apply -translate-x-full lg:!w-0 lg:translate-x-0 lg:border-0

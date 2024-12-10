@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineOptions, defineProps, ref, watch } from 'vue'
+import { computed, defineOptions, defineProps, nextTick, ref, watch } from 'vue'
 import store from '../../store'
 import router from '../../router'
 
@@ -26,6 +26,7 @@ const props = defineProps({
     default: false
   },
   smallTabs: Boolean,
+  hideable: Boolean,
   currentRoute: Object
 })
 
@@ -106,6 +107,10 @@ const init = () => {
 const select = (tab, key) => {
   if (dragging.value) {
     return
+  }
+
+  if (props.hideable) {
+    emit('action', 'collapse', tab.active)
   }
 
   props.data.forEach((i, k) => i.active = i.render = k === key)
@@ -191,7 +196,7 @@ const classes = computed(() => [
   </div>
 </template>
 
-<style scoped>
+<style>
 .app-tabs__rows {
   @apply overflow-hidden relative h-11 w-full grow-0 shrink-0
 }
@@ -230,6 +235,9 @@ const classes = computed(() => [
 }
 .app-tabs__rows.app-tabs__rows-small .app-tabs__tab {
   @apply my-[2px] mx-[2px] h-8 w-10
+}
+.app-tabs__rows.app-tabs__rows-small.app-tabs__rows__vertical .app-tabs__tab {
+  @apply h-10
 }
 .app-tabs__rows.app-tabs__rows-small .app-tabs__tab:not(.app-tabs__tab-active):hover {
   @apply hover:bg-gray-100/50 dark:hover:bg-gray-600/40

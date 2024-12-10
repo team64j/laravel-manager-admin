@@ -32,6 +32,7 @@ const props = defineProps({
     default: true
   },
   smallTabs: Boolean,
+  hideable: Boolean,
   currentRoute: Object
 })
 
@@ -43,10 +44,14 @@ const keyStorage = `tabs_` + props.id.toLowerCase()
 
 const index = computed(() => store.getters.get(keyStorage, 0))
 
-const classes = computed(() => [
-  props.navigation ? 'app-tabs__with-navigation' : '',
-  props.data.length === 1 ? 'app-tabs__without-rows' : ''
-])
+const classes = computed(() => {
+  return {
+    'app-tabs__with-navigation': props.navigation,
+    'app-tabs__without-rows': props.data.length === 1,
+    'app-tabs-small': props.smallTabs,
+    '!flex-row': props.vertical
+  }
+})
 
 const action = (...args) => {
   emit('action', ...args)
@@ -73,7 +78,7 @@ const action = (...args) => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .app-tabs__vertical {
   @apply flex-row p-0 h-auto self-stretch overflow-visible
 }
