@@ -85,10 +85,10 @@ const init = () => {
   refRows.value.querySelectorAll('.app-tabs__tab').forEach((t, i) => {
     t.styles = getComputedStyle(t)
 
-    if (i <= index) {
+    if (i <= index.value) {
       width += t.offsetWidth + parseFloat(t.styles.marginLeft) + parseFloat(t.styles.marginRight)
 
-      if (i < index) {
+      if (i < index.value) {
         right += t.offsetWidth + parseFloat(t.styles.marginLeft)
       }
     }
