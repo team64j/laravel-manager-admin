@@ -49,6 +49,12 @@ export default {
     slotLeft () {
       return this.layout.find(i => i.slot === 'left')
     },
+    slotLeftTop () {
+      return this.layout.find(i => i.slot === 'left.top')
+    },
+    slotLeftBottom () {
+      return this.layout.find(i => i.slot === 'left.bottom')
+    },
     slotSidebar () {
       return this.layout.find(i => i.slot === 'sidebar')
     }
@@ -351,14 +357,25 @@ export default {
 
 <template>
   <div v-if="loaded" class="app"
-       :class="{ 'app-mobile': isMobile, 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
+       :class="{
+        'app-mobile': isMobile,
+        'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
+      }">
     <template v-if="layout">
       <div v-if="slotTop" id="app-slot-top" class="grow-0 shrink-0 z-40 shadow">
         <Component :currentRoute="currentRoute" :layout="slotTop" @action="action"/>
       </div>
       <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
-        <div v-if="slotLeft" ref="left" id="app-slot-left" class="grow-0 shrink-0 flex-col z-30 bg-gray-800 app-left dark">
-          <Component :currentRoute="currentRoute" :layout="slotLeft" @action="action"/>
+        <div v-if="slotLeft || slotLeftTop || slotLeftBottom" class="grow-0 shrink-0 flex flex-col justify-between z-30 bg-gray-800 app-left dark">
+          <div class="grow-0">
+            <Component v-if="slotLeftTop" :currentRoute="currentRoute" :layout="slotLeftTop" @action="action"/>
+          </div>
+          <div class="grow flex items-center">
+            <Component v-if="slotLeft" :currentRoute="currentRoute" :layout="slotLeft" @action="action"/>
+          </div>
+          <div class="grow-0">
+            <Component v-if="slotLeftBottom" :currentRoute="currentRoute" :layout="slotLeftBottom" @action="action"/>
+          </div>
         </div>
         <div v-if="slotSidebar" ref="sidebar" id="app-slot-sidebar"
              class="relative grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"

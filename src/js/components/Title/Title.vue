@@ -1,5 +1,5 @@
 <script>
-import { h, reactive, Transition } from 'vue'
+import { computed, h, reactive, Transition } from 'vue'
 import router from '../../router'
 
 export default {
@@ -14,14 +14,14 @@ export default {
   },
   setup (props) {
     const route = router.currentRoute.value
-    const value = props.modelValue ?? props.title ?? route?.meta?.['title']
+    const title = computed(() => props.modelValue ?? props.title ?? router.currentRoute.value?.['meta']?.['title'])
     const id = props.id || route.params['id'] && parseInt(route.params['id'].toString()) || undefined
     const data = reactive({
       show: false
     })
 
     return () => {
-      return value !== undefined && (h('div', {
+      return title.value !== undefined && (h('div', {
         class: 'app-title w-full p-4'
       }, [
         h('h1', {
@@ -34,8 +34,9 @@ export default {
             ]
           }),
           h('span', {
-            class: 'text-2xl h-8 font-bold truncate'
-          }, value),
+            class: 'text-2xl h-8 font-bold truncate',
+            innerText: title.value
+          }),
           id && h('span', {
             class: 'ml-2'
           }, `(${id})`),

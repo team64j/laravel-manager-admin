@@ -273,7 +273,7 @@ const classes = computed(() => [
   @apply hidden
 }
 .app-tabs__rows.app-tabs__rows-small {
-  @apply p-0 px-0.5 h-[2.4rem] bg-slate-100 dark:bg-gray-800
+  @apply p-0 px-0.5 bg-slate-100 dark:bg-gray-800
 }
 .app-tabs__rows.app-tabs__rows-small .app-tabs__row {
   @apply mx-0
