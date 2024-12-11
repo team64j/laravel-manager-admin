@@ -87,7 +87,7 @@
     @apply -rotate-90
 }
 .app-global-menu.app-global-menu--active > ul > li > ul > li > .app-global-menu__loading .app-global-menu__toggle {
-    @apply inline-flex -ml-2 lg:inline-flex lg:ml-2
+    @apply inline-flex -ml-2 lg:inline-flex lg:ml-0
 }
 .app-global-menu.app-global-menu--active > ul > li > ul > li > .app-global-menu__loading .app-global-menu__icon {
     @apply hidden lg:inline-flex

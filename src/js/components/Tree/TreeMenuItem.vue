@@ -2,7 +2,7 @@
 import { nextTick, reactive } from 'vue'
 import router from '../../router'
 
-const $props = defineProps(['icon', 'loader', 'click', 'to', 'position', 'actions', 'settings'])
+const $props = defineProps(['icon', 'title', 'loader', 'click', 'to', 'position', 'actions', 'settings'])
 
 const $emit = defineEmits(['action'])
 
@@ -69,6 +69,7 @@ function onClickItem (action) {
     <button
         type="button"
         v-if="icon"
+        :data-tooltip="title"
         class="app-tree__menu__item"
         @mousedown="onClickButton"
         @blur="onBlurButton">

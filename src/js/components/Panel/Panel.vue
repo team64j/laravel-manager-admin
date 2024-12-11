@@ -710,13 +710,14 @@ export default {
           <tbody v-if="category.name && category.data.length" class="app-panel__category">
           <tr class="cursor-pointer hover:text-blue-500"
               :class="{ closed: this.hasClosedCategory(category) }"
-              @mousedown="toggleCategory(category)"
+              @dblclick="toggleCategory(category)"
               @contextmenu.prevent="buildContextMenu($event, category)">
             <td class="px-4 pt-3 pb-1 border-b-2 font-bold"
                 :colspan="columns?.length || Object.values(category.data[0]).length">
-              <span class="toggle">
+              <span class="toggle select-none">
                 <i :class="[!this.hasClosedCategory(category) ? 'fa-square-minus' : 'fa-square-plus']"
-                   class="far fa-fw mr-1"/>
+                   class="far fa-fw mr-1"
+                   @mousedown.stop="toggleCategory(category)"/>
                 <span>{{ category.name }}</span>
                 <span v-if="category.id" class="ml-1">({{ category.id }})</span>
               </span>
