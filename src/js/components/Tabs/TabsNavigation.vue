@@ -109,15 +109,6 @@ const select = (tab, key) => {
     return
   }
 
-  if (props.hideable) {
-    emit('action', 'collapse', tab.active)
-  }
-
-  props.data.forEach((i, k) => i.active = i.render = k === key)
-
-  store.dispatch('set', { [`Session.${keyStorage}`]: key })
-  store.dispatch('set', { [keyStorage]: key })
-
   if (props.history) {
     if (typeof props.history === 'string') {
       emit('action', 'pushRouter', {
@@ -136,6 +127,18 @@ const select = (tab, key) => {
         }
       })
     }
+  }
+
+  store.dispatch('set', { [`Session.${keyStorage}`]: key })
+  store.dispatch('set', { [keyStorage]: key })
+
+  if (props.hideable) {
+    const active = !tab.active
+    props.data.forEach(i => i.active = false)
+    tab.active = active
+    emit('action', 'collapse', !tab.active)
+  } else {
+    props.data.forEach((i, k) => i.active = i.render = k === key)
   }
 
   init()
@@ -237,7 +240,7 @@ const classes = computed(() => [
   @apply my-[2px] mx-[2px] h-8 w-10
 }
 .app-tabs__rows.app-tabs__rows-small.app-tabs__rows__vertical .app-tabs__tab {
-  @apply h-10
+  @apply h-8
 }
 .app-tabs__rows.app-tabs__rows-small .app-tabs__tab:not(.app-tabs__tab-active):hover {
   @apply hover:bg-gray-100/50 dark:hover:bg-gray-600/40

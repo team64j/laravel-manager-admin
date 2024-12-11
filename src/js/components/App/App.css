@@ -20,16 +20,22 @@
     @apply w-1.5 -ml-0.5
 }
 .app .app-resizer::after {
-    @apply absolute h-full w-0.5 transition duration-100
+    @apply absolute h-full w-1 transition duration-100
 }
 .app .app-resizer:hover::after {
-    @apply bg-blue-500
+    @apply bg-blue-500/50
 }
 .app .app-sidebar {
-    @apply shrink-0 absolute lg:relative z-30 flex grow-0 w-96 max-w-full lg:max-w-[75%] h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition lg:transition-[width]
+    @apply shrink-0 absolute lg:relative z-20 flex grow-0 h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition lg:transition-[width]
 }
-.app .app-left:not(:empty) + .app-sidebar {
-    @apply left-auto
+.app.app-mobile .app-sidebar {
+    @apply !w-full
+}
+.app .app-left + .app-sidebar {
+    @apply left-12 lg:left-0 max-w-[calc(100%_-_3rem)]
+}
+.app.app-mobile .app-left + .app-sidebar {
+    @apply !w-full
 }
 .app.app-sidebar-hidden .app-sidebar {
     @apply -translate-x-full lg:!w-0 lg:translate-x-0 lg:border-0
@@ -44,7 +50,7 @@
     @apply hidden
 }
 .app .app-main::after {
-    @apply lg:hidden content-[""] z-20 fixed left-0 top-14 right-0 bottom-0
+    @apply lg:hidden content-[""] z-10 fixed left-0 top-14 right-0 bottom-0
 }
 .app.app-sidebar-hidden .app-main::after {
     @apply hidden

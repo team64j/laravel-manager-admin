@@ -11,7 +11,7 @@
     @apply overflow-y-auto overflow-x-hidden p-1 h-full
 }
 .app-tree__context-menu {
-    @apply fixed left-0 top-0 min-w-64 py-1 bg-white dark:text-gray-100 dark:bg-gray-750 rounded shadow-2xl
+    @apply fixed left-0 top-0 min-w-64 py-1 bg-white dark:text-gray-100 dark:bg-gray-700 rounded shadow-2xl
 }
 .app-tree__context-menu.app-tree__context-menu__position-left {
     @apply left-0 right-auto
@@ -32,7 +32,7 @@
     @apply mr-1
 }
 .app-tree__menu {
-    @apply grow-0 flex relative z-10 p-0.5 border-b
+    @apply grow-0 flex relative z-10 px-0.5 py-1.5 border-b border-gray-800
 }
 .app-tree__menu-item {
     @apply relative

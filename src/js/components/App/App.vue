@@ -16,14 +16,6 @@ import('./App.css')
 
 export default {
   name: 'App',
-  computed: {
-    currentRoute () {
-      return router.currentRoute.value
-    },
-    store () {
-      return store
-    }
-  },
   components: {
     Logo,
     Notifications,
@@ -42,6 +34,23 @@ export default {
       loaded: false,
       sidebarWidth: this.$store.getters.get('Storage.sidebarWidth', 26),
       isMobile: this.calcIsMobile()
+    }
+  },
+  computed: {
+    currentRoute () {
+      return router.currentRoute.value
+    },
+    store () {
+      return store
+    },
+    slotTop () {
+      return this.layout.find(i => i.slot === 'top')
+    },
+    slotLeft () {
+      return this.layout.find(i => i.slot === 'left')
+    },
+    slotSidebar () {
+      return this.layout.find(i => i.slot === 'sidebar')
     }
   },
   watch: {
@@ -293,7 +302,7 @@ export default {
     },
     splitterMove (event) {
       this.sidebarWidth = this.convertPixelsToRem(
-          Math.min(Math.max(this.w - (this.x - event.clientX), 64), window.innerWidth * .64))
+          Math.min(Math.max(this.w - (this.x - event.clientX), 64), window.innerWidth * .5))
       this.$store.dispatch('Storage/set', { sidebarWidth: this.sidebarWidth })
     },
     splitterUp (event) {
@@ -342,25 +351,21 @@ export default {
 
 <template>
   <div v-if="loaded" class="app"
-       :class="{ 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
+       :class="{ 'app-mobile': isMobile, 'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true) }">
     <template v-if="layout">
-      <div id="app-slot-top" class="grow-0 shrink-0 z-40 shadow">
-        <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'top')"
-                   @action="action"/>
+      <div v-if="slotTop" id="app-slot-top" class="grow-0 shrink-0 z-40 shadow">
+        <Component :currentRoute="currentRoute" :layout="slotTop" @action="action"/>
       </div>
       <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
-        <div ref="left" id="app-slot-left" class="grow-0 shrink-0 flex-col z-40 bg-gray-800 app-left dark">
-          <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'left')"
-                     @action="action"/>
+        <div v-if="slotLeft" ref="left" id="app-slot-left" class="grow-0 shrink-0 flex-col z-30 bg-gray-800 app-left dark">
+          <Component :currentRoute="currentRoute" :layout="slotLeft" @action="action"/>
         </div>
-        <div class="relative grow-0 shrink-0">
-          <div ref="sidebar" id="app-slot-sidebar" class="grow-0 shrink-0 flex-col app-sidebar dark"
-               :style="{ maxWidth: sidebarWidth + `rem` }">
-            <Component :currentRoute="currentRoute" :layout="this.layout.find(i => i.slot === 'sidebar')"
-                       @action="action"/>
-            <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
-              <div/>
-            </div>
+        <div v-if="slotSidebar" ref="sidebar" id="app-slot-sidebar"
+             class="relative grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"
+             :style="{ width: sidebarWidth + `rem` }">
+          <Component :currentRoute="currentRoute" :layout="slotSidebar" @action="action"/>
+          <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
+            <div/>
           </div>
         </div>
         <div id="app-slot-main" class="grow flex flex-col overflow-hidden app-main">
