@@ -17,7 +17,20 @@ let enterTimer = 0
 
 const methods = {
   onClick (event, data) {
-    instance.proxy.$el.classList.toggle('app-main-menu__active')
+    if (instance.proxy.$root.isMobile) {
+      if (event.currentTarget.classList.contains('app-main-menu__hover')) {
+        instance.proxy.$el.classList.add('app-main-menu__active')
+      } else {
+        instance.proxy.$el.classList.remove('app-main-menu__active')
+      }
+    } else {
+      instance.proxy.$el.classList.toggle('app-main-menu__active')
+    }
+
+    if (event.target.tagName === 'I' && data['url']) {
+      methods.loadData(data['url'], data)
+      return
+    }
 
     if (data['to']) {
       instance.proxy.$el.classList.remove('app-main-menu__active')
@@ -119,13 +132,13 @@ onMounted(() => {
 
 <style>
 .app-main-menu {
-  @apply flex cursor-default p-1
+  @apply relative flex cursor-default p-1
 }
 .app-main-menu li {
   @apply inline-flex select-none
 }
 .app-main-menu li[data-level="1"] {
-  @apply relative
+  @apply lg:relative
 }
 .app-main-menu li > div {
   @apply flex w-full justify-between items-center px-4 transition
@@ -140,10 +153,10 @@ onMounted(() => {
   @apply bg-gray-600
 }
 .app-main-menu li ul {
-  @apply absolute flex flex-col opacity-0 invisible top-full left-0 w-80 rounded py-1 bg-gray-700 shadow-2xl transition-all
+  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-10 lg:top-full left-0 w-[calc(100vw_-_0.5rem)] lg:w-80 h-[calc(100vh_-_3rem)] lg:h-auto m-1 lg:m-0 rounded py-1 bg-gray-700 shadow-2xl transition-all
 }
 .app-main-menu li[data-level="2"] ul {
-  @apply left-full top-0 overflow-hidden overflow-y-auto max-h-[calc(100vh_-_4rem)]
+  @apply z-10 left-0 lg:left-full top-10 lg:top-0 overflow-hidden overflow-y-auto h-[calc(100vh_-_3rem)] lg:h-auto
 }
 .app-position-end .app-main-menu li[data-level="1"] ul {
   @apply left-auto right-0

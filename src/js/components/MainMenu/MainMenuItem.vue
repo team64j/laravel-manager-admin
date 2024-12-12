@@ -43,7 +43,8 @@ if (props['data']['values']) {
     </template>
 
     <div v-else :data-tooltip="data['title']">
-      <span :class="{ 'w-8': level > 1, 'mr-2': data['name'] }" class="grow-0 shrink-0 flex items-center">
+      <span :class="{ 'w-8': level > 1, 'lg:mr-2': data['name'] && level === 1 }"
+            class="grow-0 shrink-0 flex items-center">
         <i v-if="data['loading']"
            class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
 
@@ -53,7 +54,7 @@ if (props['data']['values']) {
         <i v-else-if="data['icon']" :class="data['icon']" class="fa-fw !leading-[0]"/>
       </span>
 
-      <span :class="[level > 1 ? 'py-1.5' : 'py-2.5']" class="grow truncate">
+      <span :class="[level > 1 ? 'py-1.5' : 'py-2.5 hidden lg:!block']" class="grow truncate">
         {{ data['name'] }}
       </span>
 
@@ -61,7 +62,8 @@ if (props['data']['values']) {
 
       <span v-if="data['id'] !== undefined" class="text-sm opacity-70 ml-1" v-html="data['id']"/>
 
-      <span v-if="data['data'] || data['url']" class="px-2 -mr-4 h-full inline-flex items-center">
+      <span v-if="data['data'] || data['url']" :class="[level > 1 ? 'inline-flex' : 'hidden lg:!inline-flex']"
+            class="px-2 -mr-4 h-full items-center">
         <i class="fa fa-fw w-5 !text-sm" :class="[ level === 1 ? 'fa-angle-down' : 'fa-angle-right']"/>
       </span>
     </div>
