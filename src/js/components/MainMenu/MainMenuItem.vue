@@ -1,9 +1,21 @@
 <script setup>
 import { getCurrentInstance } from 'vue'
+import store from '../../store'
 
 const instance = getCurrentInstance()
 const props = defineProps(['data', 'level'])
 const emit = defineEmits(['action'])
+
+if (props['data']['values']) {
+  const value = store.getters.get('Storage.root.' + props['data']['key'],
+      props['data']['value'] ?? props['data']['values'][0]['value'])
+
+  for (const i of props['data']['values']) {
+    if (i['value'] === value) {
+      Object.assign(props['data'], i)
+    }
+  }
+}
 </script>
 
 <template>
@@ -30,7 +42,7 @@ const emit = defineEmits(['action'])
       </div>
     </template>
 
-    <div v-else>
+    <div v-else :data-tooltip="data['title']">
       <span :class="{ 'w-8': level > 1, 'mr-2': data['name'] }" class="grow-0 shrink-0 flex items-center">
         <i v-if="data['loading']"
            class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
@@ -44,6 +56,10 @@ const emit = defineEmits(['action'])
       <span :class="[level > 1 ? 'py-1.5' : 'py-2.5']" class="grow truncate">
         {{ data['name'] }}
       </span>
+
+      <i v-if="data['locked']" class="fa fa-lock ml-1 text-sm text-rose-500"/>
+
+      <span v-if="data['id'] !== undefined" class="text-sm opacity-70 ml-1" v-html="data['id']"/>
 
       <span v-if="data['data'] || data['url']" class="px-2 -mr-4 h-full inline-flex items-center">
         <i class="fa fa-fw w-5 !text-sm" :class="[ level === 1 ? 'fa-angle-down' : 'fa-angle-right']"/>

@@ -2,6 +2,7 @@
 import MainMenuItem from './MainMenuItem.vue'
 import { getCurrentInstance, onMounted } from 'vue'
 import router from '../../router'
+import store from '../../store'
 
 defineOptions({
   name: 'MainMenu',
@@ -26,6 +27,17 @@ const methods = {
       window.open(data['href'])
     } else if (data['url']) {
       methods.loadData(data['url'], data)
+    } else if (data['values']) {
+      const value = store.getters['get']('Storage.root.' + data['key'])
+
+      for (let i in data['values']) {
+        i = parseInt(i)
+        if (value === data['values'][i].value) {
+          const item = data['values'][i + 1] ?? data['values'][0]
+          store.dispatch('set', { ['Storage.root.' + data['key']]: item.value })
+          break
+        }
+      }
     }
   },
   onEnter (event, data) {

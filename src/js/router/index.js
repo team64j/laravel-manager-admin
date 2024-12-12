@@ -127,6 +127,7 @@ router.parse = (route) => {
   }
 
   if (route.path && route.params) {
+    route.params = { ...route.params }
     const query = route.path.split('?')[1] ?? null
 
     if (query) {
@@ -154,8 +155,16 @@ router.parse = (route) => {
         if (route?.query?.[k]) {
           route.query[k] = route.query[k].replace(re, v)
         }
+
+        //delete route.params[k]
       }
     })
+
+    // for(const i in route.params) {
+    //   if (route.params[i] === null) {
+    //     delete route.params[i]
+    //   }
+    // }
   }
 
   return router.resolve(route)

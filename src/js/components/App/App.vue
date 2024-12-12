@@ -368,7 +368,7 @@ export default {
         'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
       }">
     <template v-if="layout">
-      <div v-if="slotTop || slotTopLeft || slotTopRight" class="grow-0 shrink-0 flex justify-between z-40 shadow">
+      <div v-if="slotTop || slotTopLeft || slotTopRight" class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark">
         <div class="grow-0 flex">
           <Component v-if="slotTopLeft" :currentRoute="currentRoute" :layout="slotTopLeft" @action="action"/>
         </div>
