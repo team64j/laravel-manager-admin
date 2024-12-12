@@ -46,6 +46,12 @@ export default {
     slotTop () {
       return this.layout.find(i => i.slot === 'top')
     },
+    slotTopLeft () {
+      return this.layout.find(i => i.slot === 'top.left')
+    },
+    slotTopRight () {
+      return this.layout.find(i => i.slot === 'top.right')
+    },
     slotLeft () {
       return this.layout.find(i => i.slot === 'left')
     },
@@ -362,18 +368,27 @@ export default {
         'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
       }">
     <template v-if="layout">
-      <div v-if="slotTop" id="app-slot-top" class="grow-0 shrink-0 z-40 shadow">
-        <Component :currentRoute="currentRoute" :layout="slotTop" @action="action"/>
+      <div v-if="slotTop || slotTopLeft || slotTopRight" class="grow-0 shrink-0 flex justify-between z-40 shadow">
+        <div class="grow-0 flex">
+          <Component v-if="slotTopLeft" :currentRoute="currentRoute" :layout="slotTopLeft" @action="action"/>
+        </div>
+        <div class="grow flex justify-center">
+          <Component v-if="slotTop" :currentRoute="currentRoute" :layout="slotTop" @action="action"/>
+        </div>
+        <div class="grow-0 flex app-position-end">
+          <Component v-if="slotTopRight" :currentRoute="currentRoute" :layout="slotTopRight" @action="action"/>
+        </div>
       </div>
       <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
-        <div v-if="slotLeft || slotLeftTop || slotLeftBottom" class="grow-0 shrink-0 flex flex-col justify-between z-30 bg-gray-800 app-left dark">
-          <div class="grow-0">
+        <div v-if="slotLeft || slotLeftTop || slotLeftBottom"
+             class="grow-0 shrink-0 flex flex-col justify-between z-30 bg-gray-800 app-left dark">
+          <div class="grow-0 flex">
             <Component v-if="slotLeftTop" :currentRoute="currentRoute" :layout="slotLeftTop" @action="action"/>
           </div>
           <div class="grow flex items-center">
             <Component v-if="slotLeft" :currentRoute="currentRoute" :layout="slotLeft" @action="action"/>
           </div>
-          <div class="grow-0">
+          <div class="grow-0 flex app-position-end">
             <Component v-if="slotLeftBottom" :currentRoute="currentRoute" :layout="slotLeftBottom" @action="action"/>
           </div>
         </div>
