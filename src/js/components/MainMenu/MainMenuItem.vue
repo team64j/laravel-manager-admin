@@ -27,7 +27,7 @@ if (props['data']['values']) {
       @mouseleave="emit('action', 'onOut', $event, data)"
       @click.stop="emit('action', 'onClick', $event, data)">
 
-    <div v-if="data['prev'] || data['next']" class="border-t py-1 !bg-inherit">
+    <div v-if="data['prev'] || data['next']" class="py-1 -mb-1 !bg-inherit">
       <button type="button" class="-ml-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
               @click.stop="emit('action', 'onNav', $event, data['prev'], instance.parent.props)">
@@ -49,7 +49,7 @@ if (props['data']['values']) {
         <i v-if="data['loading']"
            class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
 
-        <img v-else-if="/^https?:\/\/?/.test(data['icon'])" :src="data['icon']" class="block min-w-8 min-h-8 w-8 h-8"
+        <img v-else-if="/^https?:\/\/?/.test(data['icon'])" :src="data['icon']" class="block min-w-8 min-h-8 w-8 h-8 -mx-1.5 lg:-mx-2"
              alt=""/>
 
         <i v-else-if="data['icon']" :class="data['icon']" class="fa-fw !leading-[0]"/>
@@ -71,7 +71,7 @@ if (props['data']['values']) {
 
     <ul v-if="data['data']">
       <li v-if="level > 1" :data-level="level + 1" class="lg:!hidden sticky top-0 !bg-inherit" @click.stop="data['data'] = null">
-        <div>
+        <div class="!bg-inherit -mt-1">
           <span class="grow py-1.5 text-center">
             <i class="fa fa-arrow-left"/>&nbsp;
           </span>

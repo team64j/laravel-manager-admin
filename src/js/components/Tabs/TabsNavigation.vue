@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineOptions, defineProps, nextTick, ref, watch } from 'vue'
+import { computed, defineOptions, defineProps, ref, watch } from 'vue'
 import store from '../../store'
 import router from '../../router'
 
@@ -83,7 +83,7 @@ const init = () => {
   let right = 0,
       width = 0
 
-  refRows.value.querySelectorAll('.app-tabs__tab').forEach((t, i) => {
+  refRows.value.querySelectorAll('button').forEach((t, i) => {
     t.styles = getComputedStyle(t)
 
     if (i <= index.value) {
@@ -178,29 +178,39 @@ if (props.history) {
 } else {
   props.data.forEach((i, k) => i.active = i.render = k === index.value)
 }
-
-const classes = computed(() => [
-  props.vertical ? 'app-tabs__rows__vertical' : '',
-  props.smallTabs ? 'app-tabs__rows-small' : 'app-tabs__rows-large'
-])
 </script>
 
 <template>
-  <div v-if="data.length > 1" class="app-tabs__rows" :class="classes">
-    <div class="app-tabs__row" ref="refRows" @mousedown="drag">
-      <button v-for="(i, k) in data"
-              :class="['app-tabs__tab', k === index ? 'app-tabs__tab-active' : '']"
-              :data-tooltip="i.title"
-              @click="select(i, k)">
-        <i v-if="i.icon" :class="['app-tabs__tab-icon', i.icon]"/>
-        <span v-if="i.name">{{ i.name }}</span>
-      </button>
-    </div>
+  <div v-if="data.length > 1" class="app-tabs-navigation" :class="{
+          'app-tabs__rows__vertical': props.vertical,
+          'app-tabs__rows-small': props.smallTabs
+       }"
+       ref="refRows"
+       @mousedown="drag">
+    <button v-for="(i, k) in data"
+            :class="{ 'app-tabs-navigation__active': k === index }"
+            :data-tooltip="i.title"
+            @click="select(i, k)">
+      <i v-if="i.icon" :class="['app-tabs__tab-icon', i.icon, i.name ? 'mr-3' : '']"/>
+      <span v-if="i.name">{{ i.name }}</span>
+    </button>
   </div>
 </template>
 
 <style>
-.app-tabs__rows {
+.app-tabs-navigation {
+  @apply flex flex-nowrap grow-0 shrink-0 overflow-hidden overflow-x-auto
+}
+.app-tabs-navigation button {
+  @apply flex items-center justify-center m-0.5 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none border-0 ring-0 text-center font-medium bg-transparent hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
+}
+.app-tabs-navigation button.app-tabs-navigation__active {
+  @apply border-inherit text-white bg-blue-600 dark:text-white dark:bg-blue-600 dark:hover:bg-blue-600 ring-0
+}
+.app-position-vertical .app-tabs-navigation {
+  @apply flex-col
+}
+/*.app-tabs__rows {
   @apply overflow-hidden relative h-11 w-full grow-0 shrink-0
 }
 .app-main .app-tabs__rows, .app-page__default .app-tabs__rows {
@@ -245,37 +255,10 @@ const classes = computed(() => [
 .app-tabs__rows.app-tabs__rows-small .app-tabs__tab:not(.app-tabs__tab-active):hover {
   @apply hover:bg-gray-100/50 dark:hover:bg-gray-600/40
 }
-.app-tabs__rows .app-tabs__prev, .app-tabs__rows .app-tabs__next {
-  @apply absolute h-10 w-5 top-0 pt-1 flex items-center justify-center cursor-pointer select-none hover:text-blue-500
-}
-.app-tabs__rows .app-tabs__prev {
-  @apply left-0
-}
-.app-tabs__rows .app-tabs__next {
-  @apply right-0
-}
-.app-tabs__rows .app-tabs__prev.app-tabs__disabled, .app-tabs__rows .app-tabs__next.app-tabs__disabled {
-  @apply opacity-20 pointer-events-none
-}
-.app-tabs__rows.app-tabs__rows__vertical .app-tabs__prev::before, .app-tabs__rows.app-tabs__rows__vertical .app-tabs__next::before {
-  @apply rotate-90
-}
-.app-tabs__rows.app-tabs__rows__vertical .app-tabs__prev {
-  @apply h-auto w-full py-1
-}
-.app-tabs__rows.app-tabs__rows__vertical .app-tabs__next {
-  @apply h-auto w-full py-1 top-auto bottom-0
-}
-.app-tabs__rows.app-tabs__rows__vertical ~ .app-tabs__page {
-  @apply !pl-5 pr-0 bg-transparent
-}
-.app-tabs__vertical .app-tabs__prev, .app-tabs__vertical .app-tabs__next {
-  @apply hidden
-}
 .app-tabs__rows.app-tabs__rows-small {
   @apply p-0 px-0.5 bg-slate-100 dark:bg-gray-800
 }
 .app-tabs__rows.app-tabs__rows-small .app-tabs__row {
   @apply mx-0
-}
+}*/
 </style>

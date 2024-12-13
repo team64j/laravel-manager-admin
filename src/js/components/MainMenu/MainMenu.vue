@@ -143,20 +143,22 @@ onMounted(() => {
 </script>
 
 <template>
-  <ul class="app-main-menu">
-    <main-menu-item v-for="(i, k) in data" :data="i" :key="k" :level="1" @action="action"/>
-  </ul>
+  <div class="app-main-menu">
+    <ul>
+      <main-menu-item v-for="(i, k) in data" :data="i" :key="k" :level="1" @action="action"/>
+    </ul>
+  </div>
 </template>
 
 <style>
-.app-main-menu {
-  @apply relative flex cursor-default p-1
+.app-main-menu > ul {
+  @apply relative flex cursor-default
 }
 .app-main-menu li {
   @apply inline-flex select-none
 }
 .app-main-menu li[data-level="1"] {
-  @apply lg:relative
+  @apply lg:relative min-h-10 mx-0.5 my-1
 }
 .app-main-menu li > div {
   @apply flex w-full justify-between items-center px-3 lg:px-4 transition
@@ -171,10 +173,10 @@ onMounted(() => {
   @apply bg-gray-600
 }
 .app-main-menu li ul {
-  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-10 lg:top-full left-0 w-[calc(100vw_-_0.5rem)] lg:w-80 h-[calc(100vh_-_3rem)] lg:h-auto lg:max-h-[calc(100vh_-_3rem)] m-1 lg:m-0 rounded lg:py-1 bg-gray-700 shadow-2xl transition-all
+  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-12 lg:top-full left-0 w-[calc(100vw_-_0.5rem)] lg:w-80 h-[calc(100vh_-_3.5rem)] lg:h-auto lg:max-h-[calc(100vh_-_3.5rem)] m-1 lg:m-0 py-1 rounded bg-gray-700 shadow-2xl transition-all
 }
 .app-main-menu li[data-level="2"] ul {
-  @apply z-10 left-0 lg:left-full top-10 lg:top-0 overflow-hidden overflow-y-auto h-[calc(100vh_-_3rem)] lg:h-auto
+  @apply z-10 left-0 lg:left-full lg:top-0 overflow-hidden overflow-y-auto h-[calc(100vh_-_3.5rem)] lg:h-auto
 }
 .app-position-end .app-main-menu li[data-level="1"] ul {
   @apply left-auto right-0
