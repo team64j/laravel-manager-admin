@@ -64,7 +64,7 @@ if (props['data']['values']) {
       <span v-if="data['id'] !== undefined" class="text-sm opacity-70 ml-1" v-html="data['id']"/>
 
       <span v-if="data['data'] || data['url']" :class="[level > 1 ? 'inline-flex' : 'hidden lg:!inline-flex']"
-            class="px-2 -mr-4 h-full items-center app-main-menu__toggle">
+            class="px-2 -mr-4 h-full items-center opacity-50 app-main-menu__toggle">
         <i class="fa fa-fw w-5 !text-sm pointer-events-none" :class="[ level === 1 ? 'fa-angle-down' : 'fa-angle-right']"/>
       </span>
     </div>
