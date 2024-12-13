@@ -28,24 +28,24 @@ const methods = {
         item = item?.parentElement?.closest('li')
       }
 
-      instance.proxy.$el.classList[action]('app-main-menu__active')
+      instance.proxy.$root.$el.classList[action]('app-main-menu__active')
 
       if (event.target.classList.contains('app-main-menu__toggle') && data['url']) {
         methods.loadData(data['url'], data)
         return
       }
     } else {
-      instance.proxy.$el.classList.toggle('app-main-menu__active')
+      instance.proxy.$root.$el.classList.toggle('app-main-menu__active')
     }
 
     if (data['to']) {
-      instance.proxy.$el.classList.remove('app-main-menu__active')
+      instance.proxy.$root.$el.classList.remove('app-main-menu__active')
       router.to(data['to'])
     } else if (data['href']) {
-      instance.proxy.$el.classList.remove('app-main-menu__active')
+      instance.proxy.$root.$el.classList.remove('app-main-menu__active')
       window.open(data['href'])
     } else if (data['url']) {
-      methods.loadData(data['url'], data)
+      instance.proxy.$root.$el.classList.contains('app-main-menu__active') && methods.loadData(data['url'], data)
     } else if (data['values']) {
       const value = store.getters['get']('Storage.root.' + data['key'])
 
@@ -64,23 +64,31 @@ const methods = {
       return
     }
 
-    document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
+    let delay = 0
+
+    clearTimeout(enterTimer)
+
+    if (data['url'] && !data['data']) {
+      delay = 50
+    }
 
     let item = event.currentTarget
 
-    while (item) {
-      item.classList.add('app-main-menu__hover')
-      item = item?.parentElement?.closest('li')
-    }
+    enterTimer = setTimeout(() => {
+      document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
 
-    if (data['url'] && instance.proxy.$el.classList.contains('app-main-menu__active')) {
-      clearTimeout(enterTimer)
-      data['data'] = null
+      while (item) {
+        item.classList.add('app-main-menu__hover')
+        item = item?.parentElement?.closest('li')
+      }
 
-      enterTimer = setTimeout(() => {
-        methods.loadData(data['url'], data)
-      }, 200)
-    }
+      if (data['url'] && instance.proxy.$root.$el.classList.contains('app-main-menu__active')) {
+        clearTimeout(enterTimer)
+        data['data'] = null
+
+        enterTimer = setTimeout(() => methods.loadData(data['url'], data), 150)
+      }
+    }, delay)
   },
   onOut (event, data) {
     if (instance.proxy.$root['isMobile']) {
@@ -129,7 +137,7 @@ const action = (...args) => {
 
 onMounted(() => {
   document.addEventListener('click', function () {
-    instance.proxy.$el.classList.remove('app-main-menu__active')
+    instance.proxy.$root.$el.classList.remove('app-main-menu__active')
   })
 })
 </script>
@@ -174,7 +182,7 @@ onMounted(() => {
 .app-position-end .app-main-menu li[data-level="2"] ul {
   @apply left-auto top-0 right-full
 }
-.app-main-menu.app-main-menu__active li.app-main-menu__hover > ul {
+.app-main-menu__active .app-main-menu li.app-main-menu__hover > ul {
   @apply opacity-100 visible
 }
 </style>
