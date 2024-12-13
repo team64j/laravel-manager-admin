@@ -106,9 +106,9 @@ html, body, #app {
     /**
      * Icons
      */
-    .fa {
-        @apply relative
-    }
+    /*.fa {*/
+    /*    @apply relative*/
+    /*}*/
     .fa > .fa {
         @apply absolute right-0 bottom-0 text-xs pointer-events-none
     }

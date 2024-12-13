@@ -20,27 +20,28 @@ if (props['data']['values']) {
 
 <template>
   <li :data-level="level"
+      :class="{
+    'sticky bottom-0 mt-auto !bg-inherit': data['prev'] || data['next']
+      }"
       @mouseenter="emit('action', 'onEnter', $event, data)"
       @mouseleave="emit('action', 'onOut', $event, data)"
       @click.stop="emit('action', 'onClick', $event, data)">
 
-    <template v-if="data['prev'] !== undefined || data['next'] !== undefined">
-      <div v-if="data['prev'] || data['next']" class="border-t py-1 !bg-inherit">
-        <button type="button" class="-ml-2 btn-sm btn-gray"
-                :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
-                @click.stop="emit('action', 'onNav', $event, data['prev'], instance.parent.props)">
-          <i class="fa fa-angle-left fa-fw"/>
-        </button>
-        <span class="grow truncate text-center py-1.5 text-sm text-blue-400">
+    <div v-if="data['prev'] || data['next']" class="border-t py-1 !bg-inherit">
+      <button type="button" class="-ml-2 btn-sm btn-gray"
+              :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
+              @click.stop="emit('action', 'onNav', $event, data['prev'], instance.parent.props)">
+        <i class="fa fa-angle-left fa-fw"/>
+      </button>
+      <span class="grow truncate text-center py-1.5 text-sm text-blue-400">
           {{ data['info'] }}
         </span>
-        <button type="button" class="-mr-2 btn-sm btn-gray"
-                :class="{ 'pointer-events-none opacity-50': !data['next'] }"
-                @click.stop="emit('action', 'onNav', $event, data['next'], instance.parent.props)">
-          <i class="fa fa-angle-right fa-fw"/>
-        </button>
-      </div>
-    </template>
+      <button type="button" class="-mr-2 btn-sm btn-gray"
+              :class="{ 'pointer-events-none opacity-50': !data['next'] }"
+              @click.stop="emit('action', 'onNav', $event, data['next'], instance.parent.props)">
+        <i class="fa fa-angle-right fa-fw"/>
+      </button>
+    </div>
 
     <div v-else :data-tooltip="data['title']">
       <span :class="{ 'w-8': level > 1, 'lg:mr-2': data['name'] && level === 1 }"
@@ -63,12 +64,19 @@ if (props['data']['values']) {
       <span v-if="data['id'] !== undefined" class="text-sm opacity-70 ml-1" v-html="data['id']"/>
 
       <span v-if="data['data'] || data['url']" :class="[level > 1 ? 'inline-flex' : 'hidden lg:!inline-flex']"
-            class="px-2 -mr-4 h-full items-center">
-        <i class="fa fa-fw w-5 !text-sm" :class="[ level === 1 ? 'fa-angle-down' : 'fa-angle-right']"/>
+            class="px-2 -mr-4 h-full items-center app-main-menu__toggle">
+        <i class="fa fa-fw w-5 !text-sm pointer-events-none" :class="[ level === 1 ? 'fa-angle-down' : 'fa-angle-right']"/>
       </span>
     </div>
 
     <ul v-if="data['data']">
+      <li v-if="level > 1" :data-level="level + 1" class="lg:!hidden sticky top-0 !bg-inherit" @click.stop="data['data'] = null">
+        <div>
+          <span class="grow py-1.5 text-center">
+            <i class="fa fa-arrow-left"/>&nbsp;
+          </span>
+        </div>
+      </li>
       <main-menu-item v-for="(i, k) in data['data']" :data="i" :key="k" :level="level + 1"
                       @action="(...args) => emit('action', ...args)"/>
     </ul>

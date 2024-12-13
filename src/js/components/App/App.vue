@@ -262,7 +262,7 @@ export default {
       this.$refs.mid.addEventListener('touchend', this.onTouchendSidebar)
     },
     onTouchmoveSidebar (event) {
-      if (window.innerWidth < 1024) {
+      if (this.isMobile) {
         this.sl = null
 
         if (event.touches[0].clientX - this.sx < 0) {
@@ -295,7 +295,7 @@ export default {
     onTouchendSidebar (event) {
       let x = event.changedTouches[0].clientX - this.sx
 
-      if (Math.abs(x) > this.$refs.sidebar.offsetWidth / 2) {
+      if (Math.abs(x) > this.$refs.sidebar.offsetWidth / 3) {
         this.sl !== null && store.dispatch('set', { ['Storage.root.sidebarShow']: this.sl })
       }
 
@@ -381,7 +381,7 @@ export default {
       </div>
       <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div v-if="slotLeft || slotLeftTop || slotLeftBottom"
-             class="grow-0 shrink-0 flex flex-col justify-between z-30 bg-gray-800 app-left dark">
+             class="z-30 grow-0 shrink-0 flex flex-col justify-between z-30 bg-gray-800 app-left dark">
           <div class="grow-0 flex">
             <Component v-if="slotLeftTop" :currentRoute="currentRoute" :layout="slotLeftTop" @action="action"/>
           </div>
@@ -392,15 +392,15 @@ export default {
             <Component v-if="slotLeftBottom" :currentRoute="currentRoute" :layout="slotLeftBottom" @action="action"/>
           </div>
         </div>
-        <div v-if="slotSidebar" ref="sidebar" id="app-slot-sidebar"
-             class="relative grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"
+        <div v-if="slotSidebar" ref="sidebar"
+             class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"
              :style="{ width: sidebarWidth + `rem` }">
           <Component :currentRoute="currentRoute" :layout="slotSidebar" @action="action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
             <div/>
           </div>
         </div>
-        <div id="app-slot-main" class="grow flex flex-col overflow-hidden app-main">
+        <div class="grow flex flex-col overflow-hidden z-10 app-main">
           <global-tabs :currentRoute="currentRoute" @action="action"/>
         </div>
       </div>

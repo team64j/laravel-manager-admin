@@ -17,19 +17,25 @@ let enterTimer = 0
 
 const methods = {
   onClick (event, data) {
-    if (instance.proxy.$root.isMobile) {
-      if (event.currentTarget.classList.contains('app-main-menu__hover')) {
-        instance.proxy.$el.classList.add('app-main-menu__active')
-      } else {
-        instance.proxy.$el.classList.remove('app-main-menu__active')
+    if (instance.proxy.$root['isMobile']) {
+      const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
+      document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
+
+      let item = event.currentTarget
+
+      while (item) {
+        item.classList[action]('app-main-menu__hover')
+        item = item?.parentElement?.closest('li')
+      }
+
+      instance.proxy.$el.classList[action]('app-main-menu__active')
+
+      if (event.target.classList.contains('app-main-menu__toggle') && data['url']) {
+        methods.loadData(data['url'], data)
+        return
       }
     } else {
       instance.proxy.$el.classList.toggle('app-main-menu__active')
-    }
-
-    if (event.target.tagName === 'I' && data['url']) {
-      methods.loadData(data['url'], data)
-      return
     }
 
     if (data['to']) {
@@ -54,7 +60,7 @@ const methods = {
     }
   },
   onEnter (event, data) {
-    if (event.currentTarget.classList.contains('app-main-menu__hover')) {
+    if (event.currentTarget.classList.contains('app-main-menu__hover') || instance.proxy.$root['isMobile']) {
       return
     }
 
@@ -77,6 +83,10 @@ const methods = {
     }
   },
   onOut (event, data) {
+    if (instance.proxy.$root['isMobile']) {
+      return
+    }
+
     if (data['url']) {
       clearTimeout(enterTimer)
     }
@@ -141,7 +151,7 @@ onMounted(() => {
   @apply lg:relative
 }
 .app-main-menu li > div {
-  @apply flex w-full justify-between items-center px-4 transition
+  @apply flex w-full justify-between items-center px-3 lg:px-4 transition
 }
 .app-main-menu li[data-level="1"] > div {
   @apply rounded
@@ -153,7 +163,7 @@ onMounted(() => {
   @apply bg-gray-600
 }
 .app-main-menu li ul {
-  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-10 lg:top-full left-0 w-[calc(100vw_-_0.5rem)] lg:w-80 h-[calc(100vh_-_3rem)] lg:h-auto m-1 lg:m-0 rounded py-1 bg-gray-700 shadow-2xl transition-all
+  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-10 lg:top-full left-0 w-[calc(100vw_-_0.5rem)] lg:w-80 h-[calc(100vh_-_3rem)] lg:h-auto lg:max-h-[calc(100vh_-_3rem)] m-1 lg:m-0 rounded lg:py-1 bg-gray-700 shadow-2xl transition-all
 }
 .app-main-menu li[data-level="2"] ul {
   @apply z-10 left-0 lg:left-full top-10 lg:top-0 overflow-hidden overflow-y-auto h-[calc(100vh_-_3rem)] lg:h-auto
