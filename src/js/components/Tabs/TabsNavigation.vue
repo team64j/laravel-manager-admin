@@ -47,38 +47,6 @@ const index = computed({
   }
 })
 
-let positionX = 0
-let scrollLeft = 0
-let dragging = ref(false)
-
-const drag = event => {
-  if (event.button !== 0) {
-    return
-  }
-
-  dragging.value = false
-  positionX = event.clientX
-  scrollLeft = refRows.value.scrollLeft
-  refRows.value.addEventListener('mousemove', move)
-  document.addEventListener('mouseup', end)
-}
-
-const move = event => {
-  const l = positionX - event.clientX
-  if (Math.abs(l)) {
-    dragging.value = true
-    refRows.value.scrollLeft = scrollLeft + l
-  }
-}
-
-const end = (event) => {
-  refRows.value.removeEventListener('mousemove', move)
-  document.removeEventListener('mouseup', end)
-  setTimeout(() => dragging.value = false, 10)
-  event.preventDefault()
-  event.stopPropagation()
-}
-
 const init = () => {
   let right = 0,
       width = 0
@@ -105,10 +73,6 @@ const init = () => {
 }
 
 const select = (tab, key) => {
-  if (dragging.value) {
-    return
-  }
-
   if (props.history) {
     if (typeof props.history === 'string') {
       emit('action', 'pushRouter', {
@@ -182,11 +146,10 @@ if (props.history) {
 
 <template>
   <div v-if="data.length > 1" class="app-tabs-navigation" :class="{
-          'app-tabs__rows__vertical': props.vertical,
-          'app-tabs__rows-small': props.smallTabs
+          'app-tabs-navigation__vertical': props.vertical,
+          'app-tabs-navigation__small': props.smallTabs
        }"
-       ref="refRows"
-       @mousedown="drag">
+       ref="refRows">
     <button v-for="(i, k) in data"
             :class="{ 'app-tabs-navigation__active': k === index }"
             :data-tooltip="i.title"
@@ -197,9 +160,9 @@ if (props.history) {
   </div>
 </template>
 
-<style>
+<style scoped>
 .app-tabs-navigation {
-  @apply flex flex-nowrap grow-0 shrink-0 overflow-hidden overflow-x-auto
+  @apply flex flex-nowrap grow-0 shrink-0 overflow-hidden overflow-x-auto mb-1 mx-4
 }
 .app-tabs-navigation button {
   @apply flex items-center justify-center m-0.5 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none border-0 ring-0 text-center font-medium bg-transparent hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
@@ -207,58 +170,7 @@ if (props.history) {
 .app-tabs-navigation button.app-tabs-navigation__active {
   @apply border-inherit text-white bg-blue-600 dark:text-white dark:bg-blue-600 dark:hover:bg-blue-600 ring-0
 }
-.app-position-vertical .app-tabs-navigation {
-  @apply flex-col
+.app-tabs-navigation.app-tabs-navigation__vertical, .app-position-vertical .app-tabs-navigation {
+  @apply flex-col overflow-x-hidden overflow-y-auto m-0
 }
-/*.app-tabs__rows {
-  @apply overflow-hidden relative h-11 w-full grow-0 shrink-0
-}
-.app-main .app-tabs__rows, .app-page__default .app-tabs__rows {
-  @apply px-2
-}
-.app-tabs__row {
-  @apply relative overflow-hidden overflow-x-auto h-20 px-0 -mx-0.5 flex flex-nowrap
-}
-.app-tabs__rows.app-tabs__rows__vertical {
-  @apply grow-0 h-auto w-auto mb-0 px-0 overflow-visible
-}
-.app-tabs__rows.app-tabs__rows__vertical::after {
-  @apply left-auto top-0
-}
-.app-tabs__rows.app-tabs__rows__vertical .app-tabs__row {
-  @apply sticky top-0 flex-col h-auto py-0 m-0
-}
-.app-tabs__vertical.app-tabs__with-navigation > .app-tabs__rows .app-tabs__row {
-  @apply mx-0
-}
-.app-tabs__rows .app-tabs__tab {
-  @apply flex items-center justify-center mx-0.5 px-4 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none border-0 ring-0 text-center font-medium bg-transparent hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
-}
-.app-tabs__rows.app-tabs__dragging * {
-  @apply cursor-w-resize
-}
-.app-tabs__rows.app-tabs__dragging .app-tabs__tab {
-  @apply pointer-events-none
-}
-.app-tabs__rows .app-tabs__tab.app-tabs__tab-active {
-  @apply border-inherit text-white bg-blue-600 dark:text-white dark:bg-blue-600 dark:hover:bg-blue-600
-}
-.app-tabs__rows .app-tabs__tab .app-tabs__tab-icon + span {
-  @apply ml-2
-}
-.app-tabs__rows.app-tabs__rows-small .app-tabs__tab {
-  @apply my-[2px] mx-[2px] h-8 w-10
-}
-.app-tabs__rows.app-tabs__rows-small.app-tabs__rows__vertical .app-tabs__tab {
-  @apply h-8
-}
-.app-tabs__rows.app-tabs__rows-small .app-tabs__tab:not(.app-tabs__tab-active):hover {
-  @apply hover:bg-gray-100/50 dark:hover:bg-gray-600/40
-}
-.app-tabs__rows.app-tabs__rows-small {
-  @apply p-0 px-0.5 bg-slate-100 dark:bg-gray-800
-}
-.app-tabs__rows.app-tabs__rows-small .app-tabs__row {
-  @apply mx-0
-}*/
 </style>

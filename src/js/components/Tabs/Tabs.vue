@@ -48,8 +48,8 @@ const classes = computed(() => {
   return {
     'app-tabs__with-navigation': props.navigation,
     'app-tabs__without-rows': props.data.length === 1,
-    'app-tabs-small': props.smallTabs,
-    '!flex-row': props.vertical
+    'app-tabs__small': props.smallTabs,
+    'app-tabs__vertical': props.vertical
   }
 })
 
@@ -80,15 +80,9 @@ const action = (...args) => {
 
 <style>
 .app-tabs__vertical {
-  @apply flex-row p-0 h-auto self-stretch overflow-visible
+  @apply !flex-row h-auto self-stretch
 }
 .app-tabs__vertical > .app-tabs__page {
-  @apply flex-col h-full !p-0 shadow-none rounded-none overflow-auto flex-nowrap
-}
-.app-tabs.app-tabs-small .app-tabs__page {
-  @apply m-0 p-0 bg-inherit
-}
-.app-tabs.app-tabs-small.app-tabs__vertical .app-tabs__rows ~ .app-tabs__page {
-  @apply !p-0
+  @apply flex-col h-full ml-5 flex-nowrap
 }
 </style>

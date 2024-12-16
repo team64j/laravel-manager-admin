@@ -49,7 +49,8 @@ if (props['data']['values']) {
         <i v-if="data['loading']"
            class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
 
-        <img v-else-if="/^https?:\/\/?/.test(data['icon'])" :src="data['icon']" class="block min-w-8 min-h-8 w-8 h-8 -mx-1.5 lg:-mx-2"
+        <img v-else-if="/^https?:\/\/?/.test(data['icon'])" :src="data['icon']"
+             class="block min-w-8 min-h-8 w-8 h-8 -mx-1.5 lg:-mx-2"
              alt=""/>
 
         <i v-else-if="data['icon']" :class="data['icon']" class="fa-fw !leading-[0]"/>
@@ -65,12 +66,14 @@ if (props['data']['values']) {
 
       <span v-if="data['data'] || data['url']" :class="[level > 1 ? 'inline-flex' : 'hidden lg:!inline-flex']"
             class="px-2 -mr-4 h-full items-center opacity-50 app-main-menu__toggle">
-        <i class="fa fa-fw w-5 !text-sm pointer-events-none" :class="[ level === 1 ? 'fa-angle-down' : 'fa-angle-right']"/>
+        <i class="fa fa-fw w-5 !text-sm pointer-events-none"
+           :class="[ level === 1 ? 'fa-angle-down' : 'fa-angle-right']"/>
       </span>
     </div>
 
     <ul v-if="data['data']">
-      <li v-if="level > 1" :data-level="level + 1" class="lg:!hidden sticky top-0 !bg-inherit" @click.stop="data['data'] = null">
+      <li v-if="level > 1" :data-level="level + 1" class="lg:!hidden sticky top-0 !bg-inherit"
+          @click.stop="data['data'] = null">
         <div class="!bg-inherit -mt-1">
           <span class="grow py-1.5 text-center">
             <i class="fa fa-arrow-left"/>&nbsp;

@@ -4,8 +4,6 @@ import router from '../../router'
 import Frame from '../Layout/Frame.vue'
 import { mergeWith } from 'lodash'
 
-import('./GlobalTabs.css')
-
 export default {
   name: 'GlobalTabs',
   __isStatic: true,
@@ -31,6 +29,9 @@ export default {
     },
     frames () {
       return this.tabs.filter(i => i.meta['isIframe'])
+    },
+    router () {
+      return router
     }
   },
   created () {
@@ -72,6 +73,34 @@ export default {
       }
 
       this.keys = this.tabs.map(i => router.key(i))
+
+      let right = 0,
+          width = 0,
+          index = this.tabs.findIndex(i => i.active)
+
+      if (this.$refs.panel) {
+        this.$nextTick(() => {
+          this.$refs.panel.querySelectorAll('button').forEach((i, k) => {
+            i.styles = getComputedStyle(i)
+
+            if (k <= index) {
+              width += i.offsetWidth + parseFloat(i.styles.marginLeft) + parseFloat(i.styles.marginRight)
+
+              if (k < index) {
+                right += i.offsetWidth + parseFloat(i.styles.marginLeft)
+              }
+            }
+          })
+
+          if (this.$refs.panel.scrollLeft > right) {
+            this.$refs.panel.scrollLeft = right
+          }
+
+          if (this.$refs.panel.offsetWidth < width) {
+            this.$refs.panel.scrollLeft = width - this.$refs.panel.offsetWidth
+          }
+        })
+      }
     },
     setTab (data) {
       this.$store.dispatch('set', { tabsLoading: data.loading })
@@ -134,35 +163,34 @@ export default {
 </script>
 
 <template>
-  <div class="app-global-tabs group">
+  <div class="grow flex flex-col overflow-hidden">
 
     <div class="grow-0 dark">
-      <div class="relative h-[2.4rem] bg-slate-100 dark:bg-gray-800 overflow-hidden">
-        <div class="relative flex flex-nowrap mx-0.5 min-h-[2.35rem] overflow-auto" ref="panel">
-          <a v-for="(tab, i) in this.tabs"
-             :key="i"
-             :data-to="tab.path"
-             :class="{ 'app-global-tabs__tab-active': tab.active }"
-             @mousedown="clickTab(tab)"
-             @dblclick="dblClickTab(tab)"
-             class="app-global-tabs__tab">
+      <div ref="panel" class="relative flex flex-nowrap mx-0.5 bg-slate-100 dark:bg-gray-800 overflow-auto">
+        <button v-for="(tab, i) in this.tabs"
+                :key="i"
+                :data-to="tab.path"
+                :class="{ '!bg-blue-600 dark:!bg-blue-600': tab.active }"
+                @mousedown="clickTab(tab)"
+                @dblclick="dblClickTab(tab)"
+                class="relative shrink-0 inline-flex items-center justify-center my-0.5 ml-0.5 first:ml-0 last:mr-0 min-w-10 border-none !ring-0 btn-sm text-base text-left">
 
-            <span v-if="tab.loading || tab.meta.icon" class="app-global-tabs__tab-icon">
+            <span v-if="tab.loading || tab.meta.icon" :class="{ 'mr-2': tab.meta.title }">
               <i v-if="tab.loading"
                  class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin"/>
               <i v-else-if="tab.meta.icon" :class="tab.meta.icon"/>
             </span>
 
-            <span v-if="tab.meta.title" class="app-global-tabs__tab-title" :data-tooltip="tab.meta.title">
-              <span class="block truncate w-28">{{ tab.meta.title }}</span>
+          <span v-if="tab.meta.title" class="grow w-28 truncate" :data-tooltip="tab.meta.title">
+              {{ tab.meta.title }}
             </span>
 
-            <span v-if="!tab.meta.fixed" class="app-global-tabs__tab-close" @mousedown.stop="closeTab(tab)">✕</span>
+          <span v-if="!tab.meta.fixed"
+                class="inline-flex items-center ml-0 -mr-3 px-3 py-0 pointer-events-auto opacity-70 hover:opacity-100 hover:text-red-600"
+                @mousedown.stop="closeTab(tab)">✕</span>
 
-            <span v-if="tab.changed" class="app-global-tabs__tab-changed"/>
-          </a>
-        </div>
-        <div class="fixed left-0 right-0 top-0 bottom-0 hidden cursor-grabbing group-[.drag]:block"/>
+          <span v-if="tab.changed" class="absolute top-1 left-1 h-2 w-2 bg-amber-400 rounded-full"/>
+        </button>
       </div>
     </div>
 
@@ -172,15 +200,15 @@ export default {
         <keep-alive-component :include="keys">
           <component v-if="!slot.route?.meta?.['isIframe']"
                      :is="slot.Component"
-                     :key="$router.key(slot.route)"
+                     :key="router.key(slot.route)"
                      :currentRoute="currentRoute"
                      @action="action"/>
         </keep-alive-component>
       </router-view>
 
-      <div class="grow overflow-hidden app-global-tabs__frames">
+      <div class="grow overflow-hidden">
         <template v-for="{ path } in frames" :key="path">
-          <Frame v-if="keys.includes(path)" v-show="$route.path === path" @action="action"/>
+          <Frame v-if="keys.includes(path)" v-show="currentRoute['path'] === path" @action="action"/>
         </template>
       </div>
 
