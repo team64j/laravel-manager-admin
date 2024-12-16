@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineOptions, defineProps, ref, watch } from 'vue'
+import { computed, defineOptions, defineProps, getCurrentInstance, ref, watch } from 'vue'
 import store from '../../store'
 import router from '../../router'
 
@@ -7,6 +7,8 @@ defineOptions({
   __isStatic: true,
   name: 'TabsNavigation'
 })
+
+const instance = getCurrentInstance()
 
 const props = defineProps({
   id: {
@@ -51,9 +53,9 @@ const init = () => {
   let right = 0,
       width = 0
 
-  refRows.value.styles = getComputedStyle(refRows.value)
+  instance.proxy.$el.styles = getComputedStyle(instance.proxy.$el)
 
-  refRows.value.querySelectorAll('button').forEach((t, i) => {
+  instance.proxy.$el.querySelectorAll('button').forEach((t, i) => {
     t.styles = getComputedStyle(t)
 
     if (i <= index.value) {
@@ -65,13 +67,13 @@ const init = () => {
     }
   })
 
-  if (refRows.value.scrollLeft > right) {
-    refRows.value.scrollLeft = right
+  if (instance.proxy.$el.scrollLeft > right) {
+    instance.proxy.$el.scrollLeft = right
   }
 
-  if (refRows.value.offsetWidth < width) {
-    refRows.value.scrollLeft = width - refRows.value.offsetWidth +
-        (parseFloat(refRows.value.styles.paddingLeft) + parseFloat(refRows.value.styles.paddingRight))
+  if (instance.proxy.$el.offsetWidth < width) {
+    instance.proxy.$el.scrollLeft = width - instance.proxy.$el.offsetWidth +
+        (parseFloat(instance.proxy.$el.styles.paddingLeft) + parseFloat(instance.proxy.$el.styles.paddingRight))
   }
 }
 
@@ -151,8 +153,7 @@ if (props.history) {
   <div v-if="data.length > 1" class="app-tabs-navigation" :class="{
           'app-tabs-navigation__vertical': props.vertical,
           'app-tabs-navigation__small': props.smallTabs
-       }"
-       ref="refRows">
+       }">
     <button v-for="(i, k) in data"
             :class="{ 'app-tabs-navigation__active': k === index }"
             :data-tooltip="i.title"
