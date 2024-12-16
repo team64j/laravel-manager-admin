@@ -82,7 +82,7 @@ const action = (...args) => {
 .app-tabs__vertical {
   @apply !flex-row h-auto self-stretch
 }
-.app-tabs__vertical > .app-tabs__page {
-  @apply flex-col h-full ml-5 flex-nowrap
+.app-tabs__vertical > .app-tabs-navigation ~ .app-tabs__page {
+  @apply flex-col h-full ml-5 flex-nowrap !rounded-none
 }
 </style>

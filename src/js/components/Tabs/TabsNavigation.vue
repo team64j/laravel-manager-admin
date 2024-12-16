@@ -51,6 +51,8 @@ const init = () => {
   let right = 0,
       width = 0
 
+  refRows.value.styles = getComputedStyle(refRows.value)
+
   refRows.value.querySelectorAll('button').forEach((t, i) => {
     t.styles = getComputedStyle(t)
 
@@ -68,7 +70,8 @@ const init = () => {
   }
 
   if (refRows.value.offsetWidth < width) {
-    refRows.value.scrollLeft = width - refRows.value.offsetWidth
+    refRows.value.scrollLeft = width - refRows.value.offsetWidth +
+        (parseFloat(refRows.value.styles.paddingLeft) + parseFloat(refRows.value.styles.paddingRight))
   }
 }
 
@@ -162,15 +165,18 @@ if (props.history) {
 
 <style scoped>
 .app-tabs-navigation {
-  @apply flex flex-nowrap grow-0 shrink-0 overflow-hidden overflow-x-auto mb-1 mx-4
+  @apply flex flex-nowrap grow-0 shrink-0 overflow-hidden overflow-x-auto mb-1 px-4
 }
 .app-tabs-navigation button {
   @apply flex items-center justify-center m-0.5 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none border-0 ring-0 text-center font-medium bg-transparent hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
 }
+.app-tabs-navigation.app-tabs-navigation__small button {
+  @apply p-3
+}
 .app-tabs-navigation button.app-tabs-navigation__active {
-  @apply border-inherit text-white bg-blue-600 dark:text-white dark:bg-blue-600 dark:hover:bg-blue-600 ring-0
+  @apply text-white bg-blue-600 dark:text-white dark:bg-blue-600
 }
 .app-tabs-navigation.app-tabs-navigation__vertical, .app-position-vertical .app-tabs-navigation {
-  @apply flex-col overflow-x-hidden overflow-y-auto m-0
+  @apply flex-col overflow-x-hidden overflow-y-auto m-0 p-0
 }
 </style>
