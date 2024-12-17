@@ -150,10 +150,6 @@ function onClickSelect (event) {
 }
 
 function onClickFullscreen () {
-  if (!instance.refs.editor) {
-    return
-  }
-
   if (instance.refs.editor.classList.contains('app-editor__fullscreen')) {
     instance.refs.editor.classList.remove('app-editor__fullscreen')
     instance.vnode.el.appendChild(instance.refs.editor)
@@ -162,6 +158,16 @@ function onClickFullscreen () {
     instance.proxy.$root.$el.appendChild(instance.refs.editor)
   }
 }
+
+document.addEventListener('keydown', event => {
+  if (!instance.refs.editor) {
+    return
+  }
+
+  if (instance.refs.editor.classList.contains('app-editor__fullscreen') && event.key === 'Escape') {
+    onClickFullscreen()
+  }
+})
 </script>
 
 <template>
