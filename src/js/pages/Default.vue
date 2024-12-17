@@ -54,6 +54,7 @@ export default {
           return
         } else if (action === 'save') {
           method ??= isNumericId ? 'patch' : 'post'
+          action = isNumericId ? 'update' : 'create'
         } else if (action === 'delete') {
           method ??= 'delete'
         } else {
