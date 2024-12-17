@@ -87,18 +87,18 @@ export default {
         attrs.class = (attrs.class ? attrs.class + ' ' : '') + props.class
       }
 
-      attrs.key = data.model || data.component.name || ''
+      const key = data.model || data.component.name || ''
 
       if (component.props?.['currentRoute'] && props.currentRoute?.fullPath !== data.currentRoute?.fullPath) {
         attrs.currentRoute = props.currentRoute
       }
 
-      if (attrs.key === 'data') {
+      if (key === 'data') {
         attrs.modelValue = props.data
-      } else if (props.data?.[attrs.key] !== undefined) {
-        attrs.modelValue = props.data[attrs.key]
-      } else if (attrs.key.includes('.')) {
-        attrs.modelValue = findValue(attrs.key.split('.'), props)
+      } else if (props.data?.[key] !== undefined) {
+        attrs.modelValue = props.data[key]
+      } else if (key.includes('.')) {
+        attrs.modelValue = findValue(key.split('.'), props)
       } else {
         attrs.modelValue = data?.attrs?.value
       }
@@ -108,7 +108,7 @@ export default {
       }
 
       if ((component?.extends?.props || component?.props)?.['error']) {
-        attrs.error = props.errors?.[attrs.key]
+        attrs.error = props.errors?.[key]
       }
 
       (component.extends?.emits ?? component.emits ?? []).forEach(e => {
