@@ -175,15 +175,16 @@ export default {
                 @dblclick="dblClickTab(tab)"
                 class="relative shrink-0 inline-flex items-center justify-center my-0.5 ml-0.5 last:mr-0.5 min-w-10 border-none !ring-0 btn-sm text-base text-left">
 
-            <span v-if="tab.loading || tab.meta.icon" :class="{ 'mr-2': tab.meta.title }">
+            <span v-if="tab.loading || tab.meta.icon" :class="{ 'mr-2': tab.meta.title }"
+                  class="w-5 inline-flex items-center justify-center">
               <i v-if="tab.loading"
                  class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin"/>
               <i v-else-if="tab.meta.icon" :class="tab.meta.icon"/>
             </span>
 
           <span v-if="tab.meta.title" class="grow w-28 truncate" :data-tooltip="tab.meta.title">
-              {{ tab.meta.title }}
-            </span>
+            {{ tab.meta.title }}
+          </span>
 
           <span v-if="!tab.meta.fixed"
                 class="inline-flex items-center ml-0 -mr-3 px-3 py-0 pointer-events-auto opacity-70 hover:opacity-100"
