@@ -203,21 +203,21 @@ input:-webkit-autofill:active {
 }
 ::-webkit-scrollbar-thumb {
     background-clip: padding-box;
-    background-color: rgba(0, 0, 0, .15);
+    background-color: rgba(125, 125, 125, .35);
     border-color: transparent;
     border-radius: 0.5rem;
     border-style: solid;
     border-width: 0.125rem
 }
 ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, .25);
+    background-color: rgba(125, 125, 125, .55);
     border-width: 0
 }
-html.dark ::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, .25)
+.dark ::-webkit-scrollbar-thumb {
+    background-color: rgba(125, 125, 125, .45)
 }
-html.dark ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, .35)
+.dark ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(125, 125, 125, .65)
 }
 /**
  * Selection

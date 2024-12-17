@@ -166,10 +166,10 @@ if (props.history) {
 
 <style scoped>
 .app-tabs-navigation {
-  @apply flex flex-nowrap grow-0 shrink-0 overflow-hidden overflow-x-auto mb-1 px-4
+  @apply flex flex-nowrap grow-0 shrink-0 overflow-hidden overflow-x-auto mb-1
 }
 .app-tabs-navigation button {
-  @apply flex items-center justify-center m-0.5 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none border-0 ring-0 text-center font-medium bg-transparent hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
+  @apply flex items-center justify-center m-0.5 first:ml-0 last:mr-0 h-10 relative shrink-0 cursor-pointer whitespace-nowrap rounded select-none border-0 ring-0 text-center font-medium bg-transparent hover:bg-slate-200/50 dark:hover:bg-gray-600/40 dark:hover:text-white transition
 }
 .app-tabs-navigation.app-tabs-navigation__small button {
   @apply p-3

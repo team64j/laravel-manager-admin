@@ -1,36 +1,3 @@
-<template>
-  <div class="w-full" :class="[props.class, fullSize ? 'h-full' : '']">
-    <div v-if="label" class="block font-bold mb-1">
-      {{ label }}
-      <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
-    </div>
-
-    <div class="app-editor relative flex grow flex-col"
-         :class="[inputClass, fullSize ? 'app-editor__fullsize' : '']">
-
-      <div class="app-editor__settings">
-        <i class="fas fa-expand fa-compress cursor-pointer app-editor__btn-fullscreen" @click="onClickFullscreen"/>
-        <i class="fa fa-gear select" v-if="config.length > 1">
-          <span class="app-editor__menu">
-            <span v-for="i in config" :class="{ 'active': i.active }" @click="onClickSelect"
-                  :data-component="i.component">
-              {{ i.name }}
-            </span>
-          </span>
-        </i>
-      </div>
-
-      <component
-          v-model="model"
-          :is="component"
-          :extensions="extensions"
-          :style="{ height }"/>
-
-    </div>
-    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-  </div>
-</template>
-
 <script>
 export default {
   __isStatic: true,
@@ -183,17 +150,52 @@ function onClickSelect (event) {
 }
 
 function onClickFullscreen () {
-  const target = instance.vnode.el.querySelector('.app-editor__btn-fullscreen')
-
-  if (target.classList.contains('fa-expand')) {
-    target.classList.remove('fa-expand')
-  } else {
-    target.classList.add('fa-expand')
+  if (!instance.refs.editor) {
+    return
   }
 
-  instance.vnode.el.querySelector('.app-editor').classList.toggle('app-editor__fullscreen')
+  if (instance.refs.editor.classList.contains('app-editor__fullscreen')) {
+    instance.refs.editor.classList.remove('app-editor__fullscreen')
+    instance.vnode.el.appendChild(instance.refs.editor)
+  } else {
+    instance.refs.editor.classList.add('app-editor__fullscreen')
+    instance.proxy.$root.$el.appendChild(instance.refs.editor)
+  }
 }
 </script>
+
+<template>
+  <div class="w-full" :class="[props.class, fullSize ? 'h-full' : '']">
+    <div v-if="label" class="block font-bold mb-1">
+      {{ label }}
+      <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
+    </div>
+
+    <div ref="editor" class="app-editor relative flex grow flex-col"
+         :class="[inputClass, fullSize ? 'app-editor__fullsize' : '']">
+
+      <div class="app-editor__settings">
+        <i class="fas fa-expand fa-compress cursor-pointer app-editor__btn-fullscreen" @click="onClickFullscreen"/>
+        <i class="fa fa-gear select" v-if="config.length > 1">
+          <span class="app-editor__menu">
+            <span v-for="i in config" :class="{ 'active': i.active }" @click="onClickSelect"
+                  :data-component="i.component">
+              {{ i.name }}
+            </span>
+          </span>
+        </i>
+      </div>
+
+      <component
+          v-model="model"
+          :is="component"
+          :extensions="extensions"
+          :style="{ height }"/>
+
+    </div>
+    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
+  </div>
+</template>
 
 <style scoped>
 .app-editor__settings {
@@ -228,7 +230,7 @@ function onClickFullscreen () {
   @apply border rounded focus:ring-2 focus:border-blue-500
 }
 .app-editor .ͼ1.cm-editor {
-  @apply overflow-hidden w-full bg-white dark:bg-gray-800 rounded transition-[border,box-shadow]
+  @apply overflow-hidden w-full min-h-full bg-white dark:bg-gray-800 rounded transition-all
 }
 .app-editor.app-editor__fullsize .ͼ1.cm-editor {
   @apply h-full

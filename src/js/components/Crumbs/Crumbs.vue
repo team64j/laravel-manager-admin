@@ -11,7 +11,7 @@ export default {
   setup (props) {
     return () => h('div',
         {
-          class: 'app-crumbs flex items-center px-2 py-1 text-sm bg-slate-50 dark:bg-gray-750'
+          class: 'app-crumbs flex items-center px-2 py-1 text-sm bg-white dark:bg-gray-700 border-t border-slate-100 dark:border-gray-800'
         },
         props.data.map(i => [
               i.to ? h(RouterLink, {

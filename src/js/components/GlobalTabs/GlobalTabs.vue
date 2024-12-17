@@ -166,14 +166,14 @@ export default {
   <div class="grow flex flex-col overflow-hidden">
 
     <div class="grow-0 dark">
-      <div ref="panel" class="relative flex flex-nowrap mx-0.5 bg-slate-100 dark:bg-gray-800 overflow-auto">
+      <div ref="panel" class="relative flex flex-nowrap bg-slate-100 dark:bg-gray-800 overflow-hidden !overflow-x-auto">
         <button v-for="(tab, i) in this.tabs"
                 :key="i"
                 :data-to="tab.path"
                 :class="{ '!bg-blue-600 dark:!bg-blue-600': tab.active }"
                 @mousedown="clickTab(tab)"
                 @dblclick="dblClickTab(tab)"
-                class="relative shrink-0 inline-flex items-center justify-center my-0.5 ml-0.5 first:ml-0 last:mr-0 min-w-10 border-none !ring-0 btn-sm text-base text-left">
+                class="relative shrink-0 inline-flex items-center justify-center my-0.5 ml-0.5 last:mr-0.5 min-w-10 border-none !ring-0 btn-sm text-base text-left">
 
             <span v-if="tab.loading || tab.meta.icon" :class="{ 'mr-2': tab.meta.title }">
               <i v-if="tab.loading"
@@ -186,7 +186,7 @@ export default {
             </span>
 
           <span v-if="!tab.meta.fixed"
-                class="inline-flex items-center ml-0 -mr-3 px-3 py-0 pointer-events-auto opacity-70 hover:opacity-100 hover:text-red-600"
+                class="inline-flex items-center ml-0 -mr-3 px-3 py-0 pointer-events-auto opacity-70 hover:opacity-100"
                 @mousedown.stop="closeTab(tab)">✕</span>
 
           <span v-if="tab.changed" class="absolute top-1 left-1 h-2 w-2 bg-amber-400 rounded-full"/>
