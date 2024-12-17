@@ -10,6 +10,7 @@ export default {
     disabled: Boolean,
     emitClick: String,
     emitInput: String,
+    emitInputKey: [null, String],
     error: [String, Object, Array],
     errorClass: String,
     falseValue: { default: false },
