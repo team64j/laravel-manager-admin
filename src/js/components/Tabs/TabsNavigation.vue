@@ -101,6 +101,7 @@ const select = (tab, key) => {
   store.dispatch('set', { [`Session.${keyStorage}`]: key })
   store.dispatch('set', { [keyStorage]: key })
 
+  // :TODO Сделать более универсальное решение для отправки события родительскому компоненту
   if (props.hideable) {
     const active = !tab.active
     props.data.forEach(i => i.active = false)
