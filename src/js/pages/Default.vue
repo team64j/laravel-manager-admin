@@ -1,194 +1,198 @@
-<script>
-import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
+<script setup>
+import { defineOptions, getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
 import router from '../router'
 import store from '../store'
 import Component from '../components/Layout/Component.vue'
 
-export default {
-  name: 'DefaultPage',
-  components: { Component },
-  props: {
-    currentRoute: {
-      type: Object,
-      default: router.currentRoute.value
+defineOptions({
+  name: 'DefaultPage'
+})
+
+const instance = getCurrentInstance()
+
+const emit = defineEmits(['action'])
+
+const props = defineProps({
+  currentRoute: {
+    type: Object,
+    default: router.currentRoute.value
+  }
+})
+
+const loaded = ref(false)
+
+const data = reactive({
+  url: null,
+  data: null,
+  meta: null,
+  layout: null,
+  errors: null,
+  onAction () {
+    if (typeof methods[arguments[0]] === 'function') {
+      methods[arguments[0]](...Array.from(arguments).splice(1))
+    } else {
+      emit('action', ...arguments)
     }
   },
-  setup (props, { emit }) {
-    const instance = getCurrentInstance()['ctx']
+  'onUpdate:modelValue' () {
+    emit('action', 'setTab', {
+      changed: true
+    })
+  }
+})
 
-    const loaded = ref(false)
+const methods = {
+  submit ({ action, method, route, stay } = {}, changed = false) {
+    if (route) {
+      route = router.parse(route)
+    } else {
+      route = props.currentRoute
+    }
 
-    const data = reactive({
-      url: null,
-      data: null,
-      meta: null,
-      layout: null,
-      errors: null,
-      onAction () {
-        if (typeof methods[arguments[0]] === 'function') {
-          methods[arguments[0]](...Array.from(arguments).splice(1))
-        } else {
-          emit('action', ...arguments)
-        }
-      },
-      'onUpdate:modelValue' () {
-        emit('action', 'setTab', {
-          changed: true
-        })
+    const url = route?.['meta']?.['url'] ? route['meta']['url'] : route?.['path']
+    const isNumericId = !isNaN(route['params']['id'] - 0) && route['params']['id'] > 0
+
+    if (action === 'cancel') {
+      emit('action', 'closeTab')
+      return
+    } else if (action === 'save') {
+      method ??= isNumericId ? 'patch' : 'post'
+      action = isNumericId ? 'update' : 'create'
+    } else if (action === 'delete') {
+      method ??= 'delete'
+    } else {
+      method ??= 'get'
+      action ??= 'read'
+    }
+
+    emit('action', 'setTab', {
+      key: instance.vnode.key,
+      loading: true,
+      meta: {
+        title: data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
       }
     })
 
-    const methods = {
-      submit ({ action, method, route, stay } = {}, changed = false) {
-        if (route) {
-          route = router.parse(route)
-        } else {
-          route = props.currentRoute
-        }
+    data.errors = null
 
-        const url = route?.['meta']?.['url'] ? route['meta']['url'] : route?.['path']
-        const isNumericId = !isNaN(route['params']['id'] - 0) && route['params']['id'] > 0
-
-        if (action === 'cancel') {
-          emit('action', 'closeTab')
-          return
-        } else if (action === 'save') {
-          method ??= isNumericId ? 'patch' : 'post'
-          action = isNumericId ? 'update' : 'create'
-        } else if (action === 'delete') {
-          method ??= 'delete'
-        } else {
-          method ??= 'get'
-          action ??= 'read'
-        }
-
-        emit('action', 'setTab', {
-          key: instance._.vnode.key,
-          loading: true,
-          meta: {
-            title: data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
-          }
-        })
-
-        data.errors = null
-
-        for (const i in data.layout) {
-          if (data.layout[i].slots) {
-            for (const o in data.layout[i].slots) {
-              if (data.layout[i].slots[o]?.attrs?.url) {
-                delete data.layout[i].slots[o]
-              }
-            }
+    for (const i in data.layout) {
+      if (data.layout[i].slots) {
+        for (const o in data.layout[i].slots) {
+          if (data.layout[i].slots[o]?.attrs?.url) {
+            delete data.layout[i].slots[o]
           }
         }
-
-        axios({
-          method,
-          url,
-          params: route.query,
-          data: Object.assign({}, data.data, route.query)
-        }).
-            then(r => {
-              if (r.data) {
-                if (r.data?.['meta']?.['redirect']) {
-                  location.href = r.data['meta']['redirect']
-                  return
-                }
-
-                if (r.data?.['meta']?.['reload']) {
-                  location.reload()
-                  return
-                }
-
-                if (stay === 0) {
-                  emit('action', 'closeTab')
-                  return
-                } else if (stay === 1) {
-                  emit('action', 'closeTab')
-                  router.to({ params: { id: 0 } })
-                  return
-                }
-
-                Object.assign(data, {
-                  url: r.request.responseURL,
-                  data: r.data['data'],
-                  meta: r.data['meta'],
-                  layout: r.data['layout'],
-                  errors: r.data['errors']
-                })
-
-                const meta = {}
-                const tab = data.layout.find(i => i.component === 'AppGlobalTab')
-
-                if (tab) {
-                  meta['title'] = tab.attrs.title
-                  meta['icon'] = tab.attrs.icon
-                } else {
-                  if (r.data['meta']?.['title'] !== undefined) {
-                    meta['title'] = r.data['meta']['title']
-                  } else if (r.data['data']?.['title'] !== undefined) {
-                    meta['title'] = r.data['data']['title']
-                  }
-
-                  if (r.data['meta']?.['icon'] !== undefined) {
-                    meta['icon'] = r.data['meta']['icon']
-                  } else if (r.data['data']?.['icon'] !== undefined) {
-                    meta['icon'] = r.data['data']['icon']
-                  }
-                }
-
-                if (Object.values(meta).length) {
-                  emit('action', 'setTab', {
-                    key: instance._.vnode.key,
-                    meta
-                  })
-                }
-
-                store.dispatch('set', {
-                  action,
-                  data: r.data?.data,
-                  route: props.currentRoute.path,
-                  actionUpdate: Date.now()
-                })
-
-                loaded.value = true
-              }
-            }).catch(({ response }) => {
-          if (response?.data.errors) {
-            data.errors = response.data.errors
-          }
-        }).finally(() => {
-          emit('action', 'setTab', {
-            key: instance._.vnode.key,
-            changed,
-            loading: false
-          })
-        })
-      },
-      inputReloadQuery (value, ctx) {
-        const route = router.parse({
-          query: Object.assign({}, props.currentRoute.query, { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
-        })
-        emit('action', 'pushRouter', route, () => methods.submit({}, true))
-      },
-      inputChangeQuery (value, ctx) {
-        const route = router.parse({
-          query: Object.assign({}, props.currentRoute.query, { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
-        })
-        emit('action', 'pushRouter', route, () => methods.submit({}, true))
       }
     }
 
-    onMounted(methods.submit)
+    axios({
+      method,
+      url,
+      params: route.query,
+      data: Object.assign({}, data.data, route.query)
+    }).
+        then(r => {
+          emit('action', 'setTab', {
+            key: instance.vnode.key,
+            changed: false
+          })
 
-    watch(
-        () => props.currentRoute?.path,
-        () => props.currentRoute.meta['group'] && methods.submit()
-    )
+          if (r.data) {
+            if (r.data?.['meta']?.['redirect']) {
+              location.href = r.data['meta']['redirect']
+              return
+            }
 
-    return { loaded, data }
+            if (r.data?.['meta']?.['reload']) {
+              location.reload()
+              return
+            }
+
+            store.dispatch('set', {
+              action,
+              data: r.data['data'],
+              route: props.currentRoute.path,
+              actionUpdate: Date.now()
+            })
+
+            if (stay === 0) {
+              emit('action', 'closeTab')
+              return
+            } else if (stay === 1) {
+              emit('action', 'closeTab')
+              router.to({ params: { id: 0 } })
+              return
+            }
+
+            Object.assign(data, {
+              url: r.request.responseURL,
+              data: r.data['data'],
+              meta: r.data['meta'],
+              layout: r.data['layout'],
+              errors: r.data['errors']
+            })
+
+            const meta = {}
+            const tab = data.layout.find(i => i.component === 'AppGlobalTab')
+
+            if (tab) {
+              meta['title'] = tab.attrs.title
+              meta['icon'] = tab.attrs.icon
+            } else {
+              if (r.data['meta']?.['title'] !== undefined) {
+                meta['title'] = r.data['meta']['title']
+              } else if (r.data['data']?.['title'] !== undefined) {
+                meta['title'] = r.data['data']['title']
+              }
+
+              if (r.data['meta']?.['icon'] !== undefined) {
+                meta['icon'] = r.data['meta']['icon']
+              } else if (r.data['data']?.['icon'] !== undefined) {
+                meta['icon'] = r.data['data']['icon']
+              }
+            }
+
+            if (Object.values(meta).length) {
+              emit('action', 'setTab', {
+                key: instance.vnode.key,
+                meta
+              })
+            }
+
+            loaded.value = true
+          }
+        }).catch(({ response }) => {
+      if (response?.data.errors) {
+        data.errors = response.data.errors
+      }
+    }).finally(() => {
+      emit('action', 'setTab', {
+        key: instance.vnode.key,
+        changed,
+        loading: false
+      })
+    })
+  },
+  inputReloadQuery (value, ctx) {
+    const route = router.parse({
+      query: Object.assign({}, props.currentRoute.query, { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
+    })
+    emit('action', 'pushRouter', route, () => methods.submit({}, true))
+  },
+  inputChangeQuery (value, ctx) {
+    const route = router.parse({
+      query: Object.assign({}, props.currentRoute.query, { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
+    })
+    emit('action', 'pushRouter', route, () => methods.submit({}, true))
   }
 }
+
+onMounted(methods.submit)
+
+watch(
+    () => props.currentRoute?.path,
+    () => props.currentRoute.meta['group'] && methods.submit()
+)
 </script>
 
 <template>
