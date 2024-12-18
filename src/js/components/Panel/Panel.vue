@@ -16,10 +16,11 @@ export default {
       default: 'v-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36)
     },
     modelValue: null,
+    url: String,
     data: {
       type: Array,
       default (props) {
-        return props.modelValue ?? []
+        return props.url ? [] : props.modelValue ?? []
       }
     },
     meta: Object,
@@ -32,7 +33,6 @@ export default {
       type: Array,
       default: (props) => props?.meta?.filters ?? []
     },
-    url: String,
     route: {
       type: [String, Object],
       default: (props) => props?.meta?.route
@@ -206,7 +206,7 @@ export default {
     cells (item) {
       const items = []
 
-      if (!item.hasOwnProperty('__active')) {
+      if (!item.hasOwnProperty('__active') && typeof item === 'object') {
         Object.defineProperty(item, '__active', {
           value: false,
           writable: true
@@ -249,7 +249,7 @@ export default {
         const component = structuredClone(toRaw(column.component))
 
         if (component?.attrs?.['keyValue'] !== undefined) {
-          component.attrs.value = item[component.attrs['keyValue']]
+          component.attrs.value = item[component.attrs['keyValue']] ?? item
         }
 
         return this.getComponent(component)

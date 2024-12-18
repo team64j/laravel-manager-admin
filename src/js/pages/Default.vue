@@ -111,7 +111,7 @@ const methods = {
             store.dispatch('set', {
               action,
               data: r.data['data'],
-              route: props.currentRoute.path,
+              route: props.currentRoute['path'],
               actionUpdate: Date.now()
             })
 
@@ -175,13 +175,13 @@ const methods = {
   },
   inputReloadQuery (value, ctx) {
     const route = router.parse({
-      query: Object.assign({}, props.currentRoute.query, { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
+      query: Object.assign({}, props.currentRoute['query'], { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
     })
     emit('action', 'pushRouter', route, () => methods.submit({}, true))
   },
   inputChangeQuery (value, ctx) {
     const route = router.parse({
-      query: Object.assign({}, props.currentRoute.query, { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
+      query: Object.assign({}, props.currentRoute['query'], { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
     })
     emit('action', 'pushRouter', route, () => methods.submit({}, true))
   }
@@ -190,8 +190,8 @@ const methods = {
 onMounted(methods.submit)
 
 watch(
-    () => props.currentRoute?.path,
-    () => props.currentRoute.meta['group'] && methods.submit()
+    () => props.currentRoute?.['path'],
+    () => props.currentRoute['meta']['group'] && methods.submit()
 )
 </script>
 
