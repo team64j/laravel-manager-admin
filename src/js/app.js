@@ -6,4 +6,5 @@ import App from './components/App/App.vue'
 
 window['axios'] = axios
 window['vue'] = vue
-window['app'] = vue.createApp(App).use(store).mount('#app')
+window['Vue'] = vue.createApp(App).use(store)
+window['app'] = window['Vue'].mount('#app')

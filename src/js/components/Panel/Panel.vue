@@ -147,6 +147,26 @@ export default {
         this.$emit('update:props', props)
       })
     },
+    load (route, props) {
+      if (this.history) {
+        if (this.rerender) {
+          this.$emit(
+              'action',
+              'pushRouter',
+              route
+          )
+        } else {
+          router.to(route)
+          this.get(route.query, [])
+
+          if (props) {
+            this.$emit('update:props', props, this)
+          }
+        }
+      } else {
+        this.get(route.query, [])
+      }
+    },
     selectRow (event, item, route) {
       if (item.route) {
         route = item.route
@@ -155,14 +175,14 @@ export default {
       if (!event.ctrlKey) {
         this.data.map(i => {
           if (i.data) {
-            i.data.map(j => j['@active'] = false)
+            i.data.map(j => j['__active'] = false)
           } else {
-            i['@active'] = false
+            i['__active'] = false
           }
         })
       }
 
-      item['@active'] = !item['@active']
+      item['__active'] = !item['__active']
 
       if (route) {
         if (typeof route === 'object') {
@@ -185,6 +205,13 @@ export default {
     },
     cells (item) {
       const items = []
+
+      if (!item.hasOwnProperty('__active')) {
+        Object.defineProperty(item, '__active', {
+          value: false,
+          writable: true
+        })
+      }
 
       if (this.columns?.length) {
         for (const i in this.columns) {
@@ -406,25 +433,7 @@ export default {
 
       if (this.propUrl) {
         url = router.parse('?' + url)
-        if (this.history) {
-          if (this.rerender) {
-            this.$emit(
-                'action',
-                'pushRouter',
-                url
-            )
-          } else {
-            router.to(url)
-            this.get(url.query, [])
-
-            this.$emit('update:props', {
-              data: [],
-              meta: Object.assign({}, { pagination: this.meta['pagination'] })
-            }, this)
-          }
-        } else {
-          this.get(url.query, [])
-        }
+        this.load(url)
       } else {
         this.$emit('action', 'pagination', ...arguments)
       }
@@ -504,22 +513,7 @@ export default {
           delete query['page']
 
           this.filterValues = query
-
-          if (this.history) {
-            this.$emit(
-                'action',
-                'pushRouter',
-                { query }
-            )
-            if (!this.rerender) {
-              this.$emit('update:props', {
-                data: [],
-                meta: Object.assign({}, { pagination: this.meta['pagination'] })
-              }, this)
-            }
-          } else {
-            this.get(query)
-          }
+          this.load(router.parse({ query }))
         }, delay)
       }
     },
@@ -528,23 +522,7 @@ export default {
         delete this.filterValues[name]
       }
 
-      if (this.propUrl) {
-        if (this.history) {
-          this.$emit(
-              'action',
-              'pushRouter',
-              { query: this.filterValues }
-          )
-          if (!this.rerender) {
-            this.$emit('update:props', {
-              data: [],
-              meta: Object.assign({}, { pagination: this.meta['pagination'] })
-            }, this)
-          }
-        } else {
-          this.get(this.filterValues)
-        }
-      }
+      this.load(router.parse({ query: this.filterValues }))
     },
     buildContextMenu (event, node) {
       this.idContextMenu = this.key(node)
@@ -683,9 +661,10 @@ export default {
                 <input type="text"
                        name="filter"
                        @input="columnFilters($event, f)"
-                       :value="$route?.query?.[f.name] ?? filterValues?.[f.name]" :placeholder="f.placeholder ?? '...'"
+                       :value="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]"
+                       :placeholder="f.placeholder ?? '...'"
                        autocomplete="off">
-                <i v-if="$route?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove"
+                <i v-if="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove"
                    @click="columnFilterClear(f.name)"/>
               </template>
 
@@ -731,7 +710,7 @@ export default {
                 @click="selectRow($event, item, category.route || route)"
                 @dblclick="dblClickRow($event, item)"
                 class="cursor-pointer"
-                :class="{ 'disabled' : item.disabled, 'active': item['@active'] }"
+                :class="{ 'disabled' : item.disabled, 'active': item['__active'] }"
                 @contextmenu.prevent="buildContextMenu($event, category)">
               <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
@@ -743,7 +722,7 @@ export default {
                        tag="tbody"
                        @end="sortable(category.data)">
               <template #item="{ element: item }">
-                <tr :class="{ 'disabled' : item.disabled, 'active': item['@active'] }"
+                <tr :class="{ 'disabled' : item.disabled, 'active': item['__active'] }"
                     @click="selectRow($event, item)"
                     @dblclick="dblClickRow($event, item)"
                     @contextmenu.prevent="buildContextMenu($event, item)">
@@ -761,7 +740,7 @@ export default {
             <tr v-for="item in category.data"
                 @click="selectRow($event, item)"
                 @dblclick="dblClickRow($event, item)"
-                :class="{ 'disabled' : item.disabled, 'active': item['@active'], 'cursor-pointer': item.route }"
+                :class="{ 'disabled' : item.disabled, 'active': item['__active'], 'cursor-pointer': item.route }"
                 @contextmenu.prevent="buildContextMenu($event, item)">
               <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
