@@ -13,6 +13,7 @@ if (props['data']['values']) {
   for (const i of props['data']['values']) {
     if (i['value'] === value) {
       Object.assign(props['data'], i)
+      store.dispatch('set', { ['Storage.root.' + props['data']['key']]: i['value'] })
     }
   }
 }
