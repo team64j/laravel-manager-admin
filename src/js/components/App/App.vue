@@ -257,6 +257,7 @@ export default {
     },
     onTouchstartSidebar (event) {
       this.sx = event.touches[0].clientX
+      this.sy = event.touches[0].clientY
       this.sl = null
       this.$refs.mid.addEventListener('touchmove', this.onTouchmoveSidebar)
       this.$refs.mid.addEventListener('touchend', this.onTouchendSidebar)
@@ -264,6 +265,10 @@ export default {
     onTouchmoveSidebar (event) {
       if (this.isMobile) {
         this.sl = null
+
+        if (Math.abs(event.touches[0].clientX - this.sx) < Math.abs(event.touches[0].clientY - this.sy)) {
+          return
+        }
 
         if (event.touches[0].clientX - this.sx < 0) {
           this.sl = false
