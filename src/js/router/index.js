@@ -19,21 +19,21 @@ const routes = [
     }
   },
   {
-    path: '/login',
+    path: '/auth/login',
     component: () => import('../pages/Login.vue'),
     meta: {
       hidden: true
     }
   },
   {
-    path: '/logout',
+    path: '/auth/logout',
     component: () => import('../pages/Logout.vue'),
     meta: {
       hidden: true
     }
   },
   {
-    path: '/forgot',
+    path: '/auth/forgot',
     meta: {
       hidden: true
     }
@@ -73,8 +73,8 @@ router.beforeEach((to, from, next) => {
   delete meta['__navigationId']
   to.meta = meta
 
-  if (!store.getters.get('Storage.token') && to.path !== '/login') {
-    next('/login')
+  if (!store.getters.get('Storage.token') && to.path !== '/auth/login') {
+    next('/auth/login')
   } else {
     next()
   }
