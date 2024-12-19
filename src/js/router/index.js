@@ -69,9 +69,9 @@ router.beforeEach((to, from, next) => {
   /**
    * @see https://github.com/nuxt/nuxt/issues/27982
    */
-  // const meta = { ...to.meta }
-  // delete meta['__navigationId']
-  // to.meta = meta
+  const meta = { ...to.meta }
+  delete meta['__navigationId']
+  to.meta = meta
 
   if (!store.getters.get('Storage.token') && to.path !== '/login') {
     next('/login')

@@ -2,6 +2,7 @@
 import { compile, h, reactive, toRaw, watch } from 'vue'
 import draggable from 'vuedraggable'
 import router from '../../router'
+import store from '../../store'
 
 import('./Panel.css')
 
@@ -80,6 +81,30 @@ export default {
     document.addEventListener('click', () => {
       if (this.showContextMenu) {
         this.showContextMenu = false
+      }
+    })
+
+    document.addEventListener('keydown', event => {
+      if (this.keyStorage === store.getters.get('activePanel')) {
+        if (event.ctrlKey && event.key === 'a') {
+          event.preventDefault()
+
+          this.data.forEach(i => {
+            if (i.data) {
+              i.data.forEach(j => this.selectRow(event, j))
+            } else {
+              this.selectRow(event, i)
+            }
+          })
+        } else if (event.key === 'Escape') {
+          this.data.forEach(i => {
+            if (i.data) {
+              i.data.forEach(j => j.__active = false)
+            } else {
+              i.__active = false
+            }
+          })
+        }
       }
     })
   },
@@ -172,18 +197,6 @@ export default {
         route = item.route
       }
 
-      if (!event.ctrlKey) {
-        this.data.map(i => {
-          if (i.data) {
-            i.data.map(j => j['__active'] = false)
-          } else {
-            i['__active'] = false
-          }
-        })
-      }
-
-      item['__active'] = !item['__active']
-
       if (route) {
         if (typeof route === 'object') {
           this.$emit('action', 'pushRouter', {
@@ -196,6 +209,31 @@ export default {
             params: item
           })
         }
+      } else {
+        store.dispatch('set', { activePanel: this.keyStorage })
+        const column = this.columns?.find(i => i.selectable)
+
+        if (column && item[column.component.attrs.keyValue] !== undefined) {
+          const index = this.modelValue.findIndex(i => i === item[column.component.attrs.keyValue])
+
+          if (index < 0) {
+            this.modelValue.push(item[column.component.attrs.keyValue])
+          } else {
+            this.modelValue.splice(index, 1)
+          }
+        } else {
+          if (!event.ctrlKey) {
+            this.data.forEach(i => {
+              if (i.data) {
+                i.data.forEach(j => item.__key !== j.__key && (j['__active'] = false))
+              } else {
+                item.__key !== i.__key && (i['__active'] = false)
+              }
+            })
+          }
+
+          item['__active'] = !item['__active']
+        }
       }
     },
     dblClickRow (event, item) {
@@ -206,11 +244,19 @@ export default {
     cells (item) {
       const items = []
 
-      if (!item.hasOwnProperty('__active') && typeof item === 'object') {
-        Object.defineProperty(item, '__active', {
-          value: false,
-          writable: true
-        })
+      if (typeof item === 'object') {
+        if (!item.hasOwnProperty('__key')) {
+          Object.defineProperty(item, '__key', {
+            value: 'v-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36)
+          })
+        }
+
+        if (!item['route'] && !item.hasOwnProperty('__active')) {
+          Object.defineProperty(item, '__active', {
+            value: false,
+            writable: true
+          })
+        }
       }
 
       if (this.columns?.length) {
@@ -525,14 +571,16 @@ export default {
       this.load(router.parse({ query: this.filterValues }))
     },
     buildContextMenu (event, node) {
-      this.idContextMenu = this.key(node)
-      this.showContextMenu = false
-      this.dataContextMenu = []
       const contextMenu = node['contextMenu'] !== undefined ? node['contextMenu'] : this.contextMenu
 
       if (!contextMenu) {
         return
       }
+
+      event.preventDefault()
+      this.idContextMenu = this.key(node)
+      this.showContextMenu = false
+      this.dataContextMenu = []
 
       this.classContextMenu = contextMenu?.class ?? null
 
@@ -690,7 +738,7 @@ export default {
           <tr class="cursor-pointer hover:text-blue-500"
               :class="{ closed: this.hasClosedCategory(category) }"
               @dblclick="toggleCategory(category)"
-              @contextmenu.prevent="buildContextMenu($event, category)">
+              @contextmenu="buildContextMenu($event, category)">
             <td class="px-4 pt-3 pb-1 border-b-2 font-bold"
                 :colspan="columns?.length || Object.values(category.data[0]).length">
               <span class="toggle select-none">
@@ -711,7 +759,7 @@ export default {
                 @dblclick="dblClickRow($event, item)"
                 class="cursor-pointer"
                 :class="{ 'disabled' : item.disabled, 'active': item['__active'] }"
-                @contextmenu.prevent="buildContextMenu($event, category)">
+                @contextmenu="buildContextMenu($event, category)">
               <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
             </tbody>
@@ -725,7 +773,7 @@ export default {
                 <tr :class="{ 'disabled' : item.disabled, 'active': item['__active'] }"
                     @click="selectRow($event, item)"
                     @dblclick="dblClickRow($event, item)"
-                    @contextmenu.prevent="buildContextMenu($event, item)">
+                    @contextmenu="buildContextMenu($event, item)">
                   <template v-for="cell in cells(item)">
                     <component :is="cell"
                                @action="action"
@@ -741,7 +789,7 @@ export default {
                 @click="selectRow($event, item)"
                 @dblclick="dblClickRow($event, item)"
                 :class="{ 'disabled' : item.disabled, 'active': item['__active'], 'cursor-pointer': item.route }"
-                @contextmenu.prevent="buildContextMenu($event, item)">
+                @contextmenu="buildContextMenu($event, item)">
               <component v-for="cell in cells(item)" :is="cell"/>
             </tr>
             </tbody>
