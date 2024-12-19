@@ -360,8 +360,8 @@ export default {
         this.$refs.ctx.style.left = left + `px`
       })
     },
-    clickContextMenu (item) {
-      if (item.to) {
+    clickContextMenu (event, item) {
+      if (event.buttons === 1 && event.button === 0 && item.to) {
         item.to.query ??= {}
         item.to.params ??= {}
         const route = { ...item.to }
@@ -423,7 +423,7 @@ export default {
           <div v-else-if="i.title && Object.values(i).length === 1" class="app-tree__context-menu__item">
             {{ i.title }}
           </div>
-          <div v-else class="app-tree__context-menu__item" @mousedown="clickContextMenu(i)">
+          <div v-else class="app-tree__context-menu__item" @mousedown="clickContextMenu($event, i)">
             <i v-if="i.icon" :class="i.icon" class="fa fa-fw"/>
             {{ i.title }}
           </div>

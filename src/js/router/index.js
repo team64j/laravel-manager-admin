@@ -152,6 +152,12 @@ router.parse = (route) => {
             replace(/\/$/, '')
         }
 
+        for (const q in route?.query) {
+          if (route.query[q] === ':' + k) {
+            route.query[q] = v
+          }
+        }
+
         if (route?.query?.[k]) {
           route.query[k] = route.query[k].replace(re, v)
         }
