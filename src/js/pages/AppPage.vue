@@ -5,7 +5,7 @@ import store from '../store'
 import Component from '../components/Layout/Component.vue'
 
 defineOptions({
-  name: 'DefaultPage'
+  name: 'AppPage'
 })
 
 const instance = getCurrentInstance()

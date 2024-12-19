@@ -3,7 +3,7 @@ import router from '../router'
 import Logo from '../components/Layout/Logo.vue'
 
 export default {
-  name: 'Login',
+  name: 'LoginPage',
   components: { Logo },
   data () {
     return {
@@ -264,7 +264,7 @@ export default {
 <style scoped>
 .app__page__login {
   @apply flex w-full h-full justify-center items-center text-xl bg-center bg-cover;
-  background-image: url("../../img/login-background.jpg");
+  background-image: url("./background.jpg");
 }
 .app__page__login-wrapper {
   @apply relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl px-10 py-8 shadow-lg w-[40rem] max-w-[95%]

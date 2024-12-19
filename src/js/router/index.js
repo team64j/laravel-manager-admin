@@ -11,7 +11,7 @@ const routes = [
   },
   {
     path: '/dashboard',
-    component: () => import('../pages/Default.vue'),
+    component: () => import('../pages/AppPage.vue'),
     meta: {
       fixed: true,
       icon: 'fa fa-home',
@@ -20,14 +20,14 @@ const routes = [
   },
   {
     path: '/auth/login',
-    component: () => import('../pages/Login.vue'),
+    component: () => import('../pages/LoginPage.vue'),
     meta: {
       hidden: true
     }
   },
   {
     path: '/auth/logout',
-    component: () => import('../pages/Logout.vue'),
+    component: () => import('../pages/LogoutPage.vue'),
     meta: {
       hidden: true
     }
@@ -40,11 +40,11 @@ const routes = [
   },
   {
     path: '/redirect',
-    component: () => import('../pages/Redirect.vue'),
+    component: () => import('../pages/RedirectPage.vue'),
     children: [
       {
         path: '/redirect/:path(.*)',
-        component: () => import('../pages/Redirect.vue')
+        component: () => import('../pages/RedirectPage.vue')
       }
     ],
     meta: {
@@ -53,7 +53,7 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    component: () => import('../pages/NotFound.vue'),
+    component: () => import('../pages/NotFoundPage.vue'),
     meta: {
       icon: 'fa fa-circle-exclamation'
     }

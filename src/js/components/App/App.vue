@@ -168,7 +168,7 @@ export default {
 
             if (response.data.routes) {
               const routes = router.getRoutes()
-              const component = () => import('../../pages/Default.vue')
+              const component = () => import('../../pages/AppPage.vue')
               for (const route of response.data.routes) {
                 if (routes.some(i => (i.name || i.path) === (route.name || route.path))) {
                   continue
