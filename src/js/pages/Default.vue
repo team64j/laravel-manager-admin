@@ -65,13 +65,20 @@ const methods = {
       action ??= 'read'
     }
 
-    emit('action', 'setTab', {
-      key: instance.vnode.key,
-      loading: true,
-      meta: {
-        title: data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
-      }
-    })
+    if (data.data) {
+      emit('action', 'setTab', {
+        key: instance.vnode.key,
+        loading: true
+      })
+    } else {
+      emit('action', 'setTab', {
+        key: instance.vnode.key,
+        loading: true,
+        meta: {
+          title: data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
+        }
+      })
+    }
 
     data.errors = null
 

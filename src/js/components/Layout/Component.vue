@@ -107,8 +107,8 @@ export default {
         attrs.meta = attrs.meta ?? props.meta
       }
 
-      if ((component?.extends?.props || component?.props)?.['error']) {
-        attrs.error = props.errors?.[attrs.key]
+      if (props.errors && ((component?.extends?.props || component?.props)?.['error'])) {
+        attrs.error = props.errors?.[attrs.key] ?? props.errors?.[attrs.key.replace('data.', '')]
       }
 
       (component.extends?.emits ?? component.emits ?? []).forEach(e => {
