@@ -159,7 +159,7 @@ export default {
           <div class="app__page__login-form-group app__page__login-form-hostname">
             <input v-model="hostname" type="text" id="hostname"
                    class="rounded-r-none bg-transparent dark:bg-transparent"
-                   :class="[ errors['hostname'] ? '!border-rose-500' : '', data?.languages?.length ? 'rounded-l-none' : '']"
+                   :class="{ '!border-rose-500 !z-10 !ring-rose-500':  errors['hostname'], 'rounded-l-none': data?.languages?.length }"
                    @keyup.enter="checkServer"
                    autocomplete="off">
           </div>
@@ -176,7 +176,7 @@ export default {
                     :disabled="isCheckServer"
                     @click="checkServer">
               <i class="fa fa-globe fa-fw"
-                 :class="[ connected ? 'text-green-500' : '', isCheckServer? 'opacity-0' : '']"/>
+                 :class="{ 'text-green-500': connected,'opacity-0': isCheckServer }"/>
               <i v-if="isCheckServer" class="app__page__login-loader"/>
             </button>
           </div>
@@ -191,7 +191,7 @@ export default {
                  id="username"
                  name="username"
                  class="bg-transparent dark:bg-transparent"
-                 :class="[ errors['username'] ? '!border-rose-500' : '']"
+                 :class="{ '!border-rose-500 !z-10': errors['username'] }"
                  autocomplete="username"
                  @keyup.enter="login">
         </div>
@@ -202,7 +202,7 @@ export default {
                  id="password"
                  name="password"
                  class="bg-transparent dark:bg-transparent"
-                 :class="[ errors['password'] ? '!border-rose-500' : '']"
+                 :class="{ '!border-rose-500 !z-10': errors['password'] }"
                  @keyup.enter="login">
         </div>
 
@@ -213,7 +213,7 @@ export default {
           </div>
           <div>
             <button type="button" class="btn-green" :disabled="isLogin" @click="login">
-              <span :class="[ isLogin ? 'opacity-0' : '' ]">{{ lang.login }}</span>
+              <span :class="{ 'opacity-0': isLogin }">{{ lang.login }}</span>
               <i v-if="isLogin" class="app__page__login-loader"/>
             </button>
           </div>
@@ -267,7 +267,7 @@ export default {
   background-image: url("../../background.jpg");
 }
 .app__page__login-wrapper {
-  @apply relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl px-10 py-8 shadow-lg w-[40rem] max-w-[95%]
+  @apply relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl px-10 py-8 shadow-lg w-[40rem] max-w-[95%] min-h-64
 }
 .app__page__login-logo {
   @apply flex items-center justify-center

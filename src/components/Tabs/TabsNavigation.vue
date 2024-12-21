@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineOptions, defineProps, getCurrentInstance, ref, watch } from 'vue'
+import { computed, getCurrentInstance, ref, watch } from 'vue'
 import store from '../../store'
 import router from '../../router'
 
@@ -33,9 +33,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['action', 'update:props'])
-
-const refRows = ref()
-
 const keyStorage = `tabs_` + props.id.toLowerCase()
 
 store.dispatch('set', { [keyStorage]: store.getters.get(`Session.${keyStorage}`, 0) })

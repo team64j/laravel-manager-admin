@@ -1,6 +1,6 @@
 <script setup>
 import TabsNavigation from './TabsNavigation.vue'
-import { computed, defineOptions, defineProps } from 'vue'
+import { computed } from 'vue'
 import store from '../../store'
 
 defineOptions({
@@ -44,22 +44,18 @@ const keyStorage = `tabs_` + props.id.toLowerCase()
 
 const index = computed(() => store.getters.get(keyStorage, 0))
 
-const classes = computed(() => {
-  return {
-    'app-tabs__with-navigation': props.navigation,
-    'app-tabs__without-rows': props.data.length === 1,
-    'app-tabs__small': props.smallTabs,
-    'app-tabs__vertical': props.vertical
-  }
-})
-
 const action = (...args) => {
   emit('action', ...args)
 }
 </script>
 
 <template>
-  <div :id="id + 'Tabs'" :class="classes"
+  <div :id="id + 'Tabs'" :class="{
+        'app-tabs__with-navigation': navigation,
+        'app-tabs__without-rows': data.length === 1,
+        'app-tabs__small': smallTabs,
+        'app-tabs__vertical': vertical
+      }"
        class="app-tabs flex flex-col grow content-start overflow-hidden">
     <TabsNavigation v-if="navigation" v-bind="props" @action="action"/>
 
