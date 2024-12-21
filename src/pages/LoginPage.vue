@@ -231,7 +231,7 @@ export default {
             <i class="app__page__login-modal-close fa fa-close" @click="toggleModal('isShowLanguages')"/>
             <div v-for="i in data.languages"
                  class="app__page__login-modal-row"
-                 :class="[lang.key === i.key ? 'app__page__login-modal-row-selected' : '']"
+                 :class="{ 'app__page__login-modal-row-selected': lang.key === i.key }"
                  @click="selectLanguage(i)">
               <i class="fa fa-check fa-fw app__page__login-modal-check"/>
               <span class="app__page__login-modal-row-title">{{ i.value }}</span>
@@ -247,7 +247,7 @@ export default {
             <i class="app__page__login-modal-close fa fa-close" @click="toggleModal('isShowHostnames')"/>
             <div v-for="i in hostnames"
                  class="app__page__login-modal-row"
-                 :class="[hostname === i.name ? 'app__page__login-modal-row-selected' : '']"
+                 :class="{ 'app__page__login-modal-row-selected': hostname === i.name}"
                  @click="selectHostname(i)">
               <i class="fa fa-check fa-fw app__page__login-modal-check"/>
               <span class="app__page__login-modal-row-title">{{ i.name }}</span>
@@ -264,7 +264,7 @@ export default {
 <style scoped>
 .app__page__login {
   @apply flex w-full h-full justify-center items-center text-xl bg-center bg-cover;
-  background-image: url("./background.jpg");
+  background-image: url("../../background.jpg");
 }
 .app__page__login-wrapper {
   @apply relative overflow-hidden bg-black/80 text-white/80 font-medium rounded-xl px-10 py-8 shadow-lg w-[40rem] max-w-[95%]

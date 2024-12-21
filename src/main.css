@@ -26,9 +26,9 @@ html, body, #app {
     [type='checkbox'], [type='radio'], [type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select, button, [type="button"], [role="button"] {
         @apply appearance-none block w-full px-3 py-1.5 rounded bg-white border border-inherit dark:text-gray-50 dark:border-inherit dark:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-offset-0 focus:ring-blue-500 focus:outline-0 transition
     }
-/*    .dark input, .dark select, .dark textarea, .dark button {
-        color-scheme: dark
-    }*/
+    /*    .dark input, .dark select, .dark textarea, .dark button {
+            color-scheme: dark
+        }*/
     input.focus, select.focus, textarea.focus, button.focus {
         @apply border-blue-500 dark:border-blue-500 ring-1 ring-offset-0 ring-blue-500 outline-0
     }

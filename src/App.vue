@@ -1,18 +1,16 @@
 <script>
 import { RouterView } from 'vue-router'
+import router from './router'
+import store from './store'
 import { Notifications } from '@kyvg/vue3-notification'
-import GlobalMenu from '../GlobalMenu/GlobalMenu.vue'
-import GlobalTabs from '../GlobalTabs/GlobalTabs.vue'
-import Datepicker from '../Datepicker/Datepicker.vue'
-import Component from '../Layout/Component.vue'
-import Tooltip from '../Tooltip/Tooltip.vue'
-import Search from '../Search/Search.vue'
-import router from '../../router'
-import store from '../../store'
-import Logo from '../Layout/Logo.vue'
-import Modal from '../Modal/Modal.vue'
-
-import('./App.css')
+import GlobalMenu from './components/GlobalMenu/GlobalMenu.vue'
+import GlobalTabs from './components/GlobalTabs/GlobalTabs.vue'
+import Datepicker from './components/Datepicker/Datepicker.vue'
+import Component from './components/Layout/Component.vue'
+import Tooltip from './components/Tooltip/Tooltip.vue'
+import Search from './components/Search/Search.vue'
+import Logo from './components/Layout/Logo.vue'
+import Modal from './components/Modal/Modal.vue'
 
 export default {
   name: 'App',
@@ -168,7 +166,7 @@ export default {
 
             if (response.data.routes) {
               const routes = router.getRoutes()
-              const component = () => import('../../pages/AppPage.vue')
+              const component = () => import('./pages/AppPage.vue')
               for (const route of response.data.routes) {
                 if (routes.some(i => (i.name || i.path) === (route.name || route.path))) {
                   continue
@@ -190,7 +188,7 @@ export default {
               document.title = response.data.config['site_name']
             }
 
-            Object.entries(import.meta.glob('../*/*.vue', { eager: true })).
+            Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).
                 forEach(([, { default: module }]) => {
                   const name = `App` + (module.name || module.__name)
                   if (module?.['__isStatic'] && !this.$.appContext.components[name]) {
@@ -219,7 +217,7 @@ export default {
       this.loaded = true
       this.layout = false
       this.$.slots = {}
-      router.to('/login')
+      router.to('/auth/login')
     },
     assets (assets) {
       assets.forEach(i => {
@@ -424,3 +422,63 @@ export default {
     <logo class="w-24 h-24 animate-ping"/>
   </div>
 </template>
+
+<style>
+.app {
+  @apply flex flex-col h-full w-full
+}
+.app-wrapper {
+  @apply grow flex flex-row overflow-hidden
+}
+.app .app-resizer {
+  @apply absolute right-0 top-0 bottom-0 z-10 lg:z-30 shrink-0 w-0 cursor-col-resize hidden lg:block
+}
+.app .app-resizer > div {
+  @apply fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize
+}
+.app .app-resizer.active > div {
+  @apply block
+}
+.app .app-resizer::before, .app .app-resizer::after {
+  @apply absolute h-full content-[""]
+}
+.app .app-resizer::before {
+  @apply w-1.5 -ml-0.5
+}
+.app .app-resizer::after {
+  @apply absolute h-full w-1 transition duration-100
+}
+.app .app-resizer:hover::after {
+  @apply bg-blue-500/50
+}
+.app .app-sidebar {
+  @apply shrink-0 absolute lg:relative z-20 flex grow-0 h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition lg:transition-[width]
+}
+.app.app-mobile .app-sidebar {
+  @apply !w-full
+}
+.app .app-left + .app-sidebar {
+  @apply left-12 lg:left-0 max-w-[calc(100%_-_3rem)]
+}
+.app.app-mobile .app-left + .app-sidebar {
+  @apply !w-full
+}
+.app.app-sidebar-hidden .app-sidebar {
+  @apply -translate-x-full lg:!w-0 lg:translate-x-0 lg:border-0
+}
+.app.app-sidebar-hidden .app-resizer {
+  @apply hidden
+}
+.app.app-sidebar-resize .app-sidebar {
+  @apply transition-none
+}
+#app-slot-top:empty, #app-slot-left:empty, #app-slot-sidebar:empty, #app-slot-main:empty, #app-slot-right:empty, #app-slot-bottom:empty {
+  @apply hidden
+}
+.app .app-main::after {
+  @apply lg:hidden content-[""] z-10 fixed left-0 top-14 right-0 bottom-0
+}
+.app.app-sidebar-hidden .app-main::after {
+  @apply hidden
+}
+</style>

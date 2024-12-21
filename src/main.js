@@ -1,8 +1,9 @@
-import '../css/app.css'
 import * as vue from 'vue'
 import store from './store'
 import axios from './services/Axios'
-import App from './components/App/App.vue'
+import App from './App.vue'
+
+import ('./main.css')
 
 window['axios'] = axios
 window['vue'] = vue

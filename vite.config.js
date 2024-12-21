@@ -16,20 +16,20 @@ export default {
         //     return id.toString().split('node_modules/')[1].split('/')[0].toString()
         //   }
         // },
-        assetFileNames: (assetInfo) => {
-          let extType = assetInfo.name.split('.').at(1),
-            ext = assetInfo.name.split('.').pop()
-
-          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
-            extType = 'img'
-          } else if (/ttf|woff2/i.test(ext)) {
-            extType = 'fonts'
-          }
-
-          return `assets/${extType}/[name].[hash][extname]`
-        },
-        chunkFileNames: 'assets/js/[name].[hash].js',
-        entryFileNames: 'assets/js/[name].[hash].js'
+        // assetFileNames: (assetInfo) => {
+        //   let extType = assetInfo.name.split('.').at(1),
+        //     ext = assetInfo.name.split('.').pop()
+        //
+        //   if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+        //     extType = 'img'
+        //   } else if (/ttf|woff2/i.test(ext)) {
+        //     extType = 'fonts'
+        //   }
+        //
+        //   return `assets/${extType}/[name].[hash][extname]`
+        // },
+        // chunkFileNames: 'assets/js/[name].[hash].js',
+        // entryFileNames: 'assets/js/[name].[hash].js'
       }
     }
   },
