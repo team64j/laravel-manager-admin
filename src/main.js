@@ -3,8 +3,6 @@ import store from './store'
 import axios from './services/Axios'
 import App from './App.vue'
 
-import ('./main.css')
-
 window['axios'] = axios
 window['vue'] = vue
 window['Vue'] = vue.createApp(App).use(store)

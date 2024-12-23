@@ -1,5 +1,5 @@
 <script setup>
-import { defineOptions, getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
+import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
 import router from '../router'
 import store from '../store'
 import Component from '../components/Layout/Component.vue'

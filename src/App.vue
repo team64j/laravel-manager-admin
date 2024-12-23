@@ -1,30 +1,28 @@
 <script>
+import { Notifications } from '@kyvg/vue3-notification'
 import { RouterView } from 'vue-router'
 import router from './router'
 import store from './store'
-import { Notifications } from '@kyvg/vue3-notification'
-import GlobalMenu from './components/GlobalMenu/GlobalMenu.vue'
 import GlobalTabs from './components/GlobalTabs/GlobalTabs.vue'
 import Datepicker from './components/Datepicker/Datepicker.vue'
 import Component from './components/Layout/Component.vue'
 import Tooltip from './components/Tooltip/Tooltip.vue'
 import Search from './components/Search/Search.vue'
-import Logo from './components/Layout/Logo.vue'
 import Modal from './components/Modal/Modal.vue'
+import Logo from './components/Layout/Logo.vue'
 
 export default {
   name: 'App',
   components: {
+    Component,
+    Datepicker,
+    GlobalTabs,
     Logo,
+    Modal,
     Notifications,
     RouterView,
-    Tooltip,
-    Datepicker,
-    GlobalMenu,
-    GlobalTabs,
-    Component,
     Search,
-    Modal
+    Tooltip
   },
   data () {
     return {
@@ -427,9 +425,6 @@ export default {
 .app {
   @apply flex flex-col h-full w-full
 }
-.app-wrapper {
-  @apply grow flex flex-row overflow-hidden
-}
 .app .app-resizer {
   @apply absolute right-0 top-0 bottom-0 z-10 lg:z-30 shrink-0 w-0 cursor-col-resize hidden lg:block
 }
@@ -471,9 +466,6 @@ export default {
 }
 .app.app-sidebar-resize .app-sidebar {
   @apply transition-none
-}
-#app-slot-top:empty, #app-slot-left:empty, #app-slot-sidebar:empty, #app-slot-main:empty, #app-slot-right:empty, #app-slot-bottom:empty {
-  @apply hidden
 }
 .app .app-main::after {
   @apply lg:hidden content-[""] z-10 fixed left-0 top-14 right-0 bottom-0
