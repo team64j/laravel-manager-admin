@@ -75,7 +75,7 @@ export default {
   created () {
     this.bootstrap()
 
-    window.addEventListener('resize', event => {
+    window.addEventListener('resize', () => {
       const check = this.calcIsMobile()
       if (check !== this.isMobile) {
         this.isMobile = check
