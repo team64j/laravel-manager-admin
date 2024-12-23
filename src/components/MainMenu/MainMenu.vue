@@ -13,7 +13,7 @@ const instance = getCurrentInstance()
 const props = defineProps(['data'])
 const emit = defineEmits(['action'])
 
-let enterTimer = 0
+let enterTimer = 0, filterTimer = 0
 
 const methods = {
   onClick (event, data) {
@@ -106,12 +106,33 @@ const methods = {
   onNav (event, url, ctx) {
     methods.loadData(url, ctx.data)
   },
+  onFilterInput (event, item, ctx) {
+    clearTimeout(filterTimer)
+    filterTimer = setTimeout(() => {
+      item.filter = event.target.value
+      methods.loadData(
+          router.parse({ path: ctx.data['url'], query: { filter: event.target.value } }).fullPath,
+          ctx.data
+      )
+    }, 500)
+  },
+  onFilterClear (event, item, ctx) {
+    item.filter = ''
+    methods.loadData(
+        router.parse({ path: ctx.data['url'] }).fullPath,
+        ctx.data
+    )
+  },
   loadData (url, item) {
+    const route = router.parse(url)
     item['loading'] = true
     item['data'] = null
-    axios.get(url).then(({ data: { data, meta } }) => {
+    axios.get(route.fullPath).then(({ data: { data, meta } }) => {
       item['data'] = [].concat(
           meta['prepend'] ?? [],
+          (meta['pagination'] && (meta['pagination']['total'] > meta['pagination']['per'])) || route.query['filter'] !== undefined
+              ? [{ filter: route.query['filter'] || '' }]
+              : [],
           data.map(i => {
             if (meta['route']) {
               i.to = router.parse({ path: meta['route'], params: i })
@@ -166,7 +187,7 @@ onMounted(() => {
 .app-main-menu li[data-level="1"] > div {
   @apply rounded
 }
-.app-main-menu li.app-main-menu__hover > div {
+.app-main-menu li.app-main-menu__hover:not(.app-main-menu__filter) > div {
   @apply bg-blue-600 text-white
 }
 .app-main-menu li[data-level="1"].app-main-menu__hover > div {

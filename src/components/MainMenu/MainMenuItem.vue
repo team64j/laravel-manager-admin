@@ -22,7 +22,8 @@ if (props['data']['values']) {
 <template>
   <li :data-level="level"
       :class="{
-    'sticky bottom-0 mt-auto !bg-inherit': data['prev'] || data['next']
+        'sticky bottom-0 mt-auto !bg-inherit': data['prev'] || data['next'],
+        'app-main-menu__filter': data['filter'] !== undefined
       }"
       @mouseenter="emit('action', 'onEnter', $event, data)"
       @mouseleave="emit('action', 'onOut', $event, data)"
@@ -42,6 +43,21 @@ if (props['data']['values']) {
               @click.stop="emit('action', 'onNav', $event, data['next'], instance.parent.props)">
         <i class="fa fa-angle-right fa-fw"/>
       </button>
+    </div>
+
+    <div v-else-if="data['filter'] !== undefined" class="py-1 !px-2 relative" @click.stop="">
+      <input
+          type="text"
+          name="filter"
+          class="px-2 pr-4 py-0.5 h-7"
+          placeholder="..."
+          autocomplete="off"
+          autofocus
+          :value="data['filter']"
+          @input="emit('action', 'onFilterInput', $event, data, instance.parent.props)"/>
+
+      <i class="fa fa-remove absolute right-4 hover:text-rose-600" :class="{ 'hidden': !data['filter'] }"
+         @click="emit('action', 'onFilterClear', $event, data, instance.parent.props)"/>
     </div>
 
     <div v-else :data-tooltip="data['title']">
