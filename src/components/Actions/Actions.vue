@@ -1,105 +1,95 @@
-<script>
+<script setup>
 import('./Actions.css')
-import { h } from 'vue'
+import { computed } from 'vue'
 import store from '../../store'
 import Button from '../Form/Button.vue'
 
-export default {
-  __isStatic: true,
+defineOptions({
   name: 'Actions',
-  components: { Button },
-  emits: ['action'],
-  props: {
-    data: Array
-  },
-  setup (props, { emit }) {
-    function click (params, stay) {
-      if (params.to) {
-        if (params.to.href) {
-          window.open(params.to.href)
-        } else if (params.to.path) {
-          emit('action', 'pushRouter', params.to)
-        }
+  __isStatic: true
+})
 
-        if (params.to.close) {
-          emit('action', 'closeTab')
-        }
+const props = defineProps({
+  data: Array
+})
 
-        return
-      }
+const emit = defineEmits(['action'])
 
-      params = params.action ?? { action: params }
+const stay = computed(() => store.getters['Storage/get']('stay') || 0)
 
-      if (typeof params === 'string') {
-        params = {
-          action: params
-        }
-      }
-
-      if (stay !== undefined) {
-        store.dispatch('Storage/set', ['stay', stay])
-      }
-
-      emit('action', 'submit', { ...params, stay })
+function click (params, stay) {
+  if (params.to) {
+    if (params.to.href) {
+      window.open(params.to.href)
+    } else if (params.to.path) {
+      emit('action', 'pushRouter', params.to)
     }
 
-    return props.data.length && (() => {
-      const stay = store.getters['Storage/get']('stay') || 0
+    if (params.to.close) {
+      emit('action', 'closeTab')
+    }
 
-      return h('div', {
-        class: 'app-actions'
-      }, props.data.map(i => {
-        if (i.data) {
-          return h('div', {
-                class: 'app-actions__group'
-              },
-              [].concat(i.data.filter((j, k) => k === stay).map(j => {
-                return h(Button, {
-                  icon: j.icon,
-                  class: i.class,
-                  value: i.title + ' + ' + j.title,
-                  loader: store.getters.get('tabsLoading'),
-                  onClick: () => click(i, j.stay)
-                })
-              })).concat(
-                  h(Button, {
-                    class: ['app-actions__toggle', i.class],
-                    onMousedown (event) {
-                      if (event.currentTarget === document.activeElement) {
-                        event.currentTarget.blur()
-                        event.preventDefault()
-                      }
-                    }
-                  }, () => [
-                    h('i', { class: 'fa fa-angle-down fa-fw' })
-                  ])
-              ).concat(h('div', {
-                class: 'app-actions__save-buttons'
-              }, i.data.filter((j, k) => k !== stay).map(j => {
-                return h(Button, {
-                  icon: j.icon,
-                  class: i.class,
-                  value: j.title,
-                  loader: store.getters.get('tabsLoading'),
-                  onMousedown: () => click(i, j.stay)
-                }, {
-                  icon: () => [
-                    h('i', { class: i.icon }),
-                    h('i', { class: 'fa fa-plus fa-fw' })
-                  ]
-                })
-              })))
-          )
-        } else {
-          return h(Button, {
-            icon: i.icon,
-            value: '<span>' + i.title + '</span>',
-            class: i.class,
-            onClick: () => click(i)
-          })
-        }
-      }))
-    })
+    return
+  }
+
+  params = params.action ?? { action: params }
+
+  if (typeof params === 'string') {
+    params = {
+      action: params
+    }
+  }
+
+  if (stay !== undefined) {
+    store.dispatch('Storage/set', ['stay', stay])
+  }
+
+  emit('action', 'submit', { ...params, stay })
+}
+
+function clickGroup (event) {
+  if (event.currentTarget === document.activeElement) {
+    event.currentTarget.blur()
+    event.preventDefault()
   }
 }
 </script>
+
+<template>
+  <div v-if="props.data.length" class="app-actions">
+    <template v-for="i in props.data">
+      <div v-if="i.data" class="app-actions__group">
+        <Button v-for="j in i.data.filter((j, k) => k === stay)"
+                :icon="j.icon"
+                :class="i.class"
+                :value="i.title + ' + ' + j.title"
+                :loader="store.getters.get('tabsLoading')"
+                @click="click(i, j.stay)"/>
+
+        <Button class="app-actions__toggle" :class="i.class" @mousedown="clickGroup">
+          <i class="fa fa-angle-down fa-fw"/>
+        </Button>
+
+        <div class="app-actions__save-buttons">
+          <Button v-for="j in i.data.filter((j, k) => k !== stay)"
+                  :icon="j.icon"
+                  :class="i.class"
+                  :value="j.title"
+                  :loader="store.getters.get('tabsLoading')"
+                  @mousedown="() => click(i, j.stay)">
+            <template #icon>
+              <i :class="i.icon"/>
+              <i class="fa fa-plus fa-fw"/>
+            </template>
+          </Button>
+        </div>
+      </div>
+
+      <Button v-else
+              :icon="i.icon"
+              :class="i.class"
+              :value="'<span>' + i.title + '</span>'"
+              @click="click(i)"/>
+    </template>
+  </div>
+</template>

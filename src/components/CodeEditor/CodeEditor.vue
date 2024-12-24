@@ -1,10 +1,3 @@
-<script>
-export default {
-  __isStatic: true,
-  name: 'CodeEditor'
-}
-</script>
-
 <script setup>
 import { computed, getCurrentInstance, h, markRaw, reactive } from 'vue'
 import { Codemirror } from 'vue-codemirror'
@@ -19,6 +12,11 @@ import { css } from '@codemirror/lang-css'
 import { vue } from '@codemirror/lang-vue'
 import { sql } from '@codemirror/lang-sql'
 import store from '../../store'
+
+defineOptions({
+  name: 'CodeEditor',
+  __isStatic: true
+})
 
 const instance = getCurrentInstance()
 
@@ -150,11 +148,11 @@ function onClickSelect (event) {
 }
 
 function onClickFullscreen () {
-  if (instance.refs.editor.classList.contains('app-editor__fullscreen')) {
-    instance.refs.editor.classList.remove('app-editor__fullscreen')
+  if (instance.refs.editor.classList.contains('app-editor__full-screen')) {
+    instance.refs.editor.classList.remove('app-editor__full-screen')
     instance.vnode.el.appendChild(instance.refs.editor)
   } else {
-    instance.refs.editor.classList.add('app-editor__fullscreen')
+    instance.refs.editor.classList.add('app-editor__full-screen')
     instance.proxy.$root.$el.appendChild(instance.refs.editor)
   }
 }
@@ -164,7 +162,7 @@ document.addEventListener('keydown', event => {
     return
   }
 
-  if (instance.refs.editor.classList.contains('app-editor__fullscreen') && event.key === 'Escape') {
+  if (instance.refs.editor.classList.contains('app-editor__full-screen') && event.key === 'Escape') {
     onClickFullscreen()
   }
 })
@@ -178,7 +176,7 @@ document.addEventListener('keydown', event => {
     </div>
 
     <div ref="editor" class="app-editor relative flex grow flex-col"
-         :class="[inputClass, fullSize ? 'app-editor__fullsize' : '']">
+         :class="[inputClass, fullSize ? 'app-editor__full-size' : '']">
 
       <div class="app-editor__settings">
         <i class="fas fa-expand fa-compress cursor-pointer app-editor__btn-fullscreen" @click="onClickFullscreen"/>
@@ -222,11 +220,11 @@ document.addEventListener('keydown', event => {
 .app-editor__menu span {
   @apply block px-4 py-1 cursor-pointer hover:bg-blue-500
 }
-.app-editor.app-editor__fullscreen {
+.app-editor.app-editor__full-screen {
   @apply fixed z-50 left-0 top-0 right-0 bottom-0 bg-slate-100 dark:bg-gray-800;
   z-index: 90099;
 }
-.app-editor.app-editor__fullsize {
+.app-editor.app-editor__full-size {
   @apply h-full
 }
 </style>
@@ -238,7 +236,7 @@ document.addEventListener('keydown', event => {
 .app-editor .ͼ1.cm-editor {
   @apply overflow-hidden w-full min-h-full bg-white dark:bg-gray-800 rounded transition-all
 }
-.app-editor.app-editor__fullsize .ͼ1.cm-editor {
+.app-editor.app-editor__full-size .ͼ1.cm-editor {
   @apply h-full
 }
 .app-editor .ͼ1.cm-editor.cm-focused {
@@ -253,7 +251,7 @@ document.addEventListener('keydown', event => {
 .app-editor .ͼ1 .cm-content {
   @apply grow !basis-0 max-w-full whitespace-pre-wrap break-words break-all
 }
-.app-editor.app-editor__fullscreen > textarea, .app-editor.app-editor__fullscreen .v-codemirror, .app-editor.app-editor__fullscreen .v-codemirror .cm-editor {
+.app-editor.app-editor__full-screen > textarea, .app-editor.app-editor__full-screen .v-codemirror, .app-editor.app-editor__full-screen .v-codemirror .cm-editor {
   @apply !h-full text-lg
 }
 </style>
