@@ -26,10 +26,10 @@ export default {
       this.model = ''
     },
     onShow () {
-      this.$root.$refs.datepicker.make(this)
+      this.$root.$refs.datepicker.on(this)
     },
     onClose () {
-      //this.$root.$refs.datepicker.destroy()
+      this.$root.$refs.datepicker.off()
     }
   }
 }
