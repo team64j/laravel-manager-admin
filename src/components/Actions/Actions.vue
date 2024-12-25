@@ -1,5 +1,4 @@
 <script setup>
-import('./Actions.css')
 import { computed } from 'vue'
 import store from '../../store'
 import Button from '../Form/Button.vue'
@@ -93,3 +92,42 @@ function clickGroup (event) {
     </template>
   </div>
 </template>
+
+<style scoped>
+.app-actions {
+  @apply fixed z-20 flex rounded-b bg-white/60 dark:bg-gray-700/60 p-2 right-2
+}
+.app-actions > button, .app-actions > div {
+  @apply inline-flex mx-0.5
+}
+.app-actions button:not(.app-actions__toggle) > i.fa {
+  @apply md:hidden
+}
+.app-actions button span {
+  @apply hidden md:inline-block px-1
+}
+.app-actions .app-actions__group {
+  @apply relative
+}
+.app-actions .app-actions__group > button {
+  @apply rounded-r-none last-of-type:rounded-r last-of-type:rounded-l-none
+}
+.app-actions .app-actions__toggle:not(:focus):not(:hover) {
+  @apply border-l border-l-white/20
+}
+.app-actions .app-actions__toggle > i {
+  @apply transition
+}
+.app-actions .app-actions__toggle:focus > i {
+  @apply rotate-180
+}
+.app-actions .app-actions__save-buttons {
+  @apply absolute left-0 top-full mt-0.5 w-full flex flex-col opacity-0 invisible shadow transition
+}
+.app-actions .app-actions__toggle:focus ~ .app-actions__save-buttons {
+  @apply opacity-100 visible
+}
+.app-actions .app-actions__save-buttons button {
+  @apply border-t-0 rounded-none first:rounded-t last:rounded-b
+}
+</style>

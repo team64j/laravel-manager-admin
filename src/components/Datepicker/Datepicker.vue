@@ -2,8 +2,6 @@
 import { nextTick, reactive, ref } from 'vue'
 import store from '../../store'
 
-import('./Datepicker.css')
-
 defineOptions({
   name: 'Datepicker'
 })
@@ -331,3 +329,51 @@ document.addEventListener('mousedown', () => {
     </transition>
   </teleport>
 </template>
+
+<style scoped>
+.app-datepicker {
+  @apply absolute z-50 top-0 py-0.5
+}
+.app-datepicker__content {
+  @apply relative overflow-hidden bg-white dark:bg-gray-700 border shadow-2xl rounded
+}
+.app-datepicker table {
+  @apply border-collapse border-spacing-0 w-full
+}
+.app-datepicker th, .app-datepicker td {
+  @apply text-center;
+}
+.app-datepicker thead td, .app-datepicker tfoot td {
+  @apply px-1 first:pl-2 last:pr-2 py-2
+}
+.app-datepicker tbody th {
+  @apply bg-gray-50 dark:bg-gray-600
+}
+.app-datepicker th:nth-child(6), .app-datepicker th:nth-child(7), .app-datepicker td:nth-child(6), .app-datepicker td:nth-child(7) {
+  @apply text-rose-500
+}
+.app-datepicker tbody label {
+  @apply overflow-hidden relative block w-10 h-10
+}
+.app-datepicker tbody label input {
+  @apply absolute w-0 h-0 invisible
+}
+.app-datepicker tbody label span {
+  @apply flex justify-center items-center w-full h-full opacity-50 rounded transition
+}
+.app-datepicker tbody label span.app-datepicker-day__active {
+  @apply opacity-100 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600
+}
+.app-datepicker tbody label span.app-datepicker-day__current {
+  @apply !bg-green-500 !text-white
+}
+.app-datepicker tbody label span.app-datepicker-day__selected {
+  @apply !bg-blue-600 !text-white
+}
+.app-datepicker select, .app-datepicker input, .app-datepicker button {
+  @apply py-0.5 px-1
+}
+.app-datepicker button {
+  @apply w-full justify-center
+}
+</style>

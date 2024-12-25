@@ -1,12 +1,15 @@
-<script>
-import { h } from 'vue'
-
-export default {
-  __isStatic: true,
+<script setup>
+defineOptions({
   name: 'Template',
-  props: ['class'],
-  setup (props, { slots }) {
-    return () => h('div', { class: props.class }, slots)
-  }
-}
+  __isStatic: true,
+  render () {}
+})
+
+const $props = defineProps(['class'])
 </script>
+
+<template>
+  <div :class="$props.class">
+    <slot name="default"/>
+  </div>
+</template>

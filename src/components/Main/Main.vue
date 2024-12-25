@@ -1,29 +1,37 @@
-<script>
-import('./Main.css')
+<script setup>
+import { getCurrentInstance, ref } from 'vue'
 
-export default {
+defineOptions({
   name: 'Main',
   __isStatic: true,
-  props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'],
-  emits: ['action'],
-  methods: {
-    action () {
-      this.$emit('action', ...arguments)
-    },
-    onMousedownResizer (event) {
-      this.$refs.resizer.addEventListener('mousemove', this.onMousemoveResizer)
-      this.$refs.resizer.addEventListener('mouseup', this.onMouseupResizer)
-      this.$refs.resizer.x = event.clientX - this.$refs.resizer.parentElement.offsetWidth
-    },
-    onMousemoveResizer (event) {
-      let w = Math.max(Math.min(event.clientX - this.$refs.resizer.x, this.$el.offsetWidth / 2), 50)
-      this.$refs.resizer.parentElement.style.width = w + 'px'
-    },
-    onMouseupResizer () {
-      this.$refs.resizer.removeEventListener('mousemove', this.onMousemoveResizer)
-      this.$refs.resizer.removeEventListener('mouseup', this.onMouseupResizer)
-    }
-  }
+})
+
+const instance = getCurrentInstance()
+
+const $props = defineProps(['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'])
+
+const $emit = defineEmits(['action'])
+
+const resizer = ref(null)
+
+function action () {
+  this.$emit('action', ...arguments)
+}
+
+function onMousedownResizer (event) {
+  resizer.value.addEventListener('mousemove', onMousemoveResizer)
+  resizer.value.addEventListener('mouseup', onMouseupResizer)
+  resizer.value.x = event.clientX - resizer.value.parentElement.offsetWidth
+}
+
+function onMousemoveResizer (event) {
+  let w = Math.max(Math.min(event.clientX - resizer.value.x, instance.vnode.el.offsetWidth / 2), 50)
+  resizer.value.parentElement.style.width = w + 'px'
+}
+
+function onMouseupResizer () {
+  resizer.value.removeEventListener('mousemove', onMousemoveResizer)
+  resizer.value.removeEventListener('mouseup', onMouseupResizer)
 }
 </script>
 
@@ -55,3 +63,33 @@ export default {
 
   </div>
 </template>
+
+<style scoped>
+.app-main {
+  @apply grow flex flex-col overflow-hidden
+}
+.app-main__actions, .app-main__title {
+  @apply grow-0
+}
+.app-main__sidebar {
+  @apply grow-0 shrink-0 w-80 relative
+}
+.app-main__main {
+  @apply flex grow overflow-hidden
+}
+.app-main__crumbs {
+  @apply grow-0 bg-slate-100 dark:bg-gray-750
+}
+.app-main__resizer {
+  @apply absolute top-0 right-0 bottom-0 w-[2px] cursor-col-resize bg-gray-50 dark:bg-gray-600 hover:bg-blue-500 dark:hover:bg-blue-500 transition
+}
+.app-main__resizer:active {
+  @apply bg-blue-500 transition-none
+}
+.app-main__resizer::after {
+  @apply block w-2 -mx-0.5 h-full content-[""]
+}
+.app-main__resizer:active::before {
+  @apply fixed z-10 left-0 top-0 right-0 bottom-0 cursor-col-resize content-[""]
+}
+</style>
