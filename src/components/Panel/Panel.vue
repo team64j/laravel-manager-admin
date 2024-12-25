@@ -56,7 +56,7 @@ export default {
       keyStorage: key,
       filterTimer: 0,
       filterValues: {},
-      settings: this.$store.getters.get(`Session.${key}`, {}),
+      settings: store.getters.get(`Session.${key}`, {}),
       idContextMenu: null,
       showContextMenu: false,
       dataContextMenu: [],
@@ -469,7 +469,7 @@ export default {
         this.settings.closed.push(category['id'] ?? category['key'])
       }
 
-      this.$store.dispatch('set', { ['Session.' + this.keyStorage]: { closed: this.settings.closed } })
+      store.dispatch('set', { ['Session.' + this.keyStorage]: { closed: this.settings.closed } })
     },
     hasClosedCategory (category) {
       return this.settings?.closed?.includes(category['id'] ?? category['key'])

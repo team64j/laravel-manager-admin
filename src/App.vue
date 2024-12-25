@@ -28,7 +28,7 @@ export default {
     return {
       layout: null,
       loaded: false,
-      sidebarWidth: this.$store.getters.get('Storage.sidebarWidth', 26),
+      sidebarWidth: store.getters.get('Storage.sidebarWidth', 26),
       isMobile: this.calcIsMobile()
     }
   },
@@ -84,7 +84,7 @@ export default {
 
     document.documentElement.classList.toggle(
         'dark',
-        this.$store.getters.get('Storage.root.dark', false)
+        store.getters.get('Storage.root.dark', false)
     )
 
     // window['confirm'] = (message) => {
@@ -156,7 +156,7 @@ export default {
     bootstrap () {
       this.loaded = false
 
-      if (this.$store.getters.get('Storage.token')) {
+      if (store.getters.get('Storage.token')) {
         axios.post('/bootstrap').then(({ data: response }) => {
           if (response.data) {
             this.loaded = true
@@ -177,7 +177,7 @@ export default {
               this.assets(response.data.assets)
             }
 
-            this.$store.dispatch('set', {
+            store.dispatch('set', {
               config: response.data.config || {},
               lang: response.data.lang || {}
             })
@@ -206,7 +206,7 @@ export default {
       }
     },
     login () {
-      this.$store.dispatch('set', { ['Storage.token']: null })
+      store.dispatch('set', { ['Storage.token']: null })
 
       if (!this.$.appContext.components.RouterView) {
         this.$.appContext.app.use(router)
@@ -316,7 +316,7 @@ export default {
     splitterMove (event) {
       this.sidebarWidth = this.convertPixelsToRem(
           Math.min(Math.max(this.w - (this.x - event.clientX), 64), window.innerWidth * .5))
-      this.$store.dispatch('Storage/set', { sidebarWidth: this.sidebarWidth })
+      store.dispatch('Storage/set', { sidebarWidth: this.sidebarWidth })
     },
     splitterUp (event) {
       this.$el.classList.remove('app-sidebar-resize')
@@ -339,15 +339,15 @@ export default {
       return px / parseFloat(getComputedStyle(document.documentElement).fontSize)
     },
     inputTreeSelect (event, context) {
-      this.$store.dispatch('set', { event, context })
+      store.dispatch('set', { event, context })
 
       const input = context.$el.querySelector('input')
       if (input.classList.contains('focus')) {
         input.classList.remove('focus')
-        this.$store.dispatch('set', { treeSelect: false })
+        store.dispatch('set', { treeSelect: false })
       } else {
         input.classList.add('focus')
-        this.$store.dispatch('set', { treeSelect: true })
+        store.dispatch('set', { treeSelect: true })
       }
     },
     'modal:component' (event, instance) {
@@ -356,7 +356,7 @@ export default {
       }
     },
     collapse (value) {
-      this.$store.dispatch('set', { ['Storage.root.sidebarShow']: !value })
+      store.dispatch('set', { ['Storage.root.sidebarShow']: !value })
     }
   }
 }

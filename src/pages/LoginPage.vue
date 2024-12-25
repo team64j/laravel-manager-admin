@@ -1,5 +1,6 @@
 <script>
 import router from '../router'
+import store from '../store'
 import Logo from '../components/Layout/Logo.vue'
 
 export default {
@@ -18,8 +19,8 @@ export default {
         login: 'Login'
       },
       errors: {},
-      hostname: this.$store.getters.get('Storage.hostname', location.origin + '/manager/api'),
-      hostnames: this.$store.getters.get('Storage.hostnames', []),
+      hostname: store.getters.get('Storage.hostname', location.origin + '/manager/api'),
+      hostnames: store.getters.get('Storage.hostnames', []),
       logged: false,
       isCheckServer: false,
       isLogin: false,
@@ -28,7 +29,7 @@ export default {
     }
   },
   created () {
-    if (this.$store.getters.get('Storage.token')) {
+    if (store.getters.get('Storage.token')) {
       router.to('/')
     } else {
       this.checkServer()
@@ -45,7 +46,7 @@ export default {
         this.hostname = location.origin + '/manager/api'
       }
 
-      this.$store.dispatch('set', { ['Storage.hostname']: this.hostname.replace(/\/$/g, '') })
+      store.dispatch('set', { ['Storage.hostname']: this.hostname.replace(/\/$/g, '') })
 
       axios.get('/bootstrap').then(r => {
         if (typeof r.data === 'string') {
@@ -66,14 +67,14 @@ export default {
 
         if (this.data['languages']?.length) {
           this.lang = this.data.languages.filter(
-              i => i.key === (this.$store.getters.get('Storage.lang') || 'en'))[0] ?? {}
+              i => i.key === (store.getters.get('Storage.lang') || 'en'))[0] ?? {}
         }
 
         if (!this.hostnames.some(i => i.name === this.hostname)) {
           this.hostnames.push({
             name: this.hostname
           })
-          this.$store.dispatch('set', { ['Storage.hostnames']: this.hostnames })
+          store.dispatch('set', { ['Storage.hostnames']: this.hostnames })
         }
       }).catch(() => {
         this.connected = false
@@ -87,22 +88,22 @@ export default {
     },
     selectLanguage (lang) {
       this.lang = lang
-      this.$store.dispatch('set', { ['Storage.lang']: lang.key })
+      store.dispatch('set', { ['Storage.lang']: lang.key })
       this.toggleModal('isShowLanguages')
     },
     selectHostname (item) {
       this.hostname = item.name
-      this.$store.dispatch('set', { ['Storage.hostname']: this.hostname })
+      store.dispatch('set', { ['Storage.hostname']: this.hostname })
       this.toggleModal('isShowHostnames')
       this.checkServer()
     },
     removeHostname (item) {
       if (item.name === this.hostname) {
         this.hostname = ''
-        this.$store.dispatch('set', { ['Storage.hostname']: this.hostname })
+        store.dispatch('set', { ['Storage.hostname']: this.hostname })
       }
       this.hostnames = this.hostnames.filter(i => i.name !== item.name)
-      this.$store.dispatch('set', { ['Storage.hostnames']: this.hostnames })
+      store.dispatch('set', { ['Storage.hostnames']: this.hostnames })
       this.toggleModal('isShowHostnames')
       this.checkServer()
     },
@@ -115,10 +116,10 @@ export default {
 
         if (data['access_token']) {
           this.logged = true
-          this.$store.dispatch('set', { ['Storage.lang']: this.lang.key })
-          this.$store.dispatch('set', { ['Storage.token']: data['access_token'] })
-          this.$store.dispatch('set', { ['Storage.tokenExpiresIn']: data['expires_in'] })
-          this.$store.dispatch('Session/clear')
+          store.dispatch('set', { ['Storage.lang']: this.lang.key })
+          store.dispatch('set', { ['Storage.token']: data['access_token'] })
+          store.dispatch('set', { ['Storage.tokenExpiresIn']: data['expires_in'] })
+          store.dispatch('Session/clear')
           router.to('/')
         }
       }).catch(() => {

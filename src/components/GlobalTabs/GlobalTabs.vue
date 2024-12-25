@@ -1,6 +1,7 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
 import router from '../../router'
+import store from '../../store'
 import Frame from '../Layout/Frame.vue'
 import { mergeWith } from 'lodash'
 
@@ -103,7 +104,7 @@ export default {
       }
     },
     setTab (data) {
-      this.$store.dispatch('set', { tabsLoading: data.loading })
+      store.dispatch('set', { tabsLoading: data.loading })
 
       if (data.key) {
         const index = this.keys.indexOf(data.key)
@@ -117,7 +118,7 @@ export default {
       const index = this.keys.indexOf(router.key(route))
       const tab = this.tabs[index]
 
-      if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
+      if (tab?.['changed'] && !confirm(store.getters.get('lang.warning_not_saved'))) {
         return
       }
 
@@ -139,7 +140,7 @@ export default {
     },
     toTab (data) {
       const tab = this.find(router.currentRoute.value)
-      if (tab?.changed && !confirm(this.$store.getters.get('lang.warning_not_saved'))) {
+      if (tab?.['changed'] && !confirm(store.getters.get('lang.warning_not_saved'))) {
         return
       }
       this.closeTab(router.currentRoute.value)
