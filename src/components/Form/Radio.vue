@@ -1,3 +1,29 @@
+<script>
+import Field from './Field.vue'
+
+export default {
+  __isStatic: true,
+  name: 'Radio',
+  extends: Field,
+  props: {
+    modelValue: { default: true },
+    value: { default: true },
+    asButton: Boolean
+  },
+  computed: {
+    _labelClass () {
+      const c = []
+
+      if (this.asButton) {
+        c.push('label-as-button')
+      }
+
+      return c
+    }
+  }
+}
+</script>
+
 <template>
   <div v-if="label" class="w-full" :class="$props.class">
     <template v-if="!data">
@@ -66,32 +92,6 @@
     </div>
   </template>
 </template>
-
-<script>
-import Field from './Field.vue'
-
-export default {
-  __isStatic: true,
-  name: 'Radio',
-  extends: Field,
-  props: {
-    modelValue: { default: true },
-    value: { default: true },
-    asButton: Boolean
-  },
-  computed: {
-    _labelClass () {
-      const c = []
-
-      if (this.asButton) {
-        c.push('label-as-button')
-      }
-
-      return c
-    }
-  }
-}
-</script>
 
 <style scoped>
 .label-as-button {

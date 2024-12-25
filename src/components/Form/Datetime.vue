@@ -1,37 +1,47 @@
-<script>
+<script setup>
 import Field from './Field.vue'
+import { computed, getCurrentInstance } from 'vue'
 
-export default {
-  __isStatic: true,
+const instance = getCurrentInstance()
+
+defineOptions({
   name: 'Datetime',
-  extends: Field,
-  props: {
-    data: {
-      type: Object,
-      default: {}
-    }
-  },
-  computed: {
-    model: {
-      get () {
-        return this.value ?? this.modelValue ?? ''
-      },
-      set (value) {
-        this.$emit('update:modelValue', value, this)
-      }
-    }
-  },
-  methods: {
-    onClear () {
-      this.model = ''
-    },
-    onShow () {
-      this.$root.$refs.datepicker.on(this)
-    },
-    onClose () {
-      this.$root.$refs.datepicker.off()
-    }
+  __isStatic: true,
+  extends: Field
+})
+
+const $props = defineProps({
+  data: {
+    type: Object,
+    default: {}
   }
+})
+
+const emit = defineEmits(['update:modelValue'])
+
+const model = computed({
+  get () {
+    return $props.value ?? $props.modelValue ?? ''
+  },
+  set (value) {
+    emit('update:modelValue', value, instance)
+  }
+})
+
+defineExpose({
+  model
+})
+
+function onClear () {
+  model.value = ''
+}
+
+function onShow () {
+  instance.root.refs.datepicker.on(instance)
+}
+
+function onClose () {
+  instance.root.refs.datepicker.off()
 }
 </script>
 

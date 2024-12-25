@@ -174,7 +174,7 @@ export default {
         return
       }
 
-      const key = typeof instance === 'object' ? instance._.vnode.key : instance
+      const key = typeof instance === 'object' ? (instance?._?.vnode?.key ?? instance?.vnode?.key) : instance
 
       setValue(key, value)
 

@@ -350,9 +350,9 @@ export default {
         this.$store.dispatch('set', { treeSelect: true })
       }
     },
-    'modal:component' (event, ctx) {
-      if (ctx['url']) {
-        this.$refs.modal.setOwner(ctx).setUrl(ctx['url']).open()
+    'modal:component' (event, instance) {
+      if (instance.ctx['url']) {
+        this.$refs.modal.setOwner(instance.ctx).setUrl(instance.ctx['url']).open()
       }
     },
     collapse (value) {

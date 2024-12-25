@@ -1,40 +1,35 @@
-<script>
+<script setup>
 import Field from './Field.vue'
-import { h, renderSlot } from 'vue'
+import Template from '../Layout/Template.vue'
 
-export default {
-  __isStatic: true,
+defineOptions({
   name: 'Button',
-  extends: Field,
-  props: {
-    icon: String,
-    type: {
-      default: 'button'
-    },
-    loader: Boolean
+  __isStatic: true,
+  extends: Field
+})
+
+const $props = defineProps({
+  icon: String,
+  type: {
+    default: 'button'
   },
-  setup (props, { slots }) {
-    return () => h('button', {
-      type: props.type,
-      class: ['btn-sm relative', props.class]
-    }, [
-      renderSlot(slots, 'icon'),
-      props.icon && h('i', { class: ['fa fa-fw', props.icon] }),
-      props.value && h('span', { innerHTML: props.value }),
-      renderSlot(slots, 'default'),
-      props.loader && h('span', {
-        class: 'absolute !flex items-center justify-center left-0 top-0 h-full w-full bg-inherit',
-        onClick (event) {
-          event.preventDefault()
-          event.stopPropagation()
-          return false
-        }
-      }, [
-        h('i', {
-          class: 'inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin'
-        })
-      ])
-    ])
-  }
-}
+  loader: Boolean
+})
 </script>
+
+<template>
+  <button :type="type" :class="$props.class" class="btn-sm relative">
+    <slot name="icon"/>
+
+    <i v-if="icon" :class="icon" class="fa fa-fw"/>
+
+    <span v-if="value" v-html="value"></span>
+
+    <slot name="default"/>
+
+    <span v-if="loader" @click.stop.prevent=""
+          class="absolute !flex items-center justify-center left-0 top-0 h-full w-full bg-inherit">
+      <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+    </span>
+  </button>
+</template>

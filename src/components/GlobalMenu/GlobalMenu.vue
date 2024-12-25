@@ -1,11 +1,3 @@
-<template>
-  <div class="app-global-menu">
-    <ul>
-      <global-menu-item v-for="(i, k) in data" :data="i" :key="k" @action="action"/>
-    </ul>
-  </div>
-</template>
-
 <script setup>
 import('./GlobalMenu.css')
 import { getCurrentInstance, onMounted } from 'vue'
@@ -115,3 +107,11 @@ onMounted(() => {
   })
 })
 </script>
+
+<template>
+  <div class="app-global-menu">
+    <ul>
+      <global-menu-item v-for="(i, k) in data" :data="i" :key="k" @action="action"/>
+    </ul>
+  </div>
+</template>

@@ -1,3 +1,36 @@
+<script setup>
+import Field from './Field.vue'
+import { getCurrentInstance } from 'vue'
+
+const instance = getCurrentInstance()
+
+defineOptions({
+  name: 'File',
+  __isStatic: true,
+  extends: Field
+})
+
+const $props = defineProps({
+  type: {
+    type: String,
+    default: 'file',
+    validator: (type) => ['file', 'image'].includes(type)
+  }
+})
+
+const $emit = defineEmits(['action'])
+
+function onMousedown (event) {
+  $emit('action', 'mousedown:input', event, instance)
+}
+
+function onClick (event) {
+  if ($props.emitClick) {
+    return $emit('action', $props.emitClick, event, instance)
+  }
+}
+</script>
+
 <template>
   <div v-if="label" class="w-full" :class="$props.class">
     <div class="mb-1">
@@ -42,46 +75,3 @@
     <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </div>
 </template>
-
-<script>
-import Field from './Field.vue'
-
-export default {
-  __isStatic: true,
-  name: 'File',
-  extends: Field,
-
-  props: {
-    type: {
-      type: String,
-      default: 'file',
-      validator: (type) => ['file', 'image'].includes(type)
-    }
-  },
-
-  methods: {
-    onMousedown (event) {
-      this.$emit('action', 'mousedown:input', event, this)
-    },
-
-    onClick (event) {
-      if (this.emitClick) {
-        return this.$emit('action', this.emitClick, event, this)
-      }
-      // this.$root.$refs.layout.$refs.window.open({
-      //   key: 'FilesFromInput',
-      //   currentRoute: this.$router.resolve({ name: 'Files' }),
-      //   context: this,
-      //   title: 'files',
-      //   icon: 'far fa-folder-open',
-      //   width: '85%',
-      //   height: '85%',
-      //   class: 'bg-white dark:bg-gray-700 dark:text-gray-100',
-      //   attrs: {
-      //     id: 'Files' + this.type
-      //   }
-      // })
-    }
-  }
-}
-</script>

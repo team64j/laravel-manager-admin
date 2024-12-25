@@ -1,3 +1,47 @@
+<script>
+import Field from './Field.vue'
+
+export default {
+  __isStatic: true,
+  name: 'Input',
+  extends: Field,
+  props: {
+    type: {
+      type: String,
+      default: 'text',
+      validator: (type) => ['text', 'number', 'password', 'email', 'tel', 'date', 'datetime-local', 'button'].includes(
+          type)
+    }
+  },
+  computed: {
+    model: {
+      get () {
+        return this.value ?? this.modelValue ?? ''
+      },
+      set (value) {
+        this.$emit('update:modelValue', value, this)
+      }
+    }
+  },
+  methods: {
+    onMousedown (event) {
+      this.$emit('action', this.emitClick || 'mousedown:input', event, this)
+    },
+    onClear (event) {
+      this.$emit('action', 'clear:input', event, this)
+    },
+    onClickPlus () {
+      this.$el.querySelector('input').focus()
+      this.model++
+    },
+    onClickMinus () {
+      this.$el.querySelector('input').focus()
+      this.model--
+    }
+  }
+}
+</script>
+
 <template>
   <div v-if="label" class="w-full" :class="$props.class">
     <div class="mb-1">
@@ -59,50 +103,6 @@
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
   </div>
 </template>
-
-<script>
-import Field from './Field.vue'
-
-export default {
-  __isStatic: true,
-  name: 'Input',
-  extends: Field,
-  props: {
-    type: {
-      type: String,
-      default: 'text',
-      validator: (type) => ['text', 'number', 'password', 'email', 'tel', 'date', 'datetime-local', 'button'].includes(
-          type)
-    }
-  },
-  computed: {
-    model: {
-      get () {
-        return this.value ?? this.modelValue ?? ''
-      },
-      set (value) {
-        this.$emit('update:modelValue', value, this)
-      }
-    }
-  },
-  methods: {
-    onMousedown (event) {
-      this.$emit('action', this.emitClick || 'mousedown:input', event, this)
-    },
-    onClear (event) {
-      this.$emit('action', 'clear:input', event, this)
-    },
-    onClickPlus () {
-      this.$el.querySelector('input').focus()
-      this.model++
-    },
-    onClickMinus () {
-      this.$el.querySelector('input').focus()
-      this.model--
-    }
-  }
-}
-</script>
 
 <style scoped>
 .app-input__number input::-webkit-outer-spin-button,

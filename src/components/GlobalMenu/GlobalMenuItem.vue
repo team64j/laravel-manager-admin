@@ -1,90 +1,3 @@
-<template>
-  <li :class="{
-    'app-global-menu__parent': data?.['data']?.length || data?.['url'],
-    'app-global-menu__pagination': data['prev'] || data['next'],
-  }"
-      :data-level="level"
-      @click.stop="onClick"
-      @mouseenter="onEnter"
-      @mouseleave="onOut">
-
-    <a v-if="data['href'] || data['to'] || (data['data'] && level || data['values'] || data['url'])"
-       :class="classes"
-       :data-tooltip="data['title']">
-
-      <template v-if="icon">
-        <img v-if="/^https?:\/\/?/.test(icon)" :src="icon" alt="">
-        <span v-else-if="icon[0] === '<'" v-html="icon"/>
-        <i v-else class="app-global-menu__icon" :class="icon"/>
-      </template>
-
-      <span v-if="data['name']" class="app-global-menu__title" v-html="data['name']"/>
-
-      <i v-if="data['locked']" class="app-global-menu__locked fa fa-lock"/>
-
-      <span v-if="data['id'] !== undefined" class="app-global-menu__id" v-html="data['id']"/>
-
-      <span v-if="data['loading'] || ((data['data']?.length && level) || data['url'])"
-            @click="onClickToggle"
-            class="app-global-menu__toggle">
-        <i v-if="data['loading']"
-           class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-        <i v-else class="fa fa-angle-down fa-fw leading-[0]"/>
-      </span>
-    </a>
-
-    <span v-else-if="data['prev'] || data['next']"
-          :class="classes"
-          :data-tooltip="data['title']">
-
-      <button class="app-global-menu__prev"
-              :disabled="data['prev'] ? undefined : 'disabled'"
-              @click.stop="onPrev">
-        <i class="fa fa-chevron-left"/>
-      </button>
-
-      <span>{{ data['info'] ?? data['total'] }}</span>
-
-      <button class="app-global-menu__next"
-              :disabled="data['next'] ? undefined : 'disabled'"
-              @click.stop="onNext">
-        <i class="fa fa-chevron-right"/>
-      </button>
-    </span>
-
-    <span v-else-if="data['filter'] !== undefined"
-          :class="classes"
-          :data-tooltip="data['title']"
-          @click.stop="">
-
-      <input
-          type="text"
-          name="filter"
-          :value="data['filter']"
-          placeholder="filter..."
-          autocomplete="off"
-          autofocus
-          @input="onInput"/>
-
-      <i :class="['fa fa-remove app-global-menu__clear', data['filter'] ? '' : 'hidden']" @click="onClear"/>
-    </span>
-
-    <span v-else-if="data['name']"
-          :class="classes"
-          :data-tooltip="data['title']"
-          v-html="data['name']"/>
-
-    <ul v-if="data['data']?.length">
-      <li class="app-global-menu__back" v-if="showBack">
-        <a @click.stop="data['data'] = null">
-          <i class="fa fa-arrow-left"/>&nbsp;
-        </a>
-      </li>
-      <global-menu-item v-for="(i, k) in data['data']" :data="i" :key="k" :level="level+1" @action="action"/>
-    </ul>
-  </li>
-</template>
-
 <script setup>
 import { computed, getCurrentInstance } from 'vue'
 import store from '../../store'
@@ -263,3 +176,90 @@ const onNext = () => {
   }
 }
 </script>
+
+<template>
+  <li :class="{
+    'app-global-menu__parent': data?.['data']?.length || data?.['url'],
+    'app-global-menu__pagination': data['prev'] || data['next'],
+  }"
+      :data-level="level"
+      @click.stop="onClick"
+      @mouseenter="onEnter"
+      @mouseleave="onOut">
+
+    <a v-if="data['href'] || data['to'] || (data['data'] && level || data['values'] || data['url'])"
+       :class="classes"
+       :data-tooltip="data['title']">
+
+      <template v-if="icon">
+        <img v-if="/^https?:\/\/?/.test(icon)" :src="icon" alt="">
+        <span v-else-if="icon[0] === '<'" v-html="icon"/>
+        <i v-else class="app-global-menu__icon" :class="icon"/>
+      </template>
+
+      <span v-if="data['name']" class="app-global-menu__title" v-html="data['name']"/>
+
+      <i v-if="data['locked']" class="app-global-menu__locked fa fa-lock"/>
+
+      <span v-if="data['id'] !== undefined" class="app-global-menu__id" v-html="data['id']"/>
+
+      <span v-if="data['loading'] || ((data['data']?.length && level) || data['url'])"
+            @click="onClickToggle"
+            class="app-global-menu__toggle">
+        <i v-if="data['loading']"
+           class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+        <i v-else class="fa fa-angle-down fa-fw leading-[0]"/>
+      </span>
+    </a>
+
+    <span v-else-if="data['prev'] || data['next']"
+          :class="classes"
+          :data-tooltip="data['title']">
+
+      <button class="app-global-menu__prev"
+              :disabled="data['prev'] ? undefined : 'disabled'"
+              @click.stop="onPrev">
+        <i class="fa fa-chevron-left"/>
+      </button>
+
+      <span>{{ data['info'] ?? data['total'] }}</span>
+
+      <button class="app-global-menu__next"
+              :disabled="data['next'] ? undefined : 'disabled'"
+              @click.stop="onNext">
+        <i class="fa fa-chevron-right"/>
+      </button>
+    </span>
+
+    <span v-else-if="data['filter'] !== undefined"
+          :class="classes"
+          :data-tooltip="data['title']"
+          @click.stop="">
+
+      <input
+          type="text"
+          name="filter"
+          :value="data['filter']"
+          placeholder="filter..."
+          autocomplete="off"
+          autofocus
+          @input="onInput"/>
+
+      <i :class="['fa fa-remove app-global-menu__clear', data['filter'] ? '' : 'hidden']" @click="onClear"/>
+    </span>
+
+    <span v-else-if="data['name']"
+          :class="classes"
+          :data-tooltip="data['title']"
+          v-html="data['name']"/>
+
+    <ul v-if="data['data']?.length">
+      <li class="app-global-menu__back" v-if="showBack">
+        <a @click.stop="data['data'] = null">
+          <i class="fa fa-arrow-left"/>&nbsp;
+        </a>
+      </li>
+      <global-menu-item v-for="(i, k) in data['data']" :data="i" :key="k" :level="level+1" @action="action"/>
+    </ul>
+  </li>
+</template>

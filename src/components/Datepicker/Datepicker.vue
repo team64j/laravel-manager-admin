@@ -14,7 +14,6 @@ defineExpose({
 })
 
 const $data = reactive({
-  instance: null,
   showDatepicker: false,
   position: {
     left: 0,
@@ -24,6 +23,8 @@ const $data = reactive({
   yearOffset: 10,
   days: []
 })
+
+let instance = null
 
 const datepicker = ref(null)
 
@@ -79,8 +80,8 @@ const patterns = {
 
 let currentDate = new Date()
 
-function make (instance) {
-  const d = instance['model'] ? (instance['model'] || '').toString().split(' ') : []
+function make (self) {
+  const d = self.ctx['model'] ? (self.ctx['model'] || '').toString().split(' ') : []
   currentDate = new Date()
 
   let date
@@ -110,12 +111,12 @@ function make (instance) {
     }
   }
 
-  $data.instance = instance
+  instance = self
   $data.yearStart = currentDate.getFullYear()
   $data.showDatepicker = true
 
   nextTick(() => {
-    const position = instance.$refs.input.getBoundingClientRect()
+    const position = instance.refs.input.getBoundingClientRect()
     let top, left = position.left
 
     if (position.top + position.height + datepicker.value.offsetHeight + 16 > window.innerHeight) {
@@ -196,7 +197,7 @@ function setDays () {
   }
 
   $data.days = days
-  $data.instance.model = getDate() + ' ' + getTime()
+  instance.ctx.model = getDate() + ' ' + getTime()
 }
 
 function getDate () {

@@ -1,3 +1,34 @@
+<script setup>
+import { computed } from 'vue'
+import Field from './Field.vue'
+
+defineOptions({
+  name: 'Checkbox',
+  __isStatic: true,
+  extends: Field
+})
+
+const $props = defineProps({
+  modelValue: { default: true },
+  value: { default: true },
+  asButton: Boolean
+})
+
+const _labelClass = computed(() => {
+  const c = []
+
+  if ($props.disabled) {
+    c.push('cursor-no-drop')
+  }
+
+  if ($props.asButton) {
+    c.push('label-as-button')
+  }
+
+  return c
+})
+</script>
+
 <template>
   <div v-if="label" class="w-full" :class="$props.class">
     <template v-if="!data">
@@ -67,36 +98,6 @@
     </div>
   </template>
 </template>
-
-<script>
-import Field from './Field.vue'
-
-export default {
-  __isStatic: true,
-  name: 'Checkbox',
-  extends: Field,
-  props: {
-    modelValue: { default: true },
-    value: { default: true },
-    asButton: Boolean
-  },
-  computed: {
-    _labelClass () {
-      const c = []
-
-      if (this.disabled) {
-        c.push('cursor-no-drop')
-      }
-
-      if (this.asButton) {
-        c.push('label-as-button')
-      }
-
-      return c
-    }
-  }
-}
-</script>
 
 <style scoped>
 .label-as-button {

@@ -1,6 +1,6 @@
 <script setup>
-import MainMenuItem from './MainMenuItem.vue'
 import { getCurrentInstance, onMounted } from 'vue'
+import MainMenuItem from './MainMenuItem.vue'
 import router from '../../router'
 import store from '../../store'
 
@@ -10,13 +10,12 @@ defineOptions({
 })
 
 const instance = getCurrentInstance()
-const props = defineProps(['data'])
-const emit = defineEmits(['action'])
+const $props = defineProps(['data'])
+const $emit = defineEmits(['action'])
 
 let enterTimer = 0, filterTimer = 0
 
-const methods = {
-  onClick (event, data) {
+function onClick (event, data) {
     if (instance.proxy.$root['isMobile']) {
       const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
       document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
@@ -31,7 +30,7 @@ const methods = {
       instance.proxy.$root.$el.classList[action]('app-main-menu__active')
 
       if (event.target.classList.contains('app-main-menu__toggle') && data['url']) {
-        methods.loadData(data['url'], data)
+        loadData(data['url'], data)
         return
       }
     } else {
@@ -45,7 +44,7 @@ const methods = {
       instance.proxy.$root.$el.classList.remove('app-main-menu__active')
       window.open(data['href'])
     } else if (data['url']) {
-      instance.proxy.$root.$el.classList.contains('app-main-menu__active') && methods.loadData(data['url'], data)
+      instance.proxy.$root.$el.classList.contains('app-main-menu__active') && loadData(data['url'], data)
     } else if (data['values']) {
       const value = store.getters['get']('Storage.root.' + data['key'])
 
@@ -58,8 +57,9 @@ const methods = {
         }
       }
     }
-  },
-  onEnter (event, data) {
+}
+
+function onEnter (event, data) {
     if (event.currentTarget.classList.contains('app-main-menu__hover') || instance.proxy.$root['isMobile']) {
       return
     }
@@ -86,11 +86,12 @@ const methods = {
         clearTimeout(enterTimer)
         data['data'] = null
 
-        enterTimer = setTimeout(() => methods.loadData(data['url'], data), 150)
+        enterTimer = setTimeout(() => loadData(data['url'], data), 150)
       }
     }, delay)
-  },
-  onOut (event, data) {
+}
+
+function onOut (event, data) {
     if (instance.proxy.$root['isMobile']) {
       return
     }
@@ -102,28 +103,32 @@ const methods = {
     if (!data['data']) {
       event.currentTarget.classList.remove('app-main-menu__hover')
     }
-  },
-  onNav (event, url, ctx) {
-    methods.loadData(url, ctx.data)
-  },
-  onFilterInput (event, item, ctx) {
+}
+
+function onNav (event, url, ctx) {
+  loadData(url, ctx.data)
+}
+
+function onFilterInput (event, item, ctx) {
     clearTimeout(filterTimer)
     filterTimer = setTimeout(() => {
       item.filter = event.target.value
-      methods.loadData(
+      loadData(
           router.parse({ path: ctx.data['url'], query: { filter: event.target.value } }).fullPath,
           ctx.data
       )
     }, 500)
-  },
-  onFilterClear (event, item, ctx) {
+}
+
+function onFilterClear (event, item, ctx) {
     item.filter = ''
-    methods.loadData(
+  loadData(
         router.parse({ path: ctx.data['url'] }).fullPath,
         ctx.data
     )
-  },
-  loadData (url, item) {
+}
+
+function loadData (url, item) {
     const route = router.parse(url)
     item['loading'] = true
     item['data'] = null
@@ -146,13 +151,12 @@ const methods = {
       item['loading'] = false
     })
   }
-}
 
 const action = (...args) => {
-  if (typeof methods[args[0]] === 'function') {
-    methods[args[0]](...Array.from(args).splice(1))
+  if (typeof instance.exposed[args[0]] === 'function') {
+    instance.exposed[args[0]](...Array.from(args).splice(1))
   } else {
-    emit('action', ...args)
+    $emit('action', ...args)
   }
 }
 
@@ -161,12 +165,21 @@ onMounted(() => {
     instance.proxy.$root.$el.classList.remove('app-main-menu__active')
   })
 })
+
+defineExpose({
+  onEnter,
+  onClick,
+  onOut,
+  onNav,
+  onFilterInput,
+  onFilterClear
+})
 </script>
 
 <template>
   <div class="app-main-menu">
     <ul>
-      <main-menu-item v-for="(i, k) in data" :data="i" :key="k" :level="1" @action="action"/>
+      <main-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" :level="1" @action="action"/>
     </ul>
   </div>
 </template>

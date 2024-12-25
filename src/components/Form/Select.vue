@@ -1,138 +1,3 @@
-<template>
-  <div v-if="label" class="w-full" :class="$props.class">
-    <div class="mb-1">
-      <label :for="ID" class="font-bold cursor-pointer">
-        {{ label }}
-        <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
-      </label>
-      <slot name="label"/>
-    </div>
-    <div class="relative">
-      <div v-if="loading" class="absolute z-10 left-2 top-2">
-        <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-      </div>
-
-      <template v-if="multiple">
-        <input type="text"
-               :value="firstValue"
-               :id="ID"
-               ref="input"
-               readonly
-               class="block relative w-full px-3 py-1 rounded app-appearance-select cursor-pointer"
-               :placeholder="placeholder"
-               @mousedown="onMousedown"
-               @focus="onFocus"
-               @blur="onBlur"/>
-        <div
-            class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
-            @click="onClickMultipleList"
-            @mousedown.prevent="onClickMultipleList">
-
-          <template v-for="o in options">
-            <template v-if="o?.data">
-              <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
-              <checkbox-component
-                  v-model="model"
-                  :data="o.data"
-                  @update:modelValue="onUpdateModelValue"
-                  false-value=""
-                  class="pl-0.5 pt-[1px] last:pb-[1px]"
-                  label-class="w-full pl-5"
-                  :as-button="true"/>
-            </template>
-
-            <checkbox-component
-                v-else
-                v-model="model"
-                :data="[o]"
-                @update:modelValue="onUpdateModelValue"
-                false-value=""
-                class="pl-0.5 pt-[1px] last:pb-[1px]"
-                label-class="w-full pl-2"
-                :as-button="true"/>
-          </template>
-        </div>
-      </template>
-
-      <template v-else>
-        <div v-show="itemNew === model">
-          <input type="text" :id="`input-`+ID" autofocus @input="onInput"/>
-          <i class="fa fa-circle-xmark absolute top-3 right-3" @click="onClickClear"/>
-        </div>
-
-        <input v-show="itemNew !== model"
-               type="text"
-               :value="firstValue"
-               :id="ID"
-               ref="input"
-               readonly
-               class="app-appearance-select cursor-pointer"
-               :placeholder="placeholder"
-               @mousedown="onMousedown"
-               @focus="onFocus"
-               @blur="onBlur"/>
-
-        <div
-            class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
-            @mousedown.prevent="">
-
-          <template v-for="o in options">
-            <template v-if="o?.data">
-              <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
-              <radio-component
-                  v-model="model"
-                  :data="o.data"
-                  @update:modelValue="onUpdateModelValue"
-                  false-value=""
-                  class="pl-0.5 pt-[1px] last:pb-[1px]"
-                  label-class="w-full pl-5"
-                  :as-button="true"/>
-            </template>
-
-            <radio-component
-                v-else
-                v-model="model"
-                :data="[o]"
-                @update:modelValue="onUpdateModelValue"
-                false-value=""
-                class="pl-0.5 pt-[1px] last:pb-[1px]"
-                label-class="w-full pl-2"
-                :as-button="true"/>
-          </template>
-        </div>
-      </template>
-    </div>
-    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
-  </div>
-  <div v-else class="relative">
-    <div v-if="loading" class="absolute z-10 left-2 top-2">
-      <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-    </div>
-    <select v-model="model"
-            :id="ID"
-            :multiple="multiple"
-            @mousedown="onMousedown"
-            @focus="onFocus"
-            @change="onChange"
-            @blur="onBlur">
-      <template v-for="i in options">
-        <optgroup v-if="i.data" :label="i.name">
-          <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">
-            {{ j.value }}
-          </option>
-        </optgroup>
-        <option v-else :value="i.key" :selected="i.selected" :disabled="i.disabled">
-          {{ i.value }}
-        </option>
-      </template>
-    </select>
-    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
-  </div>
-</template>
-
 <script>
 import CheckboxComponent from './Checkbox.vue'
 import RadioComponent from './Radio.vue'
@@ -290,6 +155,141 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div v-if="label" class="w-full" :class="$props.class">
+    <div class="mb-1">
+      <label :for="ID" class="font-bold cursor-pointer">
+        {{ label }}
+        <span v-if="required" class="text-rose-500">*</span>
+        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
+      </label>
+      <slot name="label"/>
+    </div>
+    <div class="relative">
+      <div v-if="loading" class="absolute z-10 left-2 top-2">
+        <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+      </div>
+
+      <template v-if="multiple">
+        <input type="text"
+               :value="firstValue"
+               :id="ID"
+               ref="input"
+               readonly
+               class="block relative w-full px-3 py-1 rounded app-appearance-select cursor-pointer"
+               :placeholder="placeholder"
+               @mousedown="onMousedown"
+               @focus="onFocus"
+               @blur="onBlur"/>
+        <div
+            class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
+            @click="onClickMultipleList"
+            @mousedown.prevent="onClickMultipleList">
+
+          <template v-for="o in options">
+            <template v-if="o?.data">
+              <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
+              <checkbox-component
+                  v-model="model"
+                  :data="o.data"
+                  @update:modelValue="onUpdateModelValue"
+                  false-value=""
+                  class="pl-0.5 pt-[1px] last:pb-[1px]"
+                  label-class="w-full pl-5"
+                  :as-button="true"/>
+            </template>
+
+            <checkbox-component
+                v-else
+                v-model="model"
+                :data="[o]"
+                @update:modelValue="onUpdateModelValue"
+                false-value=""
+                class="pl-0.5 pt-[1px] last:pb-[1px]"
+                label-class="w-full pl-2"
+                :as-button="true"/>
+          </template>
+        </div>
+      </template>
+
+      <template v-else>
+        <div v-show="itemNew === model">
+          <input type="text" :id="`input-`+ID" autofocus @input="onInput"/>
+          <i class="fa fa-circle-xmark absolute top-3 right-3" @click="onClickClear"/>
+        </div>
+
+        <input v-show="itemNew !== model"
+               type="text"
+               :value="firstValue"
+               :id="ID"
+               ref="input"
+               readonly
+               class="app-appearance-select cursor-pointer"
+               :placeholder="placeholder"
+               @mousedown="onMousedown"
+               @focus="onFocus"
+               @blur="onBlur"/>
+
+        <div
+            class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
+            @mousedown.prevent="">
+
+          <template v-for="o in options">
+            <template v-if="o?.data">
+              <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
+              <radio-component
+                  v-model="model"
+                  :data="o.data"
+                  @update:modelValue="onUpdateModelValue"
+                  false-value=""
+                  class="pl-0.5 pt-[1px] last:pb-[1px]"
+                  label-class="w-full pl-5"
+                  :as-button="true"/>
+            </template>
+
+            <radio-component
+                v-else
+                v-model="model"
+                :data="[o]"
+                @update:modelValue="onUpdateModelValue"
+                false-value=""
+                class="pl-0.5 pt-[1px] last:pb-[1px]"
+                label-class="w-full pl-2"
+                :as-button="true"/>
+          </template>
+        </div>
+      </template>
+    </div>
+    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
+    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+  </div>
+  <div v-else class="relative">
+    <div v-if="loading" class="absolute z-10 left-2 top-2">
+      <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+    </div>
+    <select v-model="model"
+            :id="ID"
+            :multiple="multiple"
+            @mousedown="onMousedown"
+            @focus="onFocus"
+            @change="onChange"
+            @blur="onBlur">
+      <template v-for="i in options">
+        <optgroup v-if="i.data" :label="i.name">
+          <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">
+            {{ j.value }}
+          </option>
+        </optgroup>
+        <option v-else :value="i.key" :selected="i.selected" :disabled="i.disabled">
+          {{ i.value }}
+        </option>
+      </template>
+    </select>
+    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
+    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+  </div>
+</template>
 
 <style scoped>
 select + input {
