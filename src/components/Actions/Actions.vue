@@ -93,7 +93,7 @@ function clickGroup (event) {
   </div>
 </template>
 
-<style scoped>
+<style>
 .app-actions {
   @apply fixed z-20 flex rounded-b bg-white/60 dark:bg-gray-700/60 p-2 right-2
 }
