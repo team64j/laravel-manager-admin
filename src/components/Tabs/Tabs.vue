@@ -1,7 +1,8 @@
 <script setup>
-import TabsNavigation from './TabsNavigation.vue'
 import { computed } from 'vue'
 import store from '../../store'
+import { uniqId } from '../../utils/uniq-id'
+import TabsNavigation from './TabsNavigation.vue'
 
 defineOptions({
   __isStatic: true,
@@ -12,7 +13,7 @@ const props = defineProps({
   id: {
     type: String,
     default () {
-      return 'v-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36)
+      return uniqId()
     }
   },
   data: {
@@ -32,7 +33,7 @@ const props = defineProps({
     default: true
   },
   smallTabs: Boolean,
-  hideable: Boolean,
+  hiddenTabs: Boolean,
   currentRoute: Object
 })
 
@@ -40,12 +41,12 @@ const slots = defineSlots()
 
 const emit = defineEmits(['action', 'update:props'])
 
-const keyStorage = `tabs_` + props.id.toLowerCase()
+const keyStorage = `tabs_${props.id.toLowerCase()}`
 
 const index = computed(() => store.getters.get(keyStorage, 0))
 
-const action = (...args) => {
-  emit('action', ...args)
+function action () {
+  emit('action', ...arguments)
 }
 </script>
 

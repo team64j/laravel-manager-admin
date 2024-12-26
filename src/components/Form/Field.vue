@@ -1,4 +1,6 @@
 <script>
+import { uniqId } from '../../utils/uniq-id'
+
 export default {
   emits: ['action', 'update:modelValue', 'update:props'],
 
@@ -55,7 +57,7 @@ export default {
 
   data () {
     return {
-      ID: this.id || 'v-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36),
+      ID: this.id || uniqId(),
       loading: false
     }
   },

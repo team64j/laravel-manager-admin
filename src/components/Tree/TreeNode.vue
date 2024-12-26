@@ -2,79 +2,79 @@
 import { computed, inject, reactive } from 'vue'
 import router from '../../router'
 
-const $props = defineProps({
+const props = defineProps({
   id: [String, Number],
   level: Number,
   node: [null, Object]
 })
 
-const $emit = defineEmits(['action'])
+const emit = defineEmits(['action'])
 
-const $data = reactive({
+const data = reactive({
   config: inject('config')
 })
 
-const keyId = $data.config['settings']['keyId'] ?? 'id'
-const keyTitle = $data.config['settings']['keyTitle'] ?? 'title'
+const keyId = data.config['settings']['keyId'] ?? 'id'
+const keyTitle = data.config['settings']['keyTitle'] ?? 'title'
 
 const title = computed(() => {
-  if ($data.config['aliases']?.['title']) {
-    const aliases = typeof $data.config['aliases']['title'] === 'object'
-        ? $data.config['aliases']['title']
-        : [$data.config['aliases']['title']]
+  if (data.config['aliases']?.['title']) {
+    const aliases = typeof data.config['aliases']['title'] === 'object'
+        ? data.config['aliases']['title']
+        : [data.config['aliases']['title']]
 
     for (const i of aliases) {
-      if ($props.node[i] !== undefined) {
-        return $props.node[i]
+      if (props.node[i] !== undefined) {
+        return props.node[i]
       }
     }
   }
 
-  return $props.node['title'] ?? $props.node[keyTitle] ?? $props.node[keyId]
+  return props.node['title'] ?? props.node[keyTitle] ?? props.node[keyId]
 })
 
 const icon = computed(() => {
-  if ($props.node['icon']) {
-    return $props.node['icon']
+  if (props.node['icon']) {
+    return props.node['icon']
   }
 
-  if (!$data.config['icons']) {
+  if (!data.config['icons']) {
     return
   }
 
-  if ($data.config['icons'][$props.node[keyId]]) {
-    return $data.config['icons'][$props.node[keyId]]
+  if (data.config['icons'][props.node[keyId]]) {
+    return data.config['icons'][props.node[keyId]]
   }
 
-  if ($data.config['icons'][$props.node['type']]) {
-    return $data.config['icons'][$props.node['type']]
+  if (data.config['icons'][props.node['type']]) {
+    return data.config['icons'][props.node['type']]
   }
 
-  if ($data.config['icons']['default'] && !($props.node['category'] || $props.node['data'] !== undefined)) {
-    return $data.config['icons']['default']
+  if (data.config['icons']['default'] && !(props.node['category'] || props.node['data'] !== undefined)) {
+    return data.config['icons']['default']
   }
 })
 
 const className = computed(() => {
   const c = []
 
-  if ($props.node['selected']) {
+  if (props.node['selected']) {
     c.push('app-tree__node-selected')
   }
 
-  if ($props.node['deleted']) {
+  if (props.node['deleted']) {
     c.push('app-tree__node-deleted')
   }
 
-  if ($props.node['muted']) {
+  if (props.node['muted']) {
     c.push('app-tree__node-muted')
   }
 
-  if ($data.config['aliases']) {
-    for (const a in $data.config['aliases']) {
-      const aliases = typeof $data.config['aliases'][a] === 'object'
-          ? $data.config['aliases'][a]
-          : [$data.config['aliases'][a]]
+  if (data.config['aliases']) {
+    for (const a in data.config['aliases']) {
+      const aliases = typeof data.config['aliases'][a] === 'object'
+          ? data.config['aliases'][a]
+          : [data.config['aliases'][a]]
       let key, value
 
       for (const i of aliases) {
@@ -88,8 +88,8 @@ const className = computed(() => {
           }
         }
 
-        if (($props.node[key] !== undefined && (value !== undefined && $props.node[key] === value)) ||
-            ($props.node[key] && value === undefined)) {
+        if ((props.node[key] !== undefined && (value !== undefined && props.node[key] === value)) ||
+            (props.node[key] && value === undefined)) {
           if (a === 'selected') {
             c.push('app-tree__node-selected')
           } else if (a === 'deleted') {
@@ -105,21 +105,21 @@ const className = computed(() => {
   const route = router.currentRoute.value
 
   if (
-      route['fullPath'] === $props.node?.['route']?.['path'] ||
+      route['fullPath'] === props.node?.['route']?.['path'] ||
       (
           (
-              route['name'] === $data.config['route'] ||
+              route['name'] === data.config['route'] ||
               route['path'] ===
-              ($data.config['route']?.['path'] || $data.config['route']).replace(':' + keyId, route['params'][keyId])
+              (data.config['route']?.['path'] || data.config['route']).replace(':' + keyId, route['params'][keyId])
           ) && (
               (
-                  route['params']?.[keyId]?.toString() === $props.node?.[keyId]?.toString()
+                  route['params']?.[keyId]?.toString() === props.node?.[keyId]?.toString()
               ) ||
               (
-                  route['params']?.[keyId] && route['params']?.[keyId]?.toString() === $props.node?.[keyId]?.toString()
+                  route['params']?.[keyId] && route['params']?.[keyId]?.toString() === props.node?.[keyId]?.toString()
               )
           )/* && (
-              !$props.node['folder'] && $props.node['category'] || !$props.node['category']
+              !props.node['folder'] && props.node['category'] || !props.node['category']
           )*/
       )
   ) {
@@ -130,14 +130,14 @@ const className = computed(() => {
 })
 
 const tooltip = computed(() => {
-  const template = typeof $props.node?.['templates'] !== undefined
-      ? ($props.node?.['templates']?.['title'] || '')
-      : $data.config['templates']?.['title']
+  const template = typeof props.node?.['templates'] !== undefined
+      ? (props.node?.['templates']?.['title'] || '')
+      : data.config['templates']?.['title']
 
   if (template) {
     const cleanKeys = true
     return template.replace(/\{([\w.]*)}/g, (str, key) => {
-      const value = typeof $props.node[key] !== undefined ? $props.node[key] : ''
+      const value = typeof props.node[key] !== undefined ? props.node[key] : ''
       return (value === null || value === undefined) ? (cleanKeys ? '' : str) : value.toString().
           replace(/&/g, '&amp;').
           replace(/</g, '&lt;').
@@ -149,7 +149,7 @@ const tooltip = computed(() => {
 })
 
 function action () {
-  $emit('action', ...arguments)
+  emit('action', ...arguments)
 }
 </script>
 
@@ -169,10 +169,10 @@ function action () {
         <i v-if="icon" class="fa-fw" :class="icon"/>
         <template v-else-if="node['data'] !== undefined || node['category']">
           <i v-if="node['data']?.length"
-             :class="$data.config['icons']['default-folder-open'] ?? 'far fa-folder-open'"
+             :class="data.config['icons']['default-folder-open'] ?? 'far fa-folder-open'"
              class="fa-fw pl-0.5 w-5"/>
           <i v-else
-             :class="$data.config['icons']['default-folder'] ?? 'far fa-folder'"
+             :class="data.config['icons']['default-folder'] ?? 'far fa-folder'"
              class="fa-fw w-5"/>
         </template>
         <i v-else class="far fa-file fa-fw"/>
@@ -186,8 +186,8 @@ function action () {
         {{ title }}
       </div>
 
-      <template v-if="(node['appends'] || $data.config['appends'])?.length">
-        <div v-for="i in (node['appends'] || $data.config['appends'])" :class="`app-tree__node-`+i"
+      <template v-if="(node['appends'] || data.config['appends'])?.length">
+        <div v-for="i in (node['appends'] || data.config['appends'])" :class="`app-tree__node-`+i"
              class="app-tree__node-append">
           {{ node[i] }}
         </div>

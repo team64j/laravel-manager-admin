@@ -8,7 +8,7 @@ defineOptions({
   extends: Field
 })
 
-const $props = defineProps({
+const props = defineProps({
   icon: String,
   type: {
     default: 'button'
@@ -18,7 +18,7 @@ const $props = defineProps({
 </script>
 
 <template>
-  <button :type="type" :class="$props.class" class="btn-sm relative">
+  <button :type="type" :class="props.class" class="btn-sm relative">
     <slot name="icon"/>
 
     <i v-if="icon" :class="icon" class="fa fa-fw"/>

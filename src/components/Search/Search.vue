@@ -4,7 +4,7 @@ import store from '../../store'
 
 const instance = getCurrentInstance()
 
-const $data = reactive({
+const data = reactive({
   search: '',
   result: null,
   searching: false
@@ -37,24 +37,24 @@ function onClose () {
 }
 
 function onInput (event) {
-  $data.search = event.target.value
+  data.search = event.target.value
   clearTimeout(timer)
   timer = setTimeout(onSearch, 500)
 }
 
 function onSearch () {
-  if ($data.search === '') {
-    $data.result = null
+  if (data.search === '') {
+    data.result = null
   } else {
-    $data.search = $data.search.toString().trim()
-    $data.result = []
-    console.log($data.search)
+    data.search = data.search.toString().trim()
+    data.result = []
+    console.log(data.search)
   }
 }
 
 function onClear () {
-  $data.search = ''
-  $data.result = null
+  data.search = ''
+  data.result = null
   nextTick(() => instance.vnode.el.querySelector('.app-search__input input').focus())
 }
 </script>
@@ -68,18 +68,18 @@ function onClear () {
           <input type="text" name="search" placeholder="Enter to Search, Ctr+F to show or Escape to close"
                  class="input-lg text-2xl border-0 border-b-2 rounded-none"
                  autocomplete="off"
-                 :value="$data.search"
+                 :value="data.search"
                  @input="onInput">
-          <i v-if="$data.search !== ''" class="app-search__clear fa fa-times" @click="onClear"/>
+          <i v-if="data.search !== ''" class="app-search__clear fa fa-times" @click="onClear"/>
         </div>
         <div class="app-search__result">
-          <template v-if="$data.searching">
+          <template v-if="data.searching">
             <div class="text-center p-4">
               <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
             </div>
           </template>
-          <template v-else-if="$data.result">
-            <div v-if="$data.result.length" v-for="i in $data.result">
+          <template v-else-if="data.result">
+            <div v-if="data.result.length" v-for="i in data.result">
               {{ i }}
             </div>
             <div v-else class="text-center p-4">Not Found</div>

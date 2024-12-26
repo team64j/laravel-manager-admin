@@ -5,11 +5,11 @@ defineOptions({
   render () {}
 })
 
-const $props = defineProps(['class'])
+const props = defineProps(['class'])
 </script>
 
 <template>
-  <div :class="$props.class">
+  <div :class="props.class">
     <slot name="default"/>
   </div>
 </template>

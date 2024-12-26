@@ -3,7 +3,7 @@ import KeepAliveComponent from './KeepAlive'
 import router from '../../router'
 import store from '../../store'
 import Frame from '../Layout/Frame.vue'
-import { mergeWith } from 'lodash'
+import { mergeDeep } from '../../utils/merge-deep'
 
 export default {
   name: 'GlobalTabs',
@@ -107,15 +107,15 @@ export default {
       store.dispatch('set', { tabsLoading: data.loading })
 
       if (data.key) {
-        const index = this.keys.indexOf(data.key)
-        index > -1 && mergeWith(this.tabs[index], data)
+        const index = this.keys.findIndex(i => i === data.key)
+        index > -1 && mergeDeep(this.tabs[index], data)
       } else {
-        this.tabs.map(i => i.active && mergeWith(i, data))
+        this.tabs.map(i => i.active && mergeDeep(i, data))
       }
     },
     closeTab (callback) {
       let route = typeof callback === 'object' ? callback : router.currentRoute.value
-      const index = this.keys.indexOf(router.key(route))
+      const index = this.keys.findIndex(i => i === router.key(route))
       const tab = this.tabs[index]
 
       if (tab?.['changed'] && !confirm(store.getters.get('lang.warning_not_saved'))) {

@@ -2,6 +2,7 @@
 import { computed, getCurrentInstance, watch } from 'vue'
 import store from '../../store'
 import router from '../../router'
+import { uniqId } from '../../utils/uniq-id'
 
 defineOptions({
   __isStatic: true,
@@ -13,7 +14,7 @@ const instance = getCurrentInstance()
 const props = defineProps({
   id: {
     type: String,
-    default: 'v-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36)
+    default: uniqId()
   },
   data: {
     type: [null, Array],
@@ -28,7 +29,7 @@ const props = defineProps({
     default: false
   },
   smallTabs: Boolean,
-  hideable: Boolean,
+  hiddenTabs: Boolean,
   currentRoute: Object
 })
 
@@ -46,7 +47,7 @@ const index = computed({
   }
 })
 
-const init = () => {
+function init () {
   let right = 0,
       width = 0
 
@@ -74,7 +75,7 @@ const init = () => {
   }
 }
 
-const select = (tab, key) => {
+function select (tab, key) {
   if (props.history) {
     if (typeof props.history === 'string') {
       emit('action', 'pushRouter', {
@@ -99,7 +100,7 @@ const select = (tab, key) => {
   store.dispatch('set', { [keyStorage]: key })
 
   // :TODO Сделать более универсальное решение для отправки события родительскому компоненту
-  if (props.hideable) {
+  if (props.hiddenTabs) {
     const active = !tab.active
     props.data.forEach(i => i.active = false)
     tab.active = active

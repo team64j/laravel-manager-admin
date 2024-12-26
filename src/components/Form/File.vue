@@ -10,7 +10,7 @@ defineOptions({
   extends: Field
 })
 
-const $props = defineProps({
+const props = defineProps({
   type: {
     type: String,
     default: 'file',
@@ -18,21 +18,21 @@ const $props = defineProps({
   }
 })
 
-const $emit = defineEmits(['action'])
+const emit = defineEmits(['action'])
 
 function onMousedown (event) {
-  $emit('action', 'mousedown:input', event, instance)
+  emit('action', 'mousedown:input', event, instance)
 }
 
 function onClick (event) {
-  if ($props.emitClick) {
-    return $emit('action', $props.emitClick, event, instance)
+  if (props.emitClick) {
+    return emit('action', props.emitClick, event, instance)
   }
 }
 </script>
 
 <template>
-  <div v-if="label" class="w-full" :class="$props.class">
+  <div v-if="label" class="w-full" :class="props.class">
     <div class="mb-1">
       <label :for="ID" class="font-bold cursor-pointer">
         {{ label }}

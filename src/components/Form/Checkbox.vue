@@ -8,7 +8,7 @@ defineOptions({
   extends: Field
 })
 
-const $props = defineProps({
+const props = defineProps({
   modelValue: { default: true },
   value: { default: true },
   asButton: Boolean
@@ -17,11 +17,11 @@ const $props = defineProps({
 const _labelClass = computed(() => {
   const c = []
 
-  if ($props.disabled) {
+  if (props.disabled) {
     c.push('cursor-no-drop')
   }
 
-  if ($props.asButton) {
+  if (props.asButton) {
     c.push('label-as-button')
   }
 
@@ -30,7 +30,7 @@ const _labelClass = computed(() => {
 </script>
 
 <template>
-  <div v-if="label" class="w-full" :class="$props.class">
+  <div v-if="label" class="w-full" :class="props.class">
     <template v-if="!data">
       <label class="inline-flex items-center " :class="[labelClass, _labelClass]">
         <input v-model="model"
@@ -83,7 +83,7 @@ const _labelClass = computed(() => {
       <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
       <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
     </template>
-    <div v-for="(i, k) in data" v-else :class="$props.class">
+    <div v-for="(i, k) in data" v-else :class="props.class">
       <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
         <input v-model="model"
                :id="ID+`_`+i.key"

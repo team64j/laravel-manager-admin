@@ -10,8 +10,8 @@ defineOptions({
 })
 
 const instance = getCurrentInstance()
-const $props = defineProps(['data'])
-const $emit = defineEmits(['action'])
+const props = defineProps(['data'])
+const emit = defineEmits(['action'])
 
 let enterTimer = 0, filterTimer = 0
 
@@ -156,7 +156,7 @@ const action = (...args) => {
   if (typeof instance.exposed[args[0]] === 'function') {
     instance.exposed[args[0]](...Array.from(args).splice(1))
   } else {
-    $emit('action', ...args)
+    emit('action', ...args)
   }
 }
 
@@ -179,7 +179,7 @@ defineExpose({
 <template>
   <div class="app-main-menu">
     <ul>
-      <main-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" :level="1" @action="action"/>
+      <main-menu-item v-for="(i, k) in props.data" :data="i" :key="k" :level="1" @action="action"/>
     </ul>
   </div>
 </template>

@@ -1,63 +1,53 @@
 <script setup>
-import { getCurrentInstance, nextTick, reactive } from 'vue'
+import { nextTick, ref, shallowRef } from 'vue'
 
 defineOptions({
   name: 'Tooltip'
 })
 
-const instance = getCurrentInstance()
+const rootElement = shallowRef()
+const isShow = ref(false)
+const style = ref(null)
 
-const $data = reactive({
-  top: 0,
-  left: 0,
-  html: null,
-  type: null,
-  isShow: false,
-  position: {}
-})
-
-let element = null
-let timer = 0
+let element, html, type, timer = 0
 
 function create (event) {
-  const el = event.target.closest('[data-tooltip]')
+  element = event.target.closest('[data-tooltip]')
 
-  if (!event.target || event.target === instance.vnode.el || !event.target.getAttribute ||
-      !event.target.closest('[data-tooltip]') || event.target.getAttribute('data-tooltip') === '...') {
+  if (!event.target || event.target === rootElement.value || !event.target.getAttribute ||
+      !element || event.target.getAttribute('data-tooltip') === '...') {
     return
   }
 
   event.preventDefault()
 
-  element = true
-  const position = el.getBoundingClientRect()
-  $data.html = el.getAttribute('data-tooltip')
-      // .replace(/<br ?\/?>/g, '\n').replace(/&/g, "&amp;")
-      // .replace(/</g, "&lt;")
-      // .replace(/>/g, "&gt;")
-      // .replace(/"/g, "&quot;")
-      // .replace(/'/g, "&#039;")
-      .replace(/\r\n|\r|\n/g, '<br>')
-  $data.type = el.getAttribute('data-type')
+  html = element.getAttribute('data-tooltip')
+  type = element.getAttribute('data-type')
+
+  style.value = { top: `0px`, left: `0px` }
 
   nextTick(() => {
-    $data.top = position.top + position.height
-    $data.left = event.clientX
+    const position = element.getBoundingClientRect()
+    const { offsetWidth, offsetHeight } = rootElement.value
+    let top = position.top + position.height
+    let left = event.clientX
 
-    if ($data.left + instance.vnode.el.offsetWidth + 16 > window.innerWidth) {
-      $data.left -= ($data.left + instance.vnode.el.offsetWidth) - window.innerWidth + 16
-    } else if ($data.left < 10) {
-      $data.left = 10
+    if (left + offsetWidth + 16 > window.innerWidth) {
+      left -= (left + offsetWidth) - window.innerWidth + 16
+    } else if (left < 10) {
+      left = 10
     }
 
-    if ($data.top + instance.vnode.el.offsetHeight + 16 > window.innerHeight) {
-      $data.top -= ($data.top + instance.vnode.el.offsetHeight) - window.innerHeight + 16
+    if (top + offsetHeight + 16 > window.innerHeight) {
+      top -= (top + offsetHeight) - window.innerHeight + 16
     }
-  }).then(() => timer = setTimeout(() => $data.isShow = true, 300))
+
+    style.value = { top: `${top}px`, left: `${left}px` }
+  }).then(() => timer = setTimeout(() => isShow.value = true, 300))
 }
 
 function destroy (event) {
-  if (!element || event.relatedTarget === instance.vnode.el) {
+  if (!element || event.relatedTarget === rootElement.value) {
     return
   }
 
@@ -65,7 +55,7 @@ function destroy (event) {
 
   element = null
   timer = null
-  $data.isShow = false
+  isShow.value = false
 }
 
 document.addEventListener('mouseover', create)
@@ -76,16 +66,15 @@ document.addEventListener('click', destroy)
 </script>
 
 <template>
-  <div class="app-tooltip" :class="{
-    'opacity-100 visible': $data.isShow,
-    'opacity-0 invisible': !$data.isShow,
-    '!bg-rose-600': $data.type === 'error'
-  }" :style="{
-          top: $data.top + 'px',
-          left: $data.left + 'px'
-        }" @mousedown.stop="" @click.stop="" @mouseover.stop="">
-    <div class="pointer-events-none" v-html="$data.html"/>
-  </div>
+  <teleport to="body">
+    <div ref="rootElement" class="app-tooltip" :class="{
+    'opacity-100 visible': isShow,
+    'opacity-0 invisible': !isShow,
+    '!bg-rose-600': type === 'error'
+  }" :style="style" @mousedown.stop="" @click.stop="" @mouseover.stop="">
+      <div class="pointer-events-none" v-html="html"/>
+    </div>
+  </teleport>
 </template>
 
 <style scoped>

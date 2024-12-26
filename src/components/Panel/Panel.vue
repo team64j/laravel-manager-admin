@@ -3,6 +3,7 @@ import { compile, h, reactive, toRaw, watch } from 'vue'
 import draggable from 'vuedraggable'
 import router from '../../router'
 import store from '../../store'
+import { uniqId } from '../../utils/uniq-id'
 
 import('./Panel.css')
 
@@ -14,7 +15,7 @@ export default {
   props: {
     id: {
       type: String,
-      default: 'v-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36)
+      default: uniqId()
     },
     modelValue: null,
     url: String,
@@ -247,7 +248,7 @@ export default {
       if (typeof item === 'object') {
         if (!item.hasOwnProperty('__key')) {
           Object.defineProperty(item, '__key', {
-            value: 'v-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36)
+            value: uniqId()
           })
         }
 

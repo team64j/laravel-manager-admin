@@ -3,17 +3,17 @@ import { getCurrentInstance } from 'vue'
 import store from '../../store'
 
 const instance = getCurrentInstance()
-const $props = defineProps(['data', 'level'])
-const $emit = defineEmits(['action'])
+const props = defineProps(['data', 'level'])
+const emit = defineEmits(['action'])
 
-if ($props.data['values']) {
-  const value = store.getters.get('Storage.root.' + $props.data['key'],
-      $props.data['value'] ?? $props.data['values'][0]['value'])
+if (props.data['values']) {
+  const value = store.getters.get('Storage.root.' + props.data['key'],
+      props.data['value'] ?? props.data['values'][0]['value'])
 
-  for (const i of $props['data']['values']) {
+  for (const i of props['data']['values']) {
     if (i['value'] === value) {
-      Object.assign($props['data'], i)
-      store.dispatch('set', { ['Storage.root.' + $props['data']['key']]: i['value'] })
+      Object.assign(props['data'], i)
+      store.dispatch('set', { ['Storage.root.' + props['data']['key']]: i['value'] })
     }
   }
 }

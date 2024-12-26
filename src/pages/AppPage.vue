@@ -3,6 +3,7 @@ import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
 import router from '../router'
 import store from '../store'
 import Component from '../components/Layout/Component.vue'
+import { isNumber } from '../utils/is-number'
 
 defineOptions({
   name: 'AppPage'
@@ -12,44 +13,41 @@ const instance = getCurrentInstance()
 
 const emit = defineEmits(['action'])
 
-const props = defineProps({
+const $props = defineProps({
   currentRoute: {
     type: Object,
     default: router.currentRoute.value
   }
 })
 
-const loaded = ref(false)
-
-const data = reactive({
+const $data = reactive({
   url: null,
   data: null,
   meta: null,
   layout: null,
   errors: null,
-  onAction () {
-    if (typeof methods[arguments[0]] === 'function') {
-      methods[arguments[0]](...Array.from(arguments).splice(1))
-    } else {
-      emit('action', ...arguments)
-    }
-  },
-  'onUpdate:modelValue' () {
-    emit('action', 'setTab', {
-      changed: true
-    })
-  }
+  currentRoute: $props.currentRoute
 })
+
+const loaded = ref(false)
+
+function action () {
+  if (typeof instance.exposed[arguments[0]] === 'function') {
+    instance.exposed[arguments[0]](...Array.from(arguments).splice(1))
+  } else {
+    emit('action', ...arguments)
+  }
+}
 
 function submit ({ action, method, route, stay } = {}, changed = false) {
   if (route) {
     route = router.parse(route)
   } else {
-    route = props.currentRoute
+    route = $props.currentRoute
   }
 
   const url = route?.['meta']?.['url'] ? route['meta']['url'] : route?.['path']
-  const isNumericId = !isNaN(route['params']['id'] - 0) && route['params']['id'] > 0
+  const isNumericId = isNumber(route['params']['id'])
 
   if (action === 'cancel') {
     emit('action', 'closeTab')
@@ -64,7 +62,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
     action ??= 'read'
   }
 
-  if (data.data) {
+  if ($data.data) {
     emit('action', 'setTab', {
       key: instance.vnode.key,
       loading: true
@@ -74,18 +72,18 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
       key: instance.vnode.key,
       loading: true,
       meta: {
-        title: data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
+        title: $data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
       }
     })
   }
 
-  data.errors = null
+  $data.errors = null
 
-  for (const i in data.layout) {
-    if (data.layout[i].slots) {
-      for (const o in data.layout[i].slots) {
-        if (data.layout[i].slots[o]?.attrs?.url) {
-          delete data.layout[i].slots[o]
+  for (const i in $data.layout) {
+    if ($data.layout[i].slots) {
+      for (const o in $data.layout[i].slots) {
+        if ($data.layout[i].slots[o]?.attrs?.url) {
+          delete $data.layout[i].slots[o]
         }
       }
     }
@@ -95,7 +93,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
     method,
     url,
     params: route.query,
-    data: Object.assign({}, data.data, route.query)
+    data: Object.assign({}, $data.data, route.query)
   }).
       then(r => {
         emit('action', 'setTab', {
@@ -117,7 +115,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
           store.dispatch('set', {
             action,
             data: r.data['data'],
-            route: props.currentRoute['path'],
+            route: $props.currentRoute['path'],
             actionUpdate: Date.now()
           })
 
@@ -130,7 +128,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
             return
           }
 
-          Object.assign(data, {
+          Object.assign($data, {
             url: r.request.responseURL,
             data: r.data['data'],
             meta: r.data['meta'],
@@ -139,7 +137,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
           })
 
           const meta = {}
-          const tab = data.layout.find(i => i.component === 'AppGlobalTab')
+          const tab = $data.layout.find(i => i.component === 'AppGlobalTab')
 
           if (tab) {
             meta['title'] = tab.attrs.title
@@ -169,7 +167,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
         }
       }).catch(({ response }) => {
     if (response?.data.errors) {
-      data.errors = response.data.errors
+      $data.errors = response.data.errors
     }
   }).finally(() => {
     emit('action', 'setTab', {
@@ -182,35 +180,41 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
 
 function inputReloadQuery (value, ctx) {
   const route = router.parse({
-    query: Object.assign({}, props.currentRoute['query'], { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
+    query: Object.assign({}, $props.currentRoute['query'], { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
   })
   emit('action', 'pushRouter', route, () => submit({}, true))
 }
 
 function inputChangeQuery (value, ctx) {
   const route = router.parse({
-    query: Object.assign({}, props.currentRoute['query'], { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
+    query: Object.assign({}, $props.currentRoute['query'], { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
   })
   emit('action', 'pushRouter', route, () => submit({}, true))
 }
 
-const methods = {
-  submit,
-  inputReloadQuery,
-  inputChangeQuery
+function updateModelValue () {
+  emit('action', 'setTab', {
+    changed: true
+  })
 }
 
 watch(
-    () => props.currentRoute?.['path'],
-    () => props.currentRoute['meta']['group'] && submit()
+    () => $props.currentRoute?.['path'],
+    () => $props.currentRoute['meta']['group'] && submit()
 )
 
 onMounted(submit)
+
+defineExpose({
+  submit,
+  inputChangeQuery,
+  inputReloadQuery
+})
 </script>
 
 <template>
   <div class="app-page__default w-full h-full flex flex-col overflow-auto">
-    <Component v-if="loaded" v-bind="data" :currentRoute="currentRoute"/>
+    <Component v-if="loaded" v-bind="$data" @action="action" @update:modelValue="updateModelValue"/>
     <div v-else class="flex items-center justify-center grow">
       <div
           class="inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500"/>

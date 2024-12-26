@@ -11,7 +11,7 @@ defineExpose({
   off: destroy
 })
 
-const $data = reactive({
+const data = reactive({
   showDatepicker: false,
   position: {
     left: 0,
@@ -110,8 +110,8 @@ function make (self) {
   }
 
   instance = self
-  $data.yearStart = currentDate.getFullYear()
-  $data.showDatepicker = true
+  data.yearStart = currentDate.getFullYear()
+  data.showDatepicker = true
 
   nextTick(() => {
     const position = instance.refs.input.getBoundingClientRect()
@@ -127,7 +127,7 @@ function make (self) {
       left = window.innerWidth - datepicker.value.offsetWidth - 16
     }
 
-    $data.position = {
+    data.position = {
       left: left + 'px',
       top: top + 'px'
     }
@@ -137,7 +137,7 @@ function make (self) {
 }
 
 function destroy () {
-  $data.showDatepicker = false
+  data.showDatepicker = false
 }
 
 function clear (ctx) {
@@ -194,7 +194,7 @@ function setDays () {
     }
   }
 
-  $data.days = days
+  data.days = days
   instance.ctx.model = getDate() + ' ' + getTime()
 }
 
@@ -245,7 +245,7 @@ function onSetDateTime () {
 }
 
 document.addEventListener('mousedown', () => {
-  if ($data.showDatepicker) {
+  if (data.showDatepicker) {
     destroy()
   }
 })
@@ -254,10 +254,10 @@ document.addEventListener('mousedown', () => {
 <template>
   <teleport to="body">
     <transition>
-      <div v-show="$data.showDatepicker"
+      <div v-show="data.showDatepicker"
            ref="datepicker"
            class="app-datepicker"
-           :style="$data.position"
+           :style="data.position"
            @mousedown.stop="() => null">
         <div class="app-datepicker__content">
           <table>
@@ -275,7 +275,7 @@ document.addEventListener('mousedown', () => {
               <td colspan="2">
                 <select @input="onSetYear">
                   <option
-                      v-for="i in Array.from({ length: ($data.yearOffset * 2) + 1 }, (_, j) => ($data.yearStart - $data.yearOffset) + j)"
+                      v-for="i in Array.from({ length: (data.yearOffset * 2) + 1 }, (_, j) => (data.yearStart - data.yearOffset) + j)"
                       :value="i"
                       :selected="currentDate.getFullYear() === i">
                     {{ i }}
@@ -291,7 +291,7 @@ document.addEventListener('mousedown', () => {
                 {{ i.substring(0, dayChars) }}
               </th>
             </tr>
-            <tr v-for="day in $data.days">
+            <tr v-for="day in data.days">
               <td v-for="i in day">
                 <label>
                   <input v-if="i.active"

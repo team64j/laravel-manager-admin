@@ -10,9 +10,9 @@ defineOptions({
 
 const instance = getCurrentInstance()
 
-const $emit = defineEmits(['action'])
+const emit = defineEmits(['action'])
 
-const $data = reactive({
+const data = reactive({
   show: false,
   title: '',
   icon: '',
@@ -28,28 +28,28 @@ function action () {
   if (typeof instance.exposed[arguments[0]] === 'function') {
     instance.exposed[arguments[0]](...Array.from(arguments).splice(1))
   } else {
-    $emit('action', ...arguments)
+    emit('action', ...arguments)
   }
 }
 
 function open () {
-  $data.show = true
+  data.show = true
 }
 
 function close () {
-  $data.show = false
-  $data.owner = null
-  $data.componentLoaded = false
+  data.show = false
+  data.owner = null
+  data.componentLoaded = false
 }
 
 function setTitle (value) {
-  $data.title = value
+  data.title = value
 
   return this
 }
 
 function setOwner (value) {
-  $data.owner = value
+  data.owner = value
 
   return this
 }
@@ -59,14 +59,14 @@ function setUrl (route) {
     route = router.parse(route)
   }
 
-  $data.currentRoute = route
+  data.currentRoute = route
 
-  if (!$data.componentLoaded) {
+  if (!data.componentLoaded) {
     axios.get(route.fullPath).then(({ data }) => {
-      $data.componentLoaded = true
-      $data.componentProps = data
-      $data.icon = data.meta['icon']
-      $data.title = data.meta['title']
+      data.componentLoaded = true
+      data.componentProps = data
+      data.icon = data.meta['icon']
+      data.title = data.meta['title']
     })
   }
 
@@ -80,16 +80,16 @@ function pushRouter (route) {
 function onMousedown (event) {
   document.addEventListener('mousemove', onMousemove)
   document.addEventListener('mouseup', onMouseup)
-  $data.x = event.clientX
-  $data.y = event.clientY
-  $data.l = modal.value.offsetLeft
-  $data.t = modal.value.offsetTop
+  data.x = event.clientX
+  data.y = event.clientY
+  data.l = modal.value.offsetLeft
+  data.t = modal.value.offsetTop
   modal.value.classList.add('opacity-50')
 }
 
 function onMousemove (event) {
-  let x = $data.l + (event.clientX - $data.x)
-  let y = $data.t + (event.clientY - $data.y)
+  let x = data.l + (event.clientX - data.x)
+  let y = data.t + (event.clientY - data.y)
 
   modal.value.style.left = x + 'px'
   modal.value.style.top = y + 'px'
@@ -102,8 +102,8 @@ function onMouseup () {
 }
 
 function modalSelect (data) {
-  if ($data.owner) {
-    $data.owner.model = data.value
+  if (data.owner) {
+    data.owner.model = data.value
     close()
   }
 }
@@ -121,23 +121,23 @@ defineExpose({
 
 <template>
   <transition name="fade">
-    <teleport to="body" v-if="$data.show">
+    <teleport to="body" v-if="data.show">
       <div class="app-modal">
-        <div class="app-modal__overlay" @click="$data.show=!$data.show"/>
+        <div class="app-modal__overlay" @click="data.show=!data.show"/>
         <div class="app-modal__wrap" ref="modal">
           <div class="app-modal__header">
-            <div v-if="$data.icon" class="pl-4 flex items-center">
-              <i :class="$data.icon"/>
+            <div v-if="data.icon" class="pl-4 flex items-center">
+              <i :class="data.icon"/>
             </div>
-            <div class="grow px-4 py-1" v-html="$data.title" @mousedown="onMousedown"/>
+            <div class="grow px-4 py-1" v-html="data.title" @mousedown="onMousedown"/>
             <button type="button" class="btn-red items-center" @click="close">
               <i class="fa fa-close"/>
             </button>
           </div>
           <div class="app-modal__main">
-            <Component v-if="$data.componentLoaded"
-                       v-bind="$data.componentProps"
-                       :currentRoute="$data.currentRoute"
+            <Component v-if="data.componentLoaded"
+                       v-bind="data.componentProps"
+                       :currentRoute="data.currentRoute"
                        @action="action"/>
           </div>
           <div class="app-modal__footer"/>
