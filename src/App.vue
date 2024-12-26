@@ -1,5 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
+import { convertPixelsToRem, convertRemToPixels } from './utils/convert'
 import router from './router'
 import store from './store'
 import { Notifications } from '@kyvg/vue3-notification'
@@ -10,7 +11,7 @@ import Tooltip from './components/Tooltip/Tooltip.vue'
 import Search from './components/Search/Search.vue'
 import Modal from './components/Modal/Modal.vue'
 import Logo from './components/Layout/Logo.vue'
-import { convertPixelsToRem, convertRemToPixels } from './utils/convert'
+import { RouterView } from 'vue-router'
 
 defineOptions({
   name: 'App'
@@ -311,7 +312,7 @@ function inputTreeSelect (event, context) {
   }
 }
 
-function modalComponent (event, instance) {
+function modalShow (event, instance) {
   if (instance.ctx['url']) {
     modalElement.value.open({
       url: instance.ctx['url'],
@@ -322,6 +323,10 @@ function modalComponent (event, instance) {
 
 function collapse (value) {
   store.dispatch('set', { ['Storage.root.sidebarShow']: !value })
+}
+
+function datepickerShow () {
+  datepickerElement.value.on(...arguments)
 }
 
 bootstrap()
@@ -343,7 +348,8 @@ defineExpose({
   pushRouter,
   collapse,
   inputTreeSelect,
-  'modal:component': modalComponent
+  'modal:component': modalShow,
+  'datepicker:show': datepickerShow
 })
 
 // window['confirm'] = (message) => {

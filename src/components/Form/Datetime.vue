@@ -37,11 +37,7 @@ function onClear () {
 }
 
 function onShow () {
-  instance.root.refs.datepicker.on(instance)
-}
-
-function onClose () {
-  //instance.root.refs.datepicker.off()
+  emit('action', 'datepicker:show', instance)
 }
 </script>
 

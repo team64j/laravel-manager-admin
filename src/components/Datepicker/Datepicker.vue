@@ -260,7 +260,7 @@ document.addEventListener('mousedown', () => {
            class="app-datepicker"
            :style="style"
            @mousedown.stop="() => {}">
-        <div class="app-datepicker__content">
+        <div v-if="showDatepicker" class="app-datepicker__content">
           <table>
             <thead>
             <tr>
