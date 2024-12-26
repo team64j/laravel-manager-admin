@@ -18,14 +18,16 @@ const props = defineProps({
                    class="app-crumbs__item truncate max-w-48 hover:opacity-80"
                    :to="i.to"
                    :title="i.title"
-                   :data-tooltip="i.tooltip"
-                   v-html="i.name ?? i.title"/>
+                   :data-tooltip="i.tooltip">
+        {{ i.name ?? i.title }}
+      </router-link>
 
       <div v-else
            class="app-crumbs__item truncate max-w-48 hover:opacity-80"
            :title="i.title"
-           :data-tooltip="i.tooltip"
-           v-html="i.name ?? i.title"></div>
+           :data-tooltip="i.tooltip">
+        {{ i.name ?? i.title }}
+      </div>
 
       <i class="fa fa-angle-right opacity-60 leading-[0] mx-4 last-of-type:hidden" style="font-size: 70%"/>
     </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, reactive, ref } from 'vue'
+import { nextTick, reactive, ref, shallowRef } from 'vue'
 import store from '../../store'
 
 defineOptions({
@@ -12,19 +12,18 @@ defineExpose({
 })
 
 const data = reactive({
-  showDatepicker: false,
-  position: {
-    left: 0,
-    top: 0
-  },
-  yearStart: new Date().getFullYear(),
-  yearOffset: 10,
   days: []
 })
 
 let instance = null
 
-const datepicker = ref(null)
+const datepicker = shallowRef()
+
+const showDatepicker = ref()
+
+const style = ref(null)
+
+const yearOffset = 10
 
 const dateFormat = store.getters.get('config.datetime_format', 'dd-mm-YYYY')
 
@@ -77,6 +76,9 @@ const patterns = {
 }
 
 let currentDate = new Date()
+let yearStart = new Date().getFullYear()
+
+let days = ref(null)
 
 function make (self) {
   const d = self.ctx['model'] ? (self.ctx['model'] || '').toString().split(' ') : []
@@ -110,8 +112,8 @@ function make (self) {
   }
 
   instance = self
-  data.yearStart = currentDate.getFullYear()
-  data.showDatepicker = true
+  yearStart = currentDate.getFullYear()
+  showDatepicker.value = true
 
   nextTick(() => {
     const position = instance.refs.input.getBoundingClientRect()
@@ -127,9 +129,9 @@ function make (self) {
       left = window.innerWidth - datepicker.value.offsetWidth - 16
     }
 
-    data.position = {
-      left: left + 'px',
-      top: top + 'px'
+    style.value = {
+      left: `${left}px`,
+      top: `${top}px`
     }
   })
 
@@ -137,7 +139,7 @@ function make (self) {
 }
 
 function destroy () {
-  data.showDatepicker = false
+  showDatepicker.value = false
 }
 
 function clear (ctx) {
@@ -145,45 +147,45 @@ function clear (ctx) {
 }
 
 function setDays () {
-  const days = []
-  let day = 1 - (7 + currentDate.getDay() - startDay) % 7
-  let week = 0
+  const date = new Date(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1) + '-01')
+  let day = 1 - (7 + date.getDay() - startDay) % 7, week = 0
+  daysInMonth[1] = date.getFullYear() % 4 === 0 ? 29 : 28
 
-  daysInMonth[1] = currentDate.getFullYear() % 4 === 0 ? 29 : 28
+  days.value = []
 
-  while (day <= daysInMonth[currentDate.getMonth()]) {
-    days[week] = []
+  while (day <= daysInMonth[date.getMonth()]) {
+    days.value[week] = []
 
     for (let i = 0; i <= 6; i++) {
-      days[week][i] = {
+      days.value[week][i] = {
         active: false,
         value: null,
         current: null
       }
 
-      if (day <= daysInMonth[currentDate.getMonth()] && day > 0) {
-        days[week][i].value = day
-        days[week][i].active = true
+      if (day <= daysInMonth[date.getMonth()] && day > 0) {
+        days.value[week][i].value = day
+        days.value[week][i].active = true
       } else {
-        days[week][i].value = day > 0
-            ? day - daysInMonth[currentDate.getMonth()]
-            : (daysInMonth[currentDate.getMonth() - 1] || daysInMonth[11]) + day
+        days.value[week][i].value = day > 0
+            ? day - daysInMonth[date.getMonth()]
+            : (daysInMonth[date.getMonth() - 1] || daysInMonth[11]) + day
       }
 
       if (
-          days[week][i].value === currentDate.getDate() &&
-          currentDate.getMonth() === currentDate.getMonth() &&
-          currentDate.getFullYear() === currentDate.getFullYear()
+          days.value[week][i].value === currentDate.getDate() &&
+          date.getMonth() === currentDate.getMonth() &&
+          date.getFullYear() === currentDate.getFullYear()
       ) {
-        days[week][i].selected = true
+        days.value[week][i].selected = true
       }
 
       if (
           day === (new Date).getDate() &&
-          currentDate.getMonth() === (new Date).getMonth() &&
-          currentDate.getFullYear() === (new Date).getFullYear()
+          date.getMonth() === (new Date).getMonth() &&
+          date.getFullYear() === (new Date).getFullYear()
       ) {
-        days[week][i].current = true
+        days.value[week][i].current = true
       }
 
       day++
@@ -194,7 +196,6 @@ function setDays () {
     }
   }
 
-  data.days = days
   instance.ctx.model = getDate() + ' ' + getTime()
 }
 
@@ -245,7 +246,7 @@ function onSetDateTime () {
 }
 
 document.addEventListener('mousedown', () => {
-  if (data.showDatepicker) {
+  if (showDatepicker.value) {
     destroy()
   }
 })
@@ -254,11 +255,11 @@ document.addEventListener('mousedown', () => {
 <template>
   <teleport to="body">
     <transition>
-      <div v-show="data.showDatepicker"
+      <div v-show="showDatepicker"
            ref="datepicker"
            class="app-datepicker"
-           :style="data.position"
-           @mousedown.stop="() => null">
+           :style="style"
+           @mousedown.stop="() => {}">
         <div class="app-datepicker__content">
           <table>
             <thead>
@@ -275,7 +276,7 @@ document.addEventListener('mousedown', () => {
               <td colspan="2">
                 <select @input="onSetYear">
                   <option
-                      v-for="i in Array.from({ length: (data.yearOffset * 2) + 1 }, (_, j) => (data.yearStart - data.yearOffset) + j)"
+                      v-for="i in Array.from({ length: (yearOffset * 2) + 1 }, (_, j) => (yearStart - yearOffset) + j)"
                       :value="i"
                       :selected="currentDate.getFullYear() === i">
                     {{ i }}
@@ -291,7 +292,7 @@ document.addEventListener('mousedown', () => {
                 {{ i.substring(0, dayChars) }}
               </th>
             </tr>
-            <tr v-for="day in data.days">
+            <tr v-for="day in days">
               <td v-for="i in day">
                 <label>
                   <input v-if="i.active"

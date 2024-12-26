@@ -41,7 +41,7 @@ function onShow () {
 }
 
 function onClose () {
-  instance.root.refs.datepicker.off()
+  //instance.root.refs.datepicker.off()
 }
 </script>
 
