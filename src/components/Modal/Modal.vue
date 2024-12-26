@@ -1,7 +1,7 @@
 <script setup>
 import Component from '../Layout/Component.vue'
 import router from '../../router'
-import { getCurrentInstance, reactive, ref } from 'vue'
+import { getCurrentInstance, reactive, shallowRef } from 'vue'
 
 defineOptions({
   name: 'Modal',
@@ -22,7 +22,7 @@ const data = reactive({
   currentRoute: null
 })
 
-const modal = ref(null)
+const modalElement = shallowRef()
 
 function action () {
   if (typeof instance.exposed[arguments[0]] === 'function') {
@@ -32,7 +32,13 @@ function action () {
   }
 }
 
-function open () {
+function open (opt) {
+  Object.assign(data, { ...opt })
+
+  if (opt.url) {
+    setUrl(opt.url)
+  }
+
   data.show = true
 }
 
@@ -62,11 +68,11 @@ function setUrl (route) {
   data.currentRoute = route
 
   if (!data.componentLoaded) {
-    axios.get(route.fullPath).then(({ data }) => {
+    axios.get(route.fullPath).then(r => {
       data.componentLoaded = true
-      data.componentProps = data
-      data.icon = data.meta['icon']
-      data.title = data.meta['title']
+      data.componentProps = r.data
+      data.icon = r.data['meta']['icon']
+      data.title = r.data['meta']['title']
     })
   }
 
@@ -75,30 +81,32 @@ function setUrl (route) {
 
 function pushRouter (route) {
   setUrl(router.parse(route))
+
+  return this
 }
 
 function onMousedown (event) {
-  document.addEventListener('mousemove', onMousemove)
-  document.addEventListener('mouseup', onMouseup)
   data.x = event.clientX
   data.y = event.clientY
-  data.l = modal.value.offsetLeft
-  data.t = modal.value.offsetTop
-  modal.value.classList.add('opacity-50')
+  data.l = modalElement.value.offsetLeft
+  data.t = modalElement.value.offsetTop
+  modalElement.value.classList.add('opacity-50')
+  document.addEventListener('mousemove', onMousemove)
+  document.addEventListener('mouseup', onMouseup)
 }
 
 function onMousemove (event) {
   let x = data.l + (event.clientX - data.x)
   let y = data.t + (event.clientY - data.y)
 
-  modal.value.style.left = x + 'px'
-  modal.value.style.top = y + 'px'
+  modalElement.value.style.left = x + 'px'
+  modalElement.value.style.top = y + 'px'
 }
 
 function onMouseup () {
+  modalElement.value.classList.remove('opacity-50')
   document.removeEventListener('mousemove', onMousemove)
   document.removeEventListener('mouseup', onMouseup)
-  modal.value.classList.remove('opacity-50')
 }
 
 function modalSelect (data) {
@@ -124,7 +132,7 @@ defineExpose({
     <teleport to="body" v-if="data.show">
       <div class="app-modal">
         <div class="app-modal__overlay" @click="data.show=!data.show"/>
-        <div class="app-modal__wrap" ref="modal">
+        <div class="app-modal__wrap" ref="modalElement">
           <div class="app-modal__header">
             <div v-if="data.icon" class="pl-4 flex items-center">
               <i :class="data.icon"/>

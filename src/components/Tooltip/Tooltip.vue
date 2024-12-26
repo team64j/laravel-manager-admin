@@ -14,7 +14,7 @@ let element, html, type, timer = 0
 function create (event) {
   element = event.target.closest('[data-tooltip]')
 
-  if (!event.target || event.target === rootElement.value || !event.target.getAttribute ||
+  if (!event.target || !rootElement.value || event.target === rootElement.value || !event.target.getAttribute ||
       !element || event.target.getAttribute('data-tooltip') === '...') {
     return
   }
@@ -67,13 +67,20 @@ document.addEventListener('click', destroy)
 
 <template>
   <teleport to="body">
-    <div ref="rootElement" class="app-tooltip" :class="{
-    'opacity-100 visible': isShow,
-    'opacity-0 invisible': !isShow,
-    '!bg-rose-600': type === 'error'
-  }" :style="style" @mousedown.stop="" @click.stop="" @mouseover.stop="">
-      <div class="pointer-events-none" v-html="html"/>
-    </div>
+    <transition>
+      <div v-show="isShow"
+           ref="rootElement"
+           class="app-tooltip"
+           :class="{
+            '!bg-rose-600': type === 'error'
+          }"
+           :style="style"
+           @click.stop=""
+           @mousedown.stop=""
+           @mouseover.stop="">
+        <div class="pointer-events-none" v-html="html"/>
+      </div>
+    </transition>
   </teleport>
 </template>
 

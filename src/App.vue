@@ -1,8 +1,8 @@
-<script>
-import { Notifications } from '@kyvg/vue3-notification'
-import { RouterView } from 'vue-router'
+<script setup>
+import { computed, getCurrentInstance, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
 import router from './router'
 import store from './store'
+import { Notifications } from '@kyvg/vue3-notification'
 import GlobalTabs from './components/GlobalTabs/GlobalTabs.vue'
 import Datepicker from './components/Datepicker/Datepicker.vue'
 import Component from './components/Layout/Component.vue'
@@ -10,366 +10,377 @@ import Tooltip from './components/Tooltip/Tooltip.vue'
 import Search from './components/Search/Search.vue'
 import Modal from './components/Modal/Modal.vue'
 import Logo from './components/Layout/Logo.vue'
+import { convertPixelsToRem, convertRemToPixels } from './utils/convert'
 
-export default {
-  name: 'App',
-  components: {
-    Component,
-    Datepicker,
-    GlobalTabs,
-    Logo,
-    Modal,
-    Notifications,
-    RouterView,
-    Search,
-    Tooltip
-  },
-  data () {
-    return {
-      layout: null,
-      loaded: false,
-      sidebarWidth: store.getters.get('Storage.sidebarWidth', 26),
-      isMobile: this.calcIsMobile()
+defineOptions({
+  name: 'App'
+})
+
+const emit = defineEmits(['action'])
+
+const instance = getCurrentInstance()
+
+const rootElement = shallowRef()
+const midElement = shallowRef()
+const modalElement = shallowRef()
+const searchElement = shallowRef()
+const tooltipElement = shallowRef()
+const sidebarElement = shallowRef()
+const datepickerElement = shallowRef()
+
+const layout = ref(null)
+const loaded = ref(false)
+const sidebarWidth = ref(store.getters.get('Storage.sidebarWidth', 26))
+const isMobile = ref(calcIsMobile())
+
+const currentRoute = computed(() => router.currentRoute.value)
+const slotTop = computed(() => layout.value.find(i => i.slot === 'top'))
+const slotTopLeft = computed(() => layout.value.find(i => i.slot === 'top.left'))
+const slotTopRight = computed(() => layout.value.find(i => i.slot === 'top.right'))
+const slotLeft = computed(() => layout.value.find(i => i.slot === 'left'))
+const slotLeftTop = computed(() => layout.value.find(i => i.slot === 'left.top'))
+const slotLeftBottom = computed(() => layout.value.find(i => i.slot === 'left.bottom'))
+const slotSidebar = computed(() => layout.value.find(i => i.slot === 'sidebar'))
+
+watch(
+    () => store.state['Storage']['token'],
+    bootstrap
+)
+
+watch(
+    () => store.state['Storage']['root']['dark'],
+    (value) => document.documentElement.classList.toggle('dark', !!value)
+)
+
+watch(
+    () => store.state['Storage']['root']['sidebarShow'],
+    (value) => rootElement.value.classList.toggle('app-sidebar-hidden', !value)
+)
+
+onMounted(() => {
+  /**
+   * @see https://dennisreimann.de/articles/delegating-html-links-to-vue-router.html
+   */
+  window.addEventListener('click', event => {
+    // ensure we use the link, in case the click has been received by a sub element
+    let { target } = event
+    while (target && target.tagName !== 'A') target = target.parentNode
+    // handle only links that do not reference external resources
+    if (target && target.matches('a:not([href*=\'://\'])') && target.href) {
+      // some sanity checks taken from vue-router:
+      // https://github.com/vuejs/vue-router/blob/dev/src/components/link.js#L106
+      const { altKey, ctrlKey, metaKey, shiftKey, button, defaultPrevented } = event
+      // don't handle with control keys
+      if (metaKey || altKey || ctrlKey || shiftKey) return
+      // don't handle when preventDefault called
+      if (defaultPrevented) return
+      // don't handle right clicks
+      if (button !== undefined && button !== 0) return
+      // don't handle if `target="_blank"`
+      if (target && target.getAttribute) {
+        const linkTarget = target.getAttribute('target')
+        if (/\b_blank\b/i.test(linkTarget)) return
+      }
+      // don't handle same page links/anchors
+      const url = new URL(target.href)
+      const to = url.pathname.replace(document.baseURI.replace(/\/$/g, '').replace(location.origin, '') + '/', '/')
+      if (window.location.pathname !== to && event.preventDefault) {
+        event.preventDefault()
+        router.to(to)
+      }
     }
-  },
-  computed: {
-    currentRoute () {
-      return router.currentRoute.value
-    },
-    store () {
-      return store
-    },
-    slotTop () {
-      return this.layout.find(i => i.slot === 'top')
-    },
-    slotTopLeft () {
-      return this.layout.find(i => i.slot === 'top.left')
-    },
-    slotTopRight () {
-      return this.layout.find(i => i.slot === 'top.right')
-    },
-    slotLeft () {
-      return this.layout.find(i => i.slot === 'left')
-    },
-    slotLeftTop () {
-      return this.layout.find(i => i.slot === 'left.top')
-    },
-    slotLeftBottom () {
-      return this.layout.find(i => i.slot === 'left.bottom')
-    },
-    slotSidebar () {
-      return this.layout.find(i => i.slot === 'sidebar')
-    }
-  },
-  watch: {
-    '$store.state.Storage.token' () {
-      this.bootstrap()
-    },
-    '$store.state.Storage.root.dark' (value) {
-      document.documentElement.classList.toggle('dark', value)
-    },
-    '$store.state.Storage.root.sidebarShow' (value) {
-      this.$el.classList.toggle('app-sidebar-hidden', !value)
-    }
-  },
-  created () {
-    this.bootstrap()
+  })
+})
 
-    window.addEventListener('resize', () => {
-      const check = this.calcIsMobile()
-      if (check !== this.isMobile) {
-        this.isMobile = check
-      }
-    })
-
-    document.documentElement.classList.toggle(
-        'dark',
-        store.getters.get('Storage.root.dark', false)
-    )
-
-    // window['confirm'] = (message) => {
-    //   const promise = new Promise(async function(resolve, reject) {
-    //     const dialog = document.createElement('div')
-    //     dialog.className = 'fixed flex flex-wrap justify-center rounded z-50 bg-white dark:bg-gray-600 top-1/2 left-1/2 w-96 max-w-full h-auto max-h-full -translate-x-1/2 -translate-y-1/2 p-5 shadow-xl'
-    //     dialog.innerHTML = `<div class="grow w-full pb-3">${message}</div>`
-    //
-    //     const btnCancel  = document.createElement('button')
-    //     btnCancel.className = 'btn-sm mx-1 px-4 border-none'
-    //     btnCancel.innerHTML = 'Cancel'
-    //     btnCancel.onclick = () => resolve(false)
-    //
-    //     const btnOk = document.createElement('button')
-    //     btnOk.className = 'btn-sm btn-green mx-1 px-4 border-none'
-    //     btnOk.innerHTML = 'OK'
-    //     btnOk.onclick = () => resolve(true)
-    //
-    //     dialog.append(btnCancel, btnOk)
-    //
-    //     document.body.append(dialog)
-    //   })
-    //
-    //   return promise
-    // }
-  },
-  mounted () {
-    /**
-     * @see https://dennisreimann.de/articles/delegating-html-links-to-vue-router.html
-     */
-    window.addEventListener('click', event => {
-      // ensure we use the link, in case the click has been received by a sub element
-      let { target } = event
-      while (target && target.tagName !== 'A') target = target.parentNode
-      // handle only links that do not reference external resources
-      if (target && target.matches('a:not([href*=\'://\'])') && target.href) {
-        // some sanity checks taken from vue-router:
-        // https://github.com/vuejs/vue-router/blob/dev/src/components/link.js#L106
-        const { altKey, ctrlKey, metaKey, shiftKey, button, defaultPrevented } = event
-        // don't handle with control keys
-        if (metaKey || altKey || ctrlKey || shiftKey) return
-        // don't handle when preventDefault called
-        if (defaultPrevented) return
-        // don't handle right clicks
-        if (button !== undefined && button !== 0) return
-        // don't handle if `target="_blank"`
-        if (target && target.getAttribute) {
-          const linkTarget = target.getAttribute('target')
-          if (/\b_blank\b/i.test(linkTarget)) return
-        }
-        // don't handle same page links/anchors
-        const url = new URL(target.href)
-        const to = url.pathname.replace(document.baseURI.replace(/\/$/g, '').replace(location.origin, '') + '/', '/')
-        if (window.location.pathname !== to && event.preventDefault) {
-          event.preventDefault()
-          router.to(to)
-        }
-      }
-    })
-  },
-  methods: {
-    action () {
-      if (typeof this[arguments[0]] === 'function') {
-        this[arguments[0]](...Array.from(arguments).splice(1))
-      } else {
-        this.$emit('action', ...arguments)
-      }
-    },
-    bootstrap () {
-      this.loaded = false
-
-      if (store.getters.get('Storage.token')) {
-        axios.post('/bootstrap').then(({ data: response }) => {
-          if (response.data) {
-            this.loaded = true
-            this.layout = response.layout
-
-            if (response.data.routes) {
-              const routes = router.getRoutes()
-              const component = () => import('./pages/AppPage.vue')
-              for (const route of response.data.routes) {
-                if (routes.some(i => (i.name || i.path) === (route.name || route.path))) {
-                  continue
-                }
-                router.addRoute({ ...route, component })
-              }
-            }
-
-            if (response.data.assets) {
-              this.assets(response.data.assets)
-            }
-
-            store.dispatch('set', {
-              config: response.data.config || {},
-              lang: response.data.lang || {}
-            })
-
-            if (response.data?.config?.['site_name']) {
-              document.title = response.data.config['site_name']
-            }
-
-            Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).
-                forEach(([, { default: module }]) => {
-                  const name = `App` + (module.name || module.__name)
-                  if (module?.['__isStatic'] && !this.$.appContext.components[name]) {
-                    this.$.appContext.app.component(name, module)
-                  }
-                })
-
-            if (!this.$.appContext.components.RouterView) {
-              this.$.appContext.app.use(router)
-            }
-          } else {
-            this.login()
-          }
-        }).catch(this.login)
-      } else {
-        this.login()
-      }
-    },
-    login () {
-      store.dispatch('set', { ['Storage.token']: null })
-
-      if (!this.$.appContext.components.RouterView) {
-        this.$.appContext.app.use(router)
-      }
-
-      this.loaded = true
-      this.layout = false
-      this.$.slots = {}
-      router.to('/auth/login')
-    },
-    assets (assets) {
-      assets.forEach(i => {
-        switch (i.rel) {
-          case 'plugin':
-            import(/* @vite-ignore */i.src).then(j => {
-              window['app']._.appContext.app.use(j.default)
-            })
-            break
-
-          case 'component':
-            import(/* @vite-ignore */i.src).then(j => {
-              window['app']._.appContext.app.component(j.default.name, j.default)
-            })
-            break
-
-          case 'manifest':
-            const fragment = document.createRange().createContextualFragment(i.source)
-            document.head.appendChild(fragment)
-            break
-
-          case 'module':
-            const script = document.createElement('script')
-            script.setAttribute('src', i.src)
-            script.setAttribute('type', 'module')
-            script.setAttribute('crossorigin', 'anonymous')
-            document.head.appendChild(script)
-            break
-
-          case 'css':
-            document.head.innerHTML += `<link rel="stylesheet" href="${i.src}">`
-            break
-        }
-      })
-    },
-    onTouchstartSidebar (event) {
-      this.sx = event.touches[0].clientX
-      this.sy = event.touches[0].clientY
-      this.sl = null
-      this.$refs.mid.addEventListener('touchmove', this.onTouchmoveSidebar)
-      this.$refs.mid.addEventListener('touchend', this.onTouchendSidebar)
-    },
-    onTouchmoveSidebar (event) {
-      if (this.isMobile) {
-        this.sl = null
-
-        if (Math.abs(event.touches[0].clientX - this.sx) < Math.abs(event.touches[0].clientY - this.sy)) {
-          return
-        }
-
-        if (event.touches[0].clientX - this.sx < 0) {
-          this.sl = false
-          if (store.getters.get('Storage.root.sidebarShow')) {
-            let x = event.touches[0].clientX - this.sx
-
-            if (Math.abs(x) > this.$refs.sidebar.offsetWidth) {
-              x = -this.$refs.sidebar.offsetWidth
-            }
-
-            this.$refs.sidebar.style.transform = 'translateX(' + x + 'px)'
-            this.$refs.sidebar.style.transition = 'none'
-          }
-        } else if (this.sx < 40) {
-          this.sl = true
-          if (!store.getters.get('Storage.root.sidebarShow')) {
-            let x = this.$refs.sidebar.offsetWidth - (event.touches[0].clientX - this.sx)
-
-            if (x < 0) {
-              x = 0
-            }
-
-            this.$refs.sidebar.style.transform = 'translateX(-' + x + 'px)'
-            this.$refs.sidebar.style.transition = 'none'
-          }
-        }
-      }
-    },
-    onTouchendSidebar (event) {
-      let x = event.changedTouches[0].clientX - this.sx
-
-      if (Math.abs(x) > this.$refs.sidebar.offsetWidth / 3) {
-        this.sl !== null && store.dispatch('set', { ['Storage.root.sidebarShow']: this.sl })
-      }
-
-      this.$refs.mid.removeEventListener('touchmove', this.onTouchmoveSidebar)
-      this.$refs.mid.removeEventListener('touchend', this.onTouchendSidebar)
-      this.$refs.sidebar.style.transform = null
-      this.$refs.sidebar.style.transition = null
-    },
-    splitterDown (event) {
-      this.x = event.clientX
-      this.w = this.convertRemToPixels(this.sidebarWidth)
-      this.$el.classList.add('app-sidebar-resize')
-      event.currentTarget.classList.add('active')
-      event.currentTarget.addEventListener('mousemove', this.splitterMove)
-      event.currentTarget.addEventListener('mouseup', this.splitterUp)
-    },
-    splitterMove (event) {
-      this.sidebarWidth = this.convertPixelsToRem(
-          Math.min(Math.max(this.w - (this.x - event.clientX), 64), window.innerWidth * .5))
-      store.dispatch('Storage/set', { sidebarWidth: this.sidebarWidth })
-    },
-    splitterUp (event) {
-      this.$el.classList.remove('app-sidebar-resize')
-      event.currentTarget.classList.remove('active')
-      event.currentTarget.removeEventListener('mousemove', this.splitterMove)
-      event.currentTarget.removeEventListener('mouseup', this.splitterUp)
-    },
-    pushRouter (route, callback) {
-      this.$nextTick(() => router.to(route).then(callback))
-    },
-    calcIsMobile () {
-      return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints'] ||
-          window.innerWidth <
-          1024
-    },
-    convertRemToPixels (rem) {
-      return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
-    },
-    convertPixelsToRem (px) {
-      return px / parseFloat(getComputedStyle(document.documentElement).fontSize)
-    },
-    inputTreeSelect (event, context) {
-      store.dispatch('set', { event, context })
-
-      const input = context.$el.querySelector('input')
-      if (input.classList.contains('focus')) {
-        input.classList.remove('focus')
-        store.dispatch('set', { treeSelect: false })
-      } else {
-        input.classList.add('focus')
-        store.dispatch('set', { treeSelect: true })
-      }
-    },
-    'modal:component' (event, instance) {
-      if (instance.ctx['url']) {
-        this.$refs.modal.setOwner(instance.ctx).setUrl(instance.ctx['url']).open()
-      }
-    },
-    collapse (value) {
-      store.dispatch('set', { ['Storage.root.sidebarShow']: !value })
-    }
+function action () {
+  if (typeof instance.exposed[arguments[0]] === 'function') {
+    instance.exposed[arguments[0]](...Array.from(arguments).splice(1))
+  } else {
+    emit('action', ...arguments)
   }
 }
+
+function bootstrap () {
+  loaded.value = false
+
+  if (!store.getters.get('Storage.token')) {
+    login()
+  }
+
+  axios.post('/bootstrap').then(({ data: response }) => {
+    if (response.data) {
+      loaded.value = true
+      layout.value = response.layout
+
+      if (response.data.routes) {
+        const routes = router.getRoutes()
+        const component = () => import('./pages/AppPage.vue')
+        for (const route of response.data.routes) {
+          if (routes.some(i => (i.name || i.path) === (route.name || route.path))) {
+            continue
+          }
+          router.addRoute({ ...route, component })
+        }
+      }
+
+      if (response.data.assets) {
+        assets(response.data.assets)
+      }
+
+      store.dispatch('set', {
+        config: response.data.config || {},
+        lang: response.data.lang || {}
+      })
+
+      if (response.data?.config?.['site_name']) {
+        document.title = response.data.config['site_name']
+      }
+
+      Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).
+          forEach(([, { default: module }]) => {
+            const name = `App` + (module.name || module.__name)
+            if (module?.['__isStatic'] && !instance.appContext.components[name]) {
+              instance.appContext.app.component(name, module)
+            }
+          })
+
+      if (!instance.appContext.components.RouterView) {
+        instance.appContext.app.use(router)
+      }
+    } else {
+      login()
+    }
+  }).catch(login)
+}
+
+function login () {
+  store.dispatch('set', { ['Storage.token']: null })
+
+  if (!instance.appContext.components.RouterView) {
+    instance.appContext.app.use(router)
+  }
+
+  loaded.value = true
+  layout.value = false
+  router.to('/auth/login')
+}
+
+function assets (assets) {
+  assets.forEach(i => {
+    switch (i.rel) {
+      case 'plugin':
+        import(/* @vite-ignore */i.src).then(j => {
+          instance.appContext.app.use(j.default)
+        })
+        break
+
+      case 'component':
+        import(/* @vite-ignore */i.src).then(j => {
+          instance.appContext.app.component(j.default.name, j.default)
+        })
+        break
+
+      case 'manifest':
+        const fragment = document.createRange().createContextualFragment(i.source)
+        document.head.appendChild(fragment)
+        break
+
+      case 'module':
+        const script = document.createElement('script')
+        script.setAttribute('src', i.src)
+        script.setAttribute('type', 'module')
+        script.setAttribute('crossorigin', 'anonymous')
+        document.head.appendChild(script)
+        break
+
+      case 'css':
+        document.head.innerHTML += `<link rel="stylesheet" href="${i.src}">`
+        break
+    }
+  })
+}
+
+function onTouchstartSidebar (event) {
+  if (!isMobile.value) {
+    return
+  }
+
+  let sx = event.touches[0].clientX,
+      sy = event.touches[0].clientY,
+      sl = null
+
+  midElement.value.addEventListener('touchmove', onTouchmoveSidebar)
+  midElement.value.addEventListener('touchend', onTouchendSidebar)
+
+  function onTouchmoveSidebar (event) {
+    sl = null
+
+    if (Math.abs(event.touches[0].clientX - sx) < Math.abs(event.touches[0].clientY - sy)) {
+      return
+    }
+
+    if (event.touches[0].clientX - sx < 0) {
+      sl = false
+      if (store.getters.get('Storage.root.sidebarShow')) {
+        let x = event.touches[0].clientX - sx
+
+        if (Math.abs(x) > sidebarElement.value.offsetWidth) {
+          x = -sidebarElement.value.offsetWidth
+        }
+
+        sidebarElement.value.style.transform = 'translateX(' + x + 'px)'
+        sidebarElement.value.style.transition = 'none'
+      }
+    } else if (sx < 40) {
+      sl = true
+      if (!store.getters.get('Storage.root.sidebarShow')) {
+        let x = sidebarElement.value.offsetWidth - (event.touches[0].clientX - sx)
+
+        if (x < 0) {
+          x = 0
+        }
+
+        sidebarElement.value.style.transform = 'translateX(-' + x + 'px)'
+        sidebarElement.value.style.transition = 'none'
+      }
+    }
+  }
+
+  function onTouchendSidebar (event) {
+    let x = event.changedTouches[0].clientX - sx
+
+    if (Math.abs(x) > sidebarElement.value.offsetWidth / 3) {
+      sl !== null && store.dispatch('set', { ['Storage.root.sidebarShow']: sl })
+    }
+
+    midElement.value.removeEventListener('touchmove', onTouchmoveSidebar)
+    midElement.value.removeEventListener('touchend', onTouchendSidebar)
+    sidebarElement.value.style.transform = null
+    sidebarElement.value.style.transition = null
+  }
+}
+
+function splitterDown (event) {
+  if (isMobile.value) {
+    return
+  }
+
+  const x = event.clientX
+  const w = convertRemToPixels(sidebarWidth.value)
+
+  rootElement.value.classList.add('app-sidebar-resize')
+  event.currentTarget.classList.add('active')
+  event.currentTarget.addEventListener('mousemove', splitterMove)
+  event.currentTarget.addEventListener('mouseup', splitterUp)
+
+  function splitterMove (event) {
+    sidebarWidth.value = convertPixelsToRem(
+        Math.min(Math.max(w - (x - event.clientX), 64), window.innerWidth * .5)
+    )
+    store.dispatch('Storage/set', { sidebarWidth: sidebarWidth.value })
+  }
+
+  function splitterUp (event) {
+    rootElement.value.classList.remove('app-sidebar-resize')
+    event.currentTarget.classList.remove('active')
+    event.currentTarget.removeEventListener('mousemove', splitterMove)
+    event.currentTarget.removeEventListener('mouseup', splitterUp)
+  }
+}
+
+function pushRouter (route, callback) {
+  nextTick(() => router.to(route).then(callback))
+}
+
+function calcIsMobile () {
+  return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints'] ||
+      window.innerWidth <
+      1024
+}
+
+function inputTreeSelect (event, context) {
+  store.dispatch('set', { event, context })
+
+  const input = context.$el.querySelector('input')
+  if (input.classList.contains('focus')) {
+    input.classList.remove('focus')
+    store.dispatch('set', { treeSelect: false })
+  } else {
+    input.classList.add('focus')
+    store.dispatch('set', { treeSelect: true })
+  }
+}
+
+function modalComponent (event, instance) {
+  if (instance.ctx['url']) {
+    modalElement.value.open({
+      url: instance.ctx['url'],
+      owner: instance.ctx
+    })
+  }
+}
+
+function collapse (value) {
+  store.dispatch('set', { ['Storage.root.sidebarShow']: !value })
+}
+
+bootstrap()
+
+window.addEventListener('resize', () => {
+  const check = calcIsMobile()
+
+  if (check !== isMobile.value) {
+    isMobile.value = check
+  }
+})
+
+document.documentElement.classList.toggle(
+    'dark',
+    store.getters.get('Storage.root.dark', false)
+)
+
+defineExpose({
+  pushRouter,
+  collapse,
+  inputTreeSelect,
+  'modal:component': modalComponent
+})
+
+// window['confirm'] = (message) => {
+//   const promise = new Promise(async function(resolve, reject) {
+//     const dialog = document.createElement('div')
+//     dialog.className = 'fixed flex flex-wrap justify-center rounded z-50 bg-white dark:bg-gray-600 top-1/2 left-1/2 w-96 max-w-full h-auto max-h-full -translate-x-1/2 -translate-y-1/2 p-5 shadow-xl'
+//     dialog.innerHTML = `<div class="grow w-full pb-3">${message}</div>`
+//
+//     const btnCancel  = document.createElement('button')
+//     btnCancel.className = 'btn-sm mx-1 px-4 border-none'
+//     btnCancel.innerHTML = 'Cancel'
+//     btnCancel.onclick = () => resolve(false)
+//
+//     const btnOk = document.createElement('button')
+//     btnOk.className = 'btn-sm btn-green mx-1 px-4 border-none'
+//     btnOk.innerHTML = 'OK'
+//     btnOk.onclick = () => resolve(true)
+//
+//     dialog.append(btnCancel, btnOk)
+//
+//     document.body.append(dialog)
+//   })
+//
+//   return promise
+// }
 </script>
 
 <template>
-  <div v-if="loaded" class="app"
+  <div v-if="loaded" ref="rootElement"
+       class="app"
        :class="{
         'app-mobile': isMobile,
         'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
       }">
     <template v-if="layout">
-      <div v-if="slotTop || slotTopLeft || slotTopRight" class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
+      <div v-if="slotTop || slotTopLeft || slotTopRight"
+           class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
           <Component v-if="slotTopLeft" :currentRoute="currentRoute" :layout="slotTopLeft" @action="action"/>
         </div>
@@ -380,7 +391,7 @@ export default {
           <Component v-if="slotTopRight" :currentRoute="currentRoute" :layout="slotTopRight" @action="action"/>
         </div>
       </div>
-      <div ref="mid" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
+      <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div v-if="slotLeft || slotLeftTop || slotLeftBottom"
              class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
           <div class="grow-0 flex">
@@ -393,7 +404,7 @@ export default {
             <Component v-if="slotLeftBottom" :currentRoute="currentRoute" :layout="slotLeftBottom" @action="action"/>
           </div>
         </div>
-        <div v-if="slotSidebar" ref="sidebar"
+        <div v-if="slotSidebar" ref="sidebarElement"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"
              :style="{ width: sidebarWidth + `rem` }">
           <Component :currentRoute="currentRoute" :layout="slotSidebar" @action="action"/>
@@ -406,10 +417,10 @@ export default {
         </div>
       </div>
 
-      <modal ref="modal"/>
-      <search ref="search"/>
-      <tooltip ref="tooltip"/>
-      <datepicker ref="datepicker"/>
+      <modal ref="modalElement"/>
+      <search ref="searchElement"/>
+      <tooltip ref="tooltipElement"/>
+      <datepicker ref="datepickerElement"/>
     </template>
 
     <router-view v-else/>
@@ -449,13 +460,10 @@ export default {
 .app .app-sidebar {
   @apply shrink-0 absolute lg:relative z-20 flex grow-0 h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition lg:transition-[width]
 }
-.app.app-mobile .app-sidebar {
-  @apply !w-full
-}
 .app .app-left + .app-sidebar {
   @apply left-12 lg:left-0 max-w-[calc(100%_-_3rem)]
 }
-.app.app-mobile .app-left + .app-sidebar {
+.app.app-mobile .app-sidebar, .app.app-mobile .app-left + .app-sidebar {
   @apply !w-full
 }
 .app.app-sidebar-hidden .app-sidebar {
