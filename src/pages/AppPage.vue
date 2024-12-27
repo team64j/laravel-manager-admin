@@ -133,7 +133,8 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
             data: r.data['data'],
             meta: r.data['meta'],
             layout: r.data['layout'],
-            errors: r.data['errors']
+            errors: r.data['errors'],
+            currentRoute: $props.currentRoute
           })
 
           const meta = {}

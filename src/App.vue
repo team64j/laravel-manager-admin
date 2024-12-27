@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
+import { getCurrentInstance, h, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
 import { convertPixelsToRem, convertRemToPixels } from './utils/convert'
 import router from './router'
 import store from './store'
@@ -17,6 +17,14 @@ defineOptions({
   name: 'App'
 })
 
+defineExpose({
+  pushRouter,
+  collapse,
+  inputTreeSelect,
+  'modal:component': modalShow,
+  'datepicker:show': datepickerShow
+})
+
 const emit = defineEmits(['action'])
 
 const instance = getCurrentInstance()
@@ -31,17 +39,8 @@ const datepickerElement = shallowRef()
 
 const layout = ref(null)
 const loaded = ref(false)
-const sidebarWidth = ref(store.getters.get('Storage.sidebarWidth', 26))
 const isMobile = ref(calcIsMobile())
-
-const currentRoute = computed(() => router.currentRoute.value)
-const slotTop = computed(() => layout.value.find(i => i.slot === 'top'))
-const slotTopLeft = computed(() => layout.value.find(i => i.slot === 'top.left'))
-const slotTopRight = computed(() => layout.value.find(i => i.slot === 'top.right'))
-const slotLeft = computed(() => layout.value.find(i => i.slot === 'left'))
-const slotLeftTop = computed(() => layout.value.find(i => i.slot === 'left.top'))
-const slotLeftBottom = computed(() => layout.value.find(i => i.slot === 'left.bottom'))
-const slotSidebar = computed(() => layout.value.find(i => i.slot === 'sidebar'))
+const sidebarWidth = ref(store.getters.get('Storage.sidebarWidth', 26))
 
 watch(
     () => store.state['Storage']['token'],
@@ -93,6 +92,21 @@ onMounted(() => {
   })
 })
 
+bootstrap()
+
+window.addEventListener('resize', () => {
+  const check = calcIsMobile()
+
+  if (check !== isMobile.value) {
+    isMobile.value = check
+  }
+})
+
+document.documentElement.classList.toggle(
+    'dark',
+    store.getters.get('Storage.root.dark', false)
+)
+
 function action () {
   if (typeof instance.exposed[arguments[0]] === 'function') {
     instance.exposed[arguments[0]](...Array.from(arguments).splice(1))
@@ -110,9 +124,6 @@ function bootstrap () {
 
   axios.post('/bootstrap').then(({ data: response }) => {
     if (response.data) {
-      loaded.value = true
-      layout.value = response.layout
-
       if (response.data.routes) {
         const routes = router.getRoutes()
         const component = () => import('./pages/AppPage.vue')
@@ -148,6 +159,40 @@ function bootstrap () {
       if (!instance.appContext.components.RouterView) {
         instance.appContext.app.use(router)
       }
+
+      const slots = {
+        'top': null,
+        'top.left': null,
+        'top.right': null,
+        'left': null,
+        'left.top': null,
+        'left.bottom': null,
+        'sidebar': null
+      }
+
+      for (const slot in slots) {
+        instance.slots[slot] = () => {
+          const i = response.layout.find(i => i.slot === slot)
+
+          return [
+            i && h(Component, {
+              layout: i,
+              currentRoute: router.currentRoute.value,
+              onAction: action
+            })
+          ]
+        }
+      }
+
+      instance.slots['global-tabs'] = () => [
+        h(GlobalTabs, {
+          currentRoute: router.currentRoute.value,
+          onAction: action
+        })
+      ]
+
+      loaded.value = true
+      layout.value = true
     } else {
       login()
     }
@@ -162,7 +207,7 @@ function login () {
   }
 
   loaded.value = true
-  layout.value = false
+  layout.value = null
   router.to('/auth/login')
 }
 
@@ -329,29 +374,6 @@ function datepickerShow () {
   datepickerElement.value.on(...arguments)
 }
 
-bootstrap()
-
-window.addEventListener('resize', () => {
-  const check = calcIsMobile()
-
-  if (check !== isMobile.value) {
-    isMobile.value = check
-  }
-})
-
-document.documentElement.classList.toggle(
-    'dark',
-    store.getters.get('Storage.root.dark', false)
-)
-
-defineExpose({
-  pushRouter,
-  collapse,
-  inputTreeSelect,
-  'modal:component': modalShow,
-  'datepicker:show': datepickerShow
-})
-
 // window['confirm'] = (message) => {
 //   const promise = new Promise(async function(resolve, reject) {
 //     const dialog = document.createElement('div')
@@ -381,45 +403,43 @@ defineExpose({
   <div v-if="loaded" ref="rootElement"
        class="app"
        :class="{
-        'app-mobile': isMobile,
-        'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
-      }">
+          'app-mobile': isMobile,
+          'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
+       }">
     <template v-if="layout">
-      <div v-if="slotTop || slotTopLeft || slotTopRight"
-           class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
+      <div class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
-          <Component v-if="slotTopLeft" :currentRoute="currentRoute" :layout="slotTopLeft" @action="action"/>
+          <slot name="top.left"/>
         </div>
         <div class="grow flex justify-center">
-          <Component v-if="slotTop" :currentRoute="currentRoute" :layout="slotTop" @action="action"/>
+          <slot name="top"/>
         </div>
         <div class="grow-0 flex app-position-end">
-          <Component v-if="slotTopRight" :currentRoute="currentRoute" :layout="slotTopRight" @action="action"/>
+          <slot name="top.right"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
-        <div v-if="slotLeft || slotLeftTop || slotLeftBottom"
-             class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
+        <div class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
           <div class="grow-0 flex">
-            <Component v-if="slotLeftTop" :currentRoute="currentRoute" :layout="slotLeftTop" @action="action"/>
+            <slot name="left.top"/>
           </div>
           <div class="grow flex items-center">
-            <Component v-if="slotLeft" :currentRoute="currentRoute" :layout="slotLeft" @action="action"/>
+            <slot name="left"/>
           </div>
           <div class="grow-0 flex app-position-end">
-            <Component v-if="slotLeftBottom" :currentRoute="currentRoute" :layout="slotLeftBottom" @action="action"/>
+            <slot name="left.bottom"/>
           </div>
         </div>
-        <div v-if="slotSidebar" ref="sidebarElement"
-             class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"
-             :style="{ width: sidebarWidth + `rem` }">
-          <Component :currentRoute="currentRoute" :layout="slotSidebar" @action="action"/>
+        <div ref="sidebarElement"
+             :style="{ width: sidebarWidth + `rem` }"
+             class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark">
+          <slot name="sidebar"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
             <div/>
           </div>
         </div>
         <div class="grow flex flex-col overflow-hidden z-10 app-main">
-          <global-tabs :currentRoute="currentRoute" @action="action"/>
+          <slot name="global-tabs"/>
         </div>
       </div>
 
