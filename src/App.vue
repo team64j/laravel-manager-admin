@@ -367,9 +367,10 @@ function collapse (value) {
 }
 
 function calcIsMobile () {
-  return 'ontouchstart' in window || navigator.maxTouchPoints || navigator['msMaxTouchPoints'] ||
-      window.innerWidth <
-      1024
+  return 'ontouchstart' in window ||
+      navigator.maxTouchPoints ||
+      navigator['msMaxTouchPoints'] ||
+      window.innerWidth < 1024
 }
 
 function inputTreeSelect (event, context) {
