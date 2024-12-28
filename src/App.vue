@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, h, nextTick, onMounted, ref, shallowRef, watch } from 'vue'
+import { getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
 import { convertPixelsToRem, convertRemToPixels } from './utils/convert'
 import router from './router'
 import store from './store'
@@ -27,9 +27,11 @@ const modalElement = shallowRef()
 const sidebarElement = shallowRef()
 const datepickerElement = shallowRef()
 
-const layout = ref(null)
-const loaded = ref(null)
-const sidebarWidth = ref(store.getters.get('Storage.sidebarWidth', 26))
+const data = reactive({
+  loaded: false,
+  layout: null,
+  sidebarWidth: store.getters.get('Storage.sidebarWidth', 26)
+})
 
 store.dispatch('set', { isMobile: calcIsMobile() })
 
@@ -105,8 +107,8 @@ function login () {
     currentInstance.appContext.app.use(router)
   }
 
-  loaded.value = true
-  layout.value = null
+  data.loaded = true
+  data.layout = null
   router.to('/auth/login')
 }
 
@@ -119,7 +121,7 @@ function action () {
 }
 
 function bootstrap () {
-  loaded.value = false
+  data.loaded = false
 
   if (!store.getters.get('Storage.token')) {
     login()
@@ -148,8 +150,8 @@ function bootstrap () {
         currentInstance.appContext.app.use(router)
       }
 
-      layout.value = response.data['layout']
-      loaded.value = true
+      data.layout = response.data['layout']
+      data.loaded = true
     } else {
       notify({
         text: 'No data',
@@ -324,14 +326,14 @@ function onMousedownSidebarSplitter (event) {
   }
 
   const x = event.clientX
-  const w = convertRemToPixels(sidebarWidth.value)
+  const w = convertRemToPixels(data.sidebarWidth)
 
   function onMousemoveSidebarSplitter (event) {
     sidebarElement.value.style.transition = 'none'
-    sidebarWidth.value = convertPixelsToRem(
+    data.sidebarWidth = convertPixelsToRem(
         Math.min(Math.max(w - (x - event.clientX), 64), window.innerWidth * .5)
     )
-    store.dispatch('Storage/set', { sidebarWidth: sidebarWidth.value })
+    store.dispatch('Storage/set', { sidebarWidth: data.sidebarWidth })
   }
 
   function onMouseupSidebarSplitter (event) {
@@ -418,42 +420,42 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="loaded" ref="rootElement"
+  <div v-if="data.loaded" ref="rootElement"
        class="app"
        :class="{
           'app-mobile': store.getters.get('isMobile'),
           'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
        }">
-    <template v-if="layout">
+    <template v-if="data.layout">
       <div
           class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
-          <Component :layout="layout.find(i => i.slot === 'top.left')" @action="action"/>
+          <Component :layout="{ ...data.layout.find(i => i.slot === 'top.left') }" @action="action"/>
         </div>
         <div class="grow flex justify-between">
-          <Component :layout="layout.find(i => i.slot === 'top')" @action="action"/>
+          <Component :layout="data.layout.find(i => i.slot === 'top')" @action="action"/>
         </div>
         <div class="grow-0 flex app-position-end">
-          <Component :layout="layout.find(i => i.slot === 'top.right')" @action="action"/>
+          <Component :layout="data.layout.find(i => i.slot === 'top.right')" @action="action"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
             class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
           <div class="grow-0 flex">
-            <Component :layout="layout.find(i => i.slot === 'left.top')" @action="action"/>
+            <Component :layout="data.layout.find(i => i.slot === 'left.top')" @action="action"/>
           </div>
           <div class="grow flex items-center">
-            <Component :layout="layout.find(i => i.slot === 'left')" @action="action"/>
+            <Component :layout="data.layout.find(i => i.slot === 'left')" @action="action"/>
           </div>
           <div class="grow-0 flex app-position-end">
-            <Component :layout="layout.find(i => i.slot === 'left.bottom')" @action="action"/>
+            <Component :layout="data.layout.find(i => i.slot === 'left.bottom')" @action="action"/>
           </div>
         </div>
         <div ref="sidebarElement"
-             :style="{ width: sidebarWidth + `rem` }"
+             :style="{ width: data.sidebarWidth + `rem` }"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark">
-          <Component :layout="layout.find(i => i.slot === 'sidebar')" @action="action"/>
+          <Component :layout="data.layout.find(i => i.slot === 'sidebar')" @action="action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>

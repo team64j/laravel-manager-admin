@@ -15,7 +15,7 @@ const emit = defineEmits(['action'])
 
 let enterTimer = 0, filterTimer = 0
 
-function onClick (event, target) {
+function onClick (event, $props) {
   if (store.getters.get('isMobile')) {
     const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
     document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
@@ -29,37 +29,37 @@ function onClick (event, target) {
 
     store.dispatch('set', { ['app-main-menu__active']: action === 'add' })
 
-    if (event.target.classList.contains('app-main-menu__toggle') && target.data['url']) {
-      loadData(target.data['url'], target)
+    if (event.target.classList.contains('app-main-menu__toggle') && $props.data['url']) {
+      loadData($props.data['url'], $props)
       return
     }
   } else {
     store.dispatch('set', { ['app-main-menu__active']: !store.getters.get('app-main-menu__active') })
   }
 
-  if (target.data['to']) {
+  if ($props.data['to']) {
     store.dispatch('set', { ['app-main-menu__active']: false })
-    router.to(target.data['to'])
-  } else if (target.data['href']) {
+    router.to($props.data['to'])
+  } else if ($props.data['href']) {
     store.dispatch('set', { ['app-main-menu__active']: false })
-    window.open(target.data['href'])
-  } else if (target.data['url']) {
-    store.getters.get('app-main-menu__active') && loadData(target.data['url'], target)
-  } else if (target.data['values']) {
-    const value = store.getters['get']('Storage.root.' + target.data['key'])
+    window.open($props.data['href'])
+  } else if ($props.data['url']) {
+    store.getters.get('app-main-menu__active') && loadData($props.data['url'], $props)
+  } else if ($props.data['values']) {
+    const value = store.getters['get']('Storage.root.' + $props.data['key'])
 
-    for (let i in target.data['values']) {
+    for (let i in $props.data['values']) {
       i = parseInt(i)
-      if (value === target.data['values'][i].value) {
-        const item = target.data['values'][i + 1] ?? target.data['values'][0]
-        store.dispatch('set', { ['Storage.root.' + target.data['key']]: item.value })
+      if (value === $props.data['values'][i].value) {
+        const item = $props.data['values'][i + 1] ?? $props.data['values'][0]
+        store.dispatch('set', { ['Storage.root.' + $props.data['key']]: item.value })
         break
       }
     }
   }
 }
 
-function onEnter (event, target) {
+function onEnter (event, $props) {
   if (event.currentTarget.classList.contains('app-main-menu__hover') || store.getters.get('isMobile')) {
     return
   }
@@ -68,7 +68,7 @@ function onEnter (event, target) {
 
   clearTimeout(enterTimer)
 
-  if (target.data['url'] && !target.data['data']) {
+  if ($props.data['url'] && !$props.data['data']) {
     delay = 50
   }
 
@@ -82,69 +82,65 @@ function onEnter (event, target) {
       item = item?.parentElement?.closest('li')
     }
 
-    if (target.data['url'] && store.getters.get('app-main-menu__active')) {
+    if ($props.data['url'] && store.getters.get('app-main-menu__active')) {
       clearTimeout(enterTimer)
-      target.data['data'] = null
+      $props.data['data'] = null
 
-      enterTimer = setTimeout(() => loadData(target.data['url'], target), 150)
+      enterTimer = setTimeout(() => loadData($props.data['url'], $props), 150)
     }
   }, delay)
 }
 
-function onOut (event, target) {
+function onOut (event, $props) {
   if (store.getters.get('isMobile')) {
     return
   }
 
-  if (target.data['url']) {
+  if ($props.data['url']) {
     clearTimeout(enterTimer)
   }
 
-  if (target.data['data'] === undefined) {
+  if ($props.data['data'] === undefined) {
     event.currentTarget.classList.remove('app-main-menu__hover')
   }
 }
 
-function onNav (event, url, target) {
-  loadData(url, target)
+function onNav (event, url, $props) {
+  loadData(url, $props)
 }
 
-function onFilterInput (event, target) {
+function onFilterInput (event, $props) {
   clearTimeout(filterTimer)
   filterTimer = setTimeout(() => {
-    target.data.filter = event.target.value
     loadData(
-        router.parse({ path: target._.parent.proxy.data['url'], query: { filter: event.target.value } }).fullPath,
-        target._.parent.proxy
+        router.parse({ path: $props.data['url'], query: { filter: event.target.value } }).fullPath,
+        $props
     )
   }, 500)
 }
 
-function onFilterClear (event, target) {
-  target.data.filter = ''
+function onFilterClear (event, $props) {
   loadData(
-      router.parse({ path: target._.parent.proxy.data['url'] }).fullPath,
-      target._.parent.proxy
+      router.parse({ path: $props.data['url'] }).fullPath,
+      $props
   )
 }
 
-function loadData (url, target) {
+function loadData (url, $props) {
   const route = router.parse(url)
-  target.data['loading'] = true
-  target.data['data'] = null
-  //_.$forceUpdate()
+  $props.data['loading'] = true
+  $props.data['data'] = null
 
   axios.get(route.fullPath).then(r => {
-    const data = r.data['data'] || []
     const meta = r.data['meta'] || {}
 
-    target.data['data'] = [].concat(
+    $props.data['data'] = [].concat(
         meta['prepend'] ?? [],
         (meta['pagination'] && (meta['pagination']['total'] > meta['pagination']['per'])) || route.query['filter'] !==
         undefined
             ? [{ filter: route.query['filter'] || '' }]
             : [],
-        data.map(i => {
+        (r.data['data'] || []).map(i => {
           if (meta['route']) {
             i.to = router.parse({ path: meta['route'], params: i })
           }
@@ -154,8 +150,7 @@ function loadData (url, target) {
         meta['pagination'] && (meta['pagination']['prev'] || meta['pagination']['next']) ? [meta['pagination']] : []
     )
   }).finally(() => {
-    target.data['loading'] = false
-    //_.$forceUpdate()
+    $props.data['loading'] = false
   })
 }
 

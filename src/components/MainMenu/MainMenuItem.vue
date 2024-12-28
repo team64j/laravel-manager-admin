@@ -4,7 +4,6 @@ import store from '../../store'
 
 const currentInstance = getCurrentInstance()
 const props = defineProps(['data', 'level'])
-const emit = defineEmits(['action'])
 
 if (props.data['values']) {
   const value = store.getters.get('Storage.root.' + props.data['key'],
@@ -25,14 +24,14 @@ if (props.data['values']) {
         'sticky bottom-0 mt-auto !bg-inherit': data['prev'] || data['next'],
         'app-main-menu__filter': data['filter'] !== undefined
       }"
-      @mouseleave="$emit('action', 'onOut', $event, currentInstance.proxy)"
-      @mouseenter="$emit('action', 'onEnter', $event, currentInstance.proxy)"
-      @click.stop="$emit('action', 'onClick', $event, currentInstance.proxy)">
+      @mouseleave="$emit('action', 'onOut', $event, props)"
+      @mouseenter="$emit('action', 'onEnter', $event, props)"
+      @click.stop="$emit('action', 'onClick', $event, props)">
 
     <div v-if="data['prev'] || data['next']" class="py-1 -mb-1 !bg-inherit">
       <button type="button" class="-ml-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
-              @click.stop="$emit('action', 'onNav', $event, data['prev'], currentInstance.parent.proxy)">
+              @click.stop="$emit('action', 'onNav', $event, data['prev'], currentInstance.parent.props)">
         <i class="fa fa-angle-left fa-fw"/>
       </button>
       <span class="grow truncate text-center py-1.5 text-sm text-blue-400">
@@ -40,7 +39,7 @@ if (props.data['values']) {
         </span>
       <button type="button" class="-mr-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['next'] }"
-              @click.stop="$emit('action', 'onNav', $event, data['next'], currentInstance.parent.proxy)">
+              @click.stop="$emit('action', 'onNav', $event, data['next'], currentInstance.parent.props)">
         <i class="fa fa-angle-right fa-fw"/>
       </button>
     </div>
@@ -54,10 +53,10 @@ if (props.data['values']) {
           autocomplete="off"
           autofocus
           :value="data['filter']"
-          @input="$emit('action', 'onFilterInput', $event, currentInstance.proxy)"/>
+          @input="$emit('action', 'onFilterInput', $event, currentInstance.parent.props)"/>
 
       <i class="fa fa-remove absolute right-4 hover:text-rose-600" :class="{ 'hidden': !props.data['filter'] }"
-         @click="$emit('action', 'onFilterClear', $event, currentInstance.proxy)"/>
+         @click="$emit('action', 'onFilterClear', $event, currentInstance.parent.props)"/>
     </div>
 
     <div v-else :data-tooltip="data['title']">
