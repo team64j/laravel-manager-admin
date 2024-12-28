@@ -146,16 +146,14 @@ function bootstrap () {
 
       //setSlots(response.data['layout'])
 
+      setLayout(response.data['layout'])
+
       if (!currentInstance.appContext.components.RouterView) {
         currentInstance.appContext.app.use(router)
       }
 
       data.loaded = true
-      data['layout'] = {}
 
-      response.data['layout'].map(i => {
-        data.layout[i.slot] = i
-      })
     } else {
       notify({
         text: 'No data',
@@ -261,6 +259,16 @@ function setSlots (data) {
         onAction: action
       })
     ]
+  }
+}
+
+function setLayout(layout) {
+  if (layout?.length) {
+    data['layout'] = {}
+
+    layout.forEach(i => {
+      data.layout[i.slot] = i
+    })
   }
 }
 
