@@ -3,7 +3,7 @@ import { computed, getCurrentInstance } from 'vue'
 import store from '../../store'
 import router from '../../router'
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 const props = defineProps({
   data: {
@@ -61,7 +61,7 @@ const icon = computed(() => {
 })
 
 const showBack = computed(() => {
-  return instance.root.proxy['isMobile'] && props.level > 1
+  return store.getters.get('isMobile') && props.level > 1
 })
 
 const action = (...args) => emit('action', ...args)
@@ -103,7 +103,7 @@ const onClick = (event) => {
 
   let show = true
 
-  if (instance.root.proxy['isMobile']) {
+  if (store.getters.get('isMobile')) {
     if (store.getters.get('menuShow')) {
       if (event.currentTarget.classList.contains('app-global-menu__hover')) {
         show = false
@@ -126,7 +126,7 @@ const onClick = (event) => {
 const onClickToggle = (event) => {
   clearTimeout(timer)
 
-  if (instance.root.proxy['isMobile']) {
+  if (store.getters.get('isMobile')) {
     emit('action', 'setActiveClass', event.target)
   }
 
@@ -137,7 +137,7 @@ const onClickToggle = (event) => {
 }
 
 const onEnter = (event) => {
-  if (instance.root.proxy['isMobile'] || event.target.classList.contains('app-global-menu__hover')) {
+  if (store.getters.get('isMobile') || event.target.classList.contains('app-global-menu__hover')) {
     return
   }
 
@@ -154,25 +154,25 @@ const onOut = () => {
 const onInput = (event) => {
   clearTimeout(timer)
   timer = setTimeout(() => {
-    instance.parent.props.filter = event.target.value
-    emit('action', 'loadData', null, instance.parent.props)
+    currentInstance.parent.props.filter = event.target.value
+    emit('action', 'loadData', null, currentInstance.parent.props)
   }, 500)
 }
 
 const onClear = () => {
-  instance.parent.props.filter = null
-  emit('action', 'loadData', null, instance.parent.props)
+  currentInstance.parent.props.filter = null
+  emit('action', 'loadData', null, currentInstance.parent.props)
 }
 
 const onPrev = () => {
   if (props.data['prev']) {
-    emit('action', 'loadData', props.data['prev'], instance.parent.props)
+    emit('action', 'loadData', props.data['prev'], currentInstance.parent.props)
   }
 }
 
 const onNext = () => {
   if (props.data['next']) {
-    emit('action', 'loadData', props.data['next'], instance.parent.props)
+    emit('action', 'loadData', props.data['next'], currentInstance.parent.props)
   }
 }
 </script>

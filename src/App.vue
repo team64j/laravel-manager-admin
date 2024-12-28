@@ -19,7 +19,7 @@ defineOptions({
 
 const emit = defineEmits(['action'])
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 const rootElement = shallowRef()
 const midElement = shallowRef()
@@ -29,8 +29,9 @@ const datepickerElement = shallowRef()
 
 const layout = ref(null)
 const loaded = ref(null)
-const isMobile = ref(calcIsMobile())
 const sidebarWidth = ref(store.getters.get('Storage.sidebarWidth', 26))
+
+store.dispatch('set', { isMobile: calcIsMobile() })
 
 watch(
     () => store.state['Storage']['token'],
@@ -87,8 +88,8 @@ bootstrap()
 window.addEventListener('resize', () => {
   const check = calcIsMobile()
 
-  if (check !== isMobile.value) {
-    isMobile.value = check
+  if (check !== store.getters.get('isMobile')) {
+    store.dispatch('set', { isMobile: check })
   }
 })
 
@@ -100,8 +101,8 @@ document.documentElement.classList.toggle(
 function login () {
   store.dispatch('set', { ['Storage.token']: null })
 
-  if (!instance.appContext.components.RouterView) {
-    instance.appContext.app.use(router)
+  if (!currentInstance.appContext.components.RouterView) {
+    currentInstance.appContext.app.use(router)
   }
 
   loaded.value = true
@@ -110,8 +111,8 @@ function login () {
 }
 
 function action () {
-  if (typeof instance.exposed[arguments[0]] === 'function') {
-    instance.exposed[arguments[0]](...Array.from(arguments).splice(1))
+  if (typeof currentInstance.exposed[arguments[0]] === 'function') {
+    currentInstance.exposed[arguments[0]](...Array.from(arguments).splice(1))
   } else {
     emit('action', ...arguments)
   }
@@ -143,8 +144,8 @@ function bootstrap () {
 
       //setSlots(response.data['layout'])
 
-      if (!instance.appContext.components.RouterView) {
-        instance.appContext.app.use(router)
+      if (!currentInstance.appContext.components.RouterView) {
+        currentInstance.appContext.app.use(router)
       }
 
       layout.value = response.data['layout']
@@ -181,13 +182,13 @@ function setAssets (data) {
       switch (i.rel) {
         case 'plugin':
           import(/* @vite-ignore */i.src).then(j => {
-            instance.appContext.app.use(j.default)
+            currentInstance.appContext.app.use(j.default)
           })
           break
 
         case 'component':
           import(/* @vite-ignore */i.src).then(j => {
-            instance.appContext.app.component(j.default.name, j.default)
+            currentInstance.appContext.app.component(j.default.name, j.default)
           })
           break
 
@@ -216,8 +217,8 @@ function setComponents () {
   Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).
       forEach(([, { default: module }]) => {
         const name = `App` + (module.name || module.__name)
-        if (module?.['__isStatic'] && !instance.appContext.components[name]) {
-          instance.appContext.app.component(name, module)
+        if (module?.['__isStatic'] && !currentInstance.appContext.components[name]) {
+          currentInstance.appContext.app.component(name, module)
         }
       })
 }
@@ -235,7 +236,7 @@ function setSlots (data) {
     }
 
     for (const slot in slots) {
-      instance.slots[slot] = () => {
+      currentInstance.slots[slot] = () => {
         const i = data.find(i => i.slot === slot)
 
         return [
@@ -248,7 +249,7 @@ function setSlots (data) {
       }
     }
 
-    instance.slots['default'] = () => [
+    currentInstance.slots['default'] = () => [
       h(GlobalTabs, {
         currentRoute: router.currentRoute.value,
         onAction: action
@@ -258,7 +259,7 @@ function setSlots (data) {
 }
 
 function onTouchstartSidebar (event) {
-  if (!isMobile.value) {
+  if (!store.getters.get('isMobile')) {
     return
   }
 
@@ -318,7 +319,7 @@ function onTouchstartSidebar (event) {
 }
 
 function onMousedownSidebarSplitter (event) {
-  if (isMobile.value) {
+  if (store.getters.get('isMobile')) {
     return
   }
 
@@ -384,7 +385,6 @@ function datepickerShow () {
 }
 
 defineExpose({
-  isMobile,
   pushRouter,
   collapse,
   inputTreeSelect,
@@ -421,7 +421,7 @@ defineExpose({
   <div v-if="loaded" ref="rootElement"
        class="app"
        :class="{
-          'app-mobile': isMobile,
+          'app-mobile': store.getters.get('isMobile'),
           'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
        }">
     <template v-if="layout">

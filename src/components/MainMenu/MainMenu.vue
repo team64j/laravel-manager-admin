@@ -9,14 +9,14 @@ defineOptions({
   __isStatic: true
 })
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 const props = defineProps(['data'])
 const emit = defineEmits(['action'])
 
 let enterTimer = 0, filterTimer = 0
 
 function onClick (event, target) {
-  if (instance.proxy.$root['isMobile']) {
+  if (store.getters.get('isMobile')) {
     const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
     document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
 
@@ -27,24 +27,24 @@ function onClick (event, target) {
       item = item?.parentElement?.closest('li')
     }
 
-    instance.root.refs.rootElement.classList[action]('app-main-menu__active')
+    store.dispatch('set', { ['app-main-menu__active']: action === 'add' })
 
     if (event.target.classList.contains('app-main-menu__toggle') && target.data['url']) {
-      loadData(target.data['url'], target.data)
+      loadData(target.data['url'], target)
       return
     }
   } else {
-    instance.root.refs.rootElement.classList.toggle('app-main-menu__active')
+    store.dispatch('set', { ['app-main-menu__active']: !store.getters.get('app-main-menu__active') })
   }
 
   if (target.data['to']) {
-    instance.root.refs.rootElement.classList.remove('app-main-menu__active')
+    store.dispatch('set', { ['app-main-menu__active']: false })
     router.to(target.data['to'])
   } else if (target.data['href']) {
-    instance.root.refs.rootElement.classList.remove('app-main-menu__active')
+    store.dispatch('set', { ['app-main-menu__active']: false })
     window.open(target.data['href'])
   } else if (target.data['url']) {
-    instance.root.refs.rootElement.classList.contains('app-main-menu__active') && loadData(target.data['url'], target)
+    store.getters.get('app-main-menu__active') && loadData(target.data['url'], target)
   } else if (target.data['values']) {
     const value = store.getters['get']('Storage.root.' + target.data['key'])
 
@@ -60,7 +60,7 @@ function onClick (event, target) {
 }
 
 function onEnter (event, target) {
-  if (event.currentTarget.classList.contains('app-main-menu__hover') || instance.proxy.$root['isMobile']) {
+  if (event.currentTarget.classList.contains('app-main-menu__hover') || store.getters.get('isMobile')) {
     return
   }
 
@@ -82,7 +82,7 @@ function onEnter (event, target) {
       item = item?.parentElement?.closest('li')
     }
 
-    if (target.data['url'] && instance.root.refs.rootElement.classList.contains('app-main-menu__active')) {
+    if (target.data['url'] && store.getters.get('app-main-menu__active')) {
       clearTimeout(enterTimer)
       target.data['data'] = null
 
@@ -92,7 +92,7 @@ function onEnter (event, target) {
 }
 
 function onOut (event, target) {
-  if (instance.proxy.$root['isMobile']) {
+  if (store.getters.get('isMobile')) {
     return
   }
 
@@ -160,8 +160,8 @@ function loadData (url, target) {
 }
 
 function action (...args) {
-  if (typeof instance.exposed[args[0]] === 'function') {
-    instance.exposed[args[0]](...Array.from(args).splice(1))
+  if (typeof currentInstance.exposed[args[0]] === 'function') {
+    currentInstance.exposed[args[0]](...Array.from(args).splice(1))
   } else {
     emit('action', ...args)
   }
@@ -169,7 +169,7 @@ function action (...args) {
 
 onMounted(() => {
   document.addEventListener('click', function () {
-    instance.root.refs.rootElement.classList.remove('app-main-menu__active')
+    store.dispatch('set', { ['app-main-menu__active']: false })
   })
 })
 
@@ -184,7 +184,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="app-main-menu">
+  <div class="app-main-menu" :class="{ 'app-main-menu__active': store.getters.get('app-main-menu__active') }">
     <ul>
       <main-menu-item v-for="(i, k) in props.data" :data="i" :key="k" :level="1" @action="action"/>
     </ul>
@@ -225,7 +225,7 @@ defineExpose({
 .app-position-end .app-main-menu li[data-level="2"] ul {
   @apply left-auto top-0 right-full
 }
-.app-main-menu__active .app-main-menu li.app-main-menu__hover > ul {
+.app-main-menu.app-main-menu__active li.app-main-menu__hover > ul {
   @apply opacity-100 visible
 }
 </style>

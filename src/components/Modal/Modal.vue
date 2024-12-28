@@ -8,7 +8,7 @@ defineOptions({
   __isStatic: true
 })
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 const emit = defineEmits(['action'])
 
@@ -25,8 +25,8 @@ const data = reactive({
 const modalElement = shallowRef()
 
 function action () {
-  if (typeof instance.exposed[arguments[0]] === 'function') {
-    instance.exposed[arguments[0]](...Array.from(arguments).splice(1))
+  if (typeof currentInstance.exposed[arguments[0]] === 'function') {
+    currentInstance.exposed[arguments[0]](...Array.from(arguments).splice(1))
   } else {
     emit('action', ...arguments)
   }

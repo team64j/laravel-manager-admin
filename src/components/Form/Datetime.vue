@@ -2,7 +2,7 @@
 import Field from './Field.vue'
 import { computed, getCurrentInstance } from 'vue'
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 defineOptions({
   name: 'Datetime',
@@ -24,7 +24,7 @@ const model = computed({
     return props.value ?? props.modelValue ?? ''
   },
   set (value) {
-    emit('update:modelValue', value, instance)
+    emit('update:modelValue', value, currentInstance)
   }
 })
 
@@ -37,7 +37,7 @@ function onClear () {
 }
 
 function onShow () {
-  emit('action', 'datepicker:show', instance)
+  emit('action', 'datepicker:show', currentInstance)
 }
 </script>
 

@@ -2,7 +2,7 @@
 import { getCurrentInstance, nextTick, reactive, watchEffect } from 'vue'
 import store from '../../store'
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 const data = reactive({
   search: '',
@@ -28,7 +28,7 @@ document.addEventListener('keydown', (event) => {
 
 watchEffect(() => {
   if (store.getters.get('Storage.root.searchShow')) {
-    nextTick(() => instance.vnode.el.querySelector('.app-search__input input').focus())
+    nextTick(() => currentInstance.vnode.el.querySelector('.app-search__input input').focus())
   }
 })
 
@@ -55,7 +55,7 @@ function onSearch () {
 function onClear () {
   data.search = ''
   data.result = null
-  nextTick(() => instance.vnode.el.querySelector('.app-search__input input').focus())
+  nextTick(() => currentInstance.vnode.el.querySelector('.app-search__input input').focus())
 }
 </script>
 

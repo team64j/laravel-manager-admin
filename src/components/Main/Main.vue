@@ -6,7 +6,7 @@ defineOptions({
   __isStatic: true,
 })
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 const props = defineProps(['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'])
 
@@ -25,7 +25,7 @@ function onMousedownResizer (event) {
 }
 
 function onMousemoveResizer (event) {
-  let w = Math.max(Math.min(event.clientX - resizer.value.x, instance.vnode.el.offsetWidth / 2), 50)
+  let w = Math.max(Math.min(event.clientX - resizer.value.x, currentInstance.vnode.el.offsetWidth / 2), 50)
   resizer.value.parentElement.style.width = w + 'px'
 }
 

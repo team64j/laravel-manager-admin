@@ -9,7 +9,7 @@ defineOptions({
   name: 'TabsNavigation'
 })
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 const props = defineProps({
   id: {
@@ -51,9 +51,9 @@ function init () {
   let right = 0,
       width = 0
 
-  instance.proxy.$el.styles = getComputedStyle(instance.proxy.$el)
+  currentInstance.proxy.$el.styles = getComputedStyle(currentInstance.proxy.$el)
 
-  instance.proxy.$el.querySelectorAll('button').forEach((t, i) => {
+  currentInstance.proxy.$el.querySelectorAll('button').forEach((t, i) => {
     t.styles = getComputedStyle(t)
 
     if (i <= index.value) {
@@ -65,13 +65,13 @@ function init () {
     }
   })
 
-  if (instance.proxy.$el.scrollLeft > right) {
-    instance.proxy.$el.scrollLeft = right
+  if (currentInstance.proxy.$el.scrollLeft > right) {
+    currentInstance.proxy.$el.scrollLeft = right
   }
 
-  if (instance.proxy.$el.offsetWidth < width) {
-    instance.proxy.$el.scrollLeft = width - instance.proxy.$el.offsetWidth +
-        (parseFloat(instance.proxy.$el.styles.paddingLeft) + parseFloat(instance.proxy.$el.styles.paddingRight))
+  if (currentInstance.proxy.$el.offsetWidth < width) {
+    currentInstance.proxy.$el.scrollLeft = width - currentInstance.proxy.$el.offsetWidth +
+        (parseFloat(currentInstance.proxy.$el.styles.paddingLeft) + parseFloat(currentInstance.proxy.$el.styles.paddingRight))
   }
 }
 

@@ -18,7 +18,7 @@ defineOptions({
   __isStatic: true
 })
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 const props = defineProps({
   modelValue: {
@@ -84,7 +84,7 @@ const component = computed(() => {
       rows: props.rows,
       class: 'block w-full px-3 py-1 rounded resize-none',
       onInput: event => {
-        emit('update:modelValue', event.target.value, instance['ctx'])
+        emit('update:modelValue', event.target.value, currentInstance['ctx'])
       }
     })
   } else {
@@ -100,7 +100,7 @@ const model = computed({
     return props.modelValue
   },
   set (value) {
-    emit('update:modelValue', value, instance['ctx'])
+    emit('update:modelValue', value, currentInstance['ctx'])
   }
 })
 
@@ -148,21 +148,21 @@ function onClickSelect (event) {
 }
 
 function onClickFullscreen () {
-  if (instance.refs.editor.classList.contains('app-editor__full-screen')) {
-    instance.refs.editor.classList.remove('app-editor__full-screen')
-    instance.vnode.el.appendChild(instance.refs.editor)
+  if (currentInstance.refs.editor.classList.contains('app-editor__full-screen')) {
+    currentInstance.refs.editor.classList.remove('app-editor__full-screen')
+    currentInstance.vnode.el.appendChild(currentInstance.refs.editor)
   } else {
-    instance.refs.editor.classList.add('app-editor__full-screen')
-    instance.root.refs.rootElement.appendChild(instance.refs.editor)
+    currentInstance.refs.editor.classList.add('app-editor__full-screen')
+    currentInstance.root.refs.rootElement.appendChild(currentInstance.refs.editor)
   }
 }
 
 document.addEventListener('keydown', event => {
-  if (!instance.refs.editor) {
+  if (!currentInstance.refs.editor) {
     return
   }
 
-  if (instance.refs.editor.classList.contains('app-editor__full-screen') && event.key === 'Escape') {
+  if (currentInstance.refs.editor.classList.contains('app-editor__full-screen') && event.key === 'Escape') {
     onClickFullscreen()
   }
 })

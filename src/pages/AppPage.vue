@@ -9,7 +9,7 @@ defineOptions({
   name: 'AppPage'
 })
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 const emit = defineEmits(['action'])
 
@@ -32,8 +32,8 @@ const $data = reactive({
 const loaded = ref(false)
 
 function action () {
-  if (typeof instance.exposed[arguments[0]] === 'function') {
-    instance.exposed[arguments[0]](...Array.from(arguments).splice(1))
+  if (typeof currentInstance.exposed[arguments[0]] === 'function') {
+    currentInstance.exposed[arguments[0]](...Array.from(arguments).splice(1))
   } else {
     emit('action', ...arguments)
   }
@@ -64,12 +64,12 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
 
   if ($data.data) {
     emit('action', 'setTab', {
-      key: instance.vnode.key,
+      key: currentInstance.vnode.key,
       loading: true
     })
   } else {
     emit('action', 'setTab', {
-      key: instance.vnode.key,
+      key: currentInstance.vnode.key,
       loading: true,
       meta: {
         title: $data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
@@ -97,7 +97,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
   }).
       then(r => {
         emit('action', 'setTab', {
-          key: instance.vnode.key,
+          key: currentInstance.vnode.key,
           changed: false
         })
 
@@ -159,7 +159,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
 
           if (Object.values(meta).length) {
             emit('action', 'setTab', {
-              key: instance.vnode.key,
+              key: currentInstance.vnode.key,
               meta
             })
           }
@@ -172,7 +172,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
     }
   }).finally(() => {
     emit('action', 'setTab', {
-      key: instance.vnode.key,
+      key: currentInstance.vnode.key,
       changed,
       loading: false
     })

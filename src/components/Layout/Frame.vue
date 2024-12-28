@@ -23,17 +23,17 @@ export default {
   },
 
   setup (props, { emit }) {
-    const instance = getCurrentInstance()
+    const currentInstance = getCurrentInstance()
 
     emit('action', 'setTab', {
-      key: instance.vnode.key,
+      key: currentInstance.vnode.key,
       loading: true,
       meta: { title: '...' }
     })
 
     watch(
         () => store.state['Storage']['root']['dark'],
-        () => instance['ctx'].message(instance.vnode.el)
+        () => currentInstance['ctx'].message(currentInstance.vnode.el)
     )
 
     const attrs = {
@@ -44,12 +44,12 @@ export default {
             (route?.['params']?.['id'] ? ': ' + route?.['params']?.['id'] : '')
 
         emit('action', 'setTab', {
-          key: instance.vnode.key,
+          key: currentInstance.vnode.key,
           loading: false,
           meta: { title: event.target?.contentDocument?.title || title }
         })
 
-        instance['ctx'].message(event.target)
+        currentInstance['ctx'].message(event.target)
 
         window.addEventListener('message', event => {
           if (event.data.data) {
@@ -57,7 +57,7 @@ export default {
 
             if (title) {
               emit('action', 'setTab', {
-                key: instance.vnode.key,
+                key: currentInstance.vnode.key,
                 loading: false,
                 meta: { title }
               })

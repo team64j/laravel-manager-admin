@@ -2,7 +2,7 @@
 import Field from './Field.vue'
 import { getCurrentInstance } from 'vue'
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 
 defineOptions({
   name: 'File',
@@ -21,12 +21,12 @@ const props = defineProps({
 const emit = defineEmits(['action'])
 
 function onMousedown (event) {
-  emit('action', 'mousedown:input', event, instance)
+  emit('action', 'mousedown:input', event, currentInstance)
 }
 
 function onClick (event) {
   if (props.emitClick) {
-    return emit('action', props.emitClick, event, instance)
+    return emit('action', props.emitClick, event, currentInstance)
   }
 }
 </script>

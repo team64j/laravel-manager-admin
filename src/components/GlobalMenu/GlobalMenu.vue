@@ -10,17 +10,17 @@ defineOptions({
   __isStatic: true
 })
 
-const instance = getCurrentInstance()
+const currentInstance = getCurrentInstance()
 const props = defineProps(['data'])
 const emit = defineEmits(['action'])
 
 const methods = {
   show (value = true) {
-    instance.vnode.el.classList.toggle('app-global-menu--active', value)
+    currentInstance.vnode.el.classList.toggle('app-global-menu--active', value)
     store.dispatch('set', { menuShow: value })
   },
   setActiveClass (el) {
-    instance.vnode.el.querySelectorAll('.app-global-menu__hover').
+    currentInstance.vnode.el.querySelectorAll('.app-global-menu__hover').
         forEach(i => i.classList.remove('app-global-menu__hover'))
 
     while (true) {
@@ -98,11 +98,11 @@ onMounted(() => {
 
     if (target && target.closest('.app-global-menu')) {
       if (target.classList.contains('app-global-menu__parent')) {
-        methods.show(!instance.vnode.el.classList.contains('app-global-menu--active'))
+        methods.show(!currentInstance.vnode.el.classList.contains('app-global-menu--active'))
       } else {
         methods.show(false)
       }
-    } else if (instance.vnode.el.classList.contains('app-global-menu--active')) {
+    } else if (currentInstance.vnode.el.classList.contains('app-global-menu--active')) {
       methods.show(false)
     }
   })
