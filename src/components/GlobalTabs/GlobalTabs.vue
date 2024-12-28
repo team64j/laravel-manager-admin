@@ -16,7 +16,10 @@ export default {
     }
   },
   props: {
-    currentRoute: Object
+    currentRoute: {
+      type: Object,
+      default: router.currentRoute.value
+    }
   },
   data () {
     return {

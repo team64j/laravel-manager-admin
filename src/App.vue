@@ -141,13 +141,13 @@ function bootstrap () {
 
       setAssets(response.data['data']['assets'])
 
-      setSlots(response.data['layout'])
+      //setSlots(response.data['layout'])
 
       if (!instance.appContext.components.RouterView) {
         instance.appContext.app.use(router)
       }
 
-      layout.value = true
+      layout.value = response.data['layout']
       loaded.value = true
     } else {
       notify({
@@ -428,38 +428,38 @@ defineExpose({
       <div
           class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
-          <slot name="top.left"/>
+          <Component :layout="layout.find(i => i.slot === 'top.left')" @action="action"/>
         </div>
         <div class="grow flex justify-between">
-          <slot name="top"/>
+          <Component :layout="layout.find(i => i.slot === 'top')" @action="action"/>
         </div>
         <div class="grow-0 flex app-position-end">
-          <slot name="top.right"/>
+          <Component :layout="layout.find(i => i.slot === 'top.right')" @action="action"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
             class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
           <div class="grow-0 flex">
-            <slot name="left.top"/>
+            <Component :layout="layout.find(i => i.slot === 'left.top')" @action="action"/>
           </div>
           <div class="grow flex items-center">
-            <slot name="left"/>
+            <Component :layout="layout.find(i => i.slot === 'left')" @action="action"/>
           </div>
           <div class="grow-0 flex app-position-end">
-            <slot name="left.bottom"/>
+            <Component :layout="layout.find(i => i.slot === 'left.bottom')" @action="action"/>
           </div>
         </div>
         <div ref="sidebarElement"
              :style="{ width: sidebarWidth + `rem` }"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark">
-          <slot name="sidebar"/>
+          <Component :layout="layout.find(i => i.slot === 'sidebar')" @action="action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>
         </div>
         <div class="grow flex flex-col overflow-hidden z-10 app-main">
-          <slot/>
+          <global-tabs :current-route="router.currentRoute.value" @action="action"/>
         </div>
       </div>
 
