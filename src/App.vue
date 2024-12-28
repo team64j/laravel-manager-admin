@@ -150,8 +150,12 @@ function bootstrap () {
         currentInstance.appContext.app.use(router)
       }
 
-      data.layout = response.data['layout']
       data.loaded = true
+      data['layout'] = {}
+
+      response.data['layout'].map(i => {
+        data.layout[i.slot] = i
+      })
     } else {
       notify({
         text: 'No data',
@@ -430,32 +434,32 @@ defineExpose({
       <div
           class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
-          <Component :layout="{ ...data.layout.find(i => i.slot === 'top.left') }" @action="action"/>
+          <Component :layout="data.layout['top.left']" @action="action"/>
         </div>
         <div class="grow flex justify-between">
-          <Component :layout="data.layout.find(i => i.slot === 'top')" @action="action"/>
+          <Component :layout="data.layout['top']" @action="action"/>
         </div>
         <div class="grow-0 flex app-position-end">
-          <Component :layout="data.layout.find(i => i.slot === 'top.right')" @action="action"/>
+          <Component :layout="data.layout['top.right']" @action="action"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
             class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
           <div class="grow-0 flex">
-            <Component :layout="data.layout.find(i => i.slot === 'left.top')" @action="action"/>
+            <Component :layout="data.layout['left.top']" @action="action"/>
           </div>
           <div class="grow flex items-center">
-            <Component :layout="data.layout.find(i => i.slot === 'left')" @action="action"/>
+            <Component :layout="data.layout['left']" @action="action"/>
           </div>
           <div class="grow-0 flex app-position-end">
-            <Component :layout="data.layout.find(i => i.slot === 'left.bottom')" @action="action"/>
+            <Component :layout="data.layout['left.bottom']" @action="action"/>
           </div>
         </div>
         <div ref="sidebarElement"
              :style="{ width: data.sidebarWidth + `rem` }"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark">
-          <Component :layout="data.layout.find(i => i.slot === 'sidebar')" @action="action"/>
+          <Component :layout="data.layout['sidebar']" @action="action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>
