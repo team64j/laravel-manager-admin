@@ -376,7 +376,7 @@ export default {
       return value
     },
     getComponent (data) {
-      const component = this.$root.$.appContext.components[data.component]
+      const component = this.$.root.appContext.components[data.component]
 
       const attrs = reactive({ ...(data.attrs || {}) })
       attrs.key = data.model

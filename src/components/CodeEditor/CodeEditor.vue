@@ -153,7 +153,7 @@ function onClickFullscreen () {
     instance.vnode.el.appendChild(instance.refs.editor)
   } else {
     instance.refs.editor.classList.add('app-editor__full-screen')
-    instance.proxy.$root.$el.appendChild(instance.refs.editor)
+    instance.root.refs.rootElement.appendChild(instance.refs.editor)
   }
 }
 

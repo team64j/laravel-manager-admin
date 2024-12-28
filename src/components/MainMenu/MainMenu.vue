@@ -15,144 +15,151 @@ const emit = defineEmits(['action'])
 
 let enterTimer = 0, filterTimer = 0
 
-function onClick (event, data) {
-    if (instance.proxy.$root['isMobile']) {
-      const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
-      document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
-
-      let item = event.currentTarget
-
-      while (item) {
-        item.classList[action]('app-main-menu__hover')
-        item = item?.parentElement?.closest('li')
-      }
-
-      instance.proxy.$root.$el.classList[action]('app-main-menu__active')
-
-      if (event.target.classList.contains('app-main-menu__toggle') && data['url']) {
-        loadData(data['url'], data)
-        return
-      }
-    } else {
-      instance.proxy.$root.$el.classList.toggle('app-main-menu__active')
-    }
-
-    if (data['to']) {
-      instance.proxy.$root.$el.classList.remove('app-main-menu__active')
-      router.to(data['to'])
-    } else if (data['href']) {
-      instance.proxy.$root.$el.classList.remove('app-main-menu__active')
-      window.open(data['href'])
-    } else if (data['url']) {
-      instance.proxy.$root.$el.classList.contains('app-main-menu__active') && loadData(data['url'], data)
-    } else if (data['values']) {
-      const value = store.getters['get']('Storage.root.' + data['key'])
-
-      for (let i in data['values']) {
-        i = parseInt(i)
-        if (value === data['values'][i].value) {
-          const item = data['values'][i + 1] ?? data['values'][0]
-          store.dispatch('set', { ['Storage.root.' + data['key']]: item.value })
-          break
-        }
-      }
-    }
-}
-
-function onEnter (event, data) {
-    if (event.currentTarget.classList.contains('app-main-menu__hover') || instance.proxy.$root['isMobile']) {
-      return
-    }
-
-    let delay = 0
-
-    clearTimeout(enterTimer)
-
-    if (data['url'] && !data['data']) {
-      delay = 50
-    }
+function onClick (event, _) {
+  if (instance.proxy.$root['isMobile']) {
+    const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
+    document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
 
     let item = event.currentTarget
 
-    enterTimer = setTimeout(() => {
-      document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
+    while (item) {
+      item.classList[action]('app-main-menu__hover')
+      item = item?.parentElement?.closest('li')
+    }
 
-      while (item) {
-        item.classList.add('app-main-menu__hover')
-        item = item?.parentElement?.closest('li')
-      }
+    instance.root.refs.rootElement.classList[action]('app-main-menu__active')
 
-      if (data['url'] && instance.proxy.$root.$el.classList.contains('app-main-menu__active')) {
-        clearTimeout(enterTimer)
-        data['data'] = null
-
-        enterTimer = setTimeout(() => loadData(data['url'], data), 150)
-      }
-    }, delay)
-}
-
-function onOut (event, data) {
-    if (instance.proxy.$root['isMobile']) {
+    if (event.target.classList.contains('app-main-menu__toggle') && _.data['url']) {
+      loadData(_.data['url'], _.data)
       return
     }
-
-    if (data['url']) {
-      clearTimeout(enterTimer)
-    }
-
-    if (!data['data']) {
-      event.currentTarget.classList.remove('app-main-menu__hover')
-    }
-}
-
-function onNav (event, url, ctx) {
-  loadData(url, ctx.data)
-}
-
-function onFilterInput (event, item, ctx) {
-    clearTimeout(filterTimer)
-    filterTimer = setTimeout(() => {
-      item.filter = event.target.value
-      loadData(
-          router.parse({ path: ctx.data['url'], query: { filter: event.target.value } }).fullPath,
-          ctx.data
-      )
-    }, 500)
-}
-
-function onFilterClear (event, item, ctx) {
-    item.filter = ''
-  loadData(
-        router.parse({ path: ctx.data['url'] }).fullPath,
-        ctx.data
-    )
-}
-
-function loadData (url, item) {
-    const route = router.parse(url)
-    item['loading'] = true
-    item['data'] = null
-    axios.get(route.fullPath).then(({ data: { data, meta } }) => {
-      item['data'] = [].concat(
-          meta['prepend'] ?? [],
-          (meta['pagination'] && (meta['pagination']['total'] > meta['pagination']['per'])) || route.query['filter'] !== undefined
-              ? [{ filter: route.query['filter'] || '' }]
-              : [],
-          data.map(i => {
-            if (meta['route']) {
-              i.to = router.parse({ path: meta['route'], params: i })
-            }
-            return i
-          }),
-          meta['append'] ?? [],
-          meta['pagination'] && (meta['pagination']['prev'] || meta['pagination']['next']) ? [meta['pagination']] : []
-      )
-    }).finally(() => {
-      item['loading'] = false
-    })
+  } else {
+    instance.root.refs.rootElement.classList.toggle('app-main-menu__active')
   }
 
-const action = (...args) => {
+  if (_.data['to']) {
+    instance.root.refs.rootElement.classList.remove('app-main-menu__active')
+    router.to(_.data['to'])
+  } else if (_.data['href']) {
+    instance.root.refs.rootElement.classList.remove('app-main-menu__active')
+    window.open(_.data['href'])
+  } else if (_.data['url']) {
+    instance.root.refs.rootElement.classList.contains('app-main-menu__active') && loadData(_.data['url'], _)
+  } else if (_.data['values']) {
+    const value = store.getters['get']('Storage.root.' + _.data['key'])
+
+    for (let i in _.data['values']) {
+      i = parseInt(i)
+      if (value === _.data['values'][i].value) {
+        const item = _.data['values'][i + 1] ?? _.data['values'][0]
+        store.dispatch('set', { ['Storage.root.' + _.data['key']]: item.value })
+        break
+      }
+    }
+  }
+}
+
+function onEnter (event, _) {
+  if (event.currentTarget.classList.contains('app-main-menu__hover') || instance.proxy.$root['isMobile']) {
+    return
+  }
+
+  let delay = 0
+
+  clearTimeout(enterTimer)
+
+  if (_.data['url'] && !_.data['data']) {
+    delay = 50
+  }
+
+  let item = event.currentTarget
+
+  enterTimer = setTimeout(() => {
+    document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
+
+    while (item) {
+      item.classList.add('app-main-menu__hover')
+      item = item?.parentElement?.closest('li')
+    }
+
+    if (_.data['url'] && instance.root.refs.rootElement.classList.contains('app-main-menu__active')) {
+      clearTimeout(enterTimer)
+      _.data['data'] = null
+
+      enterTimer = setTimeout(() => loadData(_.data['url'], _), 150)
+    }
+  }, delay)
+}
+
+function onOut (event, _) {
+  if (instance.proxy.$root['isMobile']) {
+    return
+  }
+
+  if (_.data['url']) {
+    clearTimeout(enterTimer)
+  }
+
+  if (_.data['data'] === undefined) {
+    event.currentTarget.classList.remove('app-main-menu__hover')
+  }
+}
+
+function onNav (event, url, _) {
+  loadData(url, _)
+}
+
+function onFilterInput (event, _) {
+  clearTimeout(filterTimer)
+  filterTimer = setTimeout(() => {
+    _.data.filter = event.target.value
+    loadData(
+        router.parse({ path: _._.parent.proxy.data['url'], query: { filter: event.target.value } }).fullPath,
+        _._.parent.proxy
+    )
+  }, 500)
+}
+
+function onFilterClear (event, _) {
+  _.data.filter = ''
+  loadData(
+      router.parse({ path: _._.parent.proxy.data['url'] }).fullPath,
+      _._.parent.proxy
+  )
+}
+
+function loadData (url, _) {
+  const route = router.parse(url)
+  _.data['loading'] = true
+  _.data['data'] = null
+  _.$forceUpdate()
+
+  axios.get(route.fullPath).then(r => {
+    const data = r.data['data'] || []
+    const meta = r.data['meta'] || {}
+
+    _.data['data'] = [].concat(
+        meta['prepend'] ?? [],
+        (meta['pagination'] && (meta['pagination']['total'] > meta['pagination']['per'])) || route.query['filter'] !==
+        undefined
+            ? [{ filter: route.query['filter'] || '' }]
+            : [],
+        data.map(i => {
+          if (meta['route']) {
+            i.to = router.parse({ path: meta['route'], params: i })
+          }
+          return i
+        }),
+        meta['append'] ?? [],
+        meta['pagination'] && (meta['pagination']['prev'] || meta['pagination']['next']) ? [meta['pagination']] : []
+    )
+  }).finally(() => {
+    _.data['loading'] = false
+    _.$forceUpdate()
+  })
+}
+
+function action (...args) {
   if (typeof instance.exposed[args[0]] === 'function') {
     instance.exposed[args[0]](...Array.from(args).splice(1))
   } else {
@@ -162,7 +169,7 @@ const action = (...args) => {
 
 onMounted(() => {
   document.addEventListener('click', function () {
-    instance.proxy.$root.$el.classList.remove('app-main-menu__active')
+    instance.root.refs.rootElement.classList.remove('app-main-menu__active')
   })
 })
 

@@ -3,7 +3,7 @@ import { getCurrentInstance, h, nextTick, onMounted, ref, shallowRef, watch } fr
 import { convertPixelsToRem, convertRemToPixels } from './utils/convert'
 import router from './router'
 import store from './store'
-import { Notifications } from '@kyvg/vue3-notification'
+import { Notifications, notify } from '@kyvg/vue3-notification'
 import GlobalTabs from './components/GlobalTabs/GlobalTabs.vue'
 import Datepicker from './components/Datepicker/Datepicker.vue'
 import Component from './components/Layout/Component.vue'
@@ -17,14 +17,6 @@ defineOptions({
   name: 'App'
 })
 
-defineExpose({
-  pushRouter,
-  collapse,
-  inputTreeSelect,
-  'modal:component': modalShow,
-  'datepicker:show': datepickerShow
-})
-
 const emit = defineEmits(['action'])
 
 const instance = getCurrentInstance()
@@ -32,13 +24,11 @@ const instance = getCurrentInstance()
 const rootElement = shallowRef()
 const midElement = shallowRef()
 const modalElement = shallowRef()
-const searchElement = shallowRef()
-const tooltipElement = shallowRef()
 const sidebarElement = shallowRef()
 const datepickerElement = shallowRef()
 
 const layout = ref(null)
-const loaded = ref(false)
+const loaded = ref(null)
 const isMobile = ref(calcIsMobile())
 const sidebarWidth = ref(store.getters.get('Storage.sidebarWidth', 26))
 
@@ -107,6 +97,18 @@ document.documentElement.classList.toggle(
     store.getters.get('Storage.root.dark', false)
 )
 
+function login () {
+  store.dispatch('set', { ['Storage.token']: null })
+
+  if (!instance.appContext.components.RouterView) {
+    instance.appContext.app.use(router)
+  }
+
+  loaded.value = true
+  layout.value = null
+  router.to('/auth/login')
+}
+
 function action () {
   if (typeof instance.exposed[arguments[0]] === 'function') {
     instance.exposed[arguments[0]](...Array.from(arguments).splice(1))
@@ -122,128 +124,137 @@ function bootstrap () {
     login()
   }
 
-  axios.post('/bootstrap').then(({ data: response }) => {
-    if (response.data) {
-      if (response.data.routes) {
-        const routes = router.getRoutes()
-        const component = () => import('./pages/AppPage.vue')
-        for (const route of response.data.routes) {
-          if (routes.some(i => (i.name || i.path) === (route.name || route.path))) {
-            continue
-          }
-          router.addRoute({ ...route, component })
-        }
-      }
-
-      if (response.data.assets) {
-        assets(response.data.assets)
+  axios.post('/bootstrap').then((response) => {
+    if (response.data['data']) {
+      if (response.data['data']?.['config']?.['site_name']) {
+        document.title = response.data['data']['config']['site_name']
       }
 
       store.dispatch('set', {
-        config: response.data.config || {},
-        lang: response.data.lang || {}
+        config: response.data['data']['config'] || {},
+        lang: response.data['data']['lang'] || {}
       })
 
-      if (response.data?.config?.['site_name']) {
-        document.title = response.data.config['site_name']
-      }
+      setComponents()
 
-      Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).
-          forEach(([, { default: module }]) => {
-            const name = `App` + (module.name || module.__name)
-            if (module?.['__isStatic'] && !instance.appContext.components[name]) {
-              instance.appContext.app.component(name, module)
-            }
-          })
+      setRoutes(response.data['data']['routes'])
+
+      setAssets(response.data['data']['assets'])
+
+      setSlots(response.data['layout'])
 
       if (!instance.appContext.components.RouterView) {
         instance.appContext.app.use(router)
       }
 
-      const slots = {
-        'top': null,
-        'top.left': null,
-        'top.right': null,
-        'left': null,
-        'left.top': null,
-        'left.bottom': null,
-        'sidebar': null
-      }
-
-      for (const slot in slots) {
-        instance.slots[slot] = () => {
-          const i = response.layout.find(i => i.slot === slot)
-
-          return [
-            i && h(Component, {
-              layout: i,
-              currentRoute: router.currentRoute.value,
-              onAction: action
-            })
-          ]
-        }
-      }
-
-      instance.slots['global-tabs'] = () => [
-        h(GlobalTabs, {
-          currentRoute: router.currentRoute.value,
-          onAction: action
-        })
-      ]
-
-      loaded.value = true
       layout.value = true
+      loaded.value = true
     } else {
-      login()
+      notify({
+        text: 'No data',
+        type: 'error'
+      })
+
+      setTimeout(() => {
+        login()
+      }, 2000)
     }
   }).catch(login)
 }
 
-function login () {
-  store.dispatch('set', { ['Storage.token']: null })
-
-  if (!instance.appContext.components.RouterView) {
-    instance.appContext.app.use(router)
+function setRoutes (data) {
+  if (data?.length) {
+    const routes = router.getRoutes()
+    const component = () => import('./pages/AppPage.vue')
+    for (const route of data) {
+      if (routes.some(i => (i.name || i.path) === (route.name || route.path))) {
+        continue
+      }
+      router.addRoute({ ...route, component })
+    }
   }
-
-  loaded.value = true
-  layout.value = null
-  router.to('/auth/login')
 }
 
-function assets (assets) {
-  assets.forEach(i => {
-    switch (i.rel) {
-      case 'plugin':
-        import(/* @vite-ignore */i.src).then(j => {
-          instance.appContext.app.use(j.default)
-        })
-        break
+function setAssets (data) {
+  if (data?.length) {
+    data.forEach(i => {
+      switch (i.rel) {
+        case 'plugin':
+          import(/* @vite-ignore */i.src).then(j => {
+            instance.appContext.app.use(j.default)
+          })
+          break
 
-      case 'component':
-        import(/* @vite-ignore */i.src).then(j => {
-          instance.appContext.app.component(j.default.name, j.default)
-        })
-        break
+        case 'component':
+          import(/* @vite-ignore */i.src).then(j => {
+            instance.appContext.app.component(j.default.name, j.default)
+          })
+          break
 
-      case 'manifest':
-        const fragment = document.createRange().createContextualFragment(i.source)
-        document.head.appendChild(fragment)
-        break
+        case 'manifest':
+          const fragment = document.createRange().createContextualFragment(i.source)
+          document.head.appendChild(fragment)
+          break
 
-      case 'module':
-        const script = document.createElement('script')
-        script.setAttribute('src', i.src)
-        script.setAttribute('type', 'module')
-        script.setAttribute('crossorigin', 'anonymous')
-        document.head.appendChild(script)
-        break
+        case 'module':
+          const script = document.createElement('script')
+          script.setAttribute('src', i.src)
+          script.setAttribute('type', 'module')
+          script.setAttribute('crossorigin', 'anonymous')
+          document.head.appendChild(script)
+          break
 
-      case 'css':
-        document.head.innerHTML += `<link rel="stylesheet" href="${i.src}">`
-        break
+        case 'css':
+          document.head.innerHTML += `<link rel="stylesheet" href="${i.src}">`
+          break
+      }
+    })
+  }
+}
+
+function setComponents () {
+  Object.entries(import.meta.glob('./components/*/*.vue', { eager: true })).
+      forEach(([, { default: module }]) => {
+        const name = `App` + (module.name || module.__name)
+        if (module?.['__isStatic'] && !instance.appContext.components[name]) {
+          instance.appContext.app.component(name, module)
+        }
+      })
+}
+
+function setSlots (data) {
+  if (data?.length) {
+    const slots = {
+      'top': null,
+      'top.left': null,
+      'top.right': null,
+      'left': null,
+      'left.top': null,
+      'left.bottom': null,
+      'sidebar': null
     }
-  })
+
+    for (const slot in slots) {
+      instance.slots[slot] = () => {
+        const i = data.find(i => i.slot === slot)
+
+        return [
+          i && h(Component, {
+            layout: i,
+            currentRoute: router.currentRoute.value,
+            onAction: action
+          })
+        ]
+      }
+    }
+
+    instance.slots['default'] = () => [
+      h(GlobalTabs, {
+        currentRoute: router.currentRoute.value,
+        onAction: action
+      })
+    ]
+  }
 }
 
 function onTouchstartSidebar (event) {
@@ -254,9 +265,6 @@ function onTouchstartSidebar (event) {
   let sx = event.touches[0].clientX,
       sy = event.touches[0].clientY,
       sl = null
-
-  midElement.value.addEventListener('touchmove', onTouchmoveSidebar)
-  midElement.value.addEventListener('touchend', onTouchendSidebar)
 
   function onTouchmoveSidebar (event) {
     sl = null
@@ -299,14 +307,17 @@ function onTouchstartSidebar (event) {
       sl !== null && store.dispatch('set', { ['Storage.root.sidebarShow']: sl })
     }
 
-    midElement.value.removeEventListener('touchmove', onTouchmoveSidebar)
-    midElement.value.removeEventListener('touchend', onTouchendSidebar)
     sidebarElement.value.style.transform = null
     sidebarElement.value.style.transition = null
+    midElement.value.removeEventListener('touchmove', onTouchmoveSidebar)
+    midElement.value.removeEventListener('touchend', onTouchendSidebar)
   }
+
+  midElement.value.addEventListener('touchmove', onTouchmoveSidebar)
+  midElement.value.addEventListener('touchend', onTouchendSidebar)
 }
 
-function splitterDown (event) {
+function onMousedownSidebarSplitter (event) {
   if (isMobile.value) {
     return
   }
@@ -314,28 +325,30 @@ function splitterDown (event) {
   const x = event.clientX
   const w = convertRemToPixels(sidebarWidth.value)
 
-  rootElement.value.classList.add('app-sidebar-resize')
-  event.currentTarget.classList.add('active')
-  event.currentTarget.addEventListener('mousemove', splitterMove)
-  event.currentTarget.addEventListener('mouseup', splitterUp)
-
-  function splitterMove (event) {
+  function onMousemoveSidebarSplitter (event) {
+    sidebarElement.value.style.transition = 'none'
     sidebarWidth.value = convertPixelsToRem(
         Math.min(Math.max(w - (x - event.clientX), 64), window.innerWidth * .5)
     )
     store.dispatch('Storage/set', { sidebarWidth: sidebarWidth.value })
   }
 
-  function splitterUp (event) {
-    rootElement.value.classList.remove('app-sidebar-resize')
-    event.currentTarget.classList.remove('active')
-    event.currentTarget.removeEventListener('mousemove', splitterMove)
-    event.currentTarget.removeEventListener('mouseup', splitterUp)
+  function onMouseupSidebarSplitter (event) {
+    sidebarElement.value.style.transition = null
+    event.currentTarget.removeEventListener('mousemove', onMousemoveSidebarSplitter)
+    event.currentTarget.removeEventListener('mouseup', onMouseupSidebarSplitter)
   }
+
+  event.currentTarget.addEventListener('mousemove', onMousemoveSidebarSplitter)
+  event.currentTarget.addEventListener('mouseup', onMouseupSidebarSplitter)
 }
 
 function pushRouter (route, callback) {
   nextTick(() => router.to(route).then(callback))
+}
+
+function collapse (value) {
+  store.dispatch('set', { ['Storage.root.sidebarShow']: !value })
 }
 
 function calcIsMobile () {
@@ -366,13 +379,18 @@ function modalShow (event, instance) {
   }
 }
 
-function collapse (value) {
-  store.dispatch('set', { ['Storage.root.sidebarShow']: !value })
-}
-
 function datepickerShow () {
   datepickerElement.value.on(...arguments)
 }
+
+defineExpose({
+  isMobile,
+  pushRouter,
+  collapse,
+  inputTreeSelect,
+  'modal:component': modalShow,
+  'datepicker:show': datepickerShow
+})
 
 // window['confirm'] = (message) => {
 //   const promise = new Promise(async function(resolve, reject) {
@@ -407,11 +425,12 @@ function datepickerShow () {
           'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
        }">
     <template v-if="layout">
-      <div class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
+      <div
+          class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
           <slot name="top.left"/>
         </div>
-        <div class="grow flex justify-center">
+        <div class="grow flex justify-between">
           <slot name="top"/>
         </div>
         <div class="grow-0 flex app-position-end">
@@ -419,7 +438,8 @@ function datepickerShow () {
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
-        <div class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
+        <div
+            class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
           <div class="grow-0 flex">
             <slot name="left.top"/>
           </div>
@@ -434,28 +454,29 @@ function datepickerShow () {
              :style="{ width: sidebarWidth + `rem` }"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark">
           <slot name="sidebar"/>
-          <div class="app-resizer grow-0 shrink-0 flex" @mousedown="splitterDown">
+          <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>
         </div>
         <div class="grow flex flex-col overflow-hidden z-10 app-main">
-          <slot name="global-tabs"/>
+          <slot/>
         </div>
       </div>
 
       <modal ref="modalElement"/>
-      <search ref="searchElement"/>
-      <tooltip ref="tooltipElement"/>
+      <search/>
+      <tooltip/>
       <datepicker ref="datepickerElement"/>
     </template>
 
     <router-view v-else/>
-
-    <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
   </div>
+
   <div v-else class="flex flex-col h-full justify-center items-center">
     <logo class="w-24 h-24 animate-ping"/>
   </div>
+
+  <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
 </template>
 
 <style>
@@ -468,7 +489,7 @@ function datepickerShow () {
 .app .app-resizer > div {
   @apply fixed z-50 w-full h-full left-0 top-0 hidden cursor-col-resize
 }
-.app .app-resizer.active > div {
+.app .app-resizer:active > div {
   @apply block
 }
 .app .app-resizer::before, .app .app-resizer::after {
@@ -497,9 +518,6 @@ function datepickerShow () {
 }
 .app.app-sidebar-hidden .app-resizer {
   @apply hidden
-}
-.app.app-sidebar-resize .app-sidebar {
-  @apply transition-none
 }
 .app .app-main::after {
   @apply lg:hidden content-[""] z-10 fixed left-0 top-14 right-0 bottom-0

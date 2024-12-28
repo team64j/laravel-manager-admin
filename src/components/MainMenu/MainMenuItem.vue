@@ -25,14 +25,14 @@ if (props.data['values']) {
         'sticky bottom-0 mt-auto !bg-inherit': data['prev'] || data['next'],
         'app-main-menu__filter': data['filter'] !== undefined
       }"
-      @mouseleave="$emit('action', 'onOut', $event, data)"
-      @mouseenter="$emit('action', 'onEnter', $event, data)"
-      @click.stop="$emit('action', 'onClick', $event, data)">
+      @mouseleave="$emit('action', 'onOut', $event, instance.proxy)"
+      @mouseenter="$emit('action', 'onEnter', $event, instance.proxy)"
+      @click.stop="$emit('action', 'onClick', $event, instance.proxy)">
 
     <div v-if="data['prev'] || data['next']" class="py-1 -mb-1 !bg-inherit">
       <button type="button" class="-ml-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
-              @click.stop="$emit('action', 'onNav', $event, data['prev'], instance.parent.props)">
+              @click.stop="$emit('action', 'onNav', $event, data['prev'], instance.parent.proxy)">
         <i class="fa fa-angle-left fa-fw"/>
       </button>
       <span class="grow truncate text-center py-1.5 text-sm text-blue-400">
@@ -40,7 +40,7 @@ if (props.data['values']) {
         </span>
       <button type="button" class="-mr-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['next'] }"
-              @click.stop="$emit('action', 'onNav', $event, data['next'], instance.parent.props)">
+              @click.stop="$emit('action', 'onNav', $event, data['next'], instance.parent.proxy)">
         <i class="fa fa-angle-right fa-fw"/>
       </button>
     </div>
@@ -54,10 +54,10 @@ if (props.data['values']) {
           autocomplete="off"
           autofocus
           :value="data['filter']"
-          @input="$emit('action', 'onFilterInput', $event, data, instance.parent.props)"/>
+          @input="$emit('action', 'onFilterInput', $event, instance.proxy)"/>
 
       <i class="fa fa-remove absolute right-4 hover:text-rose-600" :class="{ 'hidden': !data['filter'] }"
-         @click="$emit('action', 'onFilterClear', $event, data, instance.parent.props)"/>
+         @click="$emit('action', 'onFilterClear', $event, instance.proxy)"/>
     </div>
 
     <div v-else :data-tooltip="data['title']">
@@ -90,7 +90,7 @@ if (props.data['values']) {
 
     <ul v-if="data['data']">
       <li v-if="level > 1" :data-level="level + 1" class="lg:!hidden sticky top-0 !bg-inherit"
-          @click.stop="data['data'] = null">
+          @click.stop="() => data['data'] = null">
         <div class="!bg-inherit -mt-1">
           <span class="grow py-1.5 text-center">
             <i class="fa fa-arrow-left"/>&nbsp;
