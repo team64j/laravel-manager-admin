@@ -1,16 +1,16 @@
 <script setup>
-import Field from './Field.vue'
-import { getCurrentInstance } from 'vue'
+import { computed, getCurrentInstance } from 'vue'
+import { props as _props } from '../../composables'
 
 const currentInstance = getCurrentInstance()
 
 defineOptions({
   name: 'File',
-  __isStatic: true,
-  extends: Field
+  __isStatic: true
 })
 
 const props = defineProps({
+  ..._props,
   type: {
     type: String,
     default: 'file',
@@ -18,7 +18,16 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['action'])
+const emit = defineEmits(['action', 'update:modelValue'])
+
+const model = computed({
+  get () {
+    return props.modelValue
+  },
+  set (value) {
+    emit('update:modelValue', value, currentInstance)
+  }
+})
 
 function onMousedown (event) {
   emit('action', 'mousedown:input', event, currentInstance)
@@ -29,12 +38,16 @@ function onClick (event) {
     return emit('action', props.emitClick, event, currentInstance)
   }
 }
+
+defineExpose({
+  model
+})
 </script>
 
 <template>
   <div v-if="label" class="w-full" :class="props.class">
     <div class="mb-1">
-      <label :for="ID" class="font-bold cursor-pointer">
+      <label :for="id" class="font-bold cursor-pointer">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
         <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
@@ -44,7 +57,7 @@ function onClick (event) {
     </div>
     <div class="flex relative">
       <input v-model="model"
-             :id="ID"
+             :id="id"
              :class="inputClass"
              :readonly="readonly"
              type="text"
@@ -61,7 +74,7 @@ function onClick (event) {
   <div v-else>
     <div class="flex relative">
       <input v-model="model"
-             :id="ID"
+             :id="id"
              :class="inputClass"
              :readonly="readonly"
              type="text"

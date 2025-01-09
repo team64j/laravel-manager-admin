@@ -1,7 +1,7 @@
 <script>
 import draggable from 'vuedraggable'
-import CheckboxComponent from '../Form/Checkbox.vue'
-import InputComponent from '../Form/Input.vue'
+import CheckboxComponent from '../Checkbox/Checkbox.vue'
+import InputComponent from '../Input/Input.vue'
 
 export default {
   __isStatic: true,

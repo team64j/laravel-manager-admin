@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import store from '../../store'
-import Button from '../Form/Button.vue'
+import Button from '../Button/Button.vue'
 
 defineOptions({
   name: 'Actions',

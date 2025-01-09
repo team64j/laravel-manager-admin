@@ -1,17 +1,28 @@
 <script setup>
-import { computed } from 'vue'
-import Field from './Field.vue'
+import { computed, getCurrentInstance } from 'vue'
+import { props as _props } from '../../composables'
 
 defineOptions({
   name: 'Checkbox',
-  __isStatic: true,
-  extends: Field
+  __isStatic: true
 })
 
+const emit = defineEmits(['action', 'update:modelValue'])
+
 const props = defineProps({
+  ..._props,
   modelValue: { default: true },
   value: { default: true },
   asButton: Boolean
+})
+
+const model = computed({
+  get () {
+    return props.modelValue
+  },
+  set (value) {
+    emit('update:modelValue', value, getCurrentInstance())
+  }
 })
 
 const _labelClass = computed(() => {
@@ -27,6 +38,10 @@ const _labelClass = computed(() => {
 
   return c
 })
+
+defineExpose({
+  model
+})
 </script>
 
 <template>
@@ -34,7 +49,7 @@ const _labelClass = computed(() => {
     <template v-if="!data">
       <label class="inline-flex items-center " :class="[labelClass, _labelClass]">
         <input v-model="model"
-               :id="ID"
+               :id="id"
                :value="value"
                :true-value="trueValue"
                :false-value="falseValue"
@@ -58,7 +73,7 @@ const _labelClass = computed(() => {
       <div v-for="(i, k) in data">
         <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
           <input v-model="model"
-                 :id="ID+`_`+i.key"
+                 :id="id+`_`+i.key"
                  :class="inputClass"
                  :value="i.key"
                  :true-value="i.key"
@@ -73,7 +88,7 @@ const _labelClass = computed(() => {
   <template v-else>
     <template v-if="!data">
       <input v-model="model"
-             :id="ID"
+             :id="id"
              :class="inputClass"
              :value="value"
              :true-value="trueValue"
@@ -86,7 +101,7 @@ const _labelClass = computed(() => {
     <div v-for="(i, k) in data" v-else :class="props.class">
       <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
         <input v-model="model"
-               :id="ID+`_`+i.key"
+               :id="id+`_`+i.key"
                :class="inputClass"
                :value="i.key"
                :true-value="i.key"

@@ -373,7 +373,9 @@ function calcIsMobile () {
       window.innerWidth < 1024
 }
 
-function inputTreeSelect (event, context) {
+function inputTreeSelect (event, instance) {
+  const context = instance.ctx || instance
+
   store.dispatch('set', { event, context })
 
   const input = context.$el.querySelector('input')
@@ -387,10 +389,12 @@ function inputTreeSelect (event, context) {
 }
 
 function modalShow (event, instance) {
-  if (instance.ctx['url']) {
+  const context = instance.ctx || instance
+
+  if (context['url']) {
     modalElement.value.open({
-      url: instance.ctx['url'],
-      owner: instance.ctx
+      url: context['url'],
+      owner: context
     })
   }
 }

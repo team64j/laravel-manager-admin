@@ -1,51 +1,66 @@
-<script>
-import Field from './Field.vue'
+<script setup>
+import { props as _props } from '../../composables'
+import { computed, getCurrentInstance, reactive } from 'vue'
 
-export default {
-  __isStatic: true,
+defineOptions({
   name: 'Input',
-  extends: Field,
-  props: {
-    type: {
-      type: String,
-      default: 'text',
-      validator: (type) => ['text', 'number', 'password', 'email', 'tel', 'date', 'datetime-local', 'button'].includes(
-          type)
-    }
-  },
-  computed: {
-    model: {
-      get () {
-        return this.value ?? this.modelValue ?? ''
-      },
-      set (value) {
-        this.$emit('update:modelValue', value, this)
-      }
-    }
-  },
-  methods: {
-    onMousedown (event) {
-      this.$emit('action', this.emitClick || 'mousedown:input', event, this)
-    },
-    onClear (event) {
-      this.$emit('action', 'clear:input', event, this)
-    },
-    onClickPlus () {
-      this.$el.querySelector('input').focus()
-      this.model++
-    },
-    onClickMinus () {
-      this.$el.querySelector('input').focus()
-      this.model--
-    }
+  __isStatic: true
+})
+
+const currentInstance = getCurrentInstance()
+
+const emit = defineEmits(['action', 'update:modelValue'])
+
+const props = defineProps({
+  ..._props,
+  type: {
+    type: String,
+    default: 'text',
+    validator: (type) => ['text', 'number', 'password', 'email', 'tel', 'date', 'datetime-local', 'button'].includes(
+        type)
   }
+})
+
+const data = reactive({
+  loading: false
+})
+
+const model = computed({
+  get () {
+    return props.value ?? props.modelValue ?? ''
+  },
+  set (value) {
+    emit('update:modelValue', value, currentInstance)
+  }
+})
+
+function onMousedown (event) {
+  emit('action', props.emitClick || 'mousedown:input', event, currentInstance)
 }
+
+function onClear (event) {
+  emit('action', 'clear:input', event, currentInstance)
+}
+
+function onClickPlus () {
+  currentInstance.vnode.el.querySelector('input').focus()
+  model.value++
+}
+
+function onClickMinus () {
+  currentInstance.vnode.el.querySelector('input').focus()
+  model.value--
+}
+
+defineExpose({
+  model
+})
 </script>
 
 <template>
   <div v-if="label" class="w-full" :class="$props.class">
     <div class="mb-1">
-      <label :for="ID" class="font-bold cursor-pointer">
+      <label :for="id" class="font-bold cursor-pointer">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
         <i v-if="error" :data-tooltip="errorMessage" data-type="error" class="ml-2 font-normal"/>
@@ -55,15 +70,15 @@ export default {
       <slot name="label"/>
     </div>
     <div class="relative" :class="{ 'app-input__number': type === 'number' }">
-      <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
+      <div v-if="data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
            :class="[type === 'button' ? 'right-0 bottom-0' : '']">
         <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
       <input v-model="model"
-             :id="ID"
+             :id="id"
              :type="type"
              :placeholder="placeholder"
-             :class="[inputClass, error ? '!border-rose-500 focus:ring-rose-500' : '', loading ? '!text-transparent' : '']"
+             :class="[inputClass, error ? '!border-rose-500 focus:ring-rose-500' : '', data.loading ? '!text-transparent' : '']"
              :readonly="readonly"
              :required="required"
              :disabled="disabled"
@@ -80,15 +95,15 @@ export default {
     <slot name="item"/>
   </div>
   <div v-else class="relative" :class="[$props.class, type === 'number' ? 'app-input__number' : '']">
-    <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
+    <div v-if="data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
          :class="[type === 'button' ? 'right-0 bottom-0' : '']">
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </div>
     <input v-model="model"
-           :id="ID"
+           :id="id"
            :type="type"
            :placeholder="placeholder"
-           :class="[inputClass, error ? '!border-rose-500' : '', loading ? '!text-transparent' : '']"
+           :class="[inputClass, error ? '!border-rose-500' : '', data.loading ? '!text-transparent' : '']"
            :readonly="readonly"
            :required="required"
            :disabled="disabled"

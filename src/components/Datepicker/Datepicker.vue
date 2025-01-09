@@ -29,7 +29,7 @@ const dateFormat = store.getters.get('config.datetime_format', 'dd-mm-YYYY')
 
 const timeFormat = 'H:i:s'
 
-const monthNames = store.getters.get('lang.dp_monthNames', [
+const monthNames = store.getters.get('lang.monthNames', [
   'January',
   'February',
   'March',
@@ -46,7 +46,7 @@ const monthNames = store.getters.get('lang.dp_monthNames', [
 
 const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-const dayNames = store.getters.get('lang.dp_dayNames', [
+const dayNames = store.getters.get('lang.dayNames', [
   'Sunday',
   'Monday',
   'Tuesday',
@@ -56,7 +56,7 @@ const dayNames = store.getters.get('lang.dp_dayNames', [
   'Saturday'
 ])
 
-const startDay = parseInt(store.getters.get('lang.dp_startDay', 1))
+const startDay = parseInt(store.getters.get('lang.startDay', 1))
 
 const dayChars = 1
 
@@ -81,7 +81,9 @@ let yearStart = new Date().getFullYear()
 let days = ref(null)
 
 function make (self) {
-  const d = self.ctx['model'] ? (self.ctx['model'] || '').toString().split(' ') : []
+  instance = self
+
+  const d = getModel() ? (getModel() || '').toString().split(' ') : []
   currentDate = new Date()
 
   let date
@@ -111,7 +113,6 @@ function make (self) {
     }
   }
 
-  instance = self
   yearStart = currentDate.getFullYear()
   showDatepicker.value = true
 
@@ -196,7 +197,7 @@ function setDays () {
     }
   }
 
-  instance.ctx.model = getDate() + ' ' + getTime()
+  setModel(getDate() + ' ' + getTime())
 }
 
 function getDate () {
@@ -243,6 +244,18 @@ function onSetTime (event) {
 function onSetDateTime () {
   setDays()
   destroy()
+}
+
+function setModel (value) {
+  if (instance.exposed.model) {
+    instance.exposed.model.value = value
+  } else {
+    instance.ctx.model = value
+  }
+}
+
+function getModel() {
+  return instance.exposed.model ? instance.exposed.model.value : instance.ctx.model
 }
 
 document.addEventListener('mousedown', () => {

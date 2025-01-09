@@ -1,165 +1,168 @@
-<script>
-import CheckboxComponent from './Checkbox.vue'
-import RadioComponent from './Radio.vue'
-import Field from './Field.vue'
+<script setup>
+import { computed, getCurrentInstance, reactive } from 'vue'
+import { props as _props } from '../../composables'
+import CheckboxComponent from '../Checkbox/Checkbox.vue'
+import RadioComponent from '../Radio/Radio.vue'
 
-export default {
-  __isStatic: true,
+defineOptions({
   name: 'Select',
-  extends: Field,
-  components: { CheckboxComponent, RadioComponent },
-  props: {
-    multiple: Boolean,
-    load: Boolean,
-    url: String
+  __isStatic: true
+})
+
+const currentInstance = getCurrentInstance()
+
+const emit = defineEmits(['action', 'update:modelValue'])
+
+const props = defineProps({
+  ..._props,
+  multiple: Boolean,
+  load: Boolean,
+  url: String
+})
+
+const data = reactive({
+  loading: false,
+  options: props.data || [],
+  lastModelValue: props.modelValue
+})
+
+const model = computed({
+  get () {
+    const value = props.value ?? props.modelValue ?? ''
+    return props.multiple && !Array.isArray(value) ? [value] : value
   },
-  data () {
-    return {
-      options: this.data || [],
-      lastModelValue: this.modelValue
-    }
-  },
-  created () {
-    if (this.load && this.url) {
-      this.get()
-    }
-  },
-  computed: {
-    model: {
-      get () {
-        const value = this.value ?? this.modelValue ?? ''
-        return this.multiple && !Array.isArray(value) ? [value] : value
-      },
-      set (value) {
-        this.$emit('update:modelValue', value, this)
-      }
-    },
-    firstValue () {
-      const values = []
-
-      this.options?.forEach(i => {
-        if (i.data) {
-          values.push(...i.data)
-        } else {
-          values.push(i)
-        }
-      })
-
-      const value = this.multiple ?
-          values.filter(i => (Array.isArray(this.modelValue) ?
-                  this.modelValue :
-                  [this.modelValue]
-          ).includes(i.key)).map(i => i.value) :
-          values.filter(i => this.modelValue === i.key && this.itemNew !== i.key).map(i => i.value)
-
-      if (value.toString() !== this.itemNew) {
-        this.lastModelValue = this.model
-      }
-
-      return value
-    }
-  },
-  methods: {
-    closest (el, parent) {
-      while (el) {
-        if (el === parent) {
-          return el
-        }
-        el = el.parentElement
-      }
-    },
-    get (callback) {
-      this.loading = true
-
-      if (this.multiple) {
-        this.model = Array.isArray(this.model) ? this.model : [this.model]
-      }
-
-      this.url && axios.get(this.url, {
-        params: {
-          selected: this.model
-        }
-      }).then(r => {
-        this.loading = false
-        this.options = r.data.data
-
-        if (callback) {
-          callback()
-        }
-      })
-    },
-    onUpdateModelValue (value) {
-      this.$emit('action', this.emitInput || 'change:select', value, this)
-    },
-    onFocus () {},
-    onMousedown (event) {
-      if (!this.url || event.target.classList.contains('opened')) {
-        event.target.classList.toggle('opened')
-        this.$emit('action', 'mousedown:select', event, this)
-        return
-      }
-
-      event.target.dataset.value = event.target.value || this.model
-
-      this.loading = true
-      this.options = null
-
-      axios.get(this.url, {
-        params: {
-          selected: event.target.value
-        }
-      }).then(r => {
-        this.loading = false
-        this.options = r.data.data
-        event.target.classList.add('opened')
-        this.$emit('action', 'mousedown:select', event, this)
-      })
-    },
-    onBlur (event) {
-      event.target.classList.remove('opened')
-    },
-    onChange (event) {
-      const target = event.target
-
-      if (target.value === this.itemNew && target.options) {
-        let value = target.dataset.value
-
-        for (let i of target.options) {
-          if (i.value === value) {
-            value = this.itemNew
-            break
-          }
-        }
-
-        target.nextElementSibling.value = value
-        this.$emit('update:modelValue', value, this)
-
-        target.parentElement.classList.add('app-select__editable')
-        target.nextElementSibling.focus()
-      } else {
-        target.dataset.value = target.value
-      }
-
-      this.$emit('action', this.emitInput || 'change:select', target.value, this)
-    },
-    onInput (event) {
-      this.$emit('update:modelValue', event.target.value, this)
-    },
-    onClickClear () {
-      this.model = this.lastModelValue
-    },
-    onClickMultipleList () {
-      this.$refs.input.focus()
-      this.$refs.input.classList.add('opened')
-    }
+  set (value) {
+    emit('update:modelValue', value, currentInstance)
   }
+})
+
+const firstValue = computed(() => {
+  const values = []
+
+  data.options?.forEach(i => {
+    if (i.data) {
+      values.push(...i.data)
+    } else {
+      values.push(i)
+    }
+  })
+
+  const value = props.multiple ?
+      values.filter(i => (Array.isArray(props.modelValue) ?
+              props.modelValue :
+              [props.modelValue]
+      ).includes(i.key)).map(i => i.value) :
+      values.filter(i => props.modelValue === i.key && props.itemNew !== i.key).map(i => i.value)
+
+  if (value.toString() !== props.itemNew) {
+    data.lastModelValue = model.value
+  }
+
+  return value
+})
+
+function get (callback) {
+  data.loading = true
+
+  if (props.multiple) {
+    model.value = Array.isArray(model.value) ? model.value : [model.value]
+  }
+
+  props.url && axios.get(props.url, {
+    params: {
+      selected: model.value
+    }
+  }).then(r => {
+    data.loading = false
+    data.options = r.data.data
+
+    if (callback) {
+      callback()
+    }
+  })
+}
+
+function onUpdateModelValue (value) {
+  emit('action', props.emitInput || 'change:select', value, currentInstance)
+}
+
+function onFocus () {}
+
+function onMousedown (event) {
+  if (!props.url || event.target.classList.contains('opened')) {
+    event.target.classList.toggle('opened')
+    emit('action', 'mousedown:select', event, currentInstance)
+    return
+  }
+
+  event.target.dataset.value = event.target.value || model.value
+
+  data.loading = true
+  data.options = null
+
+  axios.get(props.url, {
+    params: {
+      selected: event.target.value
+    }
+  }).then(r => {
+    data.loading = false
+    data.options = r.data.data
+    event.target.classList.add('opened')
+    emit('action', 'mousedown:select', event, currentInstance)
+  })
+}
+
+function onBlur (event) {
+  event.target.classList.remove('opened')
+}
+
+function onChange (event) {
+  const target = event.target
+
+  if (target.value === props.itemNew && target.options) {
+    let value = target.dataset.value
+
+    for (let i of target.options) {
+      if (i.value === value) {
+        value = props.itemNew
+        break
+      }
+    }
+
+    target.nextElementSibling.value = value
+    emit('update:modelValue', value, currentInstance)
+
+    target.parentElement.classList.add('app-select__editable')
+    target.nextElementSibling.focus()
+  } else {
+    target.dataset.value = target.value
+  }
+
+  emit('action', props.emitInput || 'change:select', target.value, currentInstance)
+}
+
+function onInput (event) {
+  emit('update:modelValue', event.target.value, currentInstance)
+}
+
+function onClickClear () {
+  model.value = data.lastModelValue
+}
+
+function onClickMultipleList () {
+  currentInstance.refs.input.focus()
+  currentInstance.refs.input.classList.add('opened')
+}
+
+if (props.load && props.url) {
+  get()
 }
 </script>
 
 <template>
   <div v-if="label" class="w-full" :class="$props.class">
     <div class="mb-1">
-      <label :for="ID" class="font-bold cursor-pointer">
+      <label :for="id" class="font-bold cursor-pointer">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
         <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
@@ -167,14 +170,14 @@ export default {
       <slot name="label"/>
     </div>
     <div class="relative">
-      <div v-if="loading" class="absolute z-10 left-2 top-2">
+      <div v-if="data.loading" class="absolute z-10 left-2 top-2">
         <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
 
       <template v-if="multiple">
         <input type="text"
                :value="firstValue"
-               :id="ID"
+               :id="id"
                ref="input"
                readonly
                class="block relative w-full px-3 py-1 rounded app-appearance-select cursor-pointer"
@@ -187,7 +190,7 @@ export default {
             @click="onClickMultipleList"
             @mousedown.prevent="onClickMultipleList">
 
-          <template v-for="o in options">
+          <template v-for="o in data.options">
             <template v-if="o?.data">
               <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
               <checkbox-component
@@ -215,14 +218,14 @@ export default {
 
       <template v-else>
         <div v-show="itemNew === model">
-          <input type="text" :id="`input-`+ID" autofocus @input="onInput"/>
+          <input type="text" :id="`input-`+id" autofocus @input="onInput"/>
           <i class="fa fa-circle-xmark absolute top-3 right-3" @click="onClickClear"/>
         </div>
 
         <input v-show="itemNew !== model"
                type="text"
                :value="firstValue"
-               :id="ID"
+               :id="id"
                ref="input"
                readonly
                class="app-appearance-select cursor-pointer"
@@ -235,7 +238,7 @@ export default {
             class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
             @mousedown.prevent="">
 
-          <template v-for="o in options">
+          <template v-for="o in data.options">
             <template v-if="o?.data">
               <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
               <radio-component
@@ -265,17 +268,17 @@ export default {
     <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </div>
   <div v-else class="relative">
-    <div v-if="loading" class="absolute z-10 left-2 top-2">
+    <div v-if="data.loading" class="absolute z-10 left-2 top-2">
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </div>
     <select v-model="model"
-            :id="ID"
+            :id="id"
             :multiple="multiple"
             @mousedown="onMousedown"
             @focus="onFocus"
             @change="onChange"
             @blur="onBlur">
-      <template v-for="i in options">
+      <template v-for="i in data.options">
         <optgroup v-if="i.data" :label="i.name">
           <option v-for="j in i.data" :value="j.key" :selected="j.selected" :disabled="j.disabled">
             {{ j.value }}

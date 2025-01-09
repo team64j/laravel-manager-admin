@@ -1,23 +1,23 @@
 <script setup>
-import Field from './Field.vue'
-import { computed, getCurrentInstance } from 'vue'
+import { computed, getCurrentInstance, reactive } from 'vue'
+import { props as _props } from '../../composables'
 
 const currentInstance = getCurrentInstance()
 
 defineOptions({
   name: 'Datetime',
   __isStatic: true,
-  extends: Field
 })
 
 const props = defineProps({
+  ..._props,
   data: {
     type: Object,
     default: {}
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['action', 'update:modelValue'])
 
 const model = computed({
   get () {
@@ -28,8 +28,8 @@ const model = computed({
   }
 })
 
-defineExpose({
-  model
+const data = reactive({
+  loading: false
 })
 
 function onClear () {
@@ -39,12 +39,17 @@ function onClear () {
 function onShow () {
   emit('action', 'datepicker:show', currentInstance)
 }
+
+defineExpose({
+  model,
+  ...data,
+})
 </script>
 
 <template>
   <div v-if="label" class="w-full" :class="props.class">
     <div class="mb-1">
-      <label :for="ID" class="font-bold cursor-pointer">
+      <label :for="id" class="font-bold cursor-pointer">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
         <i v-if="error" :data-tooltip="errorMessage" data-type="error" class="ml-2 font-normal"/>
@@ -54,15 +59,15 @@ function onShow () {
       <slot name="label"/>
     </div>
     <div class="relative">
-      <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center">
+      <div v-if="data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center">
         <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
       <input v-model="model"
-             :id="ID"
+             :id="id"
              type="text"
              ref="input"
              :placeholder="placeholder"
-             :class="[inputClass, error ? '!border-rose-500 focus:ring-rose-500' : '', loading ? '!text-transparent' : '']"
+             :class="[inputClass, error ? '!border-rose-500 focus:ring-rose-500' : '', data.loading ? '!text-transparent' : '']"
              :readonly="readonly"
              :required="required"
              :disabled="disabled"
@@ -76,15 +81,15 @@ function onShow () {
     <slot name="item"/>
   </div>
   <div v-else class="relative" :class="props.class">
-    <div v-if="loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center">
+    <div v-if="data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center">
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </div>
     <input v-model="model"
-           :id="ID"
+           :id="id"
            type="text"
            ref="input"
            :placeholder="placeholder"
-           :class="[inputClass, error ? '!border-rose-500' : '', loading ? '!text-transparent' : '']"
+           :class="[inputClass, error ? '!border-rose-500' : '', data.loading ? '!text-transparent' : '']"
            :readonly="readonly"
            :required="required"
            :disabled="disabled"

@@ -109,9 +109,13 @@ function onMouseup () {
   document.removeEventListener('mouseup', onMouseup)
 }
 
-function modalSelect (data) {
+function modalSelect (value) {
   if (data.owner) {
-    data.owner.model = data.value
+    if (data.owner._.exposed.model) {
+      data.owner._.exposed.model.value = value.value
+    } else {
+      data.owner.model = value.value
+    }
     close()
   }
 }

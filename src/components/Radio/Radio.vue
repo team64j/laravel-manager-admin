@@ -1,27 +1,45 @@
-<script>
-import Field from './Field.vue'
+<script setup>
+import { computed, getCurrentInstance } from 'vue'
+import { props as _props } from '../../composables'
 
-export default {
-  __isStatic: true,
+const currentInstance = getCurrentInstance()
+
+defineOptions({
   name: 'Radio',
-  extends: Field,
-  props: {
-    modelValue: { default: true },
-    value: { default: true },
-    asButton: Boolean
-  },
-  computed: {
-    _labelClass () {
-      const c = []
+  __isStatic: true
+})
 
-      if (this.asButton) {
-        c.push('label-as-button')
-      }
+const props = defineProps({
+  ..._props,
+  modelValue: { default: true },
+  value: { default: true },
+  asButton: Boolean
+})
 
-      return c
-    }
+const emit = defineEmits(['action', 'update:modelValue'])
+
+const _labelClass = computed(() => {
+  const c = []
+
+  if (props.asButton) {
+    c.push('label-as-button')
   }
-}
+
+  return c
+})
+
+const model = computed({
+  get () {
+    return props.modelValue
+  },
+  set (value) {
+    emit('update:modelValue', value, currentInstance)
+  }
+})
+
+defineExpose({
+  model
+})
 </script>
 
 <template>
@@ -52,7 +70,7 @@ export default {
       <div v-for="(i, k) in data">
         <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
           <input v-model="model"
-                 :id="ID+`_`+i.key"
+                 :id="id+`_`+i.key"
                  :class="inputClass"
                  :value="i.key"
                  :true-value="i.key"
@@ -67,7 +85,7 @@ export default {
   <template v-else>
     <template v-if="!data">
       <input v-model="model"
-             :id="ID"
+             :id="id"
              :class="inputClass"
              :value="value"
              :true-value="trueValue"
@@ -80,7 +98,7 @@ export default {
     <div v-for="(i, k) in data" v-else :class="$props.class">
       <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
         <input v-model="model"
-               :id="ID+`_`+i.key"
+               :id="id+`_`+i.key"
                :class="inputClass"
                :value="i.key"
                :true-value="i.key"

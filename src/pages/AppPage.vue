@@ -179,14 +179,18 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
   })
 }
 
-function inputReloadQuery (value, ctx) {
+function inputReloadQuery (value, instance) {
+  const ctx = instance.ctx || instance
+
   const route = router.parse({
     query: Object.assign({}, $props.currentRoute['query'], { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
   })
   emit('action', 'pushRouter', route, () => submit({}, true))
 }
 
-function inputChangeQuery (value, ctx) {
+function inputChangeQuery (value, instance) {
+  const ctx = instance.ctx || instance
+
   const route = router.parse({
     query: Object.assign({}, $props.currentRoute['query'], { [ctx.emitInputKey ?? ctx._.vnode.key]: value })
   })

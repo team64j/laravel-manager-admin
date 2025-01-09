@@ -1,14 +1,13 @@
 <script setup>
-import Field from './Field.vue'
-import Template from '../Layout/Template.vue'
+import { props as _props } from '../../composables'
 
 defineOptions({
   name: 'Button',
-  __isStatic: true,
-  extends: Field
+  __isStatic: true
 })
 
 const props = defineProps({
+  ..._props,
   icon: String,
   type: {
     default: 'button'
@@ -23,7 +22,7 @@ const props = defineProps({
 
     <i v-if="icon" :class="icon" class="fa fa-fw"/>
 
-    <span v-if="value" v-html="value"></span>
+    <span v-if="value" v-html="value"/>
 
     <slot name="default"/>
 
