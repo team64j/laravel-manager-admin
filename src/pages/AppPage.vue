@@ -33,7 +33,7 @@ const $data = reactive({
 const loaded = ref(false)
 
 function _action () {
-  return action.call(currentInstance['ctx'], ...arguments)
+  return action.call(currentInstance, ...arguments)
 }
 
 function submit ({ action, method, route, stay } = {}, changed = false) {

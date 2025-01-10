@@ -180,15 +180,15 @@ export default {
 
       setValue(key, value)
 
-      if (instance?.relation?.['key']) {
+      if (instance.props?.relation?.['key']) {
         const empty = !(Array.isArray(value) ? value.length : (!isNaN(parseFloat(value))
             && !isNaN(value - 0)) ? parseFloat(value) : value)
 
-        setValue(instance.relation['key'],
-            empty ? instance.relation['falseValue'] : instance.relation['trueValue'])
+        setValue(instance.props.relation['key'],
+            empty ? instance.props.relation['falseValue'] : instance.props.relation['trueValue'])
 
-        if (empty && instance.relation['notEmpty']) {
-          nextTick(() => setValue(key, instance.trueValue))
+        if (empty && instance.props.relation['notEmpty']) {
+          nextTick(() => setValue(key, instance.props.trueValue))
         }
       }
 

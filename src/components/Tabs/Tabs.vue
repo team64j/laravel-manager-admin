@@ -49,7 +49,7 @@ const keyStorage = `tabs_${props.id.toLowerCase()}`
 const index = computed(() => store.getters.get(keyStorage, 0))
 
 function _action () {
-  return action.call(currentInstance['ctx'], ...arguments)
+  return action.call(currentInstance, ...arguments)
 }
 </script>
 

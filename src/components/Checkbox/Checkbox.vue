@@ -7,6 +7,8 @@ defineOptions({
   __isStatic: true
 })
 
+const currentInstance = getCurrentInstance()
+
 const emit = defineEmits(['action', 'update:modelValue'])
 
 const props = defineProps({
@@ -21,7 +23,7 @@ const model = computed({
     return props.modelValue
   },
   set (value) {
-    emit('update:modelValue', value, getCurrentInstance())
+    emit('update:modelValue', value, currentInstance)
   }
 })
 
