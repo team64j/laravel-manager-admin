@@ -1,9 +1,10 @@
 <script setup>
 import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
+import { action } from '../composables'
+import { isNumber } from '../utils'
 import router from '../router'
 import store from '../store'
-import Component from '../components/Layout/Component.vue'
-import { isNumber } from '../utils/is-number'
+import GlobalComponent from '../components/GlobalComponent/GlobalComponent.vue'
 
 defineOptions({
   name: 'AppPage'
@@ -31,12 +32,8 @@ const $data = reactive({
 
 const loaded = ref(false)
 
-function action () {
-  if (typeof currentInstance.exposed[arguments[0]] === 'function') {
-    currentInstance.exposed[arguments[0]](...Array.from(arguments).splice(1))
-  } else {
-    emit('action', ...arguments)
-  }
+function _action () {
+  return action.call(currentInstance['ctx'], ...arguments)
 }
 
 function submit ({ action, method, route, stay } = {}, changed = false) {
@@ -219,7 +216,7 @@ defineExpose({
 
 <template>
   <div class="app-page__default w-full h-full flex flex-col overflow-auto">
-    <Component v-if="loaded" v-bind="$data" @action="action" @update:modelValue="updateModelValue"/>
+    <global-component v-if="loaded" v-bind="$data" @action="_action" @update:modelValue="updateModelValue"/>
     <div v-else class="flex items-center justify-center grow">
       <div
           class="inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500"/>

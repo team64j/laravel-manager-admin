@@ -1,13 +1,16 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, getCurrentInstance } from 'vue'
+import { uniqId } from '../../utils'
+import { action } from '../../composables'
 import store from '../../store'
-import { uniqId } from '../../utils/uniq-id'
 import TabsNavigation from './TabsNavigation.vue'
 
 defineOptions({
   __isStatic: true,
   name: 'Tabs'
 })
+
+const currentInstance = getCurrentInstance()
 
 const props = defineProps({
   id: {
@@ -45,8 +48,8 @@ const keyStorage = `tabs_${props.id.toLowerCase()}`
 
 const index = computed(() => store.getters.get(keyStorage, 0))
 
-function action () {
-  emit('action', ...arguments)
+function _action () {
+  return action.call(currentInstance['ctx'], ...arguments)
 }
 </script>
 
@@ -58,7 +61,7 @@ function action () {
         'app-tabs__vertical': vertical
       }"
        class="app-tabs flex flex-col grow content-start overflow-hidden">
-    <TabsNavigation v-if="navigation" v-bind="props" @action="action"/>
+    <TabsNavigation v-if="navigation" v-bind="props" @action="_action"/>
 
     <template v-for="(i, k) in data">
       <div v-if="history || (i['needUpdate'] && k === index) || !i['needUpdate']"

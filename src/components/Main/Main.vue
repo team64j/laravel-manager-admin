@@ -14,10 +14,6 @@ const $emit = defineEmits(['action'])
 
 const resizer = ref(null)
 
-function action () {
-  this.$emit('action', ...arguments)
-}
-
 function onMousedownResizer (event) {
   resizer.value.addEventListener('mousemove', onMousemoveResizer)
   resizer.value.addEventListener('mouseup', onMouseupResizer)

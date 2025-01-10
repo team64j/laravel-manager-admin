@@ -3,7 +3,7 @@ import { compile, h, reactive, toRaw, watch } from 'vue'
 import draggable from 'vuedraggable'
 import router from '../../router'
 import store from '../../store'
-import { uniqId } from '../../utils/uniq-id'
+import { uniqId } from '../../utils'
 
 import('./Panel.css')
 

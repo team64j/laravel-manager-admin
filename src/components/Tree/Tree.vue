@@ -1,5 +1,6 @@
 <script>
 import { provide } from 'vue'
+import { action } from '../../composables'
 import TreeNode from './TreeNode.vue'
 import TreeMenuItem from './TreeMenuItem.vue'
 import router from '../../router'
@@ -97,13 +98,7 @@ export default {
     })
   },
   methods: {
-    action () {
-      if (typeof this[arguments[0]] === 'function') {
-        this[arguments[0]](...Array.from(arguments).splice(1))
-      } else {
-        this.$emit('action', ...arguments)
-      }
-    },
+    action,
     get (update) {
       const route = router.currentRoute.value
       this.loading = true

@@ -1,5 +1,4 @@
-import { computed, getCurrentInstance } from 'vue'
-import { uniqId } from '../utils/uniq-id'
+import { uniqId } from '../utils'
 
 export const props = {
   class: [Array, Object, String],
@@ -47,24 +46,4 @@ export const props = {
   itemNew: String
 }
 
-export const errorMessage = computed(() => {
-  if (props.error) {
-    if (Array.isArray(props.error)) {
-      return props.error.join(', ')
-    } else {
-      return props.error
-    }
-  }
-})
-
 export const ID = props.id || uniqId()
-
-export function action () {
-  const ctx = getCurrentInstance()
-
-  if (typeof this[arguments[0]] === 'function') {
-    this[arguments[0]](...Array.from(arguments).splice(1))
-  } else {
-    ctx.$emit('action', ...arguments)
-  }
-}

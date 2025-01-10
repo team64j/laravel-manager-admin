@@ -2,13 +2,15 @@
 import { compile, getCurrentInstance, h, nextTick } from 'vue'
 
 export default {
-  name: 'Component',
+  name: 'GlobalComponent',
   __isStatic: true,
   props: ['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url', 'currentRoute'],
   emits: ['action', 'update:modelValue', 'update:props'],
   setup (props, { emit }) {
-    function action (...args) {
-      emit('action', ...args)
+    const currentInstance = getCurrentInstance()
+
+    function action () {
+      return emit('action', ...arguments)
     }
 
     function layoutData (data) {
@@ -71,7 +73,7 @@ export default {
 
       try {
         component = app.$.appContext.components[data.component] ||
-            (data.component && (new Function('return ' + data.component + '')).call(getCurrentInstance()))
+            (data.component && (new Function('return ' + data.component + '')).call(currentInstance))
       } catch (exception) {
         return
       }

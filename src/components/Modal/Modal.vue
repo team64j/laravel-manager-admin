@@ -1,7 +1,8 @@
 <script setup>
-import Component from '../Layout/Component.vue'
-import router from '../../router'
 import { getCurrentInstance, reactive, shallowRef } from 'vue'
+import GlobalComponent from '../GlobalComponent/GlobalComponent.vue'
+import router from '../../router'
+import { action } from '../../composables'
 
 defineOptions({
   name: 'Modal',
@@ -24,12 +25,8 @@ const data = reactive({
 
 const modalElement = shallowRef()
 
-function action () {
-  if (typeof currentInstance.exposed[arguments[0]] === 'function') {
-    currentInstance.exposed[arguments[0]](...Array.from(arguments).splice(1))
-  } else {
-    emit('action', ...arguments)
-  }
+function _action () {
+  return action.call(currentInstance.exposed, ...arguments)
 }
 
 function open (opt) {
@@ -147,10 +144,10 @@ defineExpose({
             </button>
           </div>
           <div class="app-modal__main">
-            <Component v-if="data.componentLoaded"
+            <global-component v-if="data.componentLoaded"
                        v-bind="data.componentProps"
                        :currentRoute="data.currentRoute"
-                       @action="action"/>
+                       @action="_action"/>
           </div>
           <div class="app-modal__footer"/>
         </div>

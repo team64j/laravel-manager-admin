@@ -1,7 +1,7 @@
 <script>
 import router from '../router'
 import store from '../store'
-import Logo from '../components/Layout/Logo.vue'
+import Logo from '../components/Logo/Logo.vue'
 
 export default {
   name: 'LoginPage',

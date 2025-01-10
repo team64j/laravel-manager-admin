@@ -1,5 +1,6 @@
 <script setup>
 import { getCurrentInstance, onMounted } from 'vue'
+import { action } from '../../composables'
 import MainMenuItem from './MainMenuItem.vue'
 import router from '../../router'
 import store from '../../store'
@@ -154,12 +155,8 @@ function loadData (url, $props) {
   })
 }
 
-function action (...args) {
-  if (typeof currentInstance.exposed[args[0]] === 'function') {
-    currentInstance.exposed[args[0]](...Array.from(args).splice(1))
-  } else {
-    emit('action', ...args)
-  }
+function _action () {
+  return action.call(currentInstance.exposed, ...arguments)
 }
 
 onMounted(() => {
@@ -181,7 +178,7 @@ defineExpose({
 <template>
   <div class="app-main-menu" :class="{ 'app-main-menu__active': store.getters.get('app-main-menu__active') }">
     <ul>
-      <main-menu-item v-for="(i, k) in props.data" :data="i" :key="k" :level="1" @action="action"/>
+      <main-menu-item v-for="(i, k) in props.data" :data="i" :key="k" :level="1" @action="_action"/>
     </ul>
   </div>
 </template>

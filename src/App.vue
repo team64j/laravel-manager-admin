@@ -1,17 +1,18 @@
 <script setup>
 import { getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
-import { convertPixelsToRem, convertRemToPixels } from './utils/convert'
+import { convertPixelsToRem, convertRemToPixels } from './utils'
 import router from './router'
 import store from './store'
 import { Notifications, notify } from '@kyvg/vue3-notification'
 import GlobalTabs from './components/GlobalTabs/GlobalTabs.vue'
 import Datepicker from './components/Datepicker/Datepicker.vue'
-import Component from './components/Layout/Component.vue'
+import GlobalComponent from './components/GlobalComponent/GlobalComponent.vue'
 import Tooltip from './components/Tooltip/Tooltip.vue'
 import Search from './components/Search/Search.vue'
 import Modal from './components/Modal/Modal.vue'
-import Logo from './components/Layout/Logo.vue'
+import Logo from './components/Logo/Logo.vue'
 import { RouterView } from 'vue-router'
+import { action } from './composables'
 
 defineOptions({
   name: 'App'
@@ -112,12 +113,8 @@ function login () {
   router.to('/auth/login')
 }
 
-function action () {
-  if (typeof currentInstance.exposed[arguments[0]] === 'function') {
-    currentInstance.exposed[arguments[0]](...Array.from(arguments).splice(1))
-  } else {
-    emit('action', ...arguments)
-  }
+function _action () {
+  return action.call(currentInstance.exposed, ...arguments)
 }
 
 function bootstrap () {
@@ -447,38 +444,38 @@ defineExpose({
       <div
           class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
-          <Component :layout="data.layout['top.left']" @action="action"/>
+          <global-component :layout="data.layout['top.left']" @action="_action"/>
         </div>
         <div class="grow flex justify-between">
-          <Component :layout="data.layout['top']" @action="action"/>
+          <global-component :layout="data.layout['top']" @action="_action"/>
         </div>
         <div class="grow-0 flex app-position-end">
-          <Component :layout="data.layout['top.right']" @action="action"/>
+          <global-component :layout="data.layout['top.right']" @action="_action"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
             class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
           <div class="grow-0 flex">
-            <Component :layout="data.layout['left.top']" @action="action"/>
+            <global-component :layout="data.layout['left.top']" @action="_action"/>
           </div>
           <div class="grow flex items-center">
-            <Component :layout="data.layout['left']" @action="action"/>
+            <global-component :layout="data.layout['left']" @action="_action"/>
           </div>
           <div class="grow-0 flex app-position-end">
-            <Component :layout="data.layout['left.bottom']" @action="action"/>
+            <global-component :layout="data.layout['left.bottom']" @action="_action"/>
           </div>
         </div>
         <div ref="sidebarElement"
              :style="{ width: data.sidebarWidth + `rem` }"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark">
-          <Component :layout="data.layout['sidebar']" @action="action"/>
+          <global-component :layout="data.layout['sidebar']" @action="_action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>
         </div>
         <div class="grow flex flex-col overflow-hidden z-10 app-main">
-          <global-tabs :current-route="router.currentRoute.value" @action="action"/>
+          <global-tabs :current-route="router.currentRoute.value" @action="_action"/>
         </div>
       </div>
 

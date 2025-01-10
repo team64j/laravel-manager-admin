@@ -1,9 +1,10 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
+import { action } from '../../composables'
+import { mergeDeep } from '../../utils'
 import router from '../../router'
 import store from '../../store'
-import Frame from '../Layout/Frame.vue'
-import { mergeDeep } from '../../utils/merge-deep'
+import Frame from '../Frame/Frame.vue'
 
 export default {
   name: 'GlobalTabs',
@@ -42,13 +43,7 @@ export default {
     this.init()
   },
   methods: {
-    action () {
-      if (typeof this[arguments[0]] === 'function') {
-        this[arguments[0]](...Array.from(arguments).splice(1))
-      } else {
-        this.$emit('action', ...arguments)
-      }
-    },
+    action,
     init () {
       router.getRoutes().filter(i => i?.meta?.fixed).map(i => this.addTab(router.parse(i)))
     },

@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance, watch } from 'vue'
 import store from '../../store'
 import router from '../../router'
-import { uniqId } from '../../utils/uniq-id'
+import { uniqId } from '../../utils'
 
 defineOptions({
   __isStatic: true,
