@@ -9,7 +9,8 @@ export default {
   data () {
     return {
       form: {},
-      data: null,
+      config: {},
+      languages: [],
       connected: false,
       lang: {
         key: 'en',
@@ -37,7 +38,8 @@ export default {
   },
   methods: {
     checkServer () {
-      this.data = null
+      this.config = {}
+      this.languages = []
       this.connected = false
       this.errors = {}
       this.isCheckServer = true
@@ -54,19 +56,20 @@ export default {
           return
         }
 
-        this.data = r.data['data'] || {}
+        this.languages = r.data['data']?.['languages'] || []
+        this.config = r.data['data']?.['config'] || {}
 
-        if (this.data['siteName']) {
-          document.title = this.data['siteName'].toString()
+        if (this.config['siteName']) {
+          document.title = this.config['siteName']
         }
 
-        if (this.data['version']) {
+        if (this.config['version']) {
           this.connected = true
           this.$nextTick(() => this.$el.querySelector('[name="username"]').focus())
         }
 
-        if (this.data['languages']?.length) {
-          this.lang = this.data.languages.filter(
+        if (this.languages.length) {
+          this.lang = this.languages.filter(
               i => i.key === (store.getters.get('Storage.lang') || 'en'))[0] ?? {}
         }
 
@@ -139,18 +142,17 @@ export default {
         class="app__page__login-wrapper">
 
       <div class="app__page__login-logo">
-        <img v-if="data?.logo" :src="data.logo" alt="logo">
-        <logo v-else/>
+        <logo/>
         <h1>Evo Admin</h1>
       </div>
 
-      <div class="app__page__login-description">{{ data?.['siteName'] || `* * *` }}</div>
+      <div class="app__page__login-description">{{ config?.['siteName'] || ` ` }}</div>
 
       <div class="app__page__login-form-row">
-        <label for="hostname">Manager API</label>
+        <label for="hostname">API URL</label>
 
         <div class="app__page__login-form-group-api">
-          <div v-if="data?.languages?.length" class="app__page__login-form-group">
+          <div v-if="languages?.length" class="app__page__login-form-group">
             <button type="button"
                     class="rounded-r-none bg-transparent dark:bg-transparent"
                     @click="toggleModal('isShowLanguages')">
@@ -160,7 +162,7 @@ export default {
           <div class="app__page__login-form-group app__page__login-form-hostname">
             <input v-model="hostname" type="text" id="hostname"
                    class="rounded-r-none bg-transparent dark:bg-transparent"
-                   :class="{ '!border-rose-500 !z-10 !ring-rose-500':  errors['hostname'], 'rounded-l-none': data?.languages?.length }"
+                   :class="{ '!border-rose-500 !z-10 !ring-rose-500':  errors['hostname'], 'rounded-l-none': languages?.length }"
                    @keyup.enter="checkServer"
                    autocomplete="off">
           </div>
@@ -221,16 +223,16 @@ export default {
         </div>
       </template>
 
-      <div v-if="data?.version" class="app__page__login-form-row app__page__login-version">
-        {{ data.version }}
+      <div v-if="config?.['version']" class="app__page__login-form-row app__page__login-version">
+        {{ config['version'] }}
       </div>
 
       <transition>
-        <div v-if="isShowLanguages && data?.languages?.length" class="app__page__login-modal">
+        <div v-if="isShowLanguages && languages?.length" class="app__page__login-modal">
           <div class="app__page__login-modal-mask" @click="toggleModal('isShowLanguages')"/>
           <div class="app__page__login-modal-body">
             <i class="app__page__login-modal-close fa fa-close" @click="toggleModal('isShowLanguages')"/>
-            <div v-for="i in data.languages"
+            <div v-for="i in languages"
                  class="app__page__login-modal-row"
                  :class="{ 'app__page__login-modal-row-selected': lang.key === i.key }"
                  @click="selectLanguage(i)">

@@ -126,8 +126,8 @@ function bootstrap () {
 
   axios.post('/bootstrap').then((response) => {
     if (response.data['data']) {
-      if (response.data['data']?.['config']?.['site_name']) {
-        document.title = response.data['data']['config']['site_name']
+      if (response.data['data']?.['config']?.['siteName']) {
+        document.title = response.data['data']['config']['siteName']
       }
 
       store.dispatch('set', {

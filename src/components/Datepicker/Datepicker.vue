@@ -25,7 +25,7 @@ const style = ref(null)
 
 const yearOffset = 10
 
-const dateFormat = store.getters.get('config.datetime_format', 'dd-mm-YYYY')
+const dateFormat = store.getters.get('config.datetimeFormat', 'dd-mm-YYYY')
 
 const timeFormat = 'H:i:s'
 

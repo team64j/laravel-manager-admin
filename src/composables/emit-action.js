@@ -3,6 +3,8 @@ export function action () {
     this[arguments[0]](...Array.from(arguments).splice(1))
   } else if (typeof this?.['ctx']?.[arguments[0]] === 'function') {
     this['ctx'][arguments[0]](...Array.from(arguments).splice(1))
+  } else if (typeof this?.exposed?.[arguments[0]] === 'function') {
+    this?.exposed[arguments[0]](...Array.from(arguments).splice(1))
   } else if (typeof this['$emit'] === 'function') {
     this.$emit('action', ...arguments)
   } else if (typeof this.emit === 'function') {
