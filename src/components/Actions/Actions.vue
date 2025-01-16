@@ -43,7 +43,7 @@ function click (params, stay) {
     store.dispatch('Storage/set', ['stay', stay])
   }
 
-  emit('action', 'submit', { ...params, stay })
+  emit('action', 'submit', { ...params })
 }
 
 function clickGroup (event) {

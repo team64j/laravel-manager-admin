@@ -36,7 +36,7 @@ function _action () {
   return action.call(currentInstance, ...arguments)
 }
 
-function submit ({ action, method, route, stay } = {}, changed = false) {
+function submit ({ action, method, route } = {}, changed = false) {
   if (route) {
     route = router.parse(route)
   } else {
@@ -45,6 +45,7 @@ function submit ({ action, method, route, stay } = {}, changed = false) {
 
   const url = route?.['meta']?.['url'] ? route['meta']['url'] : route?.['path']
   const isNumericId = isNumber(route['params']['id'])
+  const stay = store.getters.get('Storage.stay')
 
   if (action === 'cancel') {
     emit('action', 'closeTab')
