@@ -35,7 +35,7 @@ const model = computed({
 })
 
 function onMousedown (event) {
-  emit('action', props.emitClick || 'mousedown:input', event, currentInstance)
+  props.emitClick && emit('action', props.emitClick, event, currentInstance)
 }
 
 function onClear (event) {

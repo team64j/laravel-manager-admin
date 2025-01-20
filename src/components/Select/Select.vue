@@ -83,7 +83,7 @@ function get (callback) {
 }
 
 function onUpdateModelValue (value) {
-  emit('action', props.emitInput || 'change:select', value, currentInstance)
+  props.emitInput && emit('action', props.emitInput, value, currentInstance)
 }
 
 function onFocus () {}
@@ -91,7 +91,6 @@ function onFocus () {}
 function onMousedown (event) {
   if (!props.url || event.target.classList.contains('opened')) {
     event.target.classList.toggle('opened')
-    emit('action', 'mousedown:select', event, currentInstance)
     return
   }
 
@@ -108,7 +107,6 @@ function onMousedown (event) {
     data.loading = false
     data.options = r.data.data
     event.target.classList.add('opened')
-    emit('action', 'mousedown:select', event, currentInstance)
   })
 }
 
@@ -138,7 +136,7 @@ function onChange (event) {
     target.dataset.value = target.value
   }
 
-  emit('action', props.emitInput || 'change:select', target.value, currentInstance)
+  props.emitInput && emit('action', props.emitInput, target.value, currentInstance)
 }
 
 function onInput (event) {

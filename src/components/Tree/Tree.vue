@@ -305,8 +305,15 @@ export default {
       }
     },
     buildContextMenu (event, node) {
-      this.idContextMenu = this.key(node)
-      this.showContextMenu = false
+      const key = this.key(node)
+
+      if (this.idContextMenu === key) {
+        this.idContextMenu = null
+        this.showContextMenu = false
+        return
+      }
+
+      this.idContextMenu = key
       this.dataContextMenu = []
       const contextMenu = node['contextMenu'] !== undefined ? node['contextMenu'] : this.contextMenu
 

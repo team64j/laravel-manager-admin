@@ -29,10 +29,6 @@ const model = computed({
   }
 })
 
-function onMousedown (event) {
-  emit('action', 'mousedown:input', event, currentInstance)
-}
-
 function onClick (event) {
   if (props.emitClick) {
     return emit('action', props.emitClick, event, currentInstance)
@@ -61,8 +57,7 @@ defineExpose({
              :class="inputClass"
              :readonly="readonly"
              type="text"
-             class="pr-8"
-             @mousedown="onMousedown">
+             class="pr-8">
       <i class="far absolute top-0 right-0 py-2.5 px-3 cursor-pointer text-gray-400 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
          :class="[ type === 'image' ? 'fa-file-image' : 'fa-file' ]"
          @click="onClick"/>
@@ -78,8 +73,7 @@ defineExpose({
              :class="inputClass"
              :readonly="readonly"
              type="text"
-             class="pr-8"
-             @mousedown="onMousedown">
+             class="pr-8">
       <i class="far absolute top-0 right-0 py-2.5 px-3 cursor-pointer text-gray-400 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
          :class="[ type === 'image' ? 'fa-file-image' : 'fa-file' ]"
          @click="onClick"/>
