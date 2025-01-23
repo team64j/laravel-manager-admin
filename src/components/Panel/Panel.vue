@@ -4,6 +4,7 @@ import draggable from 'vuedraggable'
 import router from '../../router'
 import store from '../../store'
 import { uniqId } from '../../utils'
+import { getValue } from '../../composables/value'
 
 import('./Panel.css')
 
@@ -287,7 +288,7 @@ export default {
       const key = column.key ?? column.name
 
       if (/\./.test(key)) {
-        return this.findValue(key.split('.'), item)
+        return getValue(key, item)
       }
 
       if (item[key]?.component) {

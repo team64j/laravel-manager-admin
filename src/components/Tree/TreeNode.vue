@@ -1,6 +1,7 @@
 <script setup>
 import { computed, inject, reactive } from 'vue'
 import router from '../../router'
+import { getValue } from '../../composables/value'
 
 const props = defineProps({
   id: [String, Number],
@@ -24,13 +25,13 @@ const title = computed(() => {
         : [data.config['aliases']['title']]
 
     for (const i of aliases) {
-      if (props.node[i] !== undefined) {
-        return props.node[i]
+      if (props.node?.['attributes']?.[i] !== undefined) {
+        return props.node['attributes'][i]
       }
     }
   }
 
-  return props.node['title'] ?? props.node[keyTitle] ?? props.node[keyId]
+  return props.node['title'] ?? props.node?.['attributes']?.[keyTitle] ?? props.node[keyId]
 })
 
 const icon = computed(() => {
@@ -130,21 +131,21 @@ const className = computed(() => {
 })
 
 const tooltip = computed(() => {
-  const template = typeof props.node?.['templates'] !== undefined
+  const template = props.node?.['templates'] !== undefined
       ? (props.node?.['templates']?.['title'] || '')
       : data.config['templates']?.['title']
 
   if (template) {
     const cleanKeys = true
     return template.replace(/\{([\w.]*)}/g, (str, key) => {
-      const value = typeof props.node[key] !== undefined ? props.node[key] : ''
+      const value = getValue(key, props.node)
       return (value === null || value === undefined) ? (cleanKeys ? '' : str) : value.toString().
           replace(/&/g, '&amp;').
           replace(/</g, '&lt;').
           replace(/>/g, '&gt;').
           replace(/"/g, '&quot;').
           replace(/'/g, '&#039;')
-    })
+    }).replace(/\r\n/g, '<br>')
   }
 })
 

@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import { getValue } from '../composables/value'
 
 const state = {}
 
@@ -80,7 +81,7 @@ const getters = {
       const nameStore = keys.shift()
 
       if (state[nameStore] !== undefined) {
-        return findValue(keys, state[nameStore]) ?? def
+        return getValue(keys, state[nameStore]) ?? def
       }
     }
 
@@ -94,22 +95,6 @@ Object.entries(import.meta.glob('./*.js', { eager: true })).forEach(([path, defi
   const name = path.split('/').pop().replace(/\.\w+$/, '')
   modules[name] = definition.default
 })
-
-function findValue (keys, data) {
-  const key = keys[0]
-  let value
-
-  if (data[key] !== undefined) {
-    if (keys[1] !== undefined) {
-      keys.shift()
-      value = findValue(keys, data[key])
-    } else {
-      value = data[key]
-    }
-  }
-
-  return value
-}
 
 export default createStore({
   state,

@@ -28,7 +28,7 @@ if (props.data['values']) {
       @mouseenter="$emit('action', 'onEnter', $event, props)"
       @click.stop="$emit('action', 'onClick', $event, props)">
 
-    <div v-if="data['prev'] || data['next']" class="py-1 -mb-1 !bg-inherit">
+    <div v-if="data['prev'] || data['next']" class="py-1 !bg-inherit">
       <button type="button" class="-ml-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
               @click.stop="$emit('action', 'onNav', $event, data['prev'], currentInstance.parent.props)">

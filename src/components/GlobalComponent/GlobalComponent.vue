@@ -1,5 +1,6 @@
 <script>
 import { compile, getCurrentInstance, h, nextTick } from 'vue'
+import { getValue } from '../../composables/value'
 
 export default {
   name: 'GlobalComponent',
@@ -16,13 +17,11 @@ export default {
     function layoutData (data) {
       for (let i in data) {
         if (typeof data[i]?.data === 'string') {
-          const keys = data[i].data.split('.')
-
           if (!data[i].attrs) {
             data[i].attrs = {}
           }
 
-          data[i].attrs.modelValue = findValue(keys, props)
+          data[i].attrs.modelValue = getValue(data[i].data, props)
           data[i].attrs.onAction = action
         } else if (data[i]?.slots) {
           data[i].slots = layoutData(data[i].slots)
@@ -100,7 +99,7 @@ export default {
       } else if (props.data?.[attrs.key] !== undefined) {
         attrs.modelValue = props.data[attrs.key]
       } else if (attrs.key.includes('.')) {
-        attrs.modelValue = findValue(attrs.key.split('.'), props)
+        attrs.modelValue = getValue(attrs.key, props)
       } else {
         attrs.modelValue = data?.attrs?.value
       }
