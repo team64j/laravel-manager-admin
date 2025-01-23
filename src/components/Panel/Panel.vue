@@ -4,7 +4,7 @@ import draggable from 'vuedraggable'
 import router from '../../router'
 import store from '../../store'
 import { uniqId } from '../../utils'
-import { getValue } from '../../composables/value'
+import { getValue } from '../../composables'
 
 import('./Panel.css')
 

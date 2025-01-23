@@ -1,6 +1,6 @@
 <script>
 import { compile, getCurrentInstance, h, nextTick } from 'vue'
-import { getValue } from '../../composables/value'
+import { getValue } from '../../composables'
 
 export default {
   name: 'GlobalComponent',

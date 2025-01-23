@@ -1,7 +1,7 @@
 <script setup>
 import { computed, inject, reactive } from 'vue'
 import router from '../../router'
-import { getValue } from '../../composables/value'
+import { getValue } from '../../composables'
 
 const props = defineProps({
   id: [String, Number],
