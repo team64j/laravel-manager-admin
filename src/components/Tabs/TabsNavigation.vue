@@ -133,7 +133,7 @@ if (props.history) {
         }
     )
   } else {
-    index.value = props.data.findIndex(i => router.parse(i?.route)['path'] === props.currentRoute.path)
+    index.value = props.data.findIndex(i => router.parse(i?.route)?.['path'] === props.currentRoute.path)
 
     watch(
         () => props.currentRoute.path,
