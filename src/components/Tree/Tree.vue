@@ -63,15 +63,15 @@ export default {
       if (store.state['route'] === route['path']) {
         switch (store.state['action']) {
           case 'create':
-            this.createNode(store.state['data']['attributes'] ?? store.state['data'], this.data)
+            this.createNode(store.state['data'], this.data)
             break
 
           case 'update':
-            this.updateNode(store.state['data']['attributes'] ?? store.state['data'], this.data)
+            this.updateNode(store.state['data'], this.data)
             break
 
           case 'delete':
-            this.deleteNode(store.state['data']['attributes'] ?? store.state['data'], this.data)
+            this.deleteNode(store.state['data'], this.data)
             break
         }
       }

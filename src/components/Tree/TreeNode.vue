@@ -31,7 +31,7 @@ const title = computed(() => {
     }
   }
 
-  return props.node['title'] ?? props.node?.['attributes']?.[keyTitle] ?? props.node[keyId]
+  return props.node?.['attributes']?.[keyTitle] ?? props.node['title'] ?? props.node[keyId]
 })
 
 const icon = computed(() => {
@@ -59,6 +59,30 @@ const icon = computed(() => {
 const className = computed(() => {
   const c = []
 
+  if (data.config['aliases']) {
+    for (const a in data.config['aliases']) {
+      const aliases = typeof data.config['aliases'][a] === 'object'
+          ? data.config['aliases'][a]
+          : [data.config['aliases'][a]]
+      let key, value
+
+      for (const i of aliases) {
+        [key, value] = /:/.test(i) ? i.split(':', 2) : [i, props.node?.['attributes']?.[key]]
+
+        if (value !== undefined) {
+          if (/^-?[\d.]+(?:e-?\d+)?$/.test(value)) {
+            value = parseInt(value)
+          } else if (['true', 'false'].includes(value)) {
+            value = value === 'true'
+          }
+        }
+
+        props.node[a] = props.node?.['attributes']?.[key] !== undefined &&
+            (props.node?.['attributes']?.[key] === value || value === undefined)
+      }
+    }
+  }
+
   if (props.node['selected']) {
     c.push('app-tree__node-selected')
   }
@@ -71,36 +95,8 @@ const className = computed(() => {
     c.push('app-tree__node-muted')
   }
 
-  if (data.config['aliases']) {
-    for (const a in data.config['aliases']) {
-      const aliases = typeof data.config['aliases'][a] === 'object'
-          ? data.config['aliases'][a]
-          : [data.config['aliases'][a]]
-      let key, value
-
-      for (const i of aliases) {
-        [key, value] = i.split(':', 2)
-
-        if (value !== undefined) {
-          if (/^-?[\d.]+(?:e-?\d+)?$/.test(value)) {
-            value = parseInt(value)
-          } else if (['true', 'false'].includes(value)) {
-            value = value === 'true'
-          }
-        }
-
-        if ((props.node[key] !== undefined && (value !== undefined && props.node[key] === value)) ||
-            (props.node[key] && value === undefined)) {
-          if (a === 'selected') {
-            c.push('app-tree__node-selected')
-          } else if (a === 'deleted') {
-            c.push('app-tree__node-deleted')
-          } else if (a === 'muted') {
-            c.push('app-tree__node-muted')
-          }
-        }
-      }
-    }
+  if (props.node['locked']) {
+    c.push('app-tree__node-locked')
   }
 
   const route = router.currentRoute.value
