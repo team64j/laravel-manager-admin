@@ -385,7 +385,7 @@ document.addEventListener('mousedown', () => {
   @apply !bg-blue-600 !text-white
 }
 .app-datepicker select, .app-datepicker input, .app-datepicker button {
-  @apply py-0.5 px-1
+  @apply py-0.5 px-1 h-auto
 }
 .app-datepicker button {
   @apply w-full justify-center

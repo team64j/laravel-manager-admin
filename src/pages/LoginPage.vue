@@ -154,7 +154,7 @@ export default {
         <div class="app__page__login-form-group-api">
           <div v-if="languages?.length" class="app__page__login-form-group">
             <button type="button"
-                    class="btn-lg rounded-r-none bg-transparent dark:bg-transparent"
+                    class="btn-lg rounded-r-none !bg-transparent"
                     @click="toggleModal('isShowLanguages')">
               {{ lang.key?.toUpperCase() }}
             </button>
@@ -168,14 +168,14 @@ export default {
           </div>
           <div v-if="hostnames.length" class="app__page__login-form-group">
             <button type="button"
-                    class="btn-lg rounded-none bg-transparent dark:bg-transparent"
+                    class="btn-lg rounded-none !bg-transparent"
                     @click="toggleModal('isShowHostnames')">
               <i class="fa fa-ellipsis fa-fw"/>
             </button>
           </div>
           <div class="app__page__login-form-group">
             <button type="button"
-                    class="btn-lg rounded-l-none bg-transparent dark:bg-transparent"
+                    class="btn-lg rounded-l-none !bg-transparent"
                     :disabled="isCheckServer"
                     @click="checkServer">
               <i class="fa fa-globe fa-fw"
@@ -193,7 +193,7 @@ export default {
                  type="text"
                  id="username"
                  name="username"
-                 class="input-lg bg-transparent dark:bg-transparent"
+                 class="input-lg !bg-transparent"
                  :class="{ '!border-rose-500 !z-10': errors['username'] }"
                  autocomplete="username"
                  @keyup.enter="login">
@@ -204,14 +204,14 @@ export default {
           <input v-model="form['password']" type="password"
                  id="password"
                  name="password"
-                 class="input-lg bg-transparent dark:bg-transparent"
+                 class="input-lg !bg-transparent"
                  :class="{ '!border-rose-500 !z-10': errors['password'] }"
                  @keyup.enter="login">
         </div>
 
         <div class="app__page__login-form-row app__page__login-form-row-login">
           <div>
-            <input v-model="form['remember']" type="checkbox" id="remember" name="remember">
+            <input v-model="form['remember']" type="checkbox" id="remember" name="remember" class="!bg-transparent">
             <label for="remember">{{ lang.remember }}</label>
           </div>
           <div>

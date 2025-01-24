@@ -35,9 +35,23 @@ const model = computed({
   }
 })
 
-const inputValue = computed(() => props.data.filter(
-    i => i['selected'] || i['key'] !== null && props.modelValue !== null ? i['key'].toString() ===
-        props.modelValue.toString() : i['key'] === props.modelValue).map(i => i['value']).join(', '))
+const inputValue = computed(() => {
+  const values = []
+
+  data.options?.forEach(i => {
+    if (i.data) {
+      values.push(...i.data)
+    } else {
+      values.push(i)
+    }
+  })
+
+  const value = model.value !== null ? model.value.toString() : model.value
+
+  return values.filter(i => {
+    return i['selected'] || (i['key'] !== null && value !== null ? i['key'].toString() === value : i['key'] === value)
+  }).map(i => i['value']).join(', ')
+})
 
 function get (callback) {
   data.loading = true
@@ -82,6 +96,10 @@ function onMousedown (event) {
   })
 }
 
+function onUpdateModelValue (value) {
+  props.emitInput && emit('action', props.emitInput, value, currentInstance)
+}
+
 if (props.load && props.url) {
   get()
 }
@@ -98,10 +116,6 @@ if (props.load && props.url) {
       <slot name="label"/>
     </div>
     <div class="relative">
-      <!--      <div v-if="data.loading" class="absolute z-10 left-2 top-2">
-              <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-            </div>-->
-
       <template v-if="multiple">
         <input type="text"
                :value="inputValue"
@@ -145,21 +159,13 @@ if (props.load && props.url) {
       </template>
 
       <template v-else>
-        <!--        <input type="text"
-                       :value="inputValue"
-                       :id="id"
-                       ref="input"
-                       readonly
-                       class="app-appearance-select cursor-pointer select-none"
-                       :placeholder="placeholder"/>-->
-
-        <button :id="id" class="app-appearance-select cursor-pointer select-none" @mousedown="onMousedown">
+        <button :id="id" class="app-appearance-select flex cursor-pointer select-none items-center" @mousedown="onMousedown">
           <i v-if="data.loading"
-             class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-          <span v-else>{{ inputValue || placeholder }}</span>
+             class="pointer-events-none inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+          <span v-else class="pointer-events-none truncate">{{ inputValue || placeholder }}</span>
         </button>
 
-        <div
+        <div v-if="data.options?.length"
             class="absolute z-20 left-0 top-full w-full border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default opacity-0 invisible"
             @mousedown.prevent="">
 
@@ -171,8 +177,9 @@ if (props.load && props.url) {
                   :data="o['data']"
                   false-value=""
                   class="pl-0.5 pt-[1px] last:pb-[1px]"
-                  label-class="w-full pl-5"
-                  :as-button="true"/>
+                  label-class="w-full h-8 pl-5"
+                  :as-button="true"
+                  @update:modelValue="onUpdateModelValue"/>
             </template>
 
             <radio-component
@@ -181,8 +188,9 @@ if (props.load && props.url) {
                 :data="[o]"
                 false-value=""
                 class="pl-0.5 pt-[1px] last:pb-[1px]"
-                label-class="w-full pl-2"
-                :as-button="true"/>
+                label-class="w-full h-8 pl-2"
+                :as-button="true"
+                @update:modelValue="onUpdateModelValue"/>
           </template>
         </div>
       </template>

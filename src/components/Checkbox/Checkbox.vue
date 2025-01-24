@@ -118,7 +118,7 @@ defineExpose({
 
 <style scoped>
 .label-as-button {
-  @apply relative px-2
+  @apply relative px-2 py-1
 }
 .label-as-button input {
   @apply absolute z-[-1] left-0 top-0 w-full h-full m-0 p-0 rounded bg-none border-none
