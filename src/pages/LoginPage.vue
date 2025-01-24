@@ -161,7 +161,7 @@ export default {
           </div>
           <div class="app__page__login-form-group app__page__login-form-hostname">
             <input v-model="hostname" type="text" id="hostname"
-                   class="input-lg rounded-r-none bg-transparent dark:bg-transparent"
+                   class="input-lg rounded-r-none !bg-transparent"
                    :class="{ '!border-rose-500 !z-10 !ring-rose-500':  errors['hostname'], 'rounded-l-none': languages?.length }"
                    @keyup.enter="checkServer"
                    autocomplete="off">

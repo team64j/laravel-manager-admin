@@ -39,30 +39,30 @@ const inputValue = computed(() => {
   const values = []
 
   data.options?.forEach(i => {
-    if (i.data) {
-      values.push(...i.data)
+    if (i['data']) {
+      values.push(...i['data'])
     } else {
       values.push(i)
     }
   })
 
-  const value = model.value !== null ? model.value.toString() : model.value
+  const value = !Array.isArray(model.value) || model.value !== null ? model.value.toString() : model.value
 
-  return values.filter(i => {
-    return i['selected'] || (i['key'] !== null && value !== null ? i['key'].toString() === value : i['key'] === value)
-  }).map(i => i['value']).join(', ')
+  return values.filter(i => Array.isArray(value) ? value.includes(i.key) : value === (i.key !== null ? i.key.toString() : i.key)).map(i => i.value).join(', ')
+
+  // const value = model.value !== null ? model.value.toString() : model.value
+  //
+  // return values.filter(i => {
+  //   return i['selected'] || (i['key'] !== null && value !== null ? i['key'].toString() === value : i['key'] === value)
+  // }).map(i => i['value']).join(', ')
 })
 
 function get (callback) {
   data.loading = true
 
-  if (props.multiple) {
-    model.value = Array.isArray(model.value) ? model.value : [model.value]
-  }
-
   props.url && axios.get(props.url, {
     params: {
-      selected: model.value
+      selected: Array.isArray(model.value) ? model.value : [model.value]
     }
   }).then(r => {
     data.loading = false
@@ -80,19 +80,10 @@ function onMousedown (event) {
     return
   }
 
-  event.target.dataset.value = event.target.value || model.value
-
-  data.loading = true
   data.options = null
 
-  axios.get(props.url, {
-    params: {
-      selected: event.target.value
-    }
-  }).then(r => {
-    data.loading = false
-    data.options = r.data.data
-    event.target.classList.add('opened')
+  get(() => {
+
   })
 }
 
@@ -159,33 +150,23 @@ if (props.load && props.url) {
       </template>
 
       <template v-else>
-        <button :id="id" class="app-appearance-select flex cursor-pointer select-none items-center" @mousedown="onMousedown">
+        <button :id="id" class="app-appearance-select flex cursor-pointer select-none font-normal items-center" @mousedown="onMousedown">
           <i v-if="data.loading"
              class="pointer-events-none inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-          <span v-else class="pointer-events-none truncate">{{ inputValue || placeholder }}</span>
+          <span v-else class="pointer-events-none truncate">
+            {{ inputValue || placeholder }}
+          </span>
         </button>
 
         <div v-if="data.options?.length"
-            class="absolute z-20 left-0 top-full w-full border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default opacity-0 invisible"
+            class="absolute z-20 left-0 top-full right-0 mt-1 p-2 rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default opacity-0 invisible"
             @mousedown.prevent="">
 
           <template v-for="o in data.options">
-            <template v-if="o?.data">
-              <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
-              <radio-component
-                  v-model="model"
-                  :data="o['data']"
-                  false-value=""
-                  class="pl-0.5 pt-[1px] last:pb-[1px]"
-                  label-class="w-full h-8 pl-5"
-                  :as-button="true"
-                  @update:modelValue="onUpdateModelValue"/>
-            </template>
-
+            <div v-if="o.name" class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
             <radio-component
-                v-else
                 v-model="model"
-                :data="[o]"
+                :data="o['data'] ?? [o]"
                 false-value=""
                 class="pl-0.5 pt-[1px] last:pb-[1px]"
                 label-class="w-full h-8 pl-2"

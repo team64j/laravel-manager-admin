@@ -110,6 +110,7 @@ defineExpose({
                :false-value="falseValue"
                type="checkbox"
                class="mr-2">
+        <i class="fa fa-fw fa-check mr-1"/>
         <span class="truncate">{{ i.value }}</span>
       </label>
     </div>
@@ -126,7 +127,10 @@ defineExpose({
 .label-as-button input:hover:not(:checked) {
   @apply bg-slate-200 dark:bg-gray-600
 }
-.label-as-button input:checked ~ span {
-  @apply text-white
+.label-as-button input ~ i {
+  @apply invisible
+}
+.label-as-button input:checked ~ span, .label-as-button input:checked ~ i {
+  @apply text-white visible
 }
 </style>
