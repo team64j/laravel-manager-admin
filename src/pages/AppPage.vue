@@ -112,9 +112,9 @@ function submit ({ action, method, route } = {}, changed = false) {
 
           store.dispatch('set', {
             action,
-            data: r.data['data']?.['attributes'] ? markRaw(r.data['data']) : {
+            data: r.data['data']?.['attributes'] ? r.data['data'] : {
               id: r.data['data']['id'],
-              attributes: markRaw(r.data['data'])
+              attributes: r.data['data']
             },
             route: $props.currentRoute['path'],
             actionUpdate: Date.now()

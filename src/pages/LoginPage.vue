@@ -154,28 +154,28 @@ export default {
         <div class="app__page__login-form-group-api">
           <div v-if="languages?.length" class="app__page__login-form-group">
             <button type="button"
-                    class="rounded-r-none bg-transparent dark:bg-transparent"
+                    class="btn-lg rounded-r-none bg-transparent dark:bg-transparent"
                     @click="toggleModal('isShowLanguages')">
               {{ lang.key?.toUpperCase() }}
             </button>
           </div>
           <div class="app__page__login-form-group app__page__login-form-hostname">
             <input v-model="hostname" type="text" id="hostname"
-                   class="rounded-r-none bg-transparent dark:bg-transparent"
+                   class="input-lg rounded-r-none bg-transparent dark:bg-transparent"
                    :class="{ '!border-rose-500 !z-10 !ring-rose-500':  errors['hostname'], 'rounded-l-none': languages?.length }"
                    @keyup.enter="checkServer"
                    autocomplete="off">
           </div>
           <div v-if="hostnames.length" class="app__page__login-form-group">
             <button type="button"
-                    class="rounded-none bg-transparent dark:bg-transparent"
+                    class="btn-lg rounded-none bg-transparent dark:bg-transparent"
                     @click="toggleModal('isShowHostnames')">
               <i class="fa fa-ellipsis fa-fw"/>
             </button>
           </div>
           <div class="app__page__login-form-group">
             <button type="button"
-                    class="rounded-l-none bg-transparent dark:bg-transparent"
+                    class="btn-lg rounded-l-none bg-transparent dark:bg-transparent"
                     :disabled="isCheckServer"
                     @click="checkServer">
               <i class="fa fa-globe fa-fw"
@@ -193,7 +193,7 @@ export default {
                  type="text"
                  id="username"
                  name="username"
-                 class="bg-transparent dark:bg-transparent"
+                 class="input-lg bg-transparent dark:bg-transparent"
                  :class="{ '!border-rose-500 !z-10': errors['username'] }"
                  autocomplete="username"
                  @keyup.enter="login">
@@ -204,7 +204,7 @@ export default {
           <input v-model="form['password']" type="password"
                  id="password"
                  name="password"
-                 class="bg-transparent dark:bg-transparent"
+                 class="input-lg bg-transparent dark:bg-transparent"
                  :class="{ '!border-rose-500 !z-10': errors['password'] }"
                  @keyup.enter="login">
         </div>
@@ -215,7 +215,7 @@ export default {
             <label for="remember">{{ lang.remember }}</label>
           </div>
           <div>
-            <button type="button" class="btn-green" :disabled="isLogin" @click="login">
+            <button type="button" class="btn-lg btn-green" :disabled="isLogin" @click="login">
               <span :class="{ 'opacity-0': isLogin }">{{ lang.login }}</span>
               <i v-if="isLogin" class="app__page__login-loader"/>
             </button>
