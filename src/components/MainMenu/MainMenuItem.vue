@@ -25,10 +25,9 @@ if (props.data['values']) {
         'app-main-menu__filter': data['filter'] !== undefined
       }"
       @mouseleave="$emit('action', 'onOut', $event, props)"
-      @mouseenter="$emit('action', 'onEnter', $event, props)"
-      @click.stop="$emit('action', 'onClick', $event, props)">
+      @mouseenter="$emit('action', 'onEnter', $event, props)">
 
-    <div v-if="data['prev'] || data['next']" class="py-1 !bg-inherit">
+    <div v-if="data['prev'] || data['next']" class="py-1 !bg-inherit" @click.stop="">
       <button type="button" class="-ml-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
               @click.stop="$emit('action', 'onNav', $event, data['prev'], currentInstance.parent.props)">
@@ -59,7 +58,7 @@ if (props.data['values']) {
          @click="$emit('action', 'onFilterClear', $event, currentInstance.parent.props)"/>
     </div>
 
-    <div v-else :data-tooltip="data['title']">
+    <div v-else :data-tooltip="data['title']" @click.stop="$emit('action', 'onClick', $event, props)">
       <span :class="{ 'w-8': level > 1, 'lg:mr-2': data['name'] && level === 1 }"
             class="grow-0 shrink-0 flex items-center">
         <i v-if="data['loading']"
