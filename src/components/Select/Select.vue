@@ -150,84 +150,50 @@ if (props.load && props.url) {
       <slot name="label"/>
     </div>
     <div class="relative">
-      <template v-if="multiple">
-        <input type="text"
-               :value="inputValue"
-               :id="id"
-               ref="input"
-               readonly
-               class="block relative w-full px-3 py-1 rounded app-appearance-select cursor-pointer"
-               :placeholder="placeholder"
-               @mousedown="onMousedown"
-               @focus="onFocus"
-               @blur="onBlur"/>
-        <div
-            class="absolute z-20 left-0 top-full w-full hidden border border-blue-500 mt-0 bg-white dark:bg-gray-800 shadow-md max-h-48 overflow-auto cursor-default"
-            @click="onClickMultipleList"
-            @mousedown.prevent="onClickMultipleList">
+      <div v-if="itemNew === model">
+        <input type="text" :id="`input-`+id" :class="{ '!border-rose-500': error }" autofocus @input="onInput"/>
+        <i class="fa fa-circle-xmark absolute top-3 right-3 cursor-pointer" @click="onClickClear"/>
+      </div>
+      <button v-show="itemNew !== model"
+              :id="id"
+              ref="input"
+              class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
+              @focus="onFocus"
+              @blur="onBlur"
+              @mousedown="onMousedown">
+        <i v-if="data.loading"
+           class="pointer-events-none inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+        <span v-else class="pointer-events-none truncate">
+          {{ inputValue || placeholder }}
+        </span>
+      </button>
 
-          <template v-for="o in data.options">
-            <template v-if="o?.data">
-              <div class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
-              <checkbox-component
-                  v-model="model"
-                  :data="o.data"
-                  @update:modelValue="onUpdateModelValue"
-                  false-value=""
-                  class="pl-0.5 pt-[1px] last:pb-[1px]"
-                  label-class="w-full pl-5"
-                  :as-button="true"/>
-            </template>
+      <div v-if="data.options?.length"
+           class="absolute z-20 left-0 top-full right-0 mt-1 p-2 rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default opacity-0 invisible"
+           @mousedown.prevent="">
 
-            <checkbox-component
-                v-else
-                v-model="model"
-                :data="[o]"
-                @update:modelValue="onUpdateModelValue"
-                false-value=""
-                class="pl-0.5 pt-[1px] last:pb-[1px]"
-                label-class="w-full pl-2"
-                :as-button="true"/>
-          </template>
-        </div>
-      </template>
-
-      <template v-else>
-        <div v-if="itemNew === model">
-          <input type="text" :id="`input-`+id" :class="{ '!border-rose-500': error }" autofocus @input="onInput"/>
-          <i class="fa fa-circle-xmark absolute top-3 right-3 cursor-pointer" @click="onClickClear"/>
-        </div>
-        <button v-show="itemNew !== model"
-                :id="id"
-                ref="input"
-                class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
-                @focus="onFocus"
-                @blur="onBlur"
-                @mousedown="onMousedown">
-          <i v-if="data.loading"
-             class="pointer-events-none inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-          <span v-else class="pointer-events-none truncate">
-            {{ inputValue || placeholder }}
-          </span>
-        </button>
-
-        <div v-if="data.options?.length"
-             class="absolute z-20 left-0 top-full right-0 mt-1 p-2 rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default opacity-0 invisible"
-             @mousedown.prevent="">
-
-          <template v-for="o in data.options">
-            <div v-if="o.name" class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
-            <radio-component
-                v-model="model"
-                :data="o['data'] ?? [o]"
-                false-value=""
-                class="pl-0.5 pt-[1px] last:pb-[1px]"
-                label-class="w-full h-8 pl-2"
-                :as-button="true"
-                @update:modelValue="onUpdateModelValue"/>
-          </template>
-        </div>
-      </template>
+        <template v-for="o in data.options">
+          <div v-if="o.name" class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
+          <checkbox-component
+              v-if="multiple"
+              v-model="model"
+              :data="o['data'] ?? [o]"
+              false-value=""
+              class="pl-0.5 pt-[1px] last:pb-[1px]"
+              label-class="w-full h-8 pl-2"
+              :as-button="true"
+              @update:modelValue="onUpdateModelValue"/>
+          <radio-component
+              v-else
+              v-model="model"
+              :data="o['data'] ?? [o]"
+              false-value=""
+              class="pl-0.5 pt-[1px] last:pb-[1px]"
+              label-class="w-full h-8 pl-2"
+              :as-button="true"
+              @update:modelValue="onUpdateModelValue"/>
+        </template>
+      </div>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
   </div>
