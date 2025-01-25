@@ -5,11 +5,12 @@ import router from '../../router'
 import store from '../../store'
 import { uniqId } from '../../utils'
 import { getValue } from '../../composables'
+import Select from '../Select/Select.vue'
 
 import('./Panel.css')
 
 export default {
-  components: { draggable },
+  components: { Select, draggable },
   __isStatic: true,
   name: 'Panel',
   emits: ['action', 'update:props', 'update:modelValue'],

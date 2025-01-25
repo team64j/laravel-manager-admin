@@ -13,13 +13,13 @@
 .app-panel .app-panel__data thead tr:first-of-type div {
     @apply px-2 py-1 first:pl-6 last:pr-6 truncate
 }
-.app-panel .app-panel__data .app-panel__filters div {
+.app-panel .app-panel__data .app-panel__filters th > div {
     @apply relative flex p-0
 }
-.app-panel .app-panel__data .app-panel__filters input, .app-panel .app-panel__data .app-panel__filters select {
+.app-panel .app-panel__data .app-panel__filters th > div > input, .app-panel .app-panel__data .app-panel__filters th > div > select {
     @apply py-0 px-1 mx-0.5 h-6 border-none font-normal focus:ring-2
 }
-.app-panel .app-panel__data .app-panel__filters input + i {
+.app-panel .app-panel__data .app-panel__filters th > div > input + i {
     @apply absolute top-1 right-2 text-rose-600 cursor-pointer
 }
 .app-panel .app-panel__data thead > tr > th, .app-panel .app-panel__data thead > tr > td {

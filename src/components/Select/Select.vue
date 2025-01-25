@@ -63,35 +63,34 @@ const inputValue = computed(() => {
 })
 
 function get (callback) {
-  data.loading = true
+  if (props.url) {
+    data.loading = true
+    data.options = []
 
-  props.url && axios.get(props.url, {
-    params: {
-      selected: Array.isArray(model.value) ? model.value : [model.value]
-    }
-  }).then(r => {
-    data.loading = false
-    data.options = r.data.data
+    axios.get(props.url, {
+      params: {
+        selected: Array.isArray(model.value) ? model.value : [model.value]
+      }
+    }).then(r => {
+      data.loading = false
+      data.options = r.data.data
 
-    if (callback) {
-      callback()
-    }
-  })
+      if (callback) {
+        callback()
+      }
+    })
+  }
 }
 
 function onMousedown (event) {
-  if (!props.url || event.target.classList.contains('app-select__focus')) {
+  if (event.target.classList.contains('app-select__focus')) {
     event.target.blur()
     event.stopPropagation()
     event.preventDefault()
     return false
   }
 
-  data.options = []
-
-  get(() => {
-
-  })
+  get(() => {})
 }
 
 function onFocus (event) {
