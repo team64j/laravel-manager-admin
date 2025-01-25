@@ -1,6 +1,7 @@
 <script setup>
 import { getCurrentInstance } from 'vue'
 import store from '../../store'
+import Button from '../Button/Button.vue'
 
 const currentInstance = getCurrentInstance()
 const props = defineProps(['data', 'level'])
@@ -28,19 +29,19 @@ if (props.data['values']) {
       @mouseenter="$emit('action', 'onEnter', $event, props)">
 
     <div v-if="data['prev'] || data['next']" class="py-1 !bg-inherit" @click.stop="">
-      <button type="button" class="-ml-2 btn-sm btn-gray"
+      <Button type="button" class="-ml-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
               @click.stop="$emit('action', 'onNav', $event, data['prev'], currentInstance.parent.props)">
         <i class="fa fa-angle-left fa-fw"/>
-      </button>
+      </Button>
       <span class="grow truncate text-center py-1.5 text-sm text-blue-400">
           {{ data['info'] }}
         </span>
-      <button type="button" class="-mr-2 btn-sm btn-gray"
+      <Button type="button" class="-mr-2 btn-sm btn-gray"
               :class="{ 'pointer-events-none opacity-50': !data['next'] }"
               @click.stop="$emit('action', 'onNav', $event, data['next'], currentInstance.parent.props)">
         <i class="fa fa-angle-right fa-fw"/>
-      </button>
+      </Button>
     </div>
 
     <div v-else-if="data['filter'] !== undefined" class="py-1 !px-2 relative" @click.stop="">

@@ -1,6 +1,7 @@
 <script setup>
 import { nextTick, reactive } from 'vue'
 import router from '../../router'
+import Button from '../Button/Button.vue'
 
 const props = defineProps(['icon', 'title', 'loader', 'click', 'to', 'position', 'actions', 'settings'])
 
@@ -66,7 +67,7 @@ function onClickItem (action) {
 
 <template>
   <div class="app-tree__menu-item">
-    <button
+    <Button
         type="button"
         v-if="icon"
         :data-tooltip="title"
@@ -79,7 +80,7 @@ function onClickItem (action) {
         <i v-else :class="icon" class="fa-fw"/>
       </template>
       <i v-else :class="icon" class="fa-fw"/>
-    </button>
+    </Button>
 
     <transition>
       <div v-if="data.active && actions" class="app-tree__context-menu"

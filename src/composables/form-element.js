@@ -1,5 +1,4 @@
 import { uniqId } from '../utils'
-import { computed } from 'vue'
 
 export const props = {
   class: [Array, Object, String],
@@ -17,12 +16,15 @@ export const props = {
   url: String,
   id: {
     type: String,
-    default: uniqId()
+    default: uniqId
   },
   inputClass: [Array, Object, String],
   label: String,
   labelClass: [Array, Object, String],
-  modelValue: [null, Object, String, Number, Boolean],
+  modelValue: {
+    type: [null, Object, String, Number, Boolean],
+    default: undefined
+  },
   placeholder: String,
   readonly: Boolean,
   relation: Object,

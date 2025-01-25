@@ -1,6 +1,6 @@
 <script setup>
 import { props as _props } from '../../composables'
-import { computed, getCurrentInstance, reactive } from 'vue'
+import { computed, getCurrentInstance, reactive, ref } from 'vue'
 
 defineOptions({
   name: 'Input',
@@ -34,12 +34,16 @@ const model = computed({
   }
 })
 
+const input = ref()
+
 function onMousedown (event) {
   props.emitClick && emit('action', props.emitClick, event, currentInstance)
 }
 
 function onClear (event) {
   emit('action', 'clear:input', event, currentInstance)
+  emit('update:modelValue', '', currentInstance)
+  input.value.focus()
 }
 
 function onClickPlus () {
@@ -75,6 +79,7 @@ defineExpose({
         <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
       <input v-model="model"
+             ref="input"
              :id="id"
              :type="type"
              :placeholder="placeholder"
@@ -94,12 +99,13 @@ defineExpose({
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
     <slot name="item"/>
   </div>
-  <div v-else class="relative" :class="[$props.class, type === 'number' ? 'app-input__number' : '']">
+  <div v-else class="relative flex items-center" :class="[$props.class, type === 'number' ? 'app-input__number' : '']">
     <div v-if="data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
          :class="[type === 'button' ? 'right-0 bottom-0' : '']">
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </div>
     <input v-model="model"
+           ref="input"
            :id="id"
            :type="type"
            :placeholder="placeholder"
@@ -112,8 +118,8 @@ defineExpose({
       <i class="fa fa-angle-up app-input__plus" @click="onClickPlus"/>
       <i class="fa fa-angle-down app-input__minus" @click="onClickMinus"/>
     </template>
-    <i v-if="clear"
-       class="fa fa-circle-xmark absolute block right-0 top-0 my-4 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
+    <i v-if="clear && model"
+       class="fa fa-circle-xmark absolute block right-0 top-0 mt-3 mr-2 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
        @click="onClear"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
   </div>

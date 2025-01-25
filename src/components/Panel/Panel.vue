@@ -6,11 +6,13 @@ import store from '../../store'
 import { uniqId } from '../../utils'
 import { getValue } from '../../composables'
 import Select from '../Select/Select.vue'
+import Input from '../Input/Input.vue'
+import Button from '../Button/Button.vue'
 
 import('./Panel.css')
 
 export default {
-  components: { Select, draggable },
+  components: { Button, Input, Select, draggable },
   __isStatic: true,
   name: 'Panel',
   emits: ['action', 'update:props', 'update:modelValue'],
@@ -659,14 +661,14 @@ export default {
     </div>
 
     <div v-if="views" class="flex justify-end px-5 pb-2" :class="{ 'border-b': this.propView === 'icon' }">
-      <button v-for="i in views"
+      <Button v-for="i in views"
               type="button"
               :class="{ 'btn-blue': this.propView === i.key }"
-              class="btn-sm ml-1 inline-flex items-center"
+              class="ml-1 inline-flex items-center"
               @click="clickView(i)">
         <i v-if="i.icon" :class="[i.icon, i.value ? 'mr-1' : '']"/>
         <span>{{ i.value }}</span>
-      </button>
+      </Button>
     </div>
 
     <div v-if="data" class="app-panel__data" ref="data">
@@ -692,14 +694,14 @@ export default {
                        :min="f.data.min"
                        :max="f.data.to"
                        @input="columnFilters($event, f)"
-                       autocomplete="off">
+                       autocomplete="off"/>
                 <input type="date"
                        name="filter"
                        :value="f.data.to"
                        :min="f.data.from"
                        :max="f.data.max"
                        @input="columnFilters($event, f)"
-                       autocomplete="off">
+                       autocomplete="off"/>
               </template>
 
               <select v-else-if="f?.data"
@@ -709,14 +711,20 @@ export default {
               </select>
 
               <template v-else>
-                <input type="text"
-                       name="filter"
-                       @input="columnFilters($event, f)"
-                       :value="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]"
-                       :placeholder="f.placeholder ?? '...'"
-                       autocomplete="off">
-                <i v-if="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove"
-                   @click="columnFilterClear(f.name)"/>
+                <Input
+                    :placeholder="f.placeholder ?? '...'"
+                    :value="filterValues?.[f.name]"
+                    :clear="true"
+                    @input="columnFilters($event, f)"/>
+
+                <!--                <input type="text"
+                                       name="filter"
+                                       @input="columnFilters($event, f)"
+                                       :value="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]"
+                                       :placeholder="f.placeholder ?? '...'"
+                                       autocomplete="off">
+                                <i v-if="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove"
+                                   @click="columnFilterClear(f.name)"/>-->
               </template>
 
             </div>
@@ -808,16 +816,16 @@ export default {
 
     <div v-if="meta?.['pagination']?.['prev'] || meta?.['pagination']?.['next']" class="app-panel__pagination">
       <div class="app-panel__pagination-arrows">
-        <button :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['prev'] }"
-                class="btn-sm btn-gray"
+        <Button class="btn-sm btn-gray"
+                :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['prev'] }"
                 @click="pagination(meta['pagination']['prev'])">
           <i class="fa fa-angle-left fa-fw"/>
-        </button>
-        <button :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['next'] }"
-                class="btn-sm btn-gray ml-1"
+        </Button>
+        <Button class="btn-sm btn-gray ml-1"
+                :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['next'] }"
                 @click="pagination(meta['pagination']['next'])">
           <i class="fa fa-angle-right fa-fw"/>
-        </button>
+        </Button>
       </div>
       <div class="app-panel__pagination-info" v-if="meta['pagination']['info']">
         {{ meta['pagination']['info'] }}

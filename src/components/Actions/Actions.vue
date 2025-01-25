@@ -59,18 +59,20 @@ function clickGroup (event) {
     <template v-for="i in props.data">
       <div v-if="i.data" class="app-actions__group">
         <Button v-for="j in i.data.filter((j, k) => k === stay)"
+                class="btn-sm"
                 :icon="j.icon"
                 :class="i.class"
                 :value="i.title + ' + ' + j.title"
                 :loader="store.getters.get('tabsLoading')"
                 @click="click(i, j.stay)"/>
 
-        <Button class="app-actions__toggle" :class="i.class" @mousedown="clickGroup">
+        <Button class="btn-sm app-actions__toggle" :class="i.class" @mousedown="clickGroup">
           <i class="fa fa-angle-down fa-fw"/>
         </Button>
 
         <div class="app-actions__save-buttons">
           <Button v-for="j in i.data.filter((j, k) => k !== stay)"
+                  class="btn-sm"
                   :icon="j.icon"
                   :class="i.class"
                   :value="j.title"
@@ -85,6 +87,7 @@ function clickGroup (event) {
       </div>
 
       <Button v-else
+              class="btn-sm"
               :icon="i.icon"
               :class="i.class"
               :value="'<span>' + i.title + '</span>'"

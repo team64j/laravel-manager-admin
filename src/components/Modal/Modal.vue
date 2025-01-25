@@ -3,6 +3,7 @@ import { getCurrentInstance, reactive, shallowRef } from 'vue'
 import GlobalComponent from '../GlobalComponent/GlobalComponent.vue'
 import router from '../../router'
 import { action } from '../../composables'
+import Button from '../Button/Button.vue'
 
 defineOptions({
   name: 'Modal',
@@ -139,9 +140,9 @@ defineExpose({
               <i :class="data.icon"/>
             </div>
             <div class="grow px-4 py-1" v-html="data.title" @mousedown="onMousedown"/>
-            <button type="button" class="btn-red items-center" @click="close">
+            <Button type="button" class="btn-red items-center" @click="close">
               <i class="fa fa-close"/>
-            </button>
+            </Button>
           </div>
           <div class="app-modal__main">
             <global-component v-if="data.componentLoaded"

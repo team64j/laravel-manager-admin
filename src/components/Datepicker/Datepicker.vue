@@ -1,6 +1,7 @@
 <script setup>
 import { nextTick, reactive, ref, shallowRef } from 'vue'
 import store from '../../store'
+import Button from '../Button/Button.vue'
 
 defineOptions({
   name: 'Datepicker'
@@ -313,7 +314,7 @@ document.addEventListener('mousedown', () => {
                          name="app-datepicker-day"
                          :value="i.value"
                          :checked="currentDate.getDate() === i.value"
-                         @input="onSetDay">
+                         @input="onSetDay"/>
                   <span :class="[
                     i.active ? 'app-datepicker-day__active' : '',
                     i.active && i.current ? 'app-datepicker-day__current' : '',
@@ -331,9 +332,9 @@ document.addEventListener('mousedown', () => {
                 <input type="text" :value="getTime()" @input="onSetTime">
               </td>
               <td colspan="2">
-                <button type="button" @click="onSetDateTime">
+                <Button type="button" @click="onSetDateTime">
                   OK
-                </button>
+                </Button>
               </td>
             </tr>
             </tfoot>

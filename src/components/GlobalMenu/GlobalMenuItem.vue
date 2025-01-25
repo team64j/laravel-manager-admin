@@ -2,6 +2,7 @@
 import { computed, getCurrentInstance } from 'vue'
 import store from '../../store'
 import router from '../../router'
+import Button from '../Button/Button.vue'
 
 const currentInstance = getCurrentInstance()
 
@@ -216,19 +217,19 @@ const onNext = () => {
           :class="classes"
           :data-tooltip="data['title']">
 
-      <button class="app-global-menu__prev"
+      <Button class="app-global-menu__prev"
               :disabled="data['prev'] ? undefined : 'disabled'"
               @click.stop="onPrev">
         <i class="fa fa-chevron-left"/>
-      </button>
+      </Button>
 
       <span>{{ data['info'] ?? data['total'] }}</span>
 
-      <button class="app-global-menu__next"
+      <Button class="app-global-menu__next"
               :disabled="data['next'] ? undefined : 'disabled'"
               @click.stop="onNext">
         <i class="fa fa-chevron-right"/>
-      </button>
+      </Button>
     </span>
 
     <span v-else-if="data['filter'] !== undefined"

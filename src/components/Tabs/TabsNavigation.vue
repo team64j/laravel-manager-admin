@@ -3,6 +3,7 @@ import { computed, getCurrentInstance, watch } from 'vue'
 import store from '../../store'
 import router from '../../router'
 import { uniqId } from '../../utils'
+import Button from '../Button/Button.vue'
 
 defineOptions({
   __isStatic: true,
@@ -153,13 +154,13 @@ if (props.history) {
           'app-tabs-navigation__vertical': props.vertical,
           'app-tabs-navigation__small': props.smallTabs
        }">
-    <button v-for="(i, k) in data"
+    <Button v-for="(i, k) in data"
             :class="{ 'app-tabs-navigation__active': k === index }"
             :data-tooltip="i.title"
             @click="select(i, k)">
       <i v-if="i.icon" :class="['app-tabs__tab-icon', i.icon, i.name ? 'mr-3' : '']"/>
       <span v-if="i.name">{{ i.name }}</span>
-    </button>
+    </Button>
   </div>
 </template>
 

@@ -206,7 +206,7 @@ defineExpose({
   @apply bg-gray-600
 }
 .app-main-menu li ul {
-  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-12 lg:top-full left-0 w-[calc(100vw_-_0.5rem)] lg:w-80 h-[calc(100vh_-_3.5rem)] lg:h-auto lg:max-h-[calc(100vh_-_3.5rem)] m-1 lg:m-0 py-1 rounded bg-gray-700 shadow-2xl transition-all
+  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-12 lg:top-full left-0 w-[calc(100vw_-_0.5rem)] lg:w-80 h-[calc(100vh_-_3.5rem)] lg:h-auto lg:max-h-[calc(100vh_-_3rem)] m-1 lg:m-0 py-1 rounded bg-gray-700 shadow-2xl transition-all
 }
 .app-main-menu li[data-level="2"] ul {
   @apply z-10 left-0 lg:left-full lg:top-0 overflow-hidden overflow-y-auto h-[calc(100vh_-_3.5rem)] lg:h-auto

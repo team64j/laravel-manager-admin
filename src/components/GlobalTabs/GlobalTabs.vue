@@ -5,11 +5,12 @@ import { mergeDeep } from '../../utils'
 import router from '../../router'
 import store from '../../store'
 import Frame from '../Frame/Frame.vue'
+import Button from '../Button/Button.vue'
 
 export default {
   name: 'GlobalTabs',
   __isStatic: true,
-  components: { KeepAliveComponent, Frame },
+  components: { Button, KeepAliveComponent, Frame },
   emits: ['action'],
   watch: {
     '$route' (route) {
@@ -166,7 +167,7 @@ export default {
 
     <div class="grow-0 dark">
       <div ref="panel" class="relative flex flex-nowrap bg-slate-100 dark:bg-gray-800 overflow-hidden !overflow-x-auto">
-        <button v-for="(tab, i) in this.tabs"
+        <Button v-for="(tab, i) in this.tabs"
                 :key="i"
                 :data-to="tab.path"
                 :class="{ '!bg-blue-600 dark:!bg-blue-600': tab.active }"
@@ -190,7 +191,7 @@ export default {
                 @mousedown.stop="closeTab(tab)">✕</span>
 
           <span v-if="tab.changed" class="absolute top-1 left-1 h-2 w-2 bg-amber-400 rounded-full"/>
-        </button>
+        </Button>
       </div>
     </div>
 
