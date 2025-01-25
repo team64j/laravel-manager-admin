@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, reactive } from 'vue'
+import { computed, getCurrentInstance, reactive, ref } from 'vue'
 import { props as _props } from '../../composables'
 import RadioComponent from '../Radio/Radio.vue'
 import CheckboxComponent from '../Checkbox/Checkbox.vue'
@@ -35,6 +35,8 @@ const model = computed({
   }
 })
 
+const input = ref()
+
 const inputValue = computed(() => {
   const values = []
 
@@ -49,12 +51,6 @@ const inputValue = computed(() => {
   const value = !Array.isArray(model.value) || model.value !== null ? model.value.toString() : model.value
 
   return values.filter(i => Array.isArray(value) ? value.includes(i.key) : value === (i.key !== null ? i.key.toString() : i.key)).map(i => i.value).join(', ')
-
-  // const value = model.value !== null ? model.value.toString() : model.value
-  //
-  // return values.filter(i => {
-  //   return i['selected'] || (i['key'] !== null && value !== null ? i['key'].toString() === value : i['key'] === value)
-  // }).map(i => i['value']).join(', ')
 })
 
 function get (callback) {
@@ -75,20 +71,42 @@ function get (callback) {
 }
 
 function onMousedown (event) {
-  if (!props.url || event.target.classList.contains('opened')) {
-    event.target.classList.toggle('opened')
-    return
+  if (!props.url || event.target.classList.contains('app-select__focus')) {
+    event.target.blur()
+    event.stopPropagation()
+    event.preventDefault()
+    return false
   }
 
-  data.options = null
+  data.options = []
 
   get(() => {
 
   })
 }
 
+function onFocus (event) {
+  event.target.classList.add('app-select__focus')
+}
+
+function onBlur (event) {
+  event.target.classList.remove('app-select__focus')
+}
+
+function onClickClear () {
+  model.value = input.value.dataset.oldValue
+}
+
+function onInput (event) {
+  //emit('update:modelValue', event.target.value, currentInstance)
+}
+
 function onUpdateModelValue (value) {
   props.emitInput && emit('action', props.emitInput, value, currentInstance)
+
+  if (value === props.itemNew) {
+    input.value.dataset.oldValue = model.value
+  }
 }
 
 if (props.load && props.url) {
@@ -150,7 +168,17 @@ if (props.load && props.url) {
       </template>
 
       <template v-else>
-        <button :id="id" class="app-appearance-select flex cursor-pointer select-none font-normal items-center" @mousedown="onMousedown">
+        <div v-if="itemNew === model">
+          <input type="text" :id="`input-`+id" autofocus @input="onInput"/>
+          <i class="fa fa-circle-xmark absolute top-3 right-3 cursor-pointer" @click="onClickClear"/>
+        </div>
+        <button v-show="itemNew !== model"
+            :id="id"
+            ref="input"
+            class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
+            @focus="onFocus"
+            @blur="onBlur"
+            @mousedown="onMousedown">
           <i v-if="data.loading"
              class="pointer-events-none inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
           <span v-else class="pointer-events-none truncate">

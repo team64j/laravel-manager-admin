@@ -13,7 +13,7 @@ export const props = {
   errorClass: String,
   errorMessage: {
     type: String,
-    default () {
+    default (props) {
       if (props.error) {
         if (Array.isArray(props.error)) {
           return props.error.join(', ')
