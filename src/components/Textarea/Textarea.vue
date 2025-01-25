@@ -60,12 +60,12 @@ defineExpose({
     <textarea v-model="model" :id="id" :class="[resize ? 'resize-y' : 'resize-none']" class="min-h-10" :rows="rows"
               :style="{ height }"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
   </div>
   <template v-else>
     <textarea v-model="model" :id="id" :class="[resize ? 'resize-y' : 'resize-none']" class="min-h-10" :rows="rows"
               :style="{ height }"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
   </template>
 </template>

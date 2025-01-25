@@ -52,7 +52,7 @@ defineExpose({
       <label :for="id" class="font-bold cursor-pointer">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="error" :data-tooltip="errorMessage" data-type="error" class="ml-2 font-normal"/>
+        <i v-if="error" :data-tooltip="error.toString()" data-type="error" class="ml-2 font-normal"/>
         <i v-else-if="help" :data-tooltip="help" class="ml-2 font-normal"/>
       </label>
       <span v-if="requiredText" class="text-rose-500 ml-3 text-sm font-normal">{{ requiredText }}</span>

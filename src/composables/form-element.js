@@ -1,4 +1,5 @@
 import { uniqId } from '../utils'
+import { computed } from 'vue'
 
 export const props = {
   class: [Array, Object, String],
@@ -11,18 +12,6 @@ export const props = {
   emitInputKey: [null, String],
   error: [String, Object, Array],
   errorClass: String,
-  errorMessage: {
-    type: String,
-    default (props) {
-      if (props.error) {
-        if (Array.isArray(props.error)) {
-          return props.error.join(', ')
-        } else {
-          return props.error
-        }
-      }
-    }
-  },
   falseValue: { default: false },
   help: String,
   url: String,

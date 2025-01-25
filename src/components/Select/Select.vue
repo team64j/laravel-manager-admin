@@ -11,7 +11,7 @@ defineOptions({
 
 const currentInstance = getCurrentInstance()
 
-const emit = defineEmits(['action', 'update:modelValue'])
+const emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
 const props = defineProps({
   ..._props,
@@ -25,6 +25,8 @@ const data = reactive({
   options: props.data || []
 })
 
+const input = ref()
+
 const model = computed({
   get () {
     const value = props.value ?? props.modelValue ?? ''
@@ -35,7 +37,7 @@ const model = computed({
   }
 })
 
-const input = ref()
+let newValue = null
 
 const inputValue = computed(() => {
   const values = []
@@ -48,9 +50,16 @@ const inputValue = computed(() => {
     }
   })
 
+  if (newValue !== null) {
+    return newValue
+  }
+
   const value = !Array.isArray(model.value) || model.value !== null ? model.value.toString() : model.value
 
-  return values.filter(i => Array.isArray(value) ? value.includes(i.key) : value === (i.key !== null ? i.key.toString() : i.key)).map(i => i.value).join(', ')
+  return values.filter(
+      i => Array.isArray(value) ? value.includes(i.key) : value === (i.key !== null ? i.key.toString() : i.key)).
+      map(i => i.value).
+      join(', ')
 })
 
 function get (callback) {
@@ -94,11 +103,23 @@ function onBlur (event) {
 }
 
 function onClickClear () {
+  newValue = null
   model.value = input.value.dataset.oldValue
+  emit('update:props', { error: '' })
 }
 
 function onInput (event) {
-  //emit('update:modelValue', event.target.value, currentInstance)
+  newValue = event.target.value
+
+  emit('update:modelValue', newValue, currentInstance)
+
+  if (props.error !== undefined) {
+    if (newValue === '') {
+      emit('update:props', { error: undefined })
+    } else {
+      emit('update:props', { error: '' })
+    }
+  }
 }
 
 function onUpdateModelValue (value) {
@@ -106,6 +127,9 @@ function onUpdateModelValue (value) {
 
   if (value === props.itemNew) {
     input.value.dataset.oldValue = model.value
+    emit('update:props', { error: undefined })
+  } else {
+    emit('update:props', { error: '' })
   }
 }
 
@@ -121,6 +145,7 @@ if (props.load && props.url) {
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
         <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
+        <i v-if="error" :data-tooltip="error.toString()" data-type="error" class="ml-2 font-normal"/>
       </label>
       <slot name="label"/>
     </div>
@@ -169,16 +194,16 @@ if (props.load && props.url) {
 
       <template v-else>
         <div v-if="itemNew === model">
-          <input type="text" :id="`input-`+id" autofocus @input="onInput"/>
+          <input type="text" :id="`input-`+id" :class="{ '!border-rose-500': error }" autofocus @input="onInput"/>
           <i class="fa fa-circle-xmark absolute top-3 right-3 cursor-pointer" @click="onClickClear"/>
         </div>
         <button v-show="itemNew !== model"
-            :id="id"
-            ref="input"
-            class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
-            @focus="onFocus"
-            @blur="onBlur"
-            @mousedown="onMousedown">
+                :id="id"
+                ref="input"
+                class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
+                @focus="onFocus"
+                @blur="onBlur"
+                @mousedown="onMousedown">
           <i v-if="data.loading"
              class="pointer-events-none inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
           <span v-else class="pointer-events-none truncate">
@@ -187,8 +212,8 @@ if (props.load && props.url) {
         </button>
 
         <div v-if="data.options?.length"
-            class="absolute z-20 left-0 top-full right-0 mt-1 p-2 rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default opacity-0 invisible"
-            @mousedown.prevent="">
+             class="absolute z-20 left-0 top-full right-0 mt-1 p-2 rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default opacity-0 invisible"
+             @mousedown.prevent="">
 
           <template v-for="o in data.options">
             <div v-if="o.name" class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
@@ -205,7 +230,6 @@ if (props.load && props.url) {
       </template>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
   </div>
 </template>
 

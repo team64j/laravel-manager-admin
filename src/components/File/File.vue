@@ -63,7 +63,7 @@ defineExpose({
          @click="onClick"/>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
     <slot name="item"/>
   </div>
   <div v-else>
@@ -79,6 +79,6 @@ defineExpose({
          @click="onClick"/>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
   </div>
 </template>

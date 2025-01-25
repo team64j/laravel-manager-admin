@@ -98,14 +98,14 @@ i[data-tooltip] > *:not(.pointer-events-auto) {
   @apply pointer-events-none
 }
 i[data-tooltip]:not([class*="fa-"]) {
-  @apply cursor-help text-gray-200 dark:text-gray-300
-}
-i[data-tooltip][data-type="error"] {
-  @apply text-rose-500 dark:text-rose-500
+  @apply cursor-help text-gray-200 dark:text-gray-300 leading-[0]
 }
 i[data-tooltip]:not([class*="fa-"])::before {
   content: "\f059";
   font-family: "Font Awesome 6 Free", serif;
   font-style: normal;
+}
+i[data-tooltip][data-type="error"] {
+  @apply text-rose-500 dark:text-rose-500
 }
 </style>

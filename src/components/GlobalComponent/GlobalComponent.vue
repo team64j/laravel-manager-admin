@@ -109,7 +109,7 @@ export default {
       }
 
       if (props.errors && ((component?.extends?.props || component?.props)?.['error'])) {
-        attrs.error = props.errors?.[attrs.key] ?? props.errors?.[attrs.key.replace('data.', '')]
+        attrs.error ??= props.errors?.[attrs.key] ?? props.errors?.[attrs.key.replace('data.', '')]
       }
 
       (component.extends?.emits ?? component.emits ?? []).forEach(e => {

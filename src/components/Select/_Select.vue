@@ -263,7 +263,7 @@ if (props.load && props.url) {
       </template>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
   </div>
   <div v-else class="relative">
     <div v-if="data.loading" class="absolute z-10 left-2 top-2">
@@ -288,7 +288,7 @@ if (props.load && props.url) {
       </template>
     </select>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ errorMessage }}</div>
+    <div v-if="error" class="text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
   </div>
 </template>
 
