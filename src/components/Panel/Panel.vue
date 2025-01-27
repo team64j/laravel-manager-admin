@@ -391,13 +391,21 @@ export default {
 
       if (this.modelValue?.[data.model] !== undefined) {
         attrs.modelValue = this.modelValue[data.model]
-        attrs['onUpdate:modelValue'] = (value) => this.setDataValue(data.model.split('.'), value, this.modelValue, true)
+        attrs['onUpdate:modelValue'] = (value) => {
+          this.setDataValue(data.model.split('.'), value, this.modelValue, true)
+          this.$emit('update:modelValue', value, this)
+        }
       } else if (/\./.test(data.model)) {
         attrs.modelValue = this.findDataValue(data.model.split('.'), this.modelValue || this.$props)
-        attrs['onUpdate:modelValue'] = (value) => this.setDataValue(data.model.split('.'), value, this.modelValue, true)
+        attrs['onUpdate:modelValue'] = (value) => {
+          this.setDataValue(data.model.split('.'), value, this.modelValue, true)
+          this.$emit('update:modelValue', value, this)
+        }
       } else {
         attrs.modelValue = this.modelValue
-        attrs['onUpdate:modelValue'] = (...args) => this.$emit('update:modelValue', ...args, this.modelValue)
+        attrs['onUpdate:modelValue'] = (...args) => {
+          this.$emit('update:modelValue', ...args, this.modelValue)
+        }
       }
 
       attrs['onAction'] = (...args) => this.$emit('action', ...args)

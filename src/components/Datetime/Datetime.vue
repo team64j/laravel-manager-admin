@@ -6,7 +6,7 @@ const currentInstance = getCurrentInstance()
 
 defineOptions({
   name: 'Datetime',
-  __isStatic: true,
+  __isStatic: true
 })
 
 const props = defineProps({
@@ -40,9 +40,13 @@ function onShow () {
   emit('action', 'datepicker:show', currentInstance)
 }
 
+function onClose () {
+
+}
+
 defineExpose({
   model,
-  ...data,
+  ...data
 })
 </script>
 
@@ -62,17 +66,18 @@ defineExpose({
       <div v-if="data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center">
         <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
-      <input v-model="model"
-             :id="id"
-             type="text"
-             ref="input"
-             :placeholder="placeholder"
-             :class="[inputClass, error ? '!border-rose-500 focus:ring-rose-500' : '', data.loading ? '!text-transparent' : '']"
-             :readonly="readonly"
-             :required="required"
-             :disabled="disabled"
-             @focus.stop.prevent="onShow"
-             @blur="onClose">
+      <input
+          v-model="model"
+          :id="id"
+          type="text"
+          ref="input"
+          :placeholder="placeholder"
+          :class="[inputClass, error ? '!border-rose-500 focus:ring-rose-500' : '', data.loading ? '!text-transparent' : '']"
+          :readonly="readonly"
+          :required="required"
+          :disabled="disabled"
+          @focus.stop.prevent="onShow"
+          @blur="onClose">
       <i v-if="clear"
          class="fa fa-calendar-xmark absolute block right-0 top-0 m-2.5 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
          @click="onClear"/>
@@ -84,17 +89,18 @@ defineExpose({
     <div v-if="data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center">
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </div>
-    <input v-model="model"
-           :id="id"
-           type="text"
-           ref="input"
-           :placeholder="placeholder"
-           :class="[inputClass, error ? '!border-rose-500' : '', data.loading ? '!text-transparent' : '']"
-           :readonly="readonly"
-           :required="required"
-           :disabled="disabled"
-           @focus="onShow"
-           @blur="onClose">
+    <input
+        v-model="model"
+        :id="id"
+        type="text"
+        ref="input"
+        :placeholder="placeholder"
+        :class="[inputClass, error ? '!border-rose-500' : '', data.loading ? '!text-transparent' : '']"
+        :readonly="readonly"
+        :required="required"
+        :disabled="disabled"
+        @focus="onShow"
+        @blur="onClose">
     <i v-if="clear"
        class="fa fa-calendar-xmark absolute block right-0 top-0 m-2.5 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
        @click="onClear"/>
