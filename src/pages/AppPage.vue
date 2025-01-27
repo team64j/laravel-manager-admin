@@ -120,13 +120,15 @@ function submit ({ action, method, route } = {}, changed = false) {
             actionUpdate: Date.now()
           })
 
-          if (stay === 0) {
-            emit('action', 'closeTab')
-            return
-          } else if (stay === 1) {
-            emit('action', 'closeTab')
-            router.to({ params: { id: 0 } })
-            return
+          if (action !== 'read') {
+            if (stay === 0) {
+              emit('action', 'closeTab')
+              return
+            } else if (stay === 1) {
+              emit('action', 'closeTab')
+              router.to({ params: { id: 0 } })
+              return
+            }
           }
 
           Object.assign($data, {

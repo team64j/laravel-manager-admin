@@ -66,13 +66,14 @@ function clickGroup (event) {
                 :loading="store.getters.get('tabsLoading')"
                 @click="click(i, j.stay)"/>
 
-        <Button class="btn-sm app-actions__toggle" :class="i.class" @mousedown="clickGroup">
-          <i class="fa fa-angle-down fa-fw"/>
-        </Button>
+        <Button class="btn-sm app-actions__toggle"
+                :class="i.class"
+                icon="fa fa-angle-down fa-fw"
+                @mousedown="clickGroup"/>
 
         <div class="app-actions__save-buttons">
           <Button v-for="j in i.data.filter((j, k) => k !== stay)"
-                  class="btn-sm"
+                  class="btn-sm justify-start"
                   :icon="j.icon"
                   :class="i.class"
                   :value="j.title"
