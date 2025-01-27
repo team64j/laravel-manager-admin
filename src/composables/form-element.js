@@ -34,7 +34,9 @@ export const props = {
   type: String,
   value: [String, Number, Array, Object],
   keyValue: String,
-  itemNew: String
+  itemNew: String,
+  icon: [Array, Object, String],
+  loading: Boolean
 }
 
 export const ID = props.id || uniqId()

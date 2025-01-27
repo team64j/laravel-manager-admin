@@ -63,7 +63,7 @@ function clickGroup (event) {
                 :icon="j.icon"
                 :class="i.class"
                 :value="i.title + ' + ' + j.title"
-                :loader="store.getters.get('tabsLoading')"
+                :loading="store.getters.get('tabsLoading')"
                 @click="click(i, j.stay)"/>
 
         <Button class="btn-sm app-actions__toggle" :class="i.class" @mousedown="clickGroup">
@@ -76,7 +76,7 @@ function clickGroup (event) {
                   :icon="j.icon"
                   :class="i.class"
                   :value="j.title"
-                  :loader="store.getters.get('tabsLoading')"
+                  :loading="store.getters.get('tabsLoading')"
                   @mousedown="() => click(i, j.stay)">
             <template #icon>
               <i :class="i.icon"/>

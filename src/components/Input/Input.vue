@@ -64,7 +64,7 @@ defineExpose({
 <template>
   <div v-if="label" class="w-full" :class="$props.class">
     <div class="mb-1">
-      <label :for="id" class="font-bold cursor-pointer">
+      <label :for="id" class="font-bold cursor-pointer" :class="labelClass">
         {{ label }}
         <span v-if="required" class="text-rose-500">*</span>
         <i v-if="error" :data-tooltip="error.toString()" data-type="error" class="ml-2 font-normal"/>

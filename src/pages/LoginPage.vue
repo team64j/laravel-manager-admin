@@ -2,13 +2,20 @@
 import router from '../router'
 import store from '../store'
 import Logo from '../components/Logo/Logo.vue'
+import Button from '../components/Button/Button.vue'
+import Checkbox from '../components/Checkbox/Checkbox.vue'
+import Input from '../components/Input/Input.vue'
 
 export default {
   name: 'LoginPage',
-  components: { Logo },
+  components: { Input, Checkbox, Button, Logo },
   data () {
     return {
-      form: {},
+      form: {
+        username: null,
+        password: null,
+        remember: null
+      },
       config: {},
       languages: [],
       connected: false,
@@ -65,7 +72,7 @@ export default {
 
         if (this.config['version']) {
           this.connected = true
-          this.$nextTick(() => this.$el.querySelector('[name="username"]').focus())
+          //this.$nextTick(() => this.$el.querySelector('[name="username"]').focus())
         }
 
         if (this.languages.length) {
@@ -153,72 +160,79 @@ export default {
 
         <div class="app__page__login-form-group-api">
           <div v-if="languages?.length" class="app__page__login-form-group">
-            <button type="button"
-                    class="btn-lg rounded-r-none !bg-transparent"
-                    @click="toggleModal('isShowLanguages')">
-              {{ lang.key?.toUpperCase() }}
-            </button>
+            <Button
+                :value="lang.key?.toUpperCase()"
+                input-class="btn-lg rounded-r-none !bg-transparent"
+                @click="toggleModal('isShowLanguages')"/>
           </div>
           <div class="app__page__login-form-group app__page__login-form-hostname">
-            <input v-model="hostname" type="text" id="hostname"
-                   class="input-lg rounded-r-none !bg-transparent"
-                   :class="{ '!border-rose-500 !z-10 !ring-rose-500':  errors['hostname'], 'rounded-l-none': languages?.length }"
-                   @keyup.enter="checkServer"
-                   autocomplete="off">
+            <Input
+                v-model="hostname"
+                class="w-full"
+                :input-class="{
+                  'input-lg rounded-r-none !bg-transparent': 1,
+                  'rounded-l-none': languages?.length,
+                  'z-10': errors['hostname']
+                }"
+                :error="errors['hostname']"
+                @keyup.enter="checkServer"
+            />
           </div>
           <div v-if="hostnames.length" class="app__page__login-form-group">
-            <button type="button"
-                    class="btn-lg rounded-none !bg-transparent"
-                    @click="toggleModal('isShowHostnames')">
-              <i class="fa fa-ellipsis fa-fw"/>
-            </button>
+            <Button
+                input-class="btn-lg rounded-none !bg-transparent"
+                icon="fa fa-ellipsis fa-fw"
+                @click="toggleModal('isShowHostnames')"/>
           </div>
           <div class="app__page__login-form-group">
-            <button type="button"
-                    class="btn-lg rounded-l-none !bg-transparent"
+            <Button type="button"
+                    input-class="btn-lg rounded-l-none !bg-transparent"
+                    :icon="{ 'fa fa-globe fa-fw': 1, 'text-green-500': connected }"
                     :disabled="isCheckServer"
-                    @click="checkServer">
-              <i class="fa fa-globe fa-fw"
-                 :class="{ 'text-green-500': connected,'opacity-0': isCheckServer }"/>
-              <i v-if="isCheckServer" class="app__page__login-loader"/>
-            </button>
+                    :loading="isCheckServer"
+                    @click="checkServer"/>
           </div>
         </div>
       </div>
 
       <template v-if="connected">
-        <div class="app__page__login-form-row">
-          <label for="username">{{ lang.user }}</label>
-          <input v-model="form['username']"
-                 type="text"
-                 id="username"
-                 name="username"
-                 class="input-lg !bg-transparent"
-                 :class="{ '!border-rose-500 !z-10': errors['username'] }"
-                 autocomplete="username"
-                 @keyup.enter="login">
-        </div>
+        <Input
+            v-model="form['username']"
+            :error="errors['username']"
+            type="text"
+            class="mb-4"
+            input-class="input-lg !bg-transparent"
+            :label="lang.user"
+            label-class="text-base font-medium"
+            @keyup.enter="login"
+        />
 
-        <div class="app__page__login-form-row">
-          <label for="password">{{ lang.password }}</label>
-          <input v-model="form['password']" type="password"
-                 id="password"
-                 name="password"
-                 class="input-lg !bg-transparent"
-                 :class="{ '!border-rose-500 !z-10': errors['password'] }"
-                 @keyup.enter="login">
-        </div>
+        <Input
+            v-model="form['password']"
+            :error="errors['password']"
+            type="password"
+            class="mb-4"
+            input-class="input-lg !bg-transparent"
+            :label="lang.password"
+            label-class="text-base font-medium"
+            @keyup.enter="login"
+        />
 
         <div class="app__page__login-form-row app__page__login-form-row-login">
           <div>
-            <input v-model="form['remember']" type="checkbox" id="remember" name="remember" class="!bg-transparent">
-            <label for="remember">{{ lang.remember }}</label>
+            <Checkbox
+                v-model="form['remember']"
+                input-class="input-lg !bg-transparent"
+                :label="lang.remember"
+                label-class="text-base font-normal"/>
           </div>
           <div>
-            <button type="button" class="btn-lg btn-green" :disabled="isLogin" @click="login">
-              <span :class="{ 'opacity-0': isLogin }">{{ lang.login }}</span>
-              <i v-if="isLogin" class="app__page__login-loader"/>
-            </button>
+            <Button
+                class="btn-lg btn-green"
+                :value="lang.login"
+                :disabled="isLogin"
+                :loading="isLogin"
+                @click="login"/>
           </div>
         </div>
       </template>

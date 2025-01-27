@@ -161,7 +161,7 @@ if (props.load && props.url) {
               @blur="onBlur"
               @mousedown="onMousedown"
               :value="inputValue || placeholder"
-              :loader="data.loading"/>
+              :loading="data.loading"/>
 
       <div v-if="data.options?.length"
            class="hidden absolute z-20 left-0 top-full mt-1 p-2 w-full rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default"

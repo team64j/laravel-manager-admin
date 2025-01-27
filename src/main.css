@@ -24,7 +24,7 @@ html, body, #app {
      * Forms
      */
     [type='checkbox'], [type='radio'], [type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select, button, [type="button"], [role="button"], button.app-appearance-select, .app-appearance-select {
-        @apply appearance-none block w-full h-10 px-3 py-1.5 rounded bg-white border border-inherit text-left dark:text-gray-50 dark:border-inherit dark:bg-gray-800 dark:focus:bg-gray-800 dark:hover:bg-gray-800 focus:bg-white hover:bg-white focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-offset-0 focus:ring-blue-500 focus:outline-0 transition
+        @apply appearance-none block w-full h-10 px-3 py-1.5 rounded bg-white border border-inherit text-left dark:text-gray-50 dark:border-inherit dark:bg-gray-800 dark:focus:bg-gray-800 dark:hover:bg-gray-800 focus:bg-white hover:bg-white focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-offset-0 focus:ring-blue-500 focus:outline-0 focus:z-10 transition
     }
     /*    .dark input, .dark select, .dark textarea, .dark button {
             color-scheme: dark
@@ -75,6 +75,9 @@ html, body, #app {
     }
     .btn-lg, .input-lg {
         @apply px-6 py-3 h-[3.308rem] rounded border-2 text-xl font-medium focus:ring-0
+    }
+    .input-lg {
+        @apply px-3.5
     }
     [type='checkbox'].input-lg, [type='radio'].input-lg {
         @apply p-0 w-6 h-6
