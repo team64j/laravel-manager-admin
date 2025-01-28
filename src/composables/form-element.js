@@ -4,7 +4,7 @@ export const props = {
   class: [Array, Object, String],
   clear: Boolean,
   data: [Object, Array],
-  description: String,
+  description: [String, Number],
   disabled: Boolean,
   emitClick: String,
   emitInput: String,

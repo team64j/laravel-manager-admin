@@ -130,6 +130,15 @@ defineExpose({
 .label-as-button input ~ i {
   @apply invisible
 }
+.label-as-button input ~ span {
+  @apply px-1 py-1 min-w-8 opacity-100 rounded
+}
+.label-as-button input:disabled ~ span {
+  @apply opacity-50
+}
+.label-as-button input:checked ~ span {
+  @apply bg-blue-600
+}
 .label-as-button input:checked ~ span, .label-as-button input:checked ~ i {
   @apply text-white visible
 }

@@ -45,7 +45,8 @@ defineExpose({
 <template>
   <div v-if="label" class="w-full" :class="$props.class">
     <template v-if="!data">
-      <label class="inline-flex items-center " :class="[ disabled ? 'cursor-no-drop' : 'cursor-pointer' ]">
+      <label class="inline-flex items-center "
+             :class="[labelClass, _labelClass, disabled ? 'cursor-no-drop' : 'cursor-pointer']">
         <input v-model="model"
                :id="id"
                :value="value"
@@ -84,16 +85,19 @@ defineExpose({
   </div>
   <template v-else>
     <template v-if="!data">
-      <input v-model="model"
-             :id="id"
-             :class="inputClass"
-             :value="value"
-             :true-value="trueValue"
-             :false-value="falseValue"
-             :disabled="disabled"
-             type="radio">
-      <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-      <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
+      <label class="inline-flex items-center "
+             :class="[labelClass, _labelClass, disabled ? 'cursor-no-drop' : 'cursor-pointer']">
+        <input v-model="model"
+               :id="id"
+               :class="inputClass"
+               :value="value"
+               :true-value="trueValue"
+               :false-value="falseValue"
+               :disabled="disabled"
+               type="radio">
+        <span v-if="description" v-html="description" class="opacity-75 text-sm"/>
+        <span v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</span>
+      </label>
     </template>
     <div v-for="(i, k) in data" v-else :class="$props.class">
       <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
@@ -124,6 +128,15 @@ defineExpose({
 }
 .label-as-button input ~ i {
   @apply invisible
+}
+.label-as-button input ~ span {
+  @apply px-1 py-1 min-w-8 opacity-100 rounded
+}
+.label-as-button input:disabled ~ span {
+  @apply opacity-50
+}
+.label-as-button input:checked ~ span {
+  @apply bg-blue-600
 }
 .label-as-button input:checked ~ span, .label-as-button input:checked ~ i {
   @apply text-white visible
