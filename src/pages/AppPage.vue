@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, markRaw, onMounted, reactive, ref, watch } from 'vue'
+import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
 import { action } from '../composables'
 import { isNumber } from '../utils'
 import router from '../router'
