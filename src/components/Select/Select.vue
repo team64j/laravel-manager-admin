@@ -157,6 +157,7 @@ if (props.load && props.url) {
       <Button v-show="itemNew !== model"
               :id="id"
               class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
+              :class="inputClass"
               @focus="onFocus"
               @blur="onBlur"
               @mousedown="onMousedown"
@@ -185,7 +186,7 @@ if (props.load && props.url) {
               :data="o['data'] ?? [o]"
               false-value=""
               class="pl-0.5 pt-[1px] last:pb-[1px]"
-              label-class="w-full py-0.5"
+              label-class="w-full py-0"
               input-class="!ring-0"
               :as-button="true"
               @update:modelValue="onUpdateModelValue"/>

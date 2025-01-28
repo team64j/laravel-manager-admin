@@ -2,6 +2,8 @@
 import { nextTick, reactive, ref, shallowRef } from 'vue'
 import store from '../../store'
 import Button from '../Button/Button.vue'
+import Select from '../Select/Select.vue'
+import Input from '../Input/Input.vue'
 
 defineOptions({
   name: 'Datepicker'
@@ -255,7 +257,7 @@ function setModel (value) {
   }
 }
 
-function getModel() {
+function getModel () {
   return instance.exposed.model ? instance.exposed.model.value : instance.ctx.model
 }
 
@@ -273,29 +275,26 @@ document.addEventListener('mousedown', () => {
            ref="datepicker"
            class="app-datepicker"
            :style="style"
-           @mousedown.stop="() => {}">
+           @mousedown.stop="">
         <div v-if="showDatepicker" class="app-datepicker__content">
           <table>
             <thead>
             <tr>
-              <td colspan="5">
-                <select @input="onSetMonth">
-                  <option v-for="(i, k) in monthNames"
-                          :value="k"
-                          :selected="currentDate.getMonth() === k">
-                    {{ i }}
-                  </option>
-                </select>
+              <td colspan="4">
+                <Select
+                    :data="monthNames.map((value, key) => ({ key, value }))"
+                    :value="currentDate.getMonth()"
+                    class="text-sm"
+                    input-class="input-sm"
+                    @input="onSetMonth"/>
               </td>
-              <td colspan="2">
-                <select @input="onSetYear">
-                  <option
-                      v-for="i in Array.from({ length: (yearOffset * 2) + 1 }, (_, j) => (yearStart - yearOffset) + j)"
-                      :value="i"
-                      :selected="currentDate.getFullYear() === i">
-                    {{ i }}
-                  </option>
-                </select>
+              <td colspan="3">
+                <Select
+                    :data="Array.from({ length: (yearOffset * 2) + 1 }, (_, j) => (yearStart - yearOffset) + j).map(i => ({ key: i, value: i }))"
+                    :value="currentDate.getFullYear()"
+                    class="text-sm"
+                    input-class="input-sm"
+                    @input="onSetYear"/>
               </td>
             </tr>
             </thead>
@@ -319,9 +318,9 @@ document.addEventListener('mousedown', () => {
                     i.active ? 'app-datepicker-day__active' : '',
                     i.active && i.current ? 'app-datepicker-day__current' : '',
                     i.active && i.selected ? 'app-datepicker-day__selected' : '',
-                ]">
-                {{ i.value }}
-              </span>
+                    ]">
+                    {{ i.value }}
+                  </span>
                 </label>
               </td>
             </tr>
@@ -329,12 +328,10 @@ document.addEventListener('mousedown', () => {
             <tfoot>
             <tr>
               <td colspan="5">
-                <input type="text" :value="getTime()" @input="onSetTime">
+                <Input :value="getTime()" input-class="input-sm" @input="onSetTime"/>
               </td>
               <td colspan="2">
-                <Button type="button" @click="onSetDateTime">
-                  OK
-                </Button>
+                <Button value="OK" input-class="btn-sm btn-green" @click="onSetDateTime"/>
               </td>
             </tr>
             </tfoot>

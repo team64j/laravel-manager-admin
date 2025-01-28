@@ -73,6 +73,9 @@ html, body, #app {
     button, [type="button"], [role="button"] {
         @apply inline-flex items-center justify-center w-auto px-4 py-2 cursor-pointer font-medium border hover:bg-slate-50 active:bg-slate-50 focus:bg-slate-50 focus:ring-blue-500 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-600 dark:focus:bg-gray-600
     }
+    .btn-sm, .input-sm, button.input-sm {
+        @apply text-sm px-2 py-1 h-8 min-h-[2rem]
+    }
     .btn-lg, .input-lg {
         @apply px-6 py-3 h-[3.308rem] rounded border-2 text-xl font-medium focus:ring-0
     }
