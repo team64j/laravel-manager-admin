@@ -52,9 +52,9 @@ function init () {
   let right = 0,
       width = 0
 
-  currentInstance.proxy.$el.styles = getComputedStyle(currentInstance.proxy.$el)
+  currentInstance.vnode.el.styles = getComputedStyle(currentInstance.vnode.el)
 
-  currentInstance.proxy.$el.querySelectorAll('button').forEach((t, i) => {
+  currentInstance.vnode.el.querySelectorAll('button').forEach((t, i) => {
     t.styles = getComputedStyle(t)
 
     if (i <= index.value) {
@@ -66,13 +66,13 @@ function init () {
     }
   })
 
-  if (currentInstance.proxy.$el.scrollLeft > right) {
-    currentInstance.proxy.$el.scrollLeft = right
+  if (currentInstance.vnode.el.scrollLeft > right) {
+    currentInstance.vnode.el.scrollLeft = right
   }
 
-  if (currentInstance.proxy.$el.offsetWidth < width) {
-    currentInstance.proxy.$el.scrollLeft = width - currentInstance.proxy.$el.offsetWidth +
-        (parseFloat(currentInstance.proxy.$el.styles.paddingLeft) + parseFloat(currentInstance.proxy.$el.styles.paddingRight))
+  if (currentInstance.vnode.el.offsetWidth < width) {
+    currentInstance.vnode.el.scrollLeft = width - currentInstance.vnode.el.offsetWidth +
+        (parseFloat(currentInstance.vnode.el.styles.paddingLeft) + parseFloat(currentInstance.vnode.el.styles.paddingRight))
   }
 }
 

@@ -372,10 +372,10 @@ function calcIsMobile () {
 
 function inputTreeSelect (event, instance) {
   const context = instance.ctx || instance
+  const input = context._.vnode.el.querySelector('input')
 
   store.dispatch('set', { event, context })
 
-  const input = context.$el.querySelector('input')
   if (input.classList.contains('focus')) {
     input.classList.remove('focus')
     store.dispatch('set', { treeSelect: false })

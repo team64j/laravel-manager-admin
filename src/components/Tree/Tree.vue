@@ -54,7 +54,7 @@ export default {
       const route = router.currentRoute.value
 
       if (route['path'] === router.parse({ ...this.propRoute, ...route }).path) {
-        this.$el.querySelector('.app-tree__body').classList.toggle('focused', !!select)
+        this._.vnode.el.querySelector('.app-tree__body').classList.toggle('focused', !!select)
       }
     },
     '$store.state.actionUpdate' () {
@@ -354,8 +354,8 @@ export default {
         let top = position.top - position.height
         let left = position.left
 
-        if (top + this.$refs.ctx.offsetHeight > this.$el.offsetHeight) {
-          top -= top + this.$refs.ctx.offsetHeight - this.$el.offsetHeight - 30
+        if (top + this.$refs.ctx.offsetHeight > this._.vnode.el.offsetHeight) {
+          top -= top + this.$refs.ctx.offsetHeight - this._.vnode.el.offsetHeight - 30
         }
 
         this.$refs.ctx.style.top = top + `px`
