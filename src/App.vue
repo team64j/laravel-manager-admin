@@ -139,7 +139,7 @@ function bootstrap () {
 
       setRoutes(response.data['data']['routes'])
 
-      //setAssets(response.data['data']['assets'])
+      setAssets(response.data['data']['assets'])
 
       //setSlots(response.data['layout'])
 
@@ -521,7 +521,7 @@ defineExpose({
   @apply bg-blue-500/50
 }
 .app .app-sidebar {
-  @apply shrink-0 absolute lg:relative z-20 flex grow-0 h-full border-r border-r-gray-800 bg-gray-800 text-gray-200 transition lg:transition-[width]
+  @apply shrink-0 absolute lg:relative z-20 flex grow-0 h-full border-r border-r-gray-800 bg-gray-800 text-gray-100 transition lg:transition-[width]
 }
 .app .app-left + .app-sidebar {
   @apply left-12 lg:left-0 max-w-[calc(100%_-_3rem)]

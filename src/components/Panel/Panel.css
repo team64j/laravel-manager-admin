@@ -11,7 +11,7 @@
     @apply w-full
 }
 .app-panel .app-panel__data thead {
-    @apply sticky top-0 z-10 bg-gray-100 dark:bg-gray-600
+    @apply sticky top-0 z-10 bg-slate-100 dark:bg-gray-600
 }
 .app-panel .app-panel__data thead tr:first-of-type div {
     @apply px-2 py-1 first:pl-6 last:pr-6 truncate

@@ -38,7 +38,7 @@
     @apply relative
 }
 .app-tree__menu-item button {
-    @apply flex justify-center items-center w-6 h-6 mx-0.5 p-0 border-0 focus:ring-0 text-gray-400 hover:text-gray-500 dark:text-gray-200 dark:hover:text-gray-100
+    @apply flex justify-center items-center w-6 h-6 mx-0.5 p-0 border-0 focus:ring-0 text-gray-400 hover:text-gray-500 dark:text-gray-100 dark:hover:text-gray-100
 }
 .app-tree__menu-item .app-tree__context-menu {
     @apply absolute top-full m-1
@@ -59,14 +59,14 @@
     @apply absolute -ml-5 w-6 flex items-center justify-center cursor-pointer text-gray-300 hover:text-blue-500
 }
 .app-tree__node .app-tree__node-icon {
-    @apply pl-1 cursor-pointer text-gray-400 dark:text-gray-400
+    @apply pl-1 cursor-pointer text-gray-400 dark:text-gray-300
 }
 .app-tree__node .app-tree__node-icon > i:first-of-type {
     @apply inline-block w-7 h-8 leading-8;
     font-size: 1.2rem;
 }
 .app-tree__node .app-tree__node-title {
-    @apply truncate px-1 grow leading-8 cursor-pointer dark:text-gray-200
+    @apply truncate px-1 grow leading-8 cursor-pointer dark:text-gray-100
 }
 .app-tree__node .app-tree__node-append {
     @apply pr-1.5 text-sm opacity-80 whitespace-nowrap
