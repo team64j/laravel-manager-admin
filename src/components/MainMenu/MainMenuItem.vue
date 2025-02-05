@@ -30,7 +30,7 @@ if (props.data['values']) {
 
     <div v-if="data['prev'] || data['next']" class="py-1 !bg-inherit" @click.stop="">
       <Button type="button" class="-ml-2 btn-sm btn-gray"
-              :class="{ 'pointer-events-none opacity-50': !data['prev'] }"
+              :disabled="!data['prev']"
               @click.stop="$emit('action', 'onNav', $event, data['prev'], currentInstance.parent.props)">
         <i class="fa fa-angle-left fa-fw"/>
       </Button>
@@ -38,7 +38,7 @@ if (props.data['values']) {
           {{ data['info'] }}
         </span>
       <Button type="button" class="-mr-2 btn-sm btn-gray"
-              :class="{ 'pointer-events-none opacity-50': !data['next'] }"
+              :disabled="!data['next']"
               @click.stop="$emit('action', 'onNav', $event, data['next'], currentInstance.parent.props)">
         <i class="fa fa-angle-right fa-fw"/>
       </Button>

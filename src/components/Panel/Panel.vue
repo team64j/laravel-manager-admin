@@ -8,11 +8,12 @@ import { getValue } from '../../composables'
 import Select from '../Select/Select.vue'
 import Input from '../Input/Input.vue'
 import Button from '../Button/Button.vue'
+import Datetime from '../Datetime/Datetime.vue'
 
 import('./Panel.css')
 
 export default {
-  components: { Button, Input, Select, draggable },
+  components: { Datetime, Button, Input, Select, draggable },
   __isStatic: true,
   name: 'Panel',
   emits: ['action', 'update:props', 'update:modelValue'],
@@ -60,7 +61,7 @@ export default {
     return {
       keyStorage: key,
       filterTimer: 0,
-      filterValues: {},
+      filterValues: { ...this.currentRoute.query },
       settings: store.getters.get(`Session.${key}`, {}),
       idContextMenu: null,
       showContextMenu: false,
@@ -497,6 +498,71 @@ export default {
         this.$emit('action', 'pagination', ...arguments)
       }
     },
+    getFilters () {
+      const filters = []
+      let propFilters = this.filters
+
+      if (this.filters) {
+        if (Array.isArray(propFilters)) {
+          const keys = propFilters.map(i => i.name || i)
+          const values = propFilters.map(i => typeof i === 'object' ? i : { name: i })
+          propFilters = Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]))
+        }
+
+        for (const i of this.columns) {
+          if (propFilters[i.name]) {
+            if (typeof propFilters[i.name] == 'boolean') {
+              propFilters[i.name] = {
+                name: i.name
+              }
+            }
+
+            filters.push(propFilters[i.name])
+          } else if (i.filter) {
+            filters.push({ name: i.name })
+          } else {
+            filters.push(null)
+          }
+        }
+      }
+
+      return filters
+    },
+    onUpdateFilters (value, ctx, filter) {
+      clearTimeout(this.filterTimer)
+
+      let name = filter.name,
+          delay = 300
+
+      if (filter?.type === 'date' || filter?.type === 'datetime') {
+        value = [value]
+      }
+
+      // if (filter?.type === 'date' || filter?.type === 'datetime') {
+      //   value = [
+      //     event.target.parentElement.firstElementChild['value'],
+      //     event.target.parentElement.lastElementChild['value']
+      //   ]
+      //
+      //   if (value[0] === '' || value[1] === '') {
+      //     value = ''
+      //   }
+      // } else if (filter.data && !filter.data.some(i => i.key === value) && filter.data.some(i => i.value === value)) {
+      //   value = filter.data.find(i => i.value === value)['key']
+      // }
+
+      if (this.propUrl) {
+        this.filterTimer = setTimeout(() => {
+          if (value === '') {
+            delete this.filterValues[name]
+          } else {
+            this.filterValues[name] = value
+          }
+
+          this.load(router.parse({ query: this.filterValues }))
+        }, delay)
+      }
+    },
     getColumnFilters () {
       const filters = []
       let propFilters = this.filters
@@ -541,11 +607,10 @@ export default {
 
       return filters
     },
-    columnFilters (event, filter) {
+    columnFilters (value, filter) {
       clearTimeout(this.filterTimer)
-      let value = event.target.value,
-          name = filter.name,
-          delay = event.target.tagName === 'INPUT' ? 300 : 0
+      let name = filter.name,
+          delay = 300
 
       if (filter?.type === 'date' || filter?.type === 'datetime') {
         value = [
@@ -692,51 +757,86 @@ export default {
           </template>
         </tr>
         <tr v-if="this.filters" class="app-panel__filters">
-          <th v-for="f in getColumnFilters()">
+          <th v-for="f in getFilters()">
             <div v-if="f">
-
               <template v-if="f?.type === 'date'">
-                <input type="date"
-                       name="filter"
-                       :value="f.data.from"
+                <Input type="date"
+                       :value="filterValues[f.name]?.from || f.data.from"
                        :min="f.data.min"
                        :max="f.data.to"
-                       @input="columnFilters($event, f)"
-                       autocomplete="off"/>
-                <input type="date"
-                       name="filter"
-                       :value="f.data.to"
+                       input-class="input-sm"
+                       @action="action"
+                       @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
+
+                <Input type="date"
+                       :value="filterValues[f.name]?.to || f.data.to"
+                       input-class="input-sm"
                        :min="f.data.from"
                        :max="f.data.max"
-                       @input="columnFilters($event, f)"
-                       autocomplete="off"/>
+                       @action="action"
+                       @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
               </template>
 
-              <select v-else-if="f?.data"
-                      @input="columnFilters($event, f)"
-                      autocomplete="off">
-                <option v-for="o in f.data" :value="o.key" :selected="o.selected">{{ o.value }}</option>
-              </select>
+              <Select v-else-if="f?.data"
+                      v-model="filterValues[f.name]"
+                      :data="f.data"
+                      input-class="input-sm"
+                      @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
 
-              <template v-else>
-                <Input
-                    :placeholder="f.placeholder ?? '...'"
-                    :value="filterValues?.[f.name]"
-                    :clear="true"
-                    @input="columnFilters($event, f)"/>
-
-                <!--                <input type="text"
-                                       name="filter"
-                                       @input="columnFilters($event, f)"
-                                       :value="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]"
-                                       :placeholder="f.placeholder ?? '...'"
-                                       autocomplete="off">
-                                <i v-if="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove"
-                                   @click="columnFilterClear(f.name)"/>-->
-              </template>
-
+              <Input v-else
+                     v-model="filterValues[f.name]"
+                     :clear="true"
+                     input-class="input-sm"
+                     :placeholder="f.placeholder ?? '...'"
+                     @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
             </div>
           </th>
+          <!--          <th v-for="f in getColumnFilters()">
+                      <div v-if="f">
+
+                        <template v-if="f?.type === 'date'">
+                          <input type="date"
+                                 name="filter"
+                                 :value="f.data.from"
+                                 :min="f.data.min"
+                                 :max="f.data.to"
+                                 @input="columnFilters($event, f)"
+                                 autocomplete="off"/>
+                          <input type="date"
+                                 name="filter"
+                                 :value="f.data.to"
+                                 :min="f.data.from"
+                                 :max="f.data.max"
+                                 @input="columnFilters($event, f)"
+                                 autocomplete="off"/>
+                        </template>
+
+                        <select v-else-if="f?.data"
+                                @input="columnFilters($event, f)"
+                                autocomplete="off">
+                          <option v-for="o in f.data" :value="o.key" :selected="o.selected">{{ o.value }}</option>
+                        </select>
+
+                        <template v-else>
+                          <Input
+                              input-class="input-sm"
+                              :placeholder="f.placeholder ?? '...'"
+                              v-model="filterValues[f.name]"
+                              :clear="true"
+                              @update:modelValue="columnFilters($event, f)"/>
+
+                          &lt;!&ndash;                <input type="text"
+                                                 name="filter"
+                                                 @input="columnFilters($event, f)"
+                                                 :value="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]"
+                                                 :placeholder="f.placeholder ?? '...'"
+                                                 autocomplete="off">
+                                          <i v-if="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove"
+                                             @click="columnFilterClear(f.name)"/>&ndash;&gt;
+                        </template>
+
+                      </div>
+                    </th>-->
         </tr>
         </thead>
 
@@ -825,12 +925,12 @@ export default {
     <div v-if="meta?.['pagination']?.['prev'] || meta?.['pagination']?.['next']" class="app-panel__pagination">
       <div class="app-panel__pagination-arrows">
         <Button class="btn-sm btn-gray"
-                :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['prev'] }"
+                :disabled="!meta['pagination']['prev']"
                 @click="pagination(meta['pagination']['prev'])">
           <i class="fa fa-angle-left fa-fw"/>
         </Button>
         <Button class="btn-sm btn-gray ml-1"
-                :class="{ 'pointer-events-none opacity-50' : !meta['pagination']['next'] }"
+                :disabled="!meta['pagination']['next']"
                 @click="pagination(meta['pagination']['next'])">
           <i class="fa fa-angle-right fa-fw"/>
         </Button>

@@ -41,8 +41,7 @@ function onMousedown (event) {
 }
 
 function onClear (event) {
-  emit('action', 'clear:input', event, currentInstance)
-  emit('update:modelValue', '', currentInstance)
+  model.value = ''
   input.value.focus()
 }
 
@@ -92,9 +91,9 @@ defineExpose({
         <i class="fa fa-angle-up app-input__plus" @click="onClickPlus"/>
         <i class="fa fa-angle-down app-input__minus" @click="onClickMinus"/>
       </template>
-      <i v-if="clear"
-         class="fa fa-circle-xmark absolute block right-0 top-0 my-4 mx-3 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
-         @click="onClear"/>
+      <i v-if="clear && model"
+         class="app-input__clear fa fa-circle-xmark absolute block right-2 my-auto cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
+         @click="onClear" :data-model="model"/>
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
     <slot name="item"/>
@@ -119,13 +118,16 @@ defineExpose({
       <i class="fa fa-angle-down app-input__minus" @click="onClickMinus"/>
     </template>
     <i v-if="clear && model"
-       class="fa fa-circle-xmark absolute block right-0 top-0 mt-3 mr-2 cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
-       @click="onClear"/>
+       class="app-input__clear fa fa-circle-xmark absolute block right-2 my-auto cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
+       @click="onClear" :data-model="model"/>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
   </div>
 </template>
 
 <style scoped>
+input ~ .app-input__clear {
+  @apply z-[11]
+}
 .app-input__number input::-webkit-outer-spin-button,
 .app-input__number input::-webkit-inner-spin-button {
   @apply appearance-none m-0
