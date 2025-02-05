@@ -1,5 +1,5 @@
 .app-panel {
-    @apply overflow-hidden flex flex-col grow bg-white dark:bg-gray-750
+    @apply overflow-hidden flex flex-col grow bg-white dark:bg-gray-700
 }
 .app-panel .app-panel__data {
     @apply grow overflow-auto rounded
