@@ -246,7 +246,7 @@ document.addEventListener('keydown', event => {
   @apply rounded
 }
 .app-editor .ͼ1 .cm-gutters {
-  @apply border-none bg-transparent dark:bg-transparent
+  @apply border-0 border-r border-solid border-r-gray-50 dark:border-r-gray-600 bg-transparent dark:bg-transparent
 }
 .app-editor .ͼ1 .cm-content {
   @apply grow !basis-0 max-w-full whitespace-pre-wrap break-words break-all
