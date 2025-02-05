@@ -455,7 +455,7 @@ defineExpose({
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
-            class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 w-12 app-left app-position-vertical dark">
+            class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 w-12 app-left app-position-vertical dark">
           <div class="grow-0 flex">
             <global-component :layout="data.layout['left.top']" @action="_action"/>
           </div>
