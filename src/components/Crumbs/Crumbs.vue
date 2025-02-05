@@ -11,7 +11,7 @@ const props = defineProps({
 
 <template>
   <div
-      class="app-crumbs flex items-center px-2 py-1 text-sm bg-white dark:bg-gray-750 border-t border-slate-100 dark:border-gray-800">
+      class="app-crumbs flex items-center px-2 py-1 text-sm bg-white dark:bg-gray-700 border-t border-slate-100 dark:border-gray-800">
     <template v-for="i in props.data">
 
       <router-link v-if="i.to"

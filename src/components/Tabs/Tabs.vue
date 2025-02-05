@@ -68,7 +68,7 @@ function _action () {
            v-show="k === index"
            :id="id + `Tab-` + i.id"
            :class="i.class"
-           class="app-tabs__page relative flex flex-wrap items-start content-start rounded overflow-auto grow bg-white dark:bg-gray-750">
+           class="app-tabs__page relative flex flex-wrap items-start content-start rounded overflow-auto grow bg-white dark:bg-gray-700">
         <slot v-if="slots[i.id]" :name="i.id"/>
         <div v-else class="grow flex items-center justify-center w-full h-full">
           <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>

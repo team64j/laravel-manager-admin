@@ -442,7 +442,7 @@ defineExpose({
        }">
     <template v-if="data.layout">
       <div
-          class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-800 text-white/80 dark app-position-horizontal">
+          class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
           <global-component :layout="data.layout['top.left']" @action="_action"/>
         </div>
