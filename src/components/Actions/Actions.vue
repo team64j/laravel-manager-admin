@@ -99,7 +99,7 @@ function clickGroup (event) {
 
 <style>
 .app-actions {
-  @apply fixed z-20 flex rounded-b bg-white/60 dark:bg-gray-700/60 p-2 right-2
+  @apply fixed z-20 flex rounded-b bg-white/60 dark:bg-gray-750/60 p-2 right-2
 }
 .app-actions > button, .app-actions > div {
   @apply inline-flex mx-0.5

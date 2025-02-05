@@ -102,7 +102,7 @@ defineExpose({
   <div v-else class="relative flex items-center" :class="[$props.class, type === 'number' ? 'app-input__number' : '']">
     <div v-if="data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
          :class="[type === 'button' ? 'right-0 bottom-0' : '']">
-      <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+      <i class="inline-block rounded-full border-2 border-gray-200 border-r-gray-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
     </div>
     <input v-model="model"
            ref="input"

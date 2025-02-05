@@ -74,7 +74,7 @@ function onMouseupResizer () {
   @apply flex grow overflow-hidden
 }
 .app-main__crumbs {
-  @apply grow-0 bg-slate-100 dark:bg-gray-750
+  @apply grow-0 bg-gray-100 dark:bg-gray-800
 }
 .app-main__resizer {
   @apply absolute top-0 right-0 bottom-0 w-[2px] cursor-col-resize bg-gray-50 dark:bg-gray-600 hover:bg-blue-500 dark:hover:bg-blue-500 transition

@@ -139,7 +139,7 @@ function bootstrap () {
 
       setRoutes(response.data['data']['routes'])
 
-      setAssets(response.data['data']['assets'])
+      //setAssets(response.data['data']['assets'])
 
       //setSlots(response.data['layout'])
 
@@ -442,7 +442,7 @@ defineExpose({
        }">
     <template v-if="data.layout">
       <div
-          class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
+          class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-800 text-white/80 dark app-position-horizontal">
         <div class="grow-0 flex app-position-start">
           <global-component :layout="data.layout['top.left']" @action="_action"/>
         </div>
@@ -521,7 +521,7 @@ defineExpose({
   @apply bg-blue-500/50
 }
 .app .app-sidebar {
-  @apply shrink-0 absolute lg:relative z-20 flex grow-0 h-full border-r border-r-gray-800 bg-gray-750 text-gray-200 transition lg:transition-[width]
+  @apply shrink-0 absolute lg:relative z-20 flex grow-0 h-full border-r border-r-gray-800 bg-gray-800 text-gray-200 transition lg:transition-[width]
 }
 .app .app-left + .app-sidebar {
   @apply left-12 lg:left-0 max-w-[calc(100%_-_3rem)]

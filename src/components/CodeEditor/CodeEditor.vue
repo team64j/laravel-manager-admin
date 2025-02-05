@@ -221,7 +221,7 @@ document.addEventListener('keydown', event => {
   @apply block px-4 py-1 cursor-pointer hover:bg-blue-500
 }
 .app-editor.app-editor__full-screen {
-  @apply fixed z-50 left-0 top-0 right-0 bottom-0 bg-slate-100 dark:bg-gray-800;
+  @apply fixed z-50 left-0 top-0 right-0 bottom-0 bg-gray-100 dark:bg-gray-800;
   z-index: 90099;
 }
 .app-editor.app-editor__full-size {
@@ -246,7 +246,7 @@ document.addEventListener('keydown', event => {
   @apply rounded
 }
 .app-editor .ͼ1 .cm-gutters {
-  @apply border-none
+  @apply border-none bg-transparent dark:bg-transparent
 }
 .app-editor .ͼ1 .cm-content {
   @apply grow !basis-0 max-w-full whitespace-pre-wrap break-words break-all

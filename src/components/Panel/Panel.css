@@ -1,14 +1,17 @@
 .app-panel {
-    @apply overflow-hidden flex flex-col grow bg-white dark:bg-gray-700
+    @apply overflow-hidden flex flex-col grow bg-white dark:bg-gray-750
 }
 .app-panel .app-panel__data {
     @apply grow overflow-auto rounded
+}
+.app-panel div + .app-panel__data {
+    @apply rounded-t-none
 }
 .app-panel .app-panel__data table {
     @apply w-full
 }
 .app-panel .app-panel__data thead {
-    @apply sticky top-0 z-10 bg-slate-100 dark:bg-gray-600
+    @apply sticky top-0 z-10 bg-gray-100 dark:bg-gray-600
 }
 .app-panel .app-panel__data thead tr:first-of-type div {
     @apply px-2 py-1 first:pl-6 last:pr-6 truncate
@@ -26,7 +29,7 @@
     @apply border-r border-r-transparent last:border-0
 }
 .app-panel:not(.app-panel__view-icon) .app-panel__data tbody tr {
-    @apply even:bg-slate-400/5
+    @apply even:bg-gray-400/5
 }
 .app-panel .app-panel__data tbody tr {
     @apply hover:bg-blue-600/10 even:hover:bg-blue-600/10
@@ -35,7 +38,7 @@
     @apply bg-blue-600/10 even:bg-blue-600/10
 }
 /*.app-panel:not(.app-panel__view-icon) .app-panel__data tbody tr:not(.disabled) {
-    @apply even:bg-slate-400/5
+    @apply even:bg-gray-400/5
 }
 .app-panel .app-panel__data tbody tr:not(.disabled) {
     @apply hover:bg-blue-600/10 even:hover:bg-blue-600/10
@@ -113,7 +116,7 @@
     @apply rounded-none
 }
 .app-panel__context-menu {
-    @apply fixed left-0 top-0 min-w-64 py-1 bg-white dark:text-gray-100 dark:bg-gray-750 rounded shadow-2xl
+    @apply fixed left-0 top-0 min-w-64 py-1 bg-white dark:text-gray-100 dark:bg-gray-800 rounded shadow-2xl
 }
 .app-panel__context-menu.app-panel__context-menu__position-left {
     @apply left-0 right-auto

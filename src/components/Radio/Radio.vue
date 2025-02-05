@@ -124,7 +124,7 @@ defineExpose({
   @apply absolute z-[-1] left-0 top-0 w-full h-full m-0 p-0 rounded bg-none border-none
 }
 .label-as-button input:hover:not(:checked) {
-  @apply bg-slate-200 dark:bg-gray-600
+  @apply bg-gray-200 dark:bg-gray-600
 }
 .label-as-button input ~ i {
   @apply invisible

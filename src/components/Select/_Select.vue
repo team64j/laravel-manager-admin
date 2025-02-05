@@ -300,7 +300,7 @@ select + input + i {
   @apply hidden
 }
 select optgroup {
-  @apply font-bold bg-slate-100 dark:bg-gray-700
+  @apply font-bold bg-gray-100 dark:bg-gray-700
 }
 select option {
   @apply bg-white dark:bg-gray-800

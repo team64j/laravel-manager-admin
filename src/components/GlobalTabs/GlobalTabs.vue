@@ -166,7 +166,7 @@ export default {
   <div class="grow flex flex-col overflow-hidden">
 
     <div class="grow-0 dark">
-      <div ref="panel" class="relative flex flex-nowrap bg-slate-100 dark:bg-gray-800 overflow-hidden !overflow-x-auto">
+      <div ref="panel" class="relative flex flex-nowrap bg-gray-100 dark:bg-gray-800 overflow-hidden !overflow-x-auto">
         <Button v-for="(tab, i) in this.tabs"
                 :key="i"
                 :data-to="tab.path"
