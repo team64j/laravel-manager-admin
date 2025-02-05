@@ -144,8 +144,7 @@ export default {
       const route = router.currentRoute.value
       const id = this.key(node)
 
-      if (store.getters.get('treeSelect') && route['path'] ===
-          router.parse({ ...this.propRoute, ...route }).path) {
+      if (store.getters.get('treeSelect') && route['path'] === router.parse({ ...this.propRoute, ...route }).path) {
         const context = store.getters.get('context')
         const event = store.getters.get('event')
         context.loading = true
@@ -163,8 +162,17 @@ export default {
           context.model = data['id']
           this.lastSelectValue = data['id'] + ' - ' + data['title']
           store.dispatch('set', { treeSelect: false })
+          if (context?.exposed?.input) {
+            context.exposed.input.blur()
+          }
+          event.target.classList.remove('focus')
         }).catch(() => {
-          setTimeout(() => event.target.classList.add('focus'), 0)
+          setTimeout(() => {
+            event.target.classList.add('focus')
+            if (context?.exposed?.input) {
+              context.exposed.input.focus()
+            }
+          }, 0)
           store.dispatch('set', { treeSelect: true })
         }).finally(() => {
           context.loading = false

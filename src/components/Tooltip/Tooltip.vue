@@ -67,26 +67,25 @@ document.addEventListener('click', destroy)
 
 <template>
   <teleport to="body">
-    <transition>
-      <div v-show="isShow"
-           ref="rootElement"
-           class="app-tooltip"
-           :class="{
-            '!bg-rose-600': type === 'error'
+    <div ref="rootElement"
+         class="app-tooltip"
+         :class="{
+            '!bg-rose-600': type === 'error',
+            '!visible !opacity-100': isShow,
+            '!duration-0': !isShow
           }"
-           :style="style"
-           @click.stop=""
-           @mousedown.stop=""
-           @mouseover.stop="">
-        <div class="pointer-events-none" v-html="html"/>
-      </div>
-    </transition>
+         :style="style"
+         @click.stop=""
+         @mousedown.stop=""
+         @mouseover.stop="">
+      <div class="pointer-events-none" v-html="html"/>
+    </div>
   </teleport>
 </template>
 
 <style scoped>
 .app-tooltip {
-  @apply fixed z-[999] -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-gray-50/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50 text-sm shadow transition-all
+  @apply fixed z-[999] opacity-0 invisible -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-gray-50/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50 text-sm shadow transition-all
 }
 </style>
 

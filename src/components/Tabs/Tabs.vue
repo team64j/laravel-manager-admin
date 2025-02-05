@@ -79,6 +79,9 @@ function _action () {
 </template>
 
 <style>
+.app-sidebar > .app-tabs > .app-tabs__page {
+  @apply rounded-none
+}
 .app-tabs__vertical {
   @apply !flex-row h-auto self-stretch
 }

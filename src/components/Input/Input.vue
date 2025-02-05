@@ -56,7 +56,8 @@ function onClickMinus () {
 }
 
 defineExpose({
-  model
+  model,
+  input
 })
 </script>
 
