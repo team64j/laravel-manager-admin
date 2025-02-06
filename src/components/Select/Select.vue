@@ -1,9 +1,9 @@
 <script setup>
 import { computed, getCurrentInstance, reactive } from 'vue'
-import { props as _props } from '../../composables'
-import RadioComponent from '../Radio/Radio.vue'
-import CheckboxComponent from '../Checkbox/Checkbox.vue'
-import Button from '../Button/Button.vue'
+import { props as _props } from '@/composables'
+import RadioComponent from '@/components/Radio/Radio.vue'
+import CheckboxComponent from '@/components/Checkbox/Checkbox.vue'
+import Button from '@/components/Button/Button.vue'
 
 defineOptions({
   name: 'Select',

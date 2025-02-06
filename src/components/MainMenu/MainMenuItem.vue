@@ -1,7 +1,7 @@
 <script setup>
 import { getCurrentInstance } from 'vue'
-import store from '../../store'
-import Button from '../Button/Button.vue'
+import store from '@/store'
+import Button from '@/components/Button/Button.vue'
 
 const currentInstance = getCurrentInstance()
 const props = defineProps(['data', 'level'])

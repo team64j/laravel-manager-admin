@@ -1,8 +1,8 @@
 <script setup>
 import { computed, getCurrentInstance } from 'vue'
-import { uniqId } from '../../utils'
-import { action } from '../../composables'
-import store from '../../store'
+import { uniqId } from '@/utils'
+import { action } from '@/composables'
+import store from '@/store'
 import TabsNavigation from './TabsNavigation.vue'
 
 defineOptions({

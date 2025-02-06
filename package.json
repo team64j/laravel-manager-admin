@@ -27,7 +27,8 @@
         "vue-codemirror": "^6.1.1",
         "vue-router": "^4.2.5",
         "vuedraggable": "^4.1.0",
-        "vuex": "^4.1.0"
+        "vuex": "^4.1.0",
+        "vite-plugin-vue-devtools": "^7.7.1"
     },
     "private": true,
     "scripts": {
@@ -40,5 +41,7 @@
         "not dead",
         "not ie 11"
     ],
-    "main": "main.js"
+    "main": "main.js",
+    "dependencies": {
+    }
 }

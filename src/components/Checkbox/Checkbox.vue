@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance } from 'vue'
-import { props as _props } from '../../composables'
+import { props as _props } from '@/composables'
 
 defineOptions({
   name: 'Checkbox',

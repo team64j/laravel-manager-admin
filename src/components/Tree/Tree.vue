@@ -1,10 +1,10 @@
 <script>
 import { provide } from 'vue'
-import { action } from '../../composables'
+import { action } from '@/composables'
+import router from '@/router'
+import store from '@/store'
 import TreeNode from './TreeNode.vue'
 import TreeMenuItem from './TreeMenuItem.vue'
-import router from '../../router'
-import store from '../../store'
 
 import('./Tree.css')
 

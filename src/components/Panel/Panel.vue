@@ -1,14 +1,14 @@
 <script>
 import { compile, h, reactive, toRaw, watch } from 'vue'
 import draggable from 'vuedraggable'
-import router from '../../router'
-import store from '../../store'
-import { uniqId } from '../../utils'
-import { getValue } from '../../composables'
-import Select from '../Select/Select.vue'
-import Input from '../Input/Input.vue'
-import Button from '../Button/Button.vue'
-import Datetime from '../Datetime/Datetime.vue'
+import router from '@/router'
+import store from '@/store'
+import { uniqId } from '@/utils'
+import { getValue } from '@/composables'
+import Select from '@/components/Select/Select.vue'
+import Input from '@/components/Input/Input.vue'
+import Button from '@/components/Button/Button.vue'
+import Datetime from '@/components/Datetime/Datetime.vue'
 
 import('./Panel.css')
 

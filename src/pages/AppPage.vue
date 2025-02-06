@@ -1,10 +1,10 @@
 <script setup>
 import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
-import { action } from '../composables'
-import { isNumber } from '../utils'
-import router from '../router'
-import store from '../store'
-import GlobalComponent from '../components/GlobalComponent/GlobalComponent.vue'
+import { action } from '@/composables'
+import { isNumber } from '@/utils'
+import router from '@/router'
+import store from '@/store'
+import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
 
 defineOptions({
   name: 'AppPage'

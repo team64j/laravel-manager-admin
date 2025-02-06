@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance, reactive } from 'vue'
-import { props as _props } from '../../composables'
+import { props as _props } from '@/composables'
 
 const currentInstance = getCurrentInstance()
 

@@ -1,6 +1,6 @@
 <script setup>
 import { getCurrentInstance, nextTick, reactive, watchEffect } from 'vue'
-import store from '../../store'
+import store from '@/store'
 
 const currentInstance = getCurrentInstance()
 

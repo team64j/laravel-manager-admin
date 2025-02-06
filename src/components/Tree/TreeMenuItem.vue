@@ -1,7 +1,7 @@
 <script setup>
 import { nextTick, reactive } from 'vue'
-import router from '../../router'
-import Button from '../Button/Button.vue'
+import router from '@/router'
+import Button from '@/components/Button/Button.vue'
 
 const props = defineProps(['icon', 'title', 'loader', 'click', 'to', 'position', 'actions', 'settings'])
 

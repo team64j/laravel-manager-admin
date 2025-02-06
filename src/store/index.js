@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { getValue } from '../composables'
+import { getValue } from '@/composables'
 
 const state = {}
 

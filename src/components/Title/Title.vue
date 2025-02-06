@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, Transition } from 'vue'
-import router from '../../router'
+import router from '@/router'
 
 defineOptions({
   name: 'Title',

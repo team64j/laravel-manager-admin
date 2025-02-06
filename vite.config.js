@@ -1,5 +1,7 @@
 //import { splitVendorChunkPlugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueDevTools from 'vite-plugin-vue-devtools'
+import { fileURLToPath, URL } from 'node:url'
 
 export default {
   base: './',
@@ -35,12 +37,13 @@ export default {
   },
   plugins: [
     //splitVendorChunkPlugin(),
-    vue()
+    vue(),
+    vueDevTools()
   ],
   resolve: {
     alias: {
       vue: 'vue/dist/vue.esm-bundler.js',
-      '@/': '/src/js/'
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     },
     extensions: ['.js', '.vue', '.json']
   }

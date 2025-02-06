@@ -1,5 +1,5 @@
 <script setup>
-import { props as _props } from '../../composables'
+import { props as _props } from '@/composables'
 
 defineOptions({
   name: 'Button',

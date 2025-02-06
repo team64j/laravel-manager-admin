@@ -1,9 +1,9 @@
 <script setup>
 import { nextTick, reactive, ref, shallowRef } from 'vue'
-import store from '../../store'
-import Button from '../Button/Button.vue'
-import Select from '../Select/Select.vue'
-import Input from '../Input/Input.vue'
+import store from '@/store'
+import Button from '@/components/Button/Button.vue'
+import Select from '@/components/Select/Select.vue'
+import Input from '@/components/Input/Input.vue'
 
 defineOptions({
   name: 'Datepicker'

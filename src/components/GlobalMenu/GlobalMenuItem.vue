@@ -1,8 +1,8 @@
 <script setup>
 import { computed, getCurrentInstance } from 'vue'
-import store from '../../store'
-import router from '../../router'
-import Button from '../Button/Button.vue'
+import store from '@/store'
+import router from '@/router'
+import Button from '@/components/Button/Button.vue'
 
 const currentInstance = getCurrentInstance()
 

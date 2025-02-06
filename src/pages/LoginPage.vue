@@ -1,10 +1,10 @@
 <script>
-import router from '../router'
-import store from '../store'
-import Logo from '../components/Logo/Logo.vue'
-import Button from '../components/Button/Button.vue'
-import Checkbox from '../components/Checkbox/Checkbox.vue'
-import Input from '../components/Input/Input.vue'
+import router from '@/router'
+import store from '@/store'
+import Logo from '@/components/Logo/Logo.vue'
+import Button from '@/components/Button/Button.vue'
+import Checkbox from '@/components/Checkbox/Checkbox.vue'
+import Input from '@/components/Input/Input.vue'
 
 export default {
   name: 'LoginPage',

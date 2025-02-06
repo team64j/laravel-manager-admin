@@ -1,6 +1,6 @@
 import axios from 'axios'
-import store from '../store'
-import router from '../router'
+import store from '@/store'
+import router from '@/router'
 import { notify } from '@kyvg/vue3-notification'
 
 axios.defaults['headers']['common']['Accept'] = 'application/json'

@@ -1,7 +1,7 @@
 <script setup>
 import { getCurrentInstance, onMounted } from 'vue'
 import GlobalMenuItem from './GlobalMenuItem.vue'
-import store from '../../store'
+import store from '@/store'
 
 import('./GlobalMenu.css')
 

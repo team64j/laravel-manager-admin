@@ -1,9 +1,9 @@
 <script setup>
 import { getCurrentInstance, reactive, shallowRef } from 'vue'
-import GlobalComponent from '../GlobalComponent/GlobalComponent.vue'
-import router from '../../router'
-import { action } from '../../composables'
-import Button from '../Button/Button.vue'
+import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
+import router from '@/router'
+import { action } from '@/composables'
+import Button from '@/components/Button/Button.vue'
 
 defineOptions({
   name: 'Modal',

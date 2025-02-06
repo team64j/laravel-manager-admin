@@ -1,4 +1,4 @@
-import { uniqId } from '../utils'
+import { uniqId } from '@/utils'
 
 export const props = {
   class: [Array, Object, String],

@@ -1,11 +1,11 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
-import { action } from '../../composables'
-import { mergeDeep } from '../../utils'
-import router from '../../router'
-import store from '../../store'
-import Frame from '../Frame/Frame.vue'
-import Button from '../Button/Button.vue'
+import { action } from '@/composables'
+import { mergeDeep } from '@/utils'
+import router from '@/router'
+import store from '@/store'
+import Frame from '@/components/Frame/Frame.vue'
+import Button from '@/components/Button/Button.vue'
 
 export default {
   name: 'GlobalTabs',

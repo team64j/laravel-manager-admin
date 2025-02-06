@@ -1,9 +1,9 @@
 <script setup>
 import { getCurrentInstance, onMounted } from 'vue'
-import { action } from '../../composables'
+import { action } from '@/composables'
 import MainMenuItem from './MainMenuItem.vue'
-import router from '../../router'
-import store from '../../store'
+import router from '@/router'
+import store from '@/store'
 
 defineOptions({
   name: 'MainMenu',
