@@ -157,7 +157,7 @@ function action () {
            @click="$emit('action', 'toggleNode', node)">
         <i v-if="node['loading']"
            class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-4 w-4 animate-spin"/>
-        <i v-else class="fa fa-angle-right fa-fw" :class="{ 'rotate-90': node['data']?.length }"/>
+        <i v-else class="fa fa-angle-right fa-fw" :class="{ 'rotate-90': node['data']?.['length'] }"/>
       </div>
 
       <div class="app-tree__node-icon"
@@ -165,7 +165,7 @@ function action () {
            @contextmenu.prevent="$emit('action', 'buildContextMenu', $event, node)">
         <i v-if="icon" class="fa-fw" :class="icon"/>
         <template v-else-if="node['data'] !== undefined || node['category']">
-          <i v-if="node['data']?.length"
+          <i v-if="node['data']?.['length']"
              :class="data.config['icons']['default-folder-open'] ?? 'far fa-folder-open'"
              class="fa-fw pl-0.5 w-5"/>
           <i v-else
@@ -191,7 +191,7 @@ function action () {
       </template>
     </div>
 
-    <template v-if="node['data']?.length">
+    <template v-if="node['data']?.['length']">
       <div class="app-tree__node-children">
         <tree-node v-for="item in node['data']" v-bind="{ node: item, level: level + 1 }" @action="action"/>
 

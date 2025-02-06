@@ -1,9 +1,9 @@
 <script>
 import KeepAliveComponent from './KeepAlive'
-import { action } from '@/composables'
-import { mergeDeep } from '@/utils'
 import router from '@/router'
 import store from '@/store'
+import { action } from '@/composables'
+import { mergeDeep } from '@/utils'
 import Frame from '@/components/Frame/Frame.vue'
 import Button from '@/components/Button/Button.vue'
 
