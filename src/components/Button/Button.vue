@@ -25,7 +25,7 @@ const props = defineProps({
 
     <i v-if="icon" :class="icon" class="fa fa-fw"/>
 
-    <span v-if="value" v-html="value"/>
+    <span v-if="value" v-html="value" class="truncate block"/>
 
     <slot name="default"/>
   </button>

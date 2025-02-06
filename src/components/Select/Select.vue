@@ -158,11 +158,11 @@ if (props.load && props.url) {
               :id="id"
               class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
               :class="inputClass"
+              :value="inputValue || placeholder"
+              :loading="data.loading"
               @focus="onFocus"
               @blur="onBlur"
-              @mousedown="onMousedown"
-              :value="inputValue || placeholder"
-              :loading="data.loading"/>
+              @mousedown="onMousedown"/>
 
       <div v-if="data.options?.length"
            class="hidden absolute z-20 left-0 top-full mt-1 p-2 w-full rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default"
