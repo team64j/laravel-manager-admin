@@ -442,7 +442,7 @@ defineExpose({
        }">
     <template v-if="data.layout">
       <div
-          class="grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 dark app-position-horizontal">
+          class="dark app-position-horizontal grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 border-b border-b-gray-900">
         <div class="grow-0 flex app-position-start">
           <global-component :layout="data.layout['top.left']" @action="_action"/>
         </div>
@@ -455,7 +455,7 @@ defineExpose({
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
-            class="z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 w-12 app-left app-position-vertical dark">
+            class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 w-12 border-r border-r-gray-800 app-position-vertical dark">
           <div class="grow-0 flex">
             <global-component :layout="data.layout['left.top']" @action="_action"/>
           </div>

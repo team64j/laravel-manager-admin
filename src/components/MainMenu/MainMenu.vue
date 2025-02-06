@@ -185,7 +185,7 @@ defineExpose({
 
 <style>
 .app-main-menu > ul {
-  @apply relative flex cursor-default
+  @apply relative z-10 flex cursor-default
 }
 .app-main-menu li {
   @apply inline-flex select-none
@@ -219,5 +219,8 @@ defineExpose({
 }
 .app-main-menu.app-main-menu__active li.app-main-menu__hover > ul {
   @apply opacity-100 visible
+}
+.app-main-menu.app-main-menu__active::before {
+  @apply content-[""] absolute z-0 left-0 top-0 right-0 bottom-0 bg-black/5
 }
 </style>
