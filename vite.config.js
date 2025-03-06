@@ -1,6 +1,6 @@
 //import { splitVendorChunkPlugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
+//import vueDevTools from 'vite-plugin-vue-devtools'
 import { fileURLToPath, URL } from 'node:url'
 
 export default {
@@ -38,7 +38,7 @@ export default {
   plugins: [
     //splitVendorChunkPlugin(),
     vue(),
-    vueDevTools()
+    //vueDevTools()
   ],
   resolve: {
     alias: {
