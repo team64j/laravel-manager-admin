@@ -18,8 +18,9 @@ const mutations = {
 
     sessionStorage[storageKey] = JSON.stringify(state)
   },
-  clear () {
+  clear (state) {
     sessionStorage[storageKey] = JSON.stringify(state = {})
+    this.state.Session = state
   }
 }
 

@@ -92,7 +92,8 @@ router.key = (route, compareRoute) => {
     }
 
     return (route?.meta?.group ?
-      ((route.name && route.name === compareRoute.name) || route.matched[0]?.path === compareRoute.matched[0]?.path) :
+      ((route.name && route.name === compareRoute.name) ||
+        (route.matched?.[0] && route.matched?.[0]?.path === compareRoute.matched[0]?.path)) :
       route.path === compareRoute.path) && queryKey
   } else {
     queryKey = ''
@@ -101,7 +102,7 @@ router.key = (route, compareRoute) => {
       queryKey = '/' + route.query['id']
     }
 
-    return (route?.meta?.group ? (route.name || route.matched[0]?.path || route.path) : route.path) + queryKey
+    return (route?.meta?.group ? (route.name || route.matched?.[0]?.path || route.path) : route.path) + queryKey
   }
 }
 

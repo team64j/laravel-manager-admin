@@ -15,6 +15,23 @@ export default {
   watch: {
     '$route' (route) {
       this.addTab(route)
+    },
+    tabs: {
+      handler (data) {
+        store.dispatch(`Session/set`, {
+          global_tabs: data.map(i => ({
+            path: i.path,
+            query: i.query,
+            meta: i?.meta,
+            params: i?.params,
+            name: i?.name,
+            matched: [{
+              path: i?.matched?.[0].path
+            }]
+          }))
+        })
+      },
+      deep: true
     }
   },
   props: {
@@ -25,7 +42,7 @@ export default {
   },
   data () {
     return {
-      tabs: [],
+      tabs: store.getters.get(`Session.global_tabs`) ?? [],
       keys: []
     }
   },

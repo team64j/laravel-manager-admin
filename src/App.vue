@@ -42,12 +42,12 @@ watch(
 )
 
 watch(
-    () => store.state['Storage']['root']['dark'],
+    () => store.state['Storage']['root']?.['dark'],
     (value) => document.documentElement.classList.toggle('dark', !!value)
 )
 
 watch(
-    () => store.state['Storage']['root']['sidebarShow'],
+    () => store.state['Storage']['root']?.['sidebarShow'],
     (value) => rootElement.value.classList.toggle('app-sidebar-hidden', !value)
 )
 
