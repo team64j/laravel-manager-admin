@@ -786,6 +786,7 @@ export default {
               <Input v-else
                      v-model="filterValues[f.name]"
                      :clear="true"
+                     class="w-full"
                      input-class="input-sm"
                      :placeholder="f.placeholder ?? '...'"
                      @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
