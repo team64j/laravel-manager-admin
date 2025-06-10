@@ -138,7 +138,7 @@ defineExpose({
   @apply invisible
 }
 .label-as-button input ~ span {
-  @apply px-1 py-0.5 min-w-8 opacity-100 rounded
+  @apply px-1 py-0.5 min-w-8 min-h-7 opacity-100 rounded
 }
 .label-as-button input:disabled ~ span {
   @apply opacity-50
