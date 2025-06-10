@@ -32,6 +32,8 @@ const _labelClass = computed(() => {
 
   if (props.disabled) {
     c.push('cursor-no-drop')
+  } else {
+    c.push('cursor-pointer')
   }
 
   if (props.asButton) {
@@ -49,7 +51,8 @@ defineExpose({
 <template>
   <div v-if="label" class="w-full" :class="props.class">
     <template v-if="!data">
-      <label class="inline-flex items-center " :class="[labelClass, _labelClass]">
+      <label class="inline-flex items-center"
+             :class="[labelClass, _labelClass]">
         <input v-model="model"
                :id="id"
                :value="value"
@@ -73,7 +76,8 @@ defineExpose({
         <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
       </div>
       <div v-for="(i, k) in data">
-        <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
+        <label :key="k" class="inline-flex items-center"
+               :class="[labelClass, _labelClass]">
           <input v-model="model"
                  :id="id+`_`+i.key"
                  :class="inputClass"
@@ -101,7 +105,8 @@ defineExpose({
       <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
     </template>
     <div v-for="(i, k) in data" v-else :class="props.class">
-      <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
+      <label :key="k" class="inline-flex items-center"
+             :class="[labelClass, _labelClass]">
         <input v-model="model"
                :id="id+`_`+i.key"
                :class="inputClass"

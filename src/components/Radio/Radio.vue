@@ -21,6 +21,12 @@ const emit = defineEmits(['action', 'update:modelValue'])
 const _labelClass = computed(() => {
   const c = []
 
+  if (props.disabled) {
+    c.push('cursor-no-drop')
+  } else {
+    c.push('cursor-pointer')
+  }
+
   if (props.asButton) {
     c.push('label-as-button')
   }
@@ -46,7 +52,7 @@ defineExpose({
   <div v-if="label" class="w-full" :class="$props.class">
     <template v-if="!data">
       <label class="inline-flex items-center "
-             :class="[labelClass, _labelClass, disabled ? 'cursor-no-drop' : 'cursor-pointer']">
+             :class="[labelClass, _labelClass]">
         <input v-model="model"
                :id="id"
                :value="value"
@@ -69,7 +75,8 @@ defineExpose({
         <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
       </div>
       <div v-for="(i, k) in data">
-        <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
+        <label :key="k" class="inline-flex items-center"
+               :class="[labelClass, _labelClass]">
           <input v-model="model"
                  :id="id+`_`+i.key"
                  :class="inputClass"
@@ -85,8 +92,8 @@ defineExpose({
   </div>
   <template v-else>
     <template v-if="!data">
-      <label class="inline-flex items-center "
-             :class="[labelClass, _labelClass, disabled ? 'cursor-no-drop' : 'cursor-pointer']">
+      <label class="inline-flex items-center"
+             :class="[labelClass, _labelClass]">
         <input v-model="model"
                :id="id"
                :class="inputClass"
@@ -100,7 +107,8 @@ defineExpose({
       </label>
     </template>
     <div v-for="(i, k) in data" v-else :class="$props.class">
-      <label :key="k" class="inline-flex items-center cursor-pointer" :class="[labelClass, _labelClass]">
+      <label :key="k" class="inline-flex items-center"
+             :class="[labelClass, _labelClass]">
         <input v-model="model"
                :id="id+`_`+i.key"
                :class="inputClass"
