@@ -132,7 +132,7 @@ export default {
     },
     get (query, params) {
       const route = router.parse(this.propUrl)
-      query = Object.assign(route.query, query || this.currentRoute?.['query'] || {})
+      query = Object.assign(route.query, this.currentRoute?.['query'] || {}, query)
 
       this.$emit('update:props', {
         data: params,
@@ -148,8 +148,11 @@ export default {
         i.style.minWidth = i.clientWidth + 'px'
       })
 
-      axios.get(route.path, {
-        params: query
+      axios({
+        method: route['meta']['method'].toLowerCase() ?? 'get',
+        url: route.path,
+        params: route.query,
+        data: Object.assign({}, route.query)
       }).then(({ data }) => {
         const props = {
           data: data.data,
@@ -710,7 +713,7 @@ export default {
         const route = { ...item.to }
         Object.assign(route.params, item.node)
         if (item.to?.target) {
-          axios.head(router.parse({ ...item.to }).fullPath).then(r => {
+          axios[route['meta']['method'].toLowerCase() ?? 'head'](router.parse({ ...item.to }).fullPath).then(r => {
             r.request.responseURL && window.open(r.request.responseURL, item.to.target)
           }).catch(r => {
             r.request.responseURL && window.open(r.request.responseURL, item.to.target)

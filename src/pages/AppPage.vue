@@ -47,6 +47,10 @@ function submit ({ action, method, route } = {}, changed = false) {
   const isNumericId = isNumber(route['params']['id'])
   const stay = store.getters.get('Storage.stay')
 
+  if (route?.['meta']?.['method']) {
+    method ??= route['meta']['method'].toLowerCase()
+  }
+
   if (action === 'cancel') {
     emit('action', 'closeTab')
     return

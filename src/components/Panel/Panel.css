@@ -37,7 +37,7 @@
 .app-panel .app-panel__data tbody tr.active {
     @apply bg-blue-600/10 even:bg-blue-600/10
 }
-/*.app-panel:not(.app-panel__view-icon) .app-panel__data tbody tr:not(.disabled) {
+.app-panel:not(.app-panel__view-icon) .app-panel__data tbody tr:not(.disabled) {
     @apply even:bg-gray-400/5
 }
 .app-panel .app-panel__data tbody tr:not(.disabled) {
@@ -54,7 +54,7 @@
 }
 .app-panel .app-panel__data tbody tr.disabled.active {
     @apply bg-rose-600/10 dark:hover:bg-rose-600/10
-}*/
+}
 .app-panel .app-panel__data tbody tr > td {
     @apply px-2 py-2 first:pl-6 last:pr-6
 }
