@@ -53,6 +53,7 @@ function onClick (event, $props) {
       i = parseInt(i)
       if (value === $props.data['values'][i].value) {
         const item = $props.data['values'][i + 1] ?? $props.data['values'][0]
+        Object.assign($props.data, item)
         store.dispatch('set', { ['Storage.root.' + $props.data['key']]: item.value })
         break
       }

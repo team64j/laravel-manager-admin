@@ -35,8 +35,8 @@ if (props.data['values']) {
         <i class="fa fa-angle-left fa-fw"/>
       </Button>
       <span class="grow truncate text-center py-1.5 text-sm text-blue-400">
-          {{ data['info'] }}
-        </span>
+        {{ data['info'] }}
+      </span>
       <Button type="button" class="-mr-2 btn-sm btn-gray"
               :disabled="!data['next']"
               @click.stop="$emit('action', 'onNav', $event, data['next'], currentInstance.parent.props)">
