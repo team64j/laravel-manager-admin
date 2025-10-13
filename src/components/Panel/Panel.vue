@@ -149,7 +149,7 @@ export default {
       })
 
       axios({
-        method: route['meta']['method'].toLowerCase() ?? 'get',
+        method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
         url: route.path,
         params: route.query,
         data: Object.assign({}, route.query)
