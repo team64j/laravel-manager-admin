@@ -113,6 +113,10 @@ export default {
         }
       }
     })
+
+    if (this.$el.parentElement.classList.contains('app-tabs__page')) {
+      this.$el.parentElement.classList.add('!p-0')
+    }
   },
   computed: {
     propUrl () {
