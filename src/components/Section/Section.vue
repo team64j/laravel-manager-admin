@@ -27,8 +27,8 @@ function click () {
 </script>
 
 <template>
-  <div class="app-section flex flex-row flex-wrap grow-0 w-full p-4 rounded content-baseline">
-    <div v-if="label" class="app-section__header relative flex flex-wrap items-center w-full transition"
+  <div class="app-section flex flex-row flex-wrap grow-0 m-4 rounded content-baseline overflow-hidden">
+    <div v-if="label" class="app-section__header relative flex flex-wrap items-center w-full px-3 py-2 transition"
          :class="{ 'cursor-pointer hover:text-blue-500 bg-gray-50 dark:bg-gray-600 py-2 px-4 rounded': data.propExpanded !== null}"
          @click="click">
       <div class="grow">
@@ -40,7 +40,7 @@ function click () {
       </div>
     </div>
     <div v-show="data.propExpanded ?? true" class="app-section__content flex flex-wrap w-full">
-      <div class="mt-2 pb-2 w-full" :class="{ 'border-t': !data.propExpanded }"/>
+      <div class="w-full" :class="{ 'border-t': !data.propExpanded }"/>
       <slot name="default"/>
     </div>
   </div>
@@ -48,6 +48,12 @@ function click () {
 
 <style>
 .app-section + .app-section {
+  @apply pt-0
+}
+.app-section__content > p {
+  @apply w-full p-3
+}
+.app-section__content > p + p {
   @apply pt-0
 }
 </style>

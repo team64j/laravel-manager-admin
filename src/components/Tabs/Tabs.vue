@@ -92,6 +92,9 @@ function _action () {
   @apply flex-col h-full ml-5 flex-nowrap !rounded-none
 }
 .app-tabs > .app-tabs__page > .app-tabs {
-  @apply p-5
+  @apply w-full
+}
+.app-tabs > .app-tabs__page > .app-tabs, .app-tabs > .app-tabs__page > .app-tabs > .app-tabs__page {
+  @apply p-0
 }
 </style>

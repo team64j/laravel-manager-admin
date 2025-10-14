@@ -116,6 +116,15 @@ html, body, #app {
         @apply bg-gray-50 border-transparent dark:border-transparent text-gray-900 dark:text-gray-50 hover:bg-white dark:bg-gray-400 hover:dark:bg-gray-300
     }
     /**
+     * Text
+     */
+    .text-success {
+        @apply text-green-600
+    }
+    .text-error {
+        @apply text-rose-600
+    }
+    /**
      * Icons
      */
     /*.fa {*/
