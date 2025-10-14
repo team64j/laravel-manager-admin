@@ -21,6 +21,11 @@ function create (event) {
 
   event.preventDefault()
 
+  element.addEventListener('mousedown', destroy)
+  element.addEventListener('mouseup', destroy)
+  element.addEventListener('keydown', destroy)
+  element.addEventListener('click', destroy)
+
   html = element.getAttribute('data-tooltip')
   type = element.getAttribute('data-type')
 
@@ -47,6 +52,8 @@ function create (event) {
 }
 
 function destroy (event) {
+  event.preventDefault()
+
   if (!element || event.relatedTarget === rootElement.value) {
     return
   }
@@ -59,10 +66,7 @@ function destroy (event) {
 }
 
 document.addEventListener('mouseover', create)
-document.addEventListener('mousedown', destroy)
 document.addEventListener('mouseout', destroy)
-document.addEventListener('keydown', destroy)
-document.addEventListener('click', destroy)
 </script>
 
 <template>
@@ -97,7 +101,7 @@ i[data-tooltip] > *:not(.pointer-events-auto) {
   @apply pointer-events-none
 }
 i[data-tooltip]:not([class*="fa-"]) {
-  @apply cursor-help text-gray-200 dark:text-gray-300 leading-[0]
+  @apply cursor-help text-gray-200 dark:text-gray-300 leading-[1]
 }
 i[data-tooltip]:not([class*="fa-"])::before {
   content: "\f059";
