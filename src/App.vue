@@ -31,10 +31,20 @@ const datepickerElement = shallowRef()
 const data = reactive({
   loaded: false,
   layout: null,
-  sidebarWidth: store.getters.get('Storage.sidebarWidth', 26)
+  sidebarWidth: store.getters.get('Storage.sidebarWidth', 26),
+  breakpoints: {
+    'sm': 0,
+    'md': 768,
+    'lg': 1024,
+    'xl': 1280,
+    '2xl': 1536
+  }
 })
 
-store.dispatch('set', { isMobile: calcIsMobile() })
+store.dispatch('set', {
+  isMobile: calcIsMobile(),
+  breakpoint: calcBreakpoint()
+})
 
 watch(
     () => store.state['Storage']['token'],
@@ -94,6 +104,8 @@ window.addEventListener('resize', () => {
   if (check !== store.getters.get('isMobile')) {
     store.dispatch('set', { isMobile: check })
   }
+
+  store.dispatch('set', { breakpoint: calcBreakpoint() })
 })
 
 document.documentElement.classList.toggle(
@@ -259,7 +271,7 @@ function setSlots (data) {
   }
 }
 
-function setLayout(layout) {
+function setLayout (layout) {
   if (layout?.length) {
     data['layout'] = {}
 
@@ -370,6 +382,18 @@ function calcIsMobile () {
       window.innerWidth < 1024
 }
 
+function calcBreakpoint () {
+  let breakpoint = 'sm'
+
+  for (const i in data.breakpoints) {
+    if (window.innerWidth > data.breakpoints[i]) {
+      breakpoint = i
+    }
+  }
+
+  return breakpoint
+}
+
 function inputTreeSelect (event, instance) {
   const context = instance.ctx || instance
   const input = context._.vnode.el.querySelector('input')
@@ -405,7 +429,10 @@ defineExpose({
   collapse,
   inputTreeSelect,
   'modal:component': modalShow,
-  'datepicker:show': datepickerShow
+  'datepicker:show': datepickerShow,
+  data: {
+    breakpoints: data.breakpoints
+  }
 })
 
 // window['confirm'] = (message) => {
