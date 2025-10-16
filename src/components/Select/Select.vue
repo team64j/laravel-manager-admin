@@ -4,6 +4,7 @@ import { props as _props } from '@/composables'
 import RadioComponent from '@/components/Radio/Radio.vue'
 import CheckboxComponent from '@/components/Checkbox/Checkbox.vue'
 import Button from '@/components/Button/Button.vue'
+import router from '@/router'
 
 defineOptions({
   name: 'Select',
@@ -67,10 +68,16 @@ function get (callback) {
     data.loading = true
     data.options = []
 
-    axios.get(props.url, {
-      params: {
-        selected: Array.isArray(model.value) ? model.value : [model.value]
-      }
+    const route = router.parse(props.url)
+    const query = {
+      selected: Array.isArray(model.value) ? model.value : [model.value]
+    }
+
+    axios({
+      method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
+      url: route.path,
+      params: query,
+      data: query
     }).then(r => {
       data.loading = false
       data.options = r.data.data
