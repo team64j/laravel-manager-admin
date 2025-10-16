@@ -1,9 +1,9 @@
 <script setup>
 import { computed, getCurrentInstance, watch } from 'vue'
-import store from '../../store'
-import router from '../../router'
-import { uniqId } from '../../utils'
-import Button from '../Button/Button.vue'
+import { uniqId } from '@/utils'
+import router from '@/router'
+import store from '@/store'
+import Button from '@/components/Button/Button.vue'
 
 defineOptions({
   __isStatic: true,
@@ -72,7 +72,8 @@ function init () {
 
   if (currentInstance.vnode.el.offsetWidth < width) {
     currentInstance.vnode.el.scrollLeft = width - currentInstance.vnode.el.offsetWidth +
-        (parseFloat(currentInstance.vnode.el.styles.paddingLeft) + parseFloat(currentInstance.vnode.el.styles.paddingRight))
+        (parseFloat(currentInstance.vnode.el.styles.paddingLeft) +
+            parseFloat(currentInstance.vnode.el.styles.paddingRight))
   }
 }
 

@@ -169,7 +169,7 @@ document.addEventListener('keydown', event => {
 </script>
 
 <template>
-  <div class="w-full" :class="[props.class, fullSize ? 'h-full' : '']">
+  <div class="w-full flex flex-col" :class="[props.class, fullSize ? 'h-full' : '']">
     <div v-if="label" class="block font-bold mb-1">
       {{ label }}
       <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>

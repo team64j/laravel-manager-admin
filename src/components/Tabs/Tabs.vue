@@ -89,7 +89,7 @@ function _action () {
   @apply !flex-row h-auto self-stretch
 }
 .app-tabs__vertical > .app-tabs-navigation ~ .app-tabs__page {
-  @apply flex-col h-full ml-5 flex-nowrap !rounded-none
+  @apply flex-col h-full ml-5 p-0 flex-nowrap !rounded-none
 }
 .app-tabs > .app-tabs__page > .app-tabs {
   @apply w-full
