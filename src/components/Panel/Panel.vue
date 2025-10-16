@@ -115,7 +115,7 @@ export default {
     })
 
     if (this.$el.parentElement.classList.contains('app-tabs__page')) {
-      this.$el.parentElement.classList.add('!p-0')
+      this.$el.parentElement.childElementCount === 1 && this.$el.parentElement.classList.add('!p-0')
     }
   },
   computed: {
