@@ -133,7 +133,12 @@ function loadData (url, $props) {
   $props.data['loading'] = true
   $props.data['data'] = null
 
-  axios.get(route.fullPath).then(r => {
+  axios({
+    method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
+    url: route.path,
+    params: route.query,
+    data: Object.assign({}, route.query)
+  }).then(r => {
     const meta = r.data['meta'] || {}
 
     $props.data['data'] = [].concat(

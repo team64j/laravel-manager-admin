@@ -469,31 +469,33 @@ defineExpose({
        }">
     <template v-if="data.layout">
       <div
+          v-if="data.layout['top.left'] || data.layout['top'] || data.layout['top.right']"
           class="dark app-position-horizontal grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 border-b border-b-gray-900">
-        <div class="grow-0 flex app-position-start">
+        <div class="grow-0 flex app-position-start" v-if="data.layout['top.left']">
           <global-component :layout="data.layout['top.left']" @action="_action"/>
         </div>
-        <div class="grow flex justify-between">
+        <div class="grow flex justify-between" v-if="data.layout['top']">
           <global-component :layout="data.layout['top']" @action="_action"/>
         </div>
-        <div class="grow-0 flex app-position-end">
+        <div class="grow-0 flex app-position-end" v-if="data.layout['top.right']">
           <global-component :layout="data.layout['top.right']" @action="_action"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
+            v-if="data.layout['left.top'] || data.layout['left'] || data.layout['left.bottom']"
             class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 w-12 border-r border-r-gray-800 app-position-vertical dark">
-          <div class="grow-0 flex">
+          <div class="grow-0 flex" v-if="data.layout['left.top']">
             <global-component :layout="data.layout['left.top']" @action="_action"/>
           </div>
-          <div class="grow flex items-center">
+          <div class="grow flex items-center" v-if="data.layout['left']">
             <global-component :layout="data.layout['left']" @action="_action"/>
           </div>
-          <div class="grow-0 flex app-position-end">
+          <div class="grow-0 flex app-position-end" v-if="data.layout['left.bottom']">
             <global-component :layout="data.layout['left.bottom']" @action="_action"/>
           </div>
         </div>
-        <div ref="sidebarElement"
+        <div v-if="data.layout['sidebar']" ref="sidebarElement"
              :style="{ width: data.sidebarWidth + `rem` }"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark">
           <global-component :layout="data.layout['sidebar']" @action="_action"/>
