@@ -12,7 +12,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="border">
+  <div class="app-media">
     <div v-if="label" class="block font-bold mb-1">
       {{ label }}
       <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
