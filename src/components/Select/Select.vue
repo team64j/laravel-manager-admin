@@ -55,7 +55,7 @@ const inputValue = computed(() => {
     return newValue
   }
 
-  const value = !Array.isArray(model.value) || model.value !== null ? model.value : model.value
+  const value = !Array.isArray(model.value) || model.value !== null ? (props.multiple ? model.value : model.value.toString()) : model.value
 
   return values.filter(
       i => Array.isArray(value) ? value.includes(i.key) : value === (i.key !== null ? i.key.toString() : i.key)).
