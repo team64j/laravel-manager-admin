@@ -66,7 +66,12 @@ function setUrl (route) {
   data.currentRoute = route
 
   if (!data.componentLoaded) {
-    axios.get(route.fullPath).then(r => {
+    axios({
+      method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
+      url: route.path,
+      params: route.query,
+      data: route.query
+    }).get(route.fullPath).then(r => {
       data.componentLoaded = true
       data.componentProps = r.data
       data.icon = r.data['meta']['icon']

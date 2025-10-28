@@ -55,8 +55,8 @@ function clickGroup (event) {
 </script>
 
 <template>
-  <div v-if="props.data.length" class="app-actions">
-    <template v-for="i in props.data">
+  <div v-if="data.length" class="app-actions">
+    <template v-for="i in data">
       <div v-if="i.data" class="app-actions__group">
         <Button v-for="j in i.data.filter(k => k.stay.toString() === stay.toString())"
                 class="btn-sm"

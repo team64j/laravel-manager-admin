@@ -9,7 +9,7 @@ export const props = {
   emitClick: String,
   emitInput: String,
   emitInputKey: [null, String],
-  error: [String, Object, Array],
+  error: [String, Object, Array, Boolean],
   errorClass: String,
   falseValue: { default: false },
   help: String,

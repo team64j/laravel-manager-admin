@@ -23,7 +23,14 @@ function onClickButton () {
     emit('action', `menu${props.click.charAt(0).toUpperCase() + props.click.slice(1)}`)
   } else if (props.to) {
     if (props.to?.target) {
-      axios.head(router.parse({ ...props.to }).fullPath).then(r => {
+      const route = router.parse({ ...props.to })
+
+      axios({
+        method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
+        url: route.path,
+        params: route.query,
+        data: route.query
+      }).head(router.parse({ ...props.to }).fullPath).then(r => {
         r.request.responseURL && window.open(r.request.responseURL, props.to.target)
       }).catch(r => {
         r.request.responseURL && window.open(r.request.responseURL, props.to.target)

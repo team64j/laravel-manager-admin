@@ -97,6 +97,10 @@ export default {
 
       if (this.$refs.panel) {
         this.$nextTick(() => {
+          if (!this.$refs.panel) {
+            return
+          }
+
           this.$refs.panel.querySelectorAll('button').forEach((i, k) => {
             i.styles = getComputedStyle(i)
 
