@@ -2,6 +2,8 @@
 import { compile, getCurrentInstance, h, nextTick } from 'vue'
 import { getValue } from '@/composables'
 
+import('./GlobalComponent.css')
+
 export default {
   name: 'GlobalComponent',
   __isStatic: true,
@@ -45,9 +47,17 @@ export default {
       }
 
       if (typeof data === 'string') {
-        return h(compile(data.replace(/href=/g, 'to=').
-            replace(/<a(.*?)>/g, '<router-link$1>').
-            replace(/(<\/a>)/g, '</router-link>')))
+        return h(
+            compile(data.replace(/href=/g, 'to=').
+                    replace(/<a(.*?)>/g, '<router-link$1>').
+                    replace(/(<\/a>)/g, '</router-link>'),
+                {
+                  parseMode: 'html',
+                  onWarn () {}
+                }
+            ),
+            { class: 'app-global-component-html' }
+        )
       }
 
       if (typeof data === 'object') {

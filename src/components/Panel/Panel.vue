@@ -144,7 +144,7 @@ export default {
       }, this)
 
       if (this.$refs.data) {
-        this.$refs.data.style.overflow = 'scroll'
+        this.$refs.data.style.height = this.$refs.data.offsetHeight + 'px'
       }
 
       this.$el.querySelectorAll('thead > tr > th').forEach(i => {
@@ -183,6 +183,8 @@ export default {
         })
 
         this.$emit('update:props', props)
+
+        this.$el.querySelector('.app-panel__data').style.height = null
       })
     },
     load (route, props) {
