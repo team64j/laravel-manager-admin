@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, onMounted } from 'vue'
+import { getCurrentInstance, onMounted, reactive } from 'vue'
 import { action } from '@/composables'
 import MainMenuItem from './MainMenuItem.vue'
 import router from '@/router'
@@ -11,7 +11,16 @@ defineOptions({
 })
 
 const currentInstance = getCurrentInstance()
-const props = defineProps(['data'])
+
+const props = defineProps({
+  data: [Array, Object],
+  isVertical: Boolean
+})
+
+const data = reactive({
+  active: false
+})
+
 const emit = defineEmits(['action'])
 
 let enterTimer = 0, filterTimer = 0
@@ -28,25 +37,26 @@ function onClick (event, $props) {
       item = item?.parentElement?.closest('li')
     }
 
-    store.dispatch('set', { ['app-main-menu__active']: action === 'add' })
+    data.active = action === 'add'
 
     if (event.target.classList.contains('app-main-menu__toggle') && $props.data['url']) {
       loadData($props.data['url'], $props)
       return
     }
   } else {
-    store.dispatch('set', { ['app-main-menu__active']: !store.getters.get('app-main-menu__active') })
+    data.active = !data.active
   }
 
   if ($props.data['to']) {
-    store.dispatch('set', { ['app-main-menu__active']: false })
+    data.active = false
     router.to($props.data['to'])
   } else if ($props.data['href']) {
-    store.dispatch('set', { ['app-main-menu__active']: false })
+    data.active = false
     window.open($props.data['href'])
   } else if ($props.data['url']) {
-    store.getters.get('app-main-menu__active') && loadData($props.data['url'], $props)
+    data.active && loadData($props.data['url'], $props)
   } else if ($props.data['values']) {
+    data.active = false
     const value = store.getters['get']('Storage.root.' + $props.data['key'])
 
     for (let i in $props.data['values']) {
@@ -59,6 +69,7 @@ function onClick (event, $props) {
       }
     }
   }
+  store.dispatch('set', { AppMainOverlay: data.active })
 }
 
 function onEnter (event, $props) {
@@ -84,7 +95,7 @@ function onEnter (event, $props) {
       item = item?.parentElement?.closest('li')
     }
 
-    if ($props.data['url'] && store.getters.get('app-main-menu__active')) {
+    if ($props.data['url'] && data.active) {
       clearTimeout(enterTimer)
       $props.data['data'] = null
 
@@ -167,7 +178,8 @@ function _action () {
 
 onMounted(() => {
   document.addEventListener('click', function () {
-    store.dispatch('set', { ['app-main-menu__active']: false })
+    data.active = false
+    store.dispatch('set', { AppMainOverlay: data.active })
   })
 })
 
@@ -182,7 +194,11 @@ defineExpose({
 </script>
 
 <template>
-  <div class="app-main-menu" :class="{ 'app-main-menu__active': store.getters.get('app-main-menu__active') }">
+  <div class="app-main-menu"
+       :class="{
+        'app-main-menu__active': store.getters.get('AppMainOverlay'),
+        'app-main-menu__vertical': props.isVertical
+      }">
     <ul>
       <main-menu-item v-for="(i, k) in props.data" :data="i" :key="k" :level="1" @action="_action"/>
     </ul>
@@ -212,21 +228,27 @@ defineExpose({
   @apply bg-gray-600
 }
 .app-main-menu li ul {
-  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-12 lg:top-full left-0 w-[calc(100vw_-_0.5rem)] lg:w-80 h-[calc(100vh_-_3.5rem)] lg:h-auto lg:max-h-[calc(100vh_-_3rem)] m-1 lg:m-0 py-1 rounded bg-gray-700 shadow-2xl transition-all
+  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-12 lg:top-full left-12 lg:left-0 w-[calc(100vw_-_3.5rem)] lg:w-80 h-[calc(100vh_-_3.5rem)] lg:h-auto lg:max-h-[calc(100vh_-_3rem)] m-1 lg:m-0 lg:mt-1.5 py-1 rounded bg-gray-700 shadow-2xl transition-all
 }
 .app-main-menu li[data-level="2"] ul {
-  @apply z-10 left-0 lg:left-full lg:top-0 overflow-hidden overflow-y-auto h-[calc(100vh_-_3.5rem)] lg:h-auto
+  @apply z-10 left-12 lg:left-full lg:top-0 m-0 overflow-hidden overflow-y-auto h-[calc(100vh_-_3.5rem)] lg:h-auto
 }
-.app-position-end .app-main-menu li[data-level="1"] ul {
+.app-position-horizontal .app-position-end .app-main-menu li[data-level="1"] ul {
   @apply left-auto right-0
 }
-.app-position-end .app-main-menu li[data-level="2"] ul {
+.app-position-horizontal .app-position-end .app-main-menu li[data-level="2"] ul {
   @apply left-auto top-0 right-full
+}
+.app-position-vertical .app-main-menu li ul {
+  @apply lg:left-full top-auto right-auto bottom-0 lg:m-0 lg:ml-1.5
+}
+.app-position-vertical .app-main-menu li > div {
+  @apply px-3
+}
+.app-position-vertical .app-main-menu__toggle {
+  @apply !hidden
 }
 .app-main-menu.app-main-menu__active li.app-main-menu__hover > ul {
   @apply opacity-100 visible
-}
-.app-main-menu.app-main-menu__active::before {
-  @apply content-[""] absolute z-0 left-0 top-0 right-0 bottom-0 bg-black/5
 }
 </style>

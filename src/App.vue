@@ -484,7 +484,7 @@ defineExpose({
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
             v-if="data.layout['left.top'] || data.layout['left'] || data.layout['left.bottom']"
-            class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 w-12 border-r border-r-gray-800 app-position-vertical dark">
+            class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 text-white/80 w-12 border-r border-r-gray-800 app-position-vertical dark">
           <div class="grow-0 flex" v-if="data.layout['left.top']">
             <global-component :layout="data.layout['left.top']" @action="_action"/>
           </div>
@@ -497,13 +497,19 @@ defineExpose({
         </div>
         <div v-if="data.layout['sidebar']" ref="sidebarElement"
              :style="{ width: data.sidebarWidth + `rem` }"
-             class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark">
+             class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"
+             :class="{
+              'app-main__overlay': store.getters.get('AppMainOverlay')
+            }">
           <global-component :layout="data.layout['sidebar']" @action="_action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>
         </div>
-        <div class="grow flex flex-col overflow-hidden z-10 app-main">
+        <div class="grow flex flex-col overflow-hidden z-10 app-main"
+          :class="{
+            'app-main__overlay': store.getters.get('AppMainOverlay')
+          }">
           <global-tabs :current-route="router.currentRoute.value" @action="_action"/>
         </div>
       </div>
@@ -569,5 +575,8 @@ defineExpose({
 }
 .app.app-sidebar-hidden .app-main::after {
   @apply hidden
+}
+.app-main__overlay::before {
+  @apply content-[""] absolute z-20 left-0 top-0 right-0 bottom-0 bg-black/20
 }
 </style>

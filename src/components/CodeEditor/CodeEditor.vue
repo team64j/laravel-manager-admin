@@ -1,6 +1,8 @@
 <script setup>
-import { computed, getCurrentInstance, h, markRaw, reactive } from 'vue'
+import { computed, getCurrentInstance, h, reactive } from 'vue'
 import { Codemirror } from 'vue-codemirror'
+//import TinyMCE from '@/components/CodeEditor/TinyMCE.vue'
+import Textarea from '@/components/Textarea/Textarea.vue'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { javascript } from '@codemirror/lang-javascript'
 import { markdown } from '@codemirror/lang-markdown'
@@ -73,41 +75,23 @@ const languages = {
   sql
 }
 
-const component = computed(() => {
+const Component = computed(() => {
   if (!data.currentConfig) {
     return
   }
 
   if (data.currentConfig['component'] === 'Textarea') {
-    data.currentConfig['_component'] = () => h('textarea', {
-      value: model.value,
+    return h(Textarea, {
       rows: props.rows,
       class: 'block w-full px-3 py-1 rounded resize-none',
-      onInput: event => {
-        emit('update:modelValue', event.target.value, currentInstance['ctx'])
-      }
+      resize: false
     })
-  } else {
-    data.currentConfig['component'] = 'Codemirror'
-    data.currentConfig['_component'] = markRaw(Codemirror)
-  }
+  }/* else if (data.currentConfig['component'] === 'TinyMCE') {
+    data.currentConfig['component'] = 'TinyMCE'
+    return h(TinyMCE)
+  }*/
 
-  return data.currentConfig['_component']
-})
-
-const model = computed({
-  get () {
-    return props.modelValue
-  },
-  set (value) {
-    emit('update:modelValue', value, currentInstance['ctx'])
-  }
-})
-
-const extensions = computed(() => {
-  if (!data.currentConfig) {
-    return
-  }
+  data.currentConfig['component'] = 'Codemirror'
 
   const extensions = []
 
@@ -123,7 +107,18 @@ const extensions = computed(() => {
     extensions.push(oneDark)
   }
 
-  return extensions
+  return h(Codemirror, {
+    extensions: extensions
+  })
+})
+
+const model = computed({
+  get () {
+    return props.modelValue
+  },
+  set (value) {
+    emit('update:modelValue', value, currentInstance['ctx'])
+  }
 })
 
 const height = computed(() => {
@@ -190,11 +185,9 @@ document.addEventListener('keydown', event => {
         </i>
       </div>
 
-      <component
-          v-model="model"
-          :is="component"
-          :extensions="extensions"
-          :style="{ height }"/>
+      <div class="app-editor__editor overflow-auto" :style="{ height }">
+        <component v-model="model" :is="Component"/>
+      </div>
 
     </div>
     <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
@@ -212,7 +205,7 @@ document.addEventListener('keydown', event => {
   @apply opacity-100 visible
 }
 .app-editor__menu {
-  @apply block opacity-0 invisible absolute right-0 top-full py-1 rounded shadow-md font-sans font-normal text-base text-white bg-gray-800 dark:text-gray-800 dark:bg-white transition
+  @apply block opacity-0 invisible absolute right-0 top-full py-1 rounded shadow-md font-sans font-normal text-base text-gray-800 bg-gray-50/90 dark:text-white dark:bg-gray-600/90 transition
 }
 .app-editor__menu span:hover, .app-editor__settings .app-editor__menu span.active {
   @apply bg-blue-600 text-white
@@ -251,7 +244,10 @@ document.addEventListener('keydown', event => {
 .app-editor .ͼ1 .cm-content {
   @apply grow !basis-0 max-w-full whitespace-pre-wrap break-words break-all
 }
-.app-editor.app-editor__full-screen > textarea, .app-editor.app-editor__full-screen .v-codemirror, .app-editor.app-editor__full-screen .v-codemirror .cm-editor {
+.app-editor .app-editor__editor > div {
+  @apply !h-full
+}
+.app-editor.app-editor__full-screen .app-editor__editor, .app-editor.app-editor__full-screen .app-editor__editor > textarea, .app-editor.app-editor__full-screen .v-codemirror, .app-editor.app-editor__full-screen .v-codemirror .cm-editor {
   @apply !h-full text-lg
 }
 </style>
