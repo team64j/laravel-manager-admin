@@ -1,14 +1,3 @@
-<template>
-  <div class="app-tinymce">
-    <Editor
-        v-model="contentValue"
-        :init="initOptions"
-        :disabled="disabled"
-        @onClick="onClick"
-    />
-  </div>
-</template>
-
 <script>
 // Introduce the Tinymce editor
 import Editor from '@tinymce/tinymce-vue'
@@ -157,6 +146,17 @@ export default defineComponent({
   }
 })
 </script>
+
+<template>
+  <div class="app-tinymce">
+    <Editor
+        v-model="contentValue"
+        :init="initOptions"
+        :disabled="disabled"
+        @onClick="onClick"
+    />
+  </div>
+</template>
 
 <style>
 .app-tinymce .tox-tinymce {

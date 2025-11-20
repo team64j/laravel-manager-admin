@@ -185,7 +185,7 @@ document.addEventListener('keydown', event => {
         </i>
       </div>
 
-      <div class="app-editor__editor overflow-auto" :style="{ height }">
+      <div class="app-editor__editor" :style="{ height }">
         <component v-model="model" :is="Component"/>
       </div>
 
@@ -223,17 +223,14 @@ document.addEventListener('keydown', event => {
 </style>
 
 <style>
-.app-editor {
-  @apply border rounded focus:ring-2 focus:border-blue-500
-}
 .app-editor .ͼ1.cm-editor {
-  @apply overflow-hidden w-full min-h-full bg-white dark:bg-gray-800 rounded transition-all
+  @apply overflow-hidden w-full h-full bg-white dark:bg-gray-800 rounded border transition-all
 }
 .app-editor.app-editor__full-size .ͼ1.cm-editor {
   @apply h-full
 }
 .app-editor .ͼ1.cm-editor.cm-focused {
-  @apply border-blue-500 ring-2 ring-offset-0 ring-blue-500 outline-0
+  @apply border-blue-500 ring-1 ring-offset-0 ring-blue-500 outline-0
 }
 .app-editor .ͼ1 .cm-scroller {
   @apply rounded

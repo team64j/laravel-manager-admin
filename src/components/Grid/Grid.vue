@@ -17,7 +17,7 @@ const props = defineProps({
 })
 
 function calcGridArea (gridArea) {
-  if (typeof gridArea === 'object' && store.getters.get('breakpoint')) {
+  if (typeof gridArea === 'object' && gridArea && store.getters.get('breakpoint')) {
     let breakpoint = Object.values(gridArea)[0]
 
     for (const i in gridArea) {
