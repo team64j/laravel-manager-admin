@@ -4,10 +4,10 @@ import { props as _props } from '../../composables'
 import CheckboxComponent from '../Checkbox/Checkbox.vue'
 import RadioComponent from '../Radio/Radio.vue'
 
-defineOptions({
-  //name: 'Select',
-  __isStatic: true
-})
+// defineOptions({
+//   //name: 'Select',
+//   __isStatic: true
+// })
 
 const currentInstance = getCurrentInstance()
 

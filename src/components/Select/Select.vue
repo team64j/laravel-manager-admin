@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, reactive } from 'vue'
+import { computed, getCurrentInstance, nextTick, reactive, ref } from 'vue'
 import { props as _props } from '@/composables'
 import RadioComponent from '@/components/Radio/Radio.vue'
 import CheckboxComponent from '@/components/Checkbox/Checkbox.vue'
@@ -26,6 +26,8 @@ const data = reactive({
   loading: false,
   options: props.data || []
 })
+
+const options = ref()
 
 const model = computed({
   get () {
@@ -83,6 +85,14 @@ function get (callback) {
     }).then(r => {
       data.loading = false
       data.options = r.data.data
+
+      nextTick(() => {
+        const checked = currentInstance.vnode.el.querySelector('input:checked')
+
+        if (checked && options) {
+          options.value.scrollTop = checked.parentElement.offsetTop
+        }
+      })
 
       if (callback) {
         callback()
@@ -174,6 +184,7 @@ if (props.load && props.url) {
               @mousedown="onMousedown"/>
 
       <div v-if="data.options?.length"
+           ref="options"
            class="hidden absolute z-20 left-0 top-full mt-1 p-2 w-full rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default"
            @mousedown.prevent="">
 

@@ -10,7 +10,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: '-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"'
+        sans: 'system-ui, -apple-system, sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, Roboto, Ubuntu, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
       },
       colors: {
         transparent: 'transparent',
