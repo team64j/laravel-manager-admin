@@ -67,7 +67,8 @@ export default {
       showContextMenu: false,
       dataContextMenu: [],
       classContextMenu: null,
-      propView: this.view
+      propView: this.view,
+      sorting: {}
     }
   },
   mounted () {
@@ -136,7 +137,7 @@ export default {
     },
     get (query, params) {
       const route = router.parse(this.propUrl)
-      query = Object.assign(route.query, this.currentRoute?.['query'] || {}, query)
+      query = Object.assign(route.query, this.currentRoute?.query || {}, query)
 
       this.$emit('update:props', {
         data: params,
@@ -572,6 +573,19 @@ export default {
         }, delay)
       }
     },
+    onSorting (order, dir) {
+      const query = router.currentRoute.value.query
+
+      if (this.meta?.['sorting']?.[order] === dir) {
+        delete query.order
+        delete query.dir
+      } else {
+        query.order = order
+        query.dir = dir
+      }
+
+      this.load(router.parse({ query }))
+    },
     getColumnFilters () {
       const filters = []
       let propFilters = this.filters
@@ -759,8 +773,16 @@ export default {
         <tr>
           <template v-for="column in columns">
             <th :style="{ width: column.width }">
-              <div :style="{ minWidth: column.width }">
+              <div :style="{ minWidth: column.width }" class="relative">
                 {{ column.label ?? '' }}
+                <div v-if="column.sort" class="app-panel__sorter absolute top-0 -right-3 flex flex-col text-xs">
+                  <i class="fa fa-angle-up hover:text-blue-500 transition"
+                     :class="{ 'text-blue-500': meta?.['sorting']?.[column.name] === 'asc' }"
+                     @click="onSorting(column.name, 'asc')"/>
+                  <i class="fa fa-angle-down hover:text-blue-500 transition"
+                     :class="{ 'text-blue-500': meta?.['sorting']?.[column.name] === 'desc' }"
+                     @click="onSorting(column.name, 'desc')"/>
+                </div>
               </div>
             </th>
           </template>
