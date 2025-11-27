@@ -72,7 +72,7 @@ if (props.data['values']) {
         <i v-else-if="data['icon']" :class="data['icon']" class="fa-fw !leading-[0]"/>
       </span>
 
-      <span :class="[level > 1 ? 'py-1.5' : 'py-2.5 hidden lg:!block']" class="grow truncate">
+      <span :class="[level > 1 ? 'py-1.5' : 'hidden lg:!block']" class="grow truncate">
         {{ data['name'] }}
       </span>
 

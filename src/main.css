@@ -18,23 +18,23 @@ html, body, #app {
 }
 @layer base {
     *, ::before, ::after {
-        @apply border-gray-50 dark:border-gray-600
+        @apply border-gray-50 hover:border-gray-100 dark:border-gray-600 dark:hover:border-gray-500
     }
     /**
      * Forms
      */
     [type='checkbox'], [type='radio'], [type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select, button, [type='button'], [role='button'], button.app-appearance-select, .app-appearance-select {
-        @apply appearance-none block w-full h-10 px-3 py-1.5 rounded bg-white border border-inherit text-left dark:text-gray-50 dark:border-inherit dark:bg-gray-800 dark:focus:bg-gray-800 dark:hover:bg-gray-800 focus:bg-white hover:bg-white focus:border-blue-500 dark:focus:border-blue-500 focus:ring-1 focus:ring-offset-0 focus:ring-blue-500 focus:outline-0 focus:z-10 transition
+        @apply appearance-none block w-full h-10 px-3 py-1.5 rounded bg-white border border-inherit text-left dark:text-gray-50 dark:border-inherit hover:border-gray-100 dark:hover:border-gray-500 dark:bg-gray-800 dark:focus:bg-gray-800 dark:hover:bg-gray-800 focus:bg-white hover:bg-white focus:!border-blue-500 focus:ring-1 focus:!ring-blue-500 focus:ring-offset-0 !outline-none focus:z-10 transition
     }
     /*    .dark input, .dark select, .dark textarea, .dark button {
             color-scheme: dark
         }*/
     input.focus, select.focus, textarea.focus, button.focus {
-        @apply border-blue-500 dark:border-blue-500 ring-1 ring-offset-0 ring-blue-500 outline-0
+        @apply !border-blue-500 ring-1 ring-blue-500 ring-offset-0 !outline-none
     }
     [type='checkbox'], [type='radio'] {
-        @apply inline-block w-5 h-5 p-0 shrink-0 rounded bg-contain bg-no-repeat bg-[center_-1rem] checked:bg-center focus:ring-1 checked:bg-blue-600 checked:border-blue-600 dark:checked:bg-blue-600 dark:checked:border-blue-600 transition-all;
-        background-size: 80%;
+        @apply inline-block w-5 h-5 p-0 shrink-0 rounded bg-no-repeat bg-[center_-1rem] focus:checked:border-blue-500 checked:border-blue-600 checked:!bg-blue-600 checked:bg-center transition-all;
+        background-size: 70%;
     }
     [type='radio'] {
         @apply bg-white rounded-full;

@@ -92,7 +92,10 @@ function _action () {
   @apply flex-col h-full ml-5 p-0 flex-nowrap !rounded-none
 }
 .app-tabs > .app-tabs__page > .app-tabs {
-  @apply w-full
+  @apply w-full h-full
+}
+.app-tabs > .app-tabs__page .app-tabs__page {
+  @apply overflow-visible
 }
 .app-tabs > .app-tabs__page > .app-tabs, .app-tabs > .app-tabs__page > .app-tabs > .app-tabs__page {
   @apply p-0

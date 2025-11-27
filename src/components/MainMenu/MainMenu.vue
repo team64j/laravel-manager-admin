@@ -213,7 +213,7 @@ defineExpose({
   @apply inline-flex select-none
 }
 .app-main-menu li[data-level="1"] {
-  @apply lg:relative min-h-10 mx-0.5 my-1
+  @apply lg:relative h-10 m-0.5
 }
 .app-main-menu li > div {
   @apply flex w-full justify-between items-center px-3 lg:px-4 transition

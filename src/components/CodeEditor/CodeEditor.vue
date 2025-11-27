@@ -1,7 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance, h, reactive } from 'vue'
 import { Codemirror } from 'vue-codemirror'
-//import TinyMCE from '@/components/CodeEditor/TinyMCE.vue'
 import Textarea from '@/components/Textarea/Textarea.vue'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { javascript } from '@codemirror/lang-javascript'
@@ -14,6 +13,7 @@ import { css } from '@codemirror/lang-css'
 import { vue } from '@codemirror/lang-vue'
 import { sql } from '@codemirror/lang-sql'
 import store from '@/store'
+import { uniqId } from '@/utils'
 
 defineOptions({
   name: 'CodeEditor',
@@ -23,6 +23,10 @@ defineOptions({
 const currentInstance = getCurrentInstance()
 
 const props = defineProps({
+  id: {
+    type: String,
+    default: uniqId
+  },
   modelValue: {
     type: [String, Object, Number]
   },
@@ -82,14 +86,12 @@ const Component = computed(() => {
 
   if (data.currentConfig['component'] === 'Textarea') {
     return h(Textarea, {
+      id: props.id,
       rows: props.rows,
       class: 'block w-full px-3 py-1 rounded resize-none',
       resize: false
     })
-  }/* else if (data.currentConfig['component'] === 'TinyMCE') {
-    data.currentConfig['component'] = 'TinyMCE'
-    return h(TinyMCE)
-  }*/
+  }
 
   data.currentConfig['component'] = 'Codemirror'
 
@@ -108,6 +110,7 @@ const Component = computed(() => {
   }
 
   return h(Codemirror, {
+    //id: props.id,
     extensions: extensions
   })
 })
@@ -165,10 +168,10 @@ document.addEventListener('keydown', event => {
 
 <template>
   <div class="w-full flex flex-col" :class="[props.class, fullSize ? 'h-full' : '']">
-    <div v-if="label" class="block font-bold mb-1">
+    <label v-if="label" :for="props.id" class="block font-bold mb-1 cursor-pointer">
       {{ label }}
       <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
-    </div>
+    </label>
 
     <div ref="editor" class="app-editor relative flex grow flex-col"
          :class="[inputClass, fullSize ? 'app-editor__full-size' : '']">
@@ -232,6 +235,9 @@ document.addEventListener('keydown', event => {
 .app-editor .ͼ1.cm-editor.cm-focused {
   @apply border-blue-500 ring-1 ring-offset-0 ring-blue-500 outline-0
 }
+/*.app-editor .v-codemirror:hover .ͼ1.cm-editor {
+  @apply border-blue-500
+}*/
 .app-editor .ͼ1 .cm-scroller {
   @apply rounded
 }
