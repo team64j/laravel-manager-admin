@@ -18,13 +18,16 @@ html, body, #app {
 }
 @layer base {
     *, ::before, ::after {
-        @apply border-gray-50 hover:border-gray-100 dark:border-gray-600 dark:hover:border-gray-500
+        @apply border-gray-50 dark:border-gray-600
     }
     /**
      * Forms
      */
-    [type='checkbox'], [type='radio'], [type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select, button, [type='button'], [role='button'], button.app-appearance-select, .app-appearance-select {
-        @apply appearance-none block w-full h-10 px-3 py-1.5 rounded bg-white border border-inherit text-left dark:text-gray-50 dark:border-inherit hover:border-gray-100 dark:hover:border-gray-500 dark:bg-gray-800 dark:focus:bg-gray-800 dark:hover:bg-gray-800 focus:bg-white hover:bg-white focus:!border-blue-500 focus:ring-1 focus:!ring-blue-500 focus:ring-offset-0 !outline-none focus:z-10 transition
+    [type='checkbox'], [type='radio'], [type='text'], [type='email'], [type='url'], [type='password'], [type='number'], [type='date'], [type='datetime-local'], [type='month'], [type='search'], [type='tel'], [type='time'], [type='week'], [multiple], textarea, select, button, [type='button'], [role='button'], button.app-appearance-select, .app-appearance-select, .cm-editor {
+        @apply bg-white border-gray-50 dark:border-gray-600 hover:border-gray-100 dark:hover:border-gray-500 dark:bg-gray-800 dark:focus:bg-gray-800 dark:hover:bg-gray-800 focus:bg-white hover:bg-white focus:!border-blue-500 focus:ring-1 focus:!ring-blue-500 focus:ring-offset-0 !outline-none focus:z-10 transition
+    }
+    input, select, textarea, button, [type='button'], [role='button'], button.app-appearance-select {
+        @apply appearance-none block w-full h-10 px-3 py-1.5 rounded border text-left dark:text-gray-50
     }
     /*    .dark input, .dark select, .dark textarea, .dark button {
             color-scheme: dark
