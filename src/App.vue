@@ -577,6 +577,6 @@ defineExpose({
   @apply hidden
 }
 .app-main__overlay::before {
-  @apply content-[""] absolute z-20 left-0 top-0 right-0 bottom-0 bg-black/20
+  @apply content-[""] absolute z-30 left-0 top-0 right-0 bottom-0 bg-black/20
 }
 </style>

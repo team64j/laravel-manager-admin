@@ -195,7 +195,7 @@ export default {
                 :icon="[tab.loading ? 'inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin' : tab.meta.icon]"
                 @mousedown="clickTab(tab)"
                 @dblclick="dblClickTab(tab)"
-                class="shrink-0 my-0.5 ml-0.5 last:mr-0.5 min-w-10 border-none !ring-0 btn-sm text-base text-left">
+                class="shrink-0 my-0.5 ml-0.5 last:mr-0.5 min-w-10 border-none !ring-0 btn-sm text-base text-left leading-5">
           <span v-if="tab.meta.title" class="grow w-28 pl-1 truncate" :data-tooltip="tab.meta.title">
             {{ tab.meta.title }}
           </span>
