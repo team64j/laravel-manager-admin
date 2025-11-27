@@ -127,6 +127,8 @@ const model = computed({
 const height = computed(() => {
   if (props.rows === 'auto') {
     return props.rows
+  } else if (props.rows === 'full') {
+    return '100%'
   }
 
   const fs = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue('font-size'))

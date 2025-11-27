@@ -141,7 +141,7 @@ export default {
 
       this.$emit('update:props', {
         data: params,
-        meta: params ? Object.assign({}, { pagination: this.meta['pagination'] }) : {}
+        meta: params ? Object.assign({}, { ...this.meta }) : {}
       }, this)
 
       if (this.$refs.data) {
@@ -499,11 +499,8 @@ export default {
       return this.settings?.closed?.includes(category['id'] ?? category['key'])
     },
     pagination (url) {
-      url = url.split('?')[1] ?? ''
-
       if (this.propUrl) {
-        url = router.parse('?' + url)
-        this.load(url)
+        this.load(router.parse(url))
       } else {
         this.$emit('action', 'pagination', ...arguments)
       }
@@ -574,7 +571,7 @@ export default {
       }
     },
     onSorting (order, dir) {
-      const query = router.currentRoute.value.query
+      const query = { ...router.currentRoute.value.query }
 
       if (this.meta?.['sorting']?.[order] === dir) {
         delete query.order
@@ -773,16 +770,25 @@ export default {
         <tr>
           <template v-for="column in columns">
             <th :style="{ width: column.width }">
-              <div :style="{ minWidth: column.width }" class="relative">
-                {{ column.label ?? '' }}
-                <div v-if="column.sort" class="app-panel__sorter absolute top-0 -right-3 flex flex-col text-xs">
-                  <i class="fa fa-angle-up hover:text-blue-500 transition"
-                     :class="{ 'text-blue-500': meta?.['sorting']?.[column.name] === 'asc' }"
-                     @click="onSorting(column.name, 'asc')"/>
-                  <i class="fa fa-angle-down hover:text-blue-500 transition"
-                     :class="{ 'text-blue-500': meta?.['sorting']?.[column.name] === 'desc' }"
-                     @click="onSorting(column.name, 'desc')"/>
+              <div v-if="column.label" :style="{ minWidth: column.width }" class="relative">
+                {{ column.label }}
+                <div v-if="column.sort" class="app-panel__sorter absolute top-0 !px-0 right-0 flex flex-col text-xs">
+                  <i class="fa hover:text-blue-500 hover:opacity-100 transition"
+                     :class="[
+                         `fa-sort-amount-` + (meta?.['sorting']?.[column.name] || 'asc'),
+                         meta?.['sorting']?.[column.name] ? 'text-blue-500' : 'opacity-60'
+                     ]"
+                     @click="onSorting(column.name, meta?.['sorting']?.[column.name] === 'asc' ? 'desc' : 'asc')"
+                  />
                 </div>
+<!--                <div v-if="column.sort" class="app-panel__sorter absolute top-0 !px-0 right-0 flex flex-col text-xs">
+                  <i class="fa fa-angle-up px-2 hover:text-blue-500 hover:opacity-100 transition"
+                     :class="[meta?.['sorting']?.[column.name] === 'asc' ? 'text-blue-500 opacity-100' : 'opacity-60']"
+                     @click="onSorting(column.name, 'asc')"/>
+                  <i class="fa fa-angle-down px-2 hover:text-blue-500 hover:!opacity-100 transition"
+                     :class="[meta?.['sorting']?.[column.name] === 'desc' ? 'text-blue-500 opacity-100' : 'opacity-60']"
+                     @click="onSorting(column.name, 'desc')"/>
+                </div>-->
               </div>
             </th>
           </template>

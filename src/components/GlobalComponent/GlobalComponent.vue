@@ -56,7 +56,7 @@ export default {
                   onWarn () {}
                 }
             ),
-            { class: 'app-global-component-html' }
+            { class: 'app-global-component-html p-5' }
         )
       }
 
