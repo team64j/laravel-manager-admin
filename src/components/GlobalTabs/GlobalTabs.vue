@@ -196,7 +196,7 @@ export default {
                 @mousedown="clickTab(tab)"
                 @dblclick="dblClickTab(tab)"
                 class="shrink-0 my-0.5 ml-0.5 last:mr-0.5 min-w-10 border-none !ring-0 btn-sm text-base text-left leading-5">
-          <span v-if="tab.meta.title" class="grow w-28 pl-1 truncate" :data-tooltip="tab.meta.title">
+          <span v-if="tab.meta.title !== undefined" class="grow w-28 pl-1 truncate" :data-tooltip="tab.meta.title">
             {{ tab.meta.title }}
           </span>
           <span v-if="!tab.meta.fixed"

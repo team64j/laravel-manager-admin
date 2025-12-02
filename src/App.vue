@@ -122,7 +122,7 @@ function login () {
 
   data.loaded = true
   data.layout = null
-  router.to('/auth/login')
+  router.to('/login')
 }
 
 function _action () {
@@ -181,7 +181,7 @@ function setRoutes (data) {
     const routes = router.getRoutes()
     const component = () => import('./pages/AppPage.vue')
     for (const route of data) {
-      if (routes.some(i => (i.name || i.path) === (route.name || route.path))) {
+      if (router.hasRoute(route.name) || routes.some(i => i.path === route.path)) {
         continue
       }
       router.addRoute({ ...route, component })
@@ -395,10 +395,8 @@ function calcBreakpoint () {
 }
 
 function inputTreeSelect (event, instance) {
-  const context = instance.ctx || instance
-  const input = context._.vnode.el.querySelector('input')
-
-  store.dispatch('set', { event, context })
+  const input = instance.vnode.el.querySelector('input')
+  store.dispatch('set', { event, context: instance })
 
   if (input.classList.contains('focus')) {
     input.classList.remove('focus')

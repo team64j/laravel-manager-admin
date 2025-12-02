@@ -74,7 +74,7 @@ function submit ({ action, method, route } = {}, changed = false) {
       key: currentInstance.vnode.key,
       loading: true,
       meta: {
-        title: $data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : '...'
+        title: $data.meta?.['title'] ?? route?.['meta']?.['title'] !== undefined ? route['meta']['title'] : undefined
       }
     })
   }
@@ -148,8 +148,7 @@ function submit ({ action, method, route } = {}, changed = false) {
           const tab = $data.layout.find(i => i.component === 'AppGlobalTab')
 
           if (tab) {
-            meta['title'] = tab.attrs.title
-            meta['icon'] = tab.attrs.icon
+            Object.assign(meta, tab.attrs)
           } else {
             if (r.data['meta']?.['title'] !== undefined) {
               meta['title'] = r.data['meta']['title']

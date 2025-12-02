@@ -77,16 +77,17 @@ export default {
       }
     }
   },
-  mounted () {
+  setup (props) {
     provide('config', {
-      settings: this.propSettings,
-      templates: this.templates,
-      appends: this.appends,
-      aliases: this.aliases,
-      icons: this.icons,
-      route: this.route
+      templates: props.templates,
+      settings: props.settings,
+      appends: props.appends,
+      aliases: props.aliases,
+      icons: props.icons,
+      route: props.route
     })
-
+  },
+  mounted () {
     Object.assign(this.propSettings, store.getters.get(`Session.${this.keyStorage}`, {}))
 
     this.get()
@@ -147,7 +148,7 @@ export default {
       if (store.getters.get('treeSelect') && route['path'] === router.parse({ ...this.propRoute, ...route }).path) {
         const context = store.getters.get('context')
         const event = store.getters.get('event')
-        context.loading = true
+        context.exposed.data.loading = true
         this.loading = true
 
         const path = router.parse({
@@ -158,27 +159,33 @@ export default {
         }).path + '/' + route['params']['id'] + '/' + id
 
         axios.get(path).then(({ data: { data } }) => {
-          context.loading = false
-          context.model = data['id']
           this.lastSelectValue = data['id'] + ' - ' + data['title']
-          store.dispatch('set', { treeSelect: false })
-          if (context?.exposed?.input) {
-            context.exposed.input.blur()
+          context.exposed.data.loading = false
+          if (context?.exposed?.model) {
+            context.exposed.model.value = data['id']
+          } else {
+            context.ctx.model = data['id']
           }
-          event.target.classList.remove('focus')
+          if (context?.exposed?.input) {
+            context.exposed.input.value.blur()
+            context.exposed.input.value.classList.remove('focus')
+          } else {
+            event.target.classList.remove('focus')
+          }
+          store.dispatch('set', { treeSelect: false })
         }).catch(() => {
           setTimeout(() => {
             event.target.classList.add('focus')
             if (context?.exposed?.input) {
-              context.exposed.input.focus()
+              context.exposed.input.value.focus()
             }
           }, 0)
           store.dispatch('set', { treeSelect: true })
         }).finally(() => {
-          context.loading = false
+          context.exposed.data.loading = false
           this.loading = false
           if (this.lastSelectValue) {
-            this.$nextTick(() => event.target.value = this.lastSelectValue)
+            context.emit('update:props', { value: this.lastSelectValue })
           }
         })
 
@@ -196,13 +203,19 @@ export default {
       if (event.ctrlKey && this.routeList) {
         this.$parent.$emit('action', 'pushRouter', {
           path: this.routeList,
-          params: node
+          params: node,
+          meta: {
+            title: node.title
+          }
         })
       } else {
         const route = node['route'] || this.propRoute
         this.$parent.$emit('action', 'pushRouter', {
           ...route,
-          params: node
+          params: node,
+          meta: {
+            title: node.title
+          }
         })
       }
     },
