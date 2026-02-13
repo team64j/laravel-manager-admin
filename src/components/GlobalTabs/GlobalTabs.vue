@@ -166,6 +166,16 @@ export default {
       this.closeTab(router.currentRoute.value)
       router.to(data)
     },
+    replaceTab (data) {
+      for (const i in this.tabs) {
+        if (router.key(this.tabs[i], router.currentRoute.value)) {
+          Object.assign(this.tabs[i], data)
+          this.keys[i] = router.key(data)
+          router.to(data)
+          break
+        }
+      }
+    },
     clickTab (tab) {
       router.to(tab)
     },

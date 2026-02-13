@@ -170,7 +170,7 @@ if (props.load && props.url) {
     </div>
     <div class="relative">
       <div v-if="itemNew === model">
-        <input type="text" :id="`input-`+id" :class="{ '!border-rose-500': error }" autofocus @input="onInput"/>
+        <input type="text" :id="`input-`+id" :class="{ '!border-rose-500': error }" autofocus @change="onInput"/>
         <i class="fa fa-circle-xmark absolute top-3 right-3 cursor-pointer" @click="onClickClear"/>
       </div>
       <Button v-show="itemNew !== model"

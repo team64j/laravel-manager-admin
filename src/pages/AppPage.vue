@@ -114,6 +114,17 @@ function submit ({ action, method, route } = {}, changed = false) {
             return
           }
 
+          if (r.data?.['meta']?.['exit']) {
+            emit('action', 'closeTab')
+            return
+          }
+
+          if (r.data?.['data']?.['id'] !== undefined && $props.currentRoute?.['params']?.['id'] !== undefined &&
+              r.data['data']['id'].toString() !== $props.currentRoute['params']['id'].toString()) {
+            emit('action', 'replaceTab', router.parse({ params: { id: r.data['data']['id'] } }))
+            return
+          }
+
           store.dispatch('set', {
             action,
             data: r.data['data']?.['attributes'] ? r.data['data'] : {
@@ -145,7 +156,7 @@ function submit ({ action, method, route } = {}, changed = false) {
           })
 
           const meta = {}
-          const tab = $data.layout.find(i => i.component === 'AppGlobalTab')
+          const tab = Array.isArray($data.layout) && $data.layout.find(i => i.component === 'AppGlobalTab')
 
           if (tab) {
             Object.assign(meta, tab.attrs)
