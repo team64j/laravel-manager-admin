@@ -1,16 +1,18 @@
 <script>
-import KeepAliveComponent from './KeepAlive'
 import router from '@/router'
 import store from '@/store'
 import { action } from '@/composables'
 import { mergeDeep } from '@/utils'
-import Frame from '@/components/Frame/Frame.vue'
-import Button from '@/components/Button/Button.vue'
+import { defineAsyncComponent } from 'vue'
 
 export default {
   name: 'GlobalTabs',
   __isStatic: true,
-  components: { Button, KeepAliveComponent, Frame },
+  components: {
+    KeepAliveComponent: defineAsyncComponent(() => import('./KeepAlive')),
+    Button: defineAsyncComponent(() => import('@/components/Button/Button.vue')),
+    Frame: defineAsyncComponent(() => import('@/components/Frame/Frame.vue'))
+  },
   emits: ['action'],
   watch: {
     '$route' (route) {
@@ -25,9 +27,7 @@ export default {
             meta: i?.meta,
             params: i?.params,
             name: i?.name,
-            matched: [{
-              path: i?.matched?.[0].path
-            }]
+            matched: [{ path: i?.matched?.[0].path }]
           }))
         })
       },

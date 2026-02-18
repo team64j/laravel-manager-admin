@@ -1,12 +1,14 @@
 <script>
-import draggable from 'vuedraggable'
-import CheckboxComponent from '@/components/Checkbox/Checkbox.vue'
-import InputComponent from '@/components/Input/Input.vue'
+import { defineAsyncComponent } from 'vue'
 
 export default {
   __isStatic: true,
   name: 'TreeBuilder',
-  components: { draggable, CheckboxComponent, InputComponent },
+  components: {
+    draggable: defineAsyncComponent(() => import('vuedraggable')),
+    CheckboxComponent: defineAsyncComponent(() => import('@/components/Checkbox/Checkbox.vue')),
+    InputComponent: defineAsyncComponent(() => import('@/components/Input/Input.vue'))
+  },
   emits: ['action', 'update:modelValue'],
 
   props: {

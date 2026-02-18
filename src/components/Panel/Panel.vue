@@ -1,19 +1,20 @@
 <script>
-import { compile, h, reactive, toRaw, watch } from 'vue'
-import draggable from 'vuedraggable'
+import { compile, defineAsyncComponent, h, reactive, toRaw, watch } from 'vue'
 import router from '@/router'
 import store from '@/store'
 import { uniqId } from '@/utils'
 import { getValue } from '@/composables'
-import Select from '@/components/Select/Select.vue'
-import Input from '@/components/Input/Input.vue'
-import Button from '@/components/Button/Button.vue'
-import Datetime from '@/components/Datetime/Datetime.vue'
 
 import('./Panel.css')
 
 export default {
-  components: { Datetime, Button, Input, Select, draggable },
+  components: {
+    draggable: defineAsyncComponent(() => import('vuedraggable')),
+    Input: defineAsyncComponent(() => import('@/components/Input/Input.vue')),
+    Button: defineAsyncComponent(() => import('@/components/Button/Button.vue')),
+    Select: defineAsyncComponent(() => import('@/components/Select/Select.vue')),
+    Datetime: defineAsyncComponent(() => import('@/components/Datetime/Datetime.vue'))
+  },
   __isStatic: true,
   name: 'Panel',
   emits: ['action', 'update:props', 'update:modelValue'],
@@ -200,9 +201,9 @@ export default {
           router.to(route)
           this.get(route.query, [])
 
-          if (props) {
-            this.$emit('update:props', props, this)
-          }
+          // if (props) {
+          //   this.$emit('update:props', props, this)
+          // }
         }
       } else {
         this.get(route.query, [])
@@ -252,7 +253,7 @@ export default {
         }
       }
     },
-    dblClickRow (event, item) {
+    dblClickRow (item) {
       if (item['dbClick']) {
         this.$emit('action', item['dbClick'], item)
       }
@@ -913,7 +914,7 @@ export default {
             <tbody v-if="category.route || route">
             <tr v-for="item in category.data"
                 @click="selectRow($event, item, category.route || route)"
-                @dblclick="dblClickRow($event, item)"
+                @dblclick="dblClickRow(item)"
                 class="cursor-pointer"
                 :class="{ 'disabled' : item.disabled, 'active': item['__active'] }"
                 @contextmenu="buildContextMenu($event, category)">
@@ -929,7 +930,7 @@ export default {
               <template #item="{ element: item }">
                 <tr :class="{ 'disabled' : item.disabled, 'active': item['__active'] }"
                     @click="selectRow($event, item)"
-                    @dblclick="dblClickRow($event, item)"
+                    @dblclick="dblClickRow(item)"
                     @contextmenu="buildContextMenu($event, item)">
                   <template v-for="cell in cells(item)">
                     <component :is="cell"
@@ -944,7 +945,7 @@ export default {
             <tbody v-else>
             <tr v-for="item in category.data"
                 @click="selectRow($event, item)"
-                @dblclick="dblClickRow($event, item)"
+                @dblclick="dblClickRow(item)"
                 :class="{ 'disabled' : item.disabled, 'active': item['__active'], 'cursor-pointer': item.route }"
                 @contextmenu="buildContextMenu($event, item)">
               <component v-for="cell in cells(item)" :is="cell"/>

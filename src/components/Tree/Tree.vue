@@ -1,15 +1,16 @@
 <script>
-import { provide } from 'vue'
+import { defineAsyncComponent, provide } from 'vue'
 import { action } from '@/composables'
 import router from '@/router'
 import store from '@/store'
-import TreeNode from './TreeNode.vue'
-import TreeMenuItem from './TreeMenuItem.vue'
 
 import('./Tree.css')
 
 export default {
-  components: { TreeNode, TreeMenuItem },
+  components: {
+    TreeNode: defineAsyncComponent(() => import('./TreeNode.vue')),
+    TreeMenuItem: defineAsyncComponent(() => import('./TreeMenuItem.vue'))
+  },
   __isStatic: true,
   name: 'Tree',
   props: {
