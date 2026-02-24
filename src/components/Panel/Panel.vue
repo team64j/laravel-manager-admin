@@ -122,7 +122,7 @@ export default {
   },
   computed: {
     propUrl () {
-      return this.url ?? (this.currentRoute?.['meta']?.url || (this.currentRoute['path'])) ?? null
+      return this.url ?? this.currentRoute['path'] ?? null
     }
   },
   methods: {
@@ -137,7 +137,7 @@ export default {
       return data['id'] ?? data['key']
     },
     get (query, params) {
-      const route = router.parse(this.propUrl)
+      const route = router.parse(this.currentRoute?.['meta']?.['url'] || this.propUrl)
       query = Object.assign(route.query, this.currentRoute?.query || {}, query)
 
       this.$emit('update:props', {
@@ -501,7 +501,7 @@ export default {
     },
     pagination (url) {
       if (this.propUrl) {
-        this.load(router.parse(url))
+        this.load(Object.assign({}, router.parse(this.propUrl), { query: router.parse(url).query }))
       } else {
         this.$emit('action', 'pagination', ...arguments)
       }
@@ -782,14 +782,14 @@ export default {
                      @click="onSorting(column.name, meta?.['sorting']?.[column.name] === 'asc' ? 'desc' : 'asc')"
                   />
                 </div>
-<!--                <div v-if="column.sort" class="app-panel__sorter absolute top-0 !px-0 right-0 flex flex-col text-xs">
-                  <i class="fa fa-angle-up px-2 hover:text-blue-500 hover:opacity-100 transition"
-                     :class="[meta?.['sorting']?.[column.name] === 'asc' ? 'text-blue-500 opacity-100' : 'opacity-60']"
-                     @click="onSorting(column.name, 'asc')"/>
-                  <i class="fa fa-angle-down px-2 hover:text-blue-500 hover:!opacity-100 transition"
-                     :class="[meta?.['sorting']?.[column.name] === 'desc' ? 'text-blue-500 opacity-100' : 'opacity-60']"
-                     @click="onSorting(column.name, 'desc')"/>
-                </div>-->
+                <!--                <div v-if="column.sort" class="app-panel__sorter absolute top-0 !px-0 right-0 flex flex-col text-xs">
+                                  <i class="fa fa-angle-up px-2 hover:text-blue-500 hover:opacity-100 transition"
+                                     :class="[meta?.['sorting']?.[column.name] === 'asc' ? 'text-blue-500 opacity-100' : 'opacity-60']"
+                                     @click="onSorting(column.name, 'asc')"/>
+                                  <i class="fa fa-angle-down px-2 hover:text-blue-500 hover:!opacity-100 transition"
+                                     :class="[meta?.['sorting']?.[column.name] === 'desc' ? 'text-blue-500 opacity-100' : 'opacity-60']"
+                                     @click="onSorting(column.name, 'desc')"/>
+                                </div>-->
               </div>
             </th>
           </template>
