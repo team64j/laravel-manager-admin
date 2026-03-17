@@ -186,6 +186,8 @@ function submit ({ action, method, route } = {}, changed = false) {
       }).catch(({ response }) => {
     if (response?.data.errors) {
       $data.errors = response.data.errors
+    } else if (response?.status >= 400) {
+      emit('action', 'closeTab')
     }
   }).finally(() => {
     emit('action', 'setTab', {

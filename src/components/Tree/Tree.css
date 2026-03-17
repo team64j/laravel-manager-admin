@@ -2,7 +2,7 @@
     @apply flex flex-col overflow-hidden w-full h-full
 }
 .app-tree__body {
-    @apply grow overflow-hidden
+    @apply grow overflow-hidden bg-gray-700 rounded
 }
 .app-tree__body.focused {
     @apply ring-2 ring-inset ring-blue-500
@@ -32,7 +32,7 @@
     @apply mr-1
 }
 .app-tree__menu {
-    @apply grow-0 flex relative z-10 px-0.5 py-1.5 border-b border-gray-800
+    @apply grow-0 flex relative z-10 px-0.5 py-1.5
 }
 .app-tree__menu-item {
     @apply relative

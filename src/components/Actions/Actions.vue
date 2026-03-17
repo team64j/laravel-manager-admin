@@ -107,8 +107,8 @@ function clickGroup (event) {
 .app-actions button:not(.app-actions__toggle) > i.fa {
   @apply md:hidden
 }
-.app-actions button span {
-  @apply hidden md:inline-block px-1
+.app-actions button > span {
+  @apply hidden md:inline-block px-1.5
 }
 .app-actions .app-actions__group {
   @apply relative

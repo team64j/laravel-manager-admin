@@ -27,7 +27,7 @@ html, body, #app {
         @apply bg-white border-gray-50 dark:border-gray-600 hover:border-gray-100 dark:hover:border-gray-500 dark:bg-gray-800 dark:focus:bg-gray-800 dark:hover:bg-gray-800 focus:bg-white hover:bg-white focus:!border-blue-500 focus:ring-1 focus:!ring-blue-500 focus:ring-offset-0 focus:z-10
     }
     input, select, textarea, button, [type='button'], [role='button'], button.app-appearance-select {
-        @apply appearance-none block w-full h-10 px-3 py-1.5 rounded border text-left dark:text-gray-50 !outline-none transition
+        @apply appearance-none block w-full h-10 px-3 py-0 rounded border text-left dark:text-gray-50 !outline-none transition
     }
     /*    .dark input, .dark select, .dark textarea, .dark button {
             color-scheme: dark
@@ -77,10 +77,10 @@ html, body, #app {
         background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22rgb%2899%20139%20241%29%22%20viewBox%3D%220%200%2025%2016%22%3E%0A%20%20%3Cpath%20d%3D%22M25%2013v-1L14%201a1%201%200%200%200-2%200L1%2012a1%201%200%200%200%200%202l1%201a1%201%200%201%200%202%200l9-10%209%2010a1%201%200%200%200%202%200l1-1v-1Z%22%2F%3E%0A%3C%2Fsvg%3E");
     }
     button, [type='button'], [role='button'] {
-        @apply inline-flex items-center justify-center w-auto px-4 py-2 cursor-pointer font-medium border hover:bg-gray-50 active:bg-gray-50 focus:bg-gray-50 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-auto disabled:pointer-events-none dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-600 dark:focus:bg-gray-600
+        @apply inline-flex items-center justify-center w-auto px-4 py-0 cursor-pointer font-medium border hover:bg-gray-50 active:bg-gray-50 focus:bg-gray-50 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-auto disabled:pointer-events-none dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-600 dark:focus:bg-gray-600
     }
     .btn-sm, .input-sm, button.input-sm {
-        @apply text-sm px-2 py-1 h-8 min-h-[2rem]
+        @apply text-sm px-2 min-h-[2rem]
     }
     .btn-lg, .input-lg {
         @apply px-6 py-3 h-[3.308rem] rounded border-2 text-xl font-medium focus:ring-0
@@ -95,7 +95,7 @@ html, body, #app {
         @apply !border-rose-600
     }
     .btn-sm {
-        @apply inline-flex items-center text-sm px-2 py-1 h-8 min-h-[2rem] rounded whitespace-nowrap select-none cursor-pointer transition
+        @apply inline-flex items-center text-sm px-2 h-8 min-h-[2rem] rounded whitespace-nowrap select-none cursor-pointer transition
     }
     .btn-green {
         @apply bg-green-500 !border-transparent text-white hover:!bg-green-600 active:!bg-green-600 focus:!bg-green-600 focus:!border-green-500 focus:!ring-green-500 dark:!bg-green-700 dark:hover:!bg-green-800 dark:active:!bg-green-800 dark:focus:!bg-green-800 dark:focus:!border-green-600 dark:focus:!ring-green-600

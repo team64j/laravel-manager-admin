@@ -83,7 +83,7 @@ function _action () {
   @apply px-4 pb-4
 }
 .app-sidebar > .app-tabs > .app-tabs__page {
-  @apply rounded-none p-0
+  @apply rounded-none p-0 bg-transparent
 }
 .app-tabs__vertical {
   @apply !flex-row h-auto self-stretch

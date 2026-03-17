@@ -107,9 +107,9 @@ export default {
         } else if (event.key === 'Escape') {
           this.data.forEach(i => {
             if (i.data) {
-              i.data.forEach(j => j.__active = false)
+              i.data.forEach(j => j['@active'] = false)
             } else {
-              i.__active = false
+              i['@active'] = false
             }
           })
         }
@@ -210,6 +210,10 @@ export default {
       }
     },
     selectRow (event, item, route) {
+      if (item['@disabled']) {
+        return
+      }
+
       if (item.route) {
         route = item.route
       }
@@ -242,14 +246,14 @@ export default {
           if (!event.ctrlKey) {
             this.data.forEach(i => {
               if (i.data) {
-                i.data.forEach(j => item.__key !== j.__key && (j['__active'] = false))
+                i.data.forEach(j => item['@key'] !== j['@key'] && (j['@active'] = false))
               } else {
-                item.__key !== i.__key && (i['__active'] = false)
+                item['@key'] !== i['@key'] && (i['@active'] = false)
               }
             })
           }
 
-          item['__active'] = !item['__active']
+          item['@active'] = !item['@active']
         }
       }
     },
@@ -258,18 +262,18 @@ export default {
         this.$emit('action', item['dbClick'], item)
       }
     },
-    cells (item) {
+    cells (item, index) {
       const items = []
 
       if (typeof item === 'object') {
-        if (!item.hasOwnProperty('__key')) {
-          Object.defineProperty(item, '__key', {
+        if (!item.hasOwnProperty('@key')) {
+          Object.defineProperty(item, '@key', {
             value: uniqId()
           })
         }
 
-        if (!item['route'] && !item.hasOwnProperty('__active')) {
-          Object.defineProperty(item, '__active', {
+        if (!item['route'] && !item.hasOwnProperty('@active')) {
+          Object.defineProperty(item, '@active', {
             value: false,
             writable: true
           })
@@ -282,7 +286,7 @@ export default {
 
           items.push(h('td', {
             style
-          }, this.value(item, this.columns[i])))
+          }, this.value(item, this.columns[i], index)))
         }
       } else {
         for (const i in item) {
@@ -299,7 +303,7 @@ export default {
 
       return items
     },
-    value (item, column) {
+    value (item, column, index) {
       const key = column.key ?? column.name
 
       if (/\./.test(key)) {
@@ -313,6 +317,7 @@ export default {
 
         if (component?.attrs?.['keyValue'] !== undefined) {
           component.attrs.value = item[component.attrs['keyValue']] ?? item
+          component.attrs.index = index
         }
 
         return this.getComponent(component)
@@ -912,13 +917,17 @@ export default {
 
           <template v-if="category.data && !this.hasClosedCategory(category)">
             <tbody v-if="category.route || route">
-            <tr v-for="item in category.data"
+            <tr v-for="(item, i) in category.data"
                 @click="selectRow($event, item, category.route || route)"
                 @dblclick="dblClickRow(item)"
-                class="cursor-pointer"
-                :class="{ 'disabled' : item.disabled, 'active': item['__active'] }"
+                :class="{
+                  'disabled' : item['@disabled'],
+                  'deleted' : item['@deleted'],
+                  'active': item['@active'],
+                  'cursor-pointer': !item['@disabled']
+                }"
                 @contextmenu="buildContextMenu($event, category)">
-              <component v-for="cell in cells(item)" :is="cell"/>
+              <component v-for="cell in cells(item, i)" :is="cell"/>
             </tr>
             </tbody>
 
@@ -927,12 +936,16 @@ export default {
                        item-key="id"
                        tag="tbody"
                        @end="sortable(category.data)">
-              <template #item="{ element: item }">
-                <tr :class="{ 'disabled' : item.disabled, 'active': item['__active'] }"
+              <template #item="{ element: item, index }">
+                <tr :class="{
+                  'disabled' : item['@disabled'],
+                  'deleted' : item['@deleted'],
+                  'active': item['@active']
+                }"
                     @click="selectRow($event, item)"
                     @dblclick="dblClickRow(item)"
                     @contextmenu="buildContextMenu($event, item)">
-                  <template v-for="cell in cells(item)">
+                  <template v-for="cell in cells(item, index)">
                     <component :is="cell"
                                @action="action"
                                :model-value="modelValue"
@@ -943,12 +956,17 @@ export default {
             </draggable>
 
             <tbody v-else>
-            <tr v-for="item in category.data"
+            <tr v-for="(item, i) in category.data"
                 @click="selectRow($event, item)"
                 @dblclick="dblClickRow(item)"
-                :class="{ 'disabled' : item.disabled, 'active': item['__active'], 'cursor-pointer': item.route }"
+                :class="{
+                  'disabled' : item['@disabled'],
+                  'deleted' : item['@deleted'],
+                  'active': item['@active'],
+                  'cursor-pointer': item.route
+                }"
                 @contextmenu="buildContextMenu($event, item)">
-              <component v-for="cell in cells(item)" :is="cell"/>
+              <component v-for="cell in cells(item, i)" :is="cell"/>
             </tr>
             </tbody>
           </template>
