@@ -80,7 +80,7 @@ html, body, #app {
         @apply inline-flex items-center justify-center w-auto px-4 py-0 cursor-pointer font-medium border hover:bg-gray-50 active:bg-gray-50 focus:bg-gray-50 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-auto disabled:pointer-events-none dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-600 dark:focus:bg-gray-600
     }
     .btn-sm, .input-sm, button.input-sm {
-        @apply text-sm px-2 min-h-[2rem]
+        @apply text-sm px-2 h-8 min-h-[2rem]
     }
     .btn-lg, .input-lg {
         @apply px-6 py-3 h-[3.308rem] rounded border-2 text-xl font-medium focus:ring-0
@@ -95,7 +95,7 @@ html, body, #app {
         @apply !border-rose-600
     }
     .btn-sm {
-        @apply inline-flex items-center text-sm px-2 h-8 min-h-[2rem] rounded whitespace-nowrap select-none cursor-pointer transition
+        @apply inline-flex items-center text-sm px-2 min-h-[2rem] rounded whitespace-nowrap select-none cursor-pointer transition
     }
     .btn-green {
         @apply bg-green-500 !border-transparent text-white hover:!bg-green-600 active:!bg-green-600 focus:!bg-green-600 focus:!border-green-500 focus:!ring-green-500 dark:!bg-green-700 dark:hover:!bg-green-800 dark:active:!bg-green-800 dark:focus:!bg-green-800 dark:focus:!border-green-600 dark:focus:!ring-green-600
