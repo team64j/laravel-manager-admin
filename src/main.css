@@ -29,9 +29,12 @@ html, body, #app {
     input, select, textarea, button, [type='button'], [role='button'], button.app-appearance-select {
         @apply appearance-none block w-full h-10 px-3 py-0 rounded border text-left dark:text-gray-50 !outline-none transition
     }
-    /*    .dark input, .dark select, .dark textarea, .dark button {
-            color-scheme: dark
-        }*/
+    textarea {
+        @apply py-1
+    }
+    .dark input, .dark select, .dark textarea, .dark button {
+        color-scheme: dark
+    }
     input.focus, select.focus, textarea.focus, button.focus {
         @apply !border-blue-500 ring-1 ring-blue-500 ring-offset-0 !outline-none
     }
