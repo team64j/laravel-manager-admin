@@ -209,6 +209,9 @@ document.addEventListener('keydown', event => {
 .app-editor__settings i:hover > * {
   @apply opacity-100 visible
 }
+.app-editor__editor {
+  @apply min-h-full
+}
 .app-editor__menu {
   @apply block opacity-0 invisible absolute right-0 top-full py-1 rounded shadow-md font-sans font-normal text-base text-gray-800 bg-gray-50/90 dark:text-white dark:bg-gray-600/90 transition
 }

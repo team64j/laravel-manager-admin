@@ -6,7 +6,7 @@ defineOptions({
 
 const props = defineProps({
   label: String,
-  data: Array, Object,
+  data: [Array, Object],
   help: String
 })
 </script>

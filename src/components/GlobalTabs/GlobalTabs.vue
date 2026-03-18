@@ -231,7 +231,7 @@ export default {
 
       <div class="grow overflow-hidden">
         <template v-for="{ path } in frames" :key="path">
-          <Frame v-if="keys.includes(path)" v-show="currentRoute['path'] === path" @action="action"/>
+          <Frame v-if="keys.includes(path)" v-show="currentRoute['path'] === path" @action="action" sandbox/>
         </template>
       </div>
 

@@ -109,6 +109,11 @@ function submit ({ action, method, route } = {}, changed = false) {
             return
           }
 
+          if (r.data?.['meta']?.['to']) {
+            router.to(r.data['meta']['to'])
+            return
+          }
+
           if (r.data?.['meta']?.['reload']) {
             location.reload()
             return

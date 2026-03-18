@@ -121,11 +121,29 @@ html, body, #app {
     /**
      * Text
      */
-    .text-success {
+    .text-emerald {
+        @apply text-emerald-500
+    }
+    .text-green, .text-success {
         @apply text-green-600
     }
-    .text-error {
+    .text-orange {
+        @apply text-orange-700
+    }
+    .text-rose, .text-error {
         @apply text-rose-600
+    }
+    .text-red {
+        @apply text-rose-800
+    }
+    .text-purple {
+        @apply text-purple-500
+    }
+    .text-blue {
+        @apply text-blue-500
+    }
+    .text-slate {
+        @apply text-slate-500
     }
     /**
      * Icons
