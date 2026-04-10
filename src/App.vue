@@ -568,7 +568,7 @@ defineExpose({
 .app.app-sidebar-hidden .app-resizer {
   @apply hidden
 }
-.app .app-main::after {
+.app .app-sidebar + .app-main::after {
   @apply lg:hidden content-[""] z-10 fixed left-0 top-14 right-0 bottom-0
 }
 .app.app-sidebar-hidden .app-main::after {

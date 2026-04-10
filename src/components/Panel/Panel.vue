@@ -13,7 +13,7 @@ export default {
     Input: defineAsyncComponent(() => import('@/components/Input/Input.vue')),
     Button: defineAsyncComponent(() => import('@/components/Button/Button.vue')),
     Select: defineAsyncComponent(() => import('@/components/Select/Select.vue')),
-    Datetime: defineAsyncComponent(() => import('@/components/Datetime/Datetime.vue'))
+    Datetime: defineAsyncComponent(() => import('@/components/Datetime/Datetime.vue')),
   },
   __isStatic: true,
   name: 'Panel',
@@ -21,7 +21,7 @@ export default {
   props: {
     id: {
       type: String,
-      default: uniqId()
+      default: uniqId(),
     },
     modelValue: null,
     url: String,
@@ -29,37 +29,38 @@ export default {
       type: Array,
       default (props) {
         return props.url ? [] : props.modelValue ?? []
-      }
+      },
     },
     meta: Object,
     layout: Object,
     columns: {
       type: Array,
-      default: (props) => props?.meta?.columns ?? []
+      default: (props) => props?.meta?.columns ?? [],
     },
     filters: {
       type: Array,
-      default: (props) => props?.meta?.filters ?? []
+      default: (props) => props?.meta?.filters ?? [],
     },
     route: {
       type: [String, Object],
-      default: (props) => props?.meta?.route
+      default: (props) => props?.meta?.route,
     },
     draggable: {
       type: [Boolean, String],
-      default: (props) => props?.meta?.draggable
+      default: (props) => props?.meta?.draggable,
     },
     history: [Boolean, String],
     rerender: Boolean,
     contextMenu: Object,
     view: String,
     views: [Object, Array],
-    currentRoute: Object
+    currentRoute: Object,
   },
   data () {
     const key = `panel.` + this.id.toLowerCase()
 
     return {
+      loading: false,
       keyStorage: key,
       filterTimer: 0,
       filterValues: { ...this.currentRoute.query },
@@ -69,7 +70,7 @@ export default {
       dataContextMenu: [],
       classContextMenu: null,
       propView: this.view,
-      sorting: {}
+      sorting: {},
     }
   },
   mounted () {
@@ -79,10 +80,13 @@ export default {
 
     if (this.history) {
       watch(
-          () => this.currentRoute['params'][this.history],
+          () => router.currentRoute.value,
           (a, b) => {
-            a !== undefined && b !== undefined && b !== this.currentRoute['params'][this.history] && this.get({}, [])
-          }
+            a['path'] === b['path'] &&
+            a['query'][this.history] !== b['query'][this.history] &&
+            this.get(a['query'], [])
+          },
+          { deep: true },
       )
     }
 
@@ -123,7 +127,7 @@ export default {
   computed: {
     propUrl () {
       return this.url ?? this.currentRoute['path'] ?? null
-    }
+    },
   },
   methods: {
     action () {
@@ -137,12 +141,13 @@ export default {
       return data['id'] ?? data['key']
     },
     get (query, params) {
+      this.loading = true
       const route = router.parse(this.currentRoute?.['meta']?.['url'] || this.propUrl)
       query = Object.assign(route.query, this.currentRoute?.query || {}, query)
 
       this.$emit('update:props', {
         data: params,
-        meta: params ? Object.assign({}, { ...this.meta }) : {}
+        meta: params ? Object.assign({}, { ...this.meta }) : {},
       }, this)
 
       if (this.$refs.data) {
@@ -158,11 +163,11 @@ export default {
         method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
         url: route.path,
         params: route.query,
-        data: Object.assign({}, route.query)
+        data: Object.assign({}, route.query),
       }).then(({ data }) => {
         const props = {
           data: data.data,
-          meta: data.meta
+          meta: data.meta,
         }
 
         if (data.meta?.columns) {
@@ -187,6 +192,8 @@ export default {
         this.$emit('update:props', props)
 
         this.$el.querySelector('.app-panel__data').style.height = null
+      }).finally(() => {
+        this.loading = false
       })
     },
     load (route, props) {
@@ -195,7 +202,7 @@ export default {
           this.$emit(
               'action',
               'pushRouter',
-              route
+              route,
           )
         } else {
           router.to(route)
@@ -222,12 +229,12 @@ export default {
         if (typeof route === 'object') {
           this.$emit('action', 'pushRouter', {
             ...route,
-            params: item
+            params: item,
           })
         } else {
           this.$emit('action', 'pushRouter', {
             path: route,
-            params: item
+            params: item,
           })
         }
       } else {
@@ -242,20 +249,20 @@ export default {
           } else {
             this.modelValue.splice(index, 1)
           }
-        } else {
-          if (!event.ctrlKey) {
-            this.data.forEach(i => {
-              if (i.data) {
-                i.data.forEach(j => item['@key'] !== j['@key'] && (j['@active'] = false))
-              } else {
-                item['@key'] !== i['@key'] && (i['@active'] = false)
-              }
-            })
-          }
-
-          item['@active'] = !item['@active']
         }
       }
+
+      if (!event.ctrlKey) {
+        this.data.forEach(i => {
+          if (i.data) {
+            i.data.forEach(j => item['@key'] !== j['@key'] && (j['@active'] = false))
+          } else {
+            item['@key'] !== i['@key'] && (i['@active'] = false)
+          }
+        })
+      }
+
+      item['@active'] = !item['@active']
     },
     dblClickRow (item) {
       if (item['dbClick']) {
@@ -268,14 +275,14 @@ export default {
       if (typeof item === 'object') {
         if (!item.hasOwnProperty('@key')) {
           Object.defineProperty(item, '@key', {
-            value: uniqId()
+            value: uniqId(),
           })
         }
 
         if (!item['route'] && !item.hasOwnProperty('@active')) {
           Object.defineProperty(item, '@active', {
             value: false,
-            writable: true
+            writable: true,
           })
         }
       }
@@ -285,7 +292,7 @@ export default {
           const style = this.columns[i].style
 
           items.push(h('td', {
-            style
+            style,
           }, this.value(item, this.columns[i], index)))
         }
       } else {
@@ -336,7 +343,7 @@ export default {
               this.action(i, item, column.values ? item[i] : column)
               event.preventDefault()
               event.stopPropagation()
-            }
+            },
           }))
         }
       } else if ((item[key] ?? column) !== undefined) {
@@ -350,14 +357,14 @@ export default {
           slots.push(h(compile(item[`${key}.html`])))
         } else if (column.icon) {
           slots.push(h(`i`, {
-            class: column.icon
+            class: column.icon,
           }))
         }
 
         if (item[key + `.help`]) {
           slots.push(h(`i`, {
             class: `ml-2`,
-            'data-tooltip': item[key + `.help`]
+            'data-tooltip': item[key + `.help`],
           }))
         }
       }
@@ -429,7 +436,7 @@ export default {
 
       return h(
           component,
-          attrs
+          attrs,
       )
     },
     sortable (data) {
@@ -526,7 +533,7 @@ export default {
           if (propFilters[i.name]) {
             if (typeof propFilters[i.name] == 'boolean') {
               propFilters[i.name] = {
-                name: i.name
+                name: i.name,
               }
             }
 
@@ -604,7 +611,7 @@ export default {
           if (propFilters[i.name]) {
             if (typeof propFilters[i.name] == 'boolean') {
               propFilters[i.name] = {
-                name: i.name
+                name: i.name,
               }
             }
 
@@ -620,7 +627,7 @@ export default {
           if (i.filter) {
             if (i.filter.data === undefined) {
               i.filter = {
-                data: i.filter
+                data: i.filter,
               }
             }
 
@@ -641,7 +648,7 @@ export default {
       if (filter?.type === 'date' || filter?.type === 'datetime') {
         value = [
           event.target.parentElement.firstElementChild['value'],
-          event.target.parentElement.lastElementChild['value']
+          event.target.parentElement.lastElementChild['value'],
         ]
 
         if (value[0] === '' || value[1] === '') {
@@ -699,14 +706,14 @@ export default {
 
         if (action.split) {
           this.dataContextMenu.push({
-            split: true
+            split: true,
           })
         } else {
           this.dataContextMenu.push({
             title: action.title,
             icon: action.icon,
             to: action.to,
-            node
+            node,
           })
         }
       })
@@ -748,8 +755,8 @@ export default {
     },
     clickView (i) {
       this.propView = i.key
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -884,7 +891,7 @@ export default {
         </tr>
         </thead>
 
-        <tbody v-if="!data.length">
+        <tbody v-if="!data || loading">
         <tr class="pointer-events-none !max-w-full">
           <td :colspan="columns?.length || 1" class="text-center p-5">
             <div v-if="meta?.['message']">

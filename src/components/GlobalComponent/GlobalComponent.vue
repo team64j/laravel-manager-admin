@@ -108,6 +108,8 @@ export default {
         attrs.modelValue = props.data
       } else if (props.data?.[attrs.key] !== undefined) {
         attrs.modelValue = props.data[attrs.key]
+      } else if (attrs.data?.[attrs.key] !== undefined) {
+        attrs.data = attrs.data[attrs.key]
       } else if (attrs.key.includes('.')) {
         attrs.modelValue = getValue(attrs.key, props)
       } else {

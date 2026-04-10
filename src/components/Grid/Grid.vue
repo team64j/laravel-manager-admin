@@ -35,7 +35,7 @@ function calcGridArea (gridArea) {
 
 <template>
   <div class="app-grid grid auto-cols-fr w-full" :style="{ gridArea: props.area, gap: props.gap }">
-    <div v-for="(i, k) in props.gridAreas" :style="{ gridArea: calcGridArea(i) }">
+    <div v-for="(i, k) in props.gridAreas" :style="{ gridArea: calcGridArea(i) }" class="overflow-hidden">
       <slot :name="`grid_${k}`"/>
     </div>
   </div>
