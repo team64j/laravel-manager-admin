@@ -1004,6 +1004,10 @@ export default {
       </div>
     </div>
 
+    <div v-if="$slots['bottom']">
+      <slot name="bottom"/>
+    </div>
+
     <transition>
       <div v-if="showContextMenu && dataContextMenu.length" ref="ctx" class="app-panel__context-menu"
            :class="classContextMenu">
