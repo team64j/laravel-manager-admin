@@ -782,7 +782,7 @@ export default {
         <thead v-if="columns?.length && columns.filter(column => column.label).length">
         <tr>
           <template v-for="column in columns">
-            <th :style="{ width: column.width }">
+            <th :style="column?.style">
               <div v-if="column.label" :style="{ minWidth: column.width }" class="relative">
                 {{ column.label }}
                 <div v-if="column.sort" class="app-panel__sorter absolute top-0 !px-0 right-0 flex flex-col text-xs">
