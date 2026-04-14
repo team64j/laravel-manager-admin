@@ -417,13 +417,13 @@ export default {
         attrs.modelValue = this.modelValue[data.model]
         attrs['onUpdate:modelValue'] = (value) => {
           this.setDataValue(data.model.split('.'), value, this.modelValue, true)
-          this.$emit('update:modelValue', value, this)
+          //this.$emit('update:modelValue', value, this)
         }
       } else if (/\./.test(data.model)) {
         attrs.modelValue = this.findDataValue(data.model.split('.'), this.modelValue || this.$props)
         attrs['onUpdate:modelValue'] = (value) => {
           this.setDataValue(data.model.split('.'), value, this.modelValue, true)
-          this.$emit('update:modelValue', value, this)
+          //this.$emit('update:modelValue', value, this)
         }
       } else {
         attrs.modelValue = this.modelValue

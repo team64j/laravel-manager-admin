@@ -74,7 +74,8 @@ function get (callback) {
 
     const route = router.parse(props.url)
     const query = {
-      selected: Array.isArray(model.value) ? model.value : [model.value]
+      selected: Array.isArray(model.value) ? model.value : [model.value],
+      ...(route['query'] || {})
     }
 
     axios({
