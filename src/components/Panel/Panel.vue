@@ -1,5 +1,5 @@
 <script>
-import { compile, defineAsyncComponent, h, reactive, toRaw, watch } from 'vue'
+import { compile, defineAsyncComponent, h, reactive, ref, shallowReactive, toRaw, watch } from 'vue'
 import router from '@/router'
 import store from '@/store'
 import { uniqId } from '@/utils'
@@ -388,26 +388,14 @@ export default {
         return h({ template: column.values[item[column.name]] ?? column.values?.[item[column.key]] })
       }
     },
-    findValue (keys, data) {
-      const key = keys[0]
-      let value
-
-      if (data?.[key] !== undefined) {
-        if (keys[1] !== undefined) {
-          keys.shift()
-          value = this.findValue(keys, data[key])
-        } else {
-          value = data[key]
-        }
-      }
-
-      return value
-    },
     getComponent (data) {
       return h(
           this.$.root.appContext.components['AppGlobalComponent'],
           {
-            layout: data,
+            layout: {
+              ...data,
+              attrs: reactive({ ...(data.attrs || {}) })
+            },
             data: this.modelValue ?? this.data,
           },
       )
