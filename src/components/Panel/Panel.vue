@@ -1,9 +1,10 @@
 <script>
-import { compile, defineAsyncComponent, h, reactive, ref, shallowReactive, toRaw, watch } from 'vue'
+import { compile, defineAsyncComponent, h, toRaw, watch } from 'vue'
 import router from '@/router'
 import store from '@/store'
 import { uniqId } from '@/utils'
 import { getValue } from '@/composables'
+import { DynamicComponent } from '@/utils/dynamic-component'
 
 import('./Panel.css')
 
@@ -318,7 +319,7 @@ export default {
       }
 
       if (item[key]?.component) {
-        return this.getComponent(item[key])
+        return DynamicComponent(item[key], this.modelValue)
       } else if (column.component) {
         const component = structuredClone(toRaw(column.component))
 
@@ -327,7 +328,7 @@ export default {
           component.attrs.index = index
         }
 
-        return this.getComponent(component)
+        return DynamicComponent(component, this.modelValue)
       }
 
       const slots = []
@@ -387,18 +388,6 @@ export default {
       } else {
         return h({ template: column.values[item[column.name]] ?? column.values?.[item[column.key]] })
       }
-    },
-    getComponent (data) {
-      return h(
-          this.$.root.appContext.components['AppGlobalComponent'],
-          {
-            layout: {
-              ...data,
-              attrs: reactive({ ...(data.attrs || {}) })
-            },
-            data: this.modelValue ?? this.data,
-          },
-      )
     },
     sortable (data) {
       const draggable = data?.draggable || this.draggable

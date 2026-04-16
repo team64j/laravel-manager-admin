@@ -16,3 +16,28 @@ export function getValue (keys, data) {
 
   return value
 }
+
+export function setValue (key, value, data) {
+  if (/\./.test(key)) {
+    if (data[key] !== undefined) {
+      data[key] = value
+    } else {
+      setDataValue(key.split('.'), value, data, true)
+    }
+  } else {
+    data[key] = value
+  }
+}
+
+export function setDataValue (keys, value, data) {
+  const key = keys[0]
+
+  if (data[key] !== undefined) {
+    if (keys[1] !== undefined) {
+      keys.shift()
+      setDataValue(keys, value, data[key], null)
+    } else {
+      data[key] = value
+    }
+  }
+}

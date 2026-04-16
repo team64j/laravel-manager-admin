@@ -1,5 +1,5 @@
 <script>
-import { compile, getCurrentInstance, h, nextTick } from 'vue'
+import { compile, getCurrentInstance, h } from 'vue'
 import { getValue } from '@/composables'
 
 import('./GlobalComponent.css')
@@ -16,7 +16,16 @@ export default {
       return emit('action', ...arguments)
     }
 
-    function layoutData (data) {
+    function layoutData (data, visited = new WeakSet()) {
+      // Защита от циклических ссылок
+      if (data && typeof data === 'object') {
+        if (visited.has(data)) {
+          console.warn('Circular reference detected in layoutData')
+          return data
+        }
+        visited.add(data)
+      }
+
       for (let i in data) {
         if (typeof data[i]?.data === 'string') {
           if (!data[i].attrs) {
@@ -27,7 +36,7 @@ export default {
           data[i].attrs.onAction = action
         } else if (data[i]?.slots) {
           data[i].slots = layoutData(data[i].slots)
-        } else if (Array.isArray(data[i])) {
+        } else if (Array.isArray(data[i]) && data[i].length) {
           data[i] = layoutData(data[i])
         }
       }
@@ -35,7 +44,14 @@ export default {
       return data
     }
 
-    function layout (data) {
+    function layout (data, depth = 0) {
+      const MAX_DEPTH = 50
+
+      if (depth > MAX_DEPTH) {
+        console.error('Maximum layout depth exceeded')
+        return null
+      }
+
       if (!data) {
         return
       }
@@ -53,21 +69,21 @@ export default {
                     replace(/(<\/a>)/g, '</router-link>'),
                 {
                   parseMode: 'html',
-                  onWarn () {}
-                }
+                  onWarn () {},
+                },
             ),
-            { class: 'app-global-component-html' }
+            { class: 'app-global-component-html' },
         )
       }
 
       if (typeof data === 'object') {
         let obj
         if (Array.isArray(data)) {
-          obj = data.filter(i => i).map(i => layout(i))
+          obj = data.filter(i => i).map(i => layout(i, depth + 1))
         } else {
           obj = {}
           for (let i in data) {
-            obj[i] = () => layout(data[i])
+            obj[i] = () => layout(data[i], depth + 1)
           }
         }
 
@@ -127,13 +143,9 @@ export default {
       (component.extends?.emits ?? component.emits ?? []).forEach(e => {
         if (e === 'action') {
           attrs['onAction'] ??= action
-        }
-
-        if (e === 'update:props') {
+        } else if (e === 'update:props') {
           attrs['onUpdate:props'] = (args) => updateProps(attrs, args)
-        }
-
-        if (e === 'update:modelValue') {
+        } else if (e === 'update:modelValue') {
           attrs['onUpdate:modelValue'] = updateModelValue
         }
       })
@@ -172,42 +184,73 @@ export default {
     function setDataValue (keys, value, data, first) {
       const key = keys[0]
 
-      if (!first && data && data[key] === undefined) {
-        data[key] = {}
-      }
+      // if (!first && data && data[key] === undefined) {
+      //   data[key] = {}
+      // }
 
       if (data[key] !== undefined) {
         if (keys[1] !== undefined) {
           keys.shift()
           setDataValue(keys, value, data[key])
         } else {
-          data[key] = value
+          if (data === props.data) {
+            emit('update:modelValue', { [key]: value }, key)
+          } else {
+            data[key] = value
+          }
         }
       }
     }
 
     function updateModelValue (value, instance) {
-      if (!instance) {
-        return
-      }
+      if (!instance) return
 
-      const key = typeof instance === 'object' ? (instance?._?.vnode?.key ?? instance?.vnode?.key) : instance
+      const key = typeof instance === 'object'
+          ? (instance?._?.vnode?.key ?? instance?.vnode?.key)
+          : instance
 
-      setValue(key, value)
+      const updates = [{ key, value }]
 
       if (instance.props?.relation?.['key']) {
-        const empty = !(Array.isArray(value) ? value.length : (!isNaN(parseFloat(value))
-            && !isNaN(value - 0)) ? parseFloat(value) : value)
+        const empty = !(Array.isArray(value) ? value.length :
+            (!isNaN(parseFloat(value)) && !isNaN(value - 0)) ? parseFloat(value) : value)
 
-        setValue(instance.props.relation['key'],
-            empty ? instance.props.relation['falseValue'] : instance.props.relation['trueValue'])
+        updates.push({
+          key: instance.props.relation['key'],
+          value: empty ? instance.props.relation['falseValue'] : instance.props.relation['trueValue'],
+        })
 
         if (empty && instance.props.relation['notEmpty']) {
-          nextTick(() => setValue(key, instance.props.trueValue))
+          setTimeout(() => {
+            emit('update:modelValue', instance.props.trueValue, key)
+          }, 0)
         }
       }
 
-      emit('update:modelValue', ...arguments)
+      updates.forEach(({ key, value }) => setValue(key, value))
+      emit('update:modelValue', value, instance)
+
+      // if (!instance) {
+      //   return
+      // }
+      //
+      // const key = typeof instance === 'object' ? (instance?._?.vnode?.key ?? instance?.vnode?.key) : instance
+      //
+      // setValue(key, value)
+      //
+      // if (instance.props?.relation?.['key']) {
+      //   const empty = !(Array.isArray(value) ? value.length : (!isNaN(parseFloat(value))
+      //       && !isNaN(value - 0)) ? parseFloat(value) : value)
+      //
+      //   setValue(instance.props.relation['key'],
+      //       empty ? instance.props.relation['falseValue'] : instance.props.relation['trueValue'])
+      //
+      //   if (empty && instance.props.relation['notEmpty']) {
+      //     nextTick(() => setValue(key, instance.props.trueValue))
+      //   }
+      // }
+      //
+      // emit('update:modelValue', ...arguments)
     }
 
     function updateProps (oldValue, newValue) {
@@ -215,6 +258,6 @@ export default {
     }
 
     return () => layout(props.layout)
-  }
+  },
 }
 </script>
