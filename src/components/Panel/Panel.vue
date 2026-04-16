@@ -404,39 +404,12 @@ export default {
       return value
     },
     getComponent (data) {
-      const component = this.$.root.appContext.components[data.component]
-
-      const attrs = reactive({ ...(data.attrs || {}) })
-      attrs.key = data.model
-
-      if (component.props?.['currentRoute']) {
-        attrs.currentRoute = this.currentRoute
-      }
-
-      if (this.modelValue?.[data.model] !== undefined) {
-        attrs.modelValue = this.modelValue[data.model]
-        attrs['onUpdate:modelValue'] = (value) => {
-          this.setDataValue(data.model.split('.'), value, this.modelValue, true)
-          //this.$emit('update:modelValue', value, this)
-        }
-      } else if (/\./.test(data.model)) {
-        attrs.modelValue = this.findDataValue(data.model.split('.'), this.modelValue || this.$props)
-        attrs['onUpdate:modelValue'] = (value) => {
-          this.setDataValue(data.model.split('.'), value, this.modelValue, true)
-          //this.$emit('update:modelValue', value, this)
-        }
-      } else {
-        attrs.modelValue = this.modelValue
-        attrs['onUpdate:modelValue'] = (...args) => {
-          this.$emit('update:modelValue', ...args, this.modelValue)
-        }
-      }
-
-      attrs['onAction'] = (...args) => this.$emit('action', ...args)
-
       return h(
-          component,
-          attrs,
+          this.$.root.appContext.components['AppGlobalComponent'],
+          {
+            layout: data,
+            data: this.modelValue ?? this.data,
+          },
       )
     },
     sortable (data) {
@@ -461,37 +434,6 @@ export default {
           this.renderComponent = true
         })
       }
-    },
-    findDataValue (keys, data) {
-      const key = keys[0]
-      let value
-
-      if (data[key] !== undefined) {
-        if (keys[1] !== undefined) {
-          keys.shift()
-          value = this.findDataValue(keys, data[key])
-        } else {
-          value = data[key]
-        }
-      }
-
-      return value
-    },
-    setDataValue (keys, value, data, first) {
-      if (!first && data && data[keys[0]] === undefined) {
-        data[keys[0]] = {}
-      }
-
-      keys.forEach((key, index) => {
-        if (data[key] !== undefined) {
-          if (keys[index + 1] !== undefined) {
-            keys.shift()
-            this.setDataValue(keys, value, data[key])
-          } else {
-            data[key] = value
-          }
-        }
-      })
     },
     toggleCategory (category) {
       if (!this.settings.closed) {

@@ -125,7 +125,7 @@ function onBlur (event) {
 function onClickClear () {
   newValue = null
   model.value = oldValue
-  emit('update:props', { error: '' })
+  emit('update:props', { error: '', modelValue: oldValue  })
 }
 
 function onInput (event) {
@@ -133,13 +133,7 @@ function onInput (event) {
 
   emit('update:modelValue', newValue, currentInstance)
 
-  if (props.error !== undefined) {
-    if (newValue === '') {
-      emit('update:props', { error: undefined })
-    } else {
-      emit('update:props', { error: '' })
-    }
-  }
+  emit('update:props', { error: newValue === '' ? undefined : '', modelValue: newValue })
 }
 
 function onUpdateModelValue (value) {
@@ -147,9 +141,9 @@ function onUpdateModelValue (value) {
 
   if (value === props.itemNew) {
     oldValue = model.value
-    emit('update:props', { error: undefined })
+    emit('update:props', { error: undefined, modelValue: value })
   } else {
-    emit('update:props', { error: '' })
+    emit('update:props', { error: '', modelValue: value })
   }
 }
 

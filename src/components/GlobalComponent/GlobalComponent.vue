@@ -110,10 +110,10 @@ export default {
         attrs.modelValue = props.data[attrs.key]
       } else if (attrs.data?.[attrs.key] !== undefined) {
         attrs.data = attrs.data[attrs.key]
-      } else if (attrs.key.includes('.')) {
-        attrs.modelValue = getValue(attrs.key, props)
-      } else {
-        attrs.modelValue = data?.attrs?.value
+      } else if (/\./.test(attrs.key)) {
+        attrs.modelValue = getValue(attrs.key, /^data\./.test(attrs.key) ? props : props.data)
+      } else if (data?.attrs?.value !== undefined) {
+        attrs.modelValue = data.attrs.value
       }
 
       if ((component?.extends?.props || component?.props)?.['meta']) {
@@ -127,9 +127,13 @@ export default {
       (component.extends?.emits ?? component.emits ?? []).forEach(e => {
         if (e === 'action') {
           attrs['onAction'] ??= action
-        } else if (e === 'update:props') {
+        }
+
+        if (e === 'update:props') {
           attrs['onUpdate:props'] = (args) => updateProps(attrs, args)
-        } else if (e === 'update:modelValue') {
+        }
+
+        if (e === 'update:modelValue') {
           attrs['onUpdate:modelValue'] = updateModelValue
         }
       })
@@ -154,11 +158,11 @@ export default {
     }
 
     function setValue (key, value) {
-      if (key.includes('.')) {
+      if (/\./.test(key)) {
         if (props.data[key] !== undefined) {
           props.data[key] = value
         } else {
-          setDataValue(key.split('.'), value, props, true)
+          setDataValue(key.split('.'), value, /^data\./.test(key) ? props : props.data, true)
         }
       } else {
         props.data[key] = value

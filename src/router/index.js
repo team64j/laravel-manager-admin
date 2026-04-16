@@ -6,36 +6,36 @@ const routes = [
     path: '/',
     redirect: '/dashboard',
     meta: {
-      hidden: true
-    }
+      hidden: true,
+    },
   },
   {
     path: '/dashboard',
     component: () => import('../pages/AppPage.vue'),
     meta: {
       fixed: true,
-      icon: 'fa fa-home'
-    }
+      icon: 'fa fa-home',
+    },
   },
   {
     path: '/login',
     component: () => import('../pages/LoginPage.vue'),
     meta: {
-      hidden: true
-    }
+      hidden: true,
+    },
   },
   {
     path: '/logout',
     component: () => import('../pages/LogoutPage.vue'),
     meta: {
-      hidden: true
-    }
+      hidden: true,
+    },
   },
   {
     path: '/forgot',
     meta: {
-      hidden: true
-    }
+      hidden: true,
+    },
   },
   {
     path: '/redirect',
@@ -43,34 +43,38 @@ const routes = [
     children: [
       {
         path: '/redirect/:path(.*)',
-        component: () => import('../pages/RedirectPage.vue')
-      }
+        component: () => import('../pages/RedirectPage.vue'),
+      },
     ],
     meta: {
-      hidden: true
-    }
+      hidden: true,
+    },
   },
   {
     path: '/:pathMatch(.*)*',
     component: () => import('../pages/NotFoundPage.vue'),
     meta: {
-      icon: 'fa fa-circle-exclamation'
-    }
-  }
+      icon: 'fa fa-circle-exclamation',
+    },
+  },
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 })
 
 router.beforeEach((to, from, next) => {
   /**
    * @see https://github.com/nuxt/nuxt/issues/27982
    */
-  const meta = { ...to.meta }
-  delete meta['__navigationId']
-  to.meta = meta
+  // const meta = { ...to.meta }
+  // delete meta['__navigationId']
+  // to.meta = meta
+
+  if (!__VUE_PROD_DEVTOOLS__) {
+    to.meta['__navigationId'] = 0
+  }
 
   if (!store.getters.get('Storage.token') && to.path !== '/login') {
     next('/login')
@@ -85,7 +89,8 @@ router.key = (route, compareRoute) => {
   if (compareRoute) {
     queryKey = true
 
-    if (route?.meta['queryKey'] && compareRoute?.meta['queryKey'] && route?.query['id'] !== undefined &&
+    if (route?.meta['queryKey'] && compareRoute?.meta['queryKey'] &&
+      route?.query['id'] !== undefined &&
       compareRoute?.query['id'] !== undefined) {
       queryKey = route.query['id'] === compareRoute.query['id']
     }
@@ -93,8 +98,10 @@ router.key = (route, compareRoute) => {
     return (route?.meta?.group || route.matched?.[0]?.meta?.group ?
       (
         (route.name && route.name === compareRoute.name) ||
-        (route.matched?.[0]?.path && route.matched?.[0]?.path === compareRoute.matched[0]?.path) ||
-        (route.matched?.[0]?.meta?.group && route.matched?.[0]?.meta?.group === compareRoute.matched[0]?.meta?.group)
+        (route.matched?.[0]?.path && route.matched?.[0]?.path ===
+          compareRoute.matched[0]?.path) ||
+        (route.matched?.[0]?.meta?.group && route.matched?.[0]?.meta?.group ===
+          compareRoute.matched[0]?.meta?.group)
       ) :
       route.path === compareRoute.path) && queryKey
   } else {
@@ -105,7 +112,8 @@ router.key = (route, compareRoute) => {
     }
 
     return (route?.meta?.group || route.matched?.[0]?.meta?.group ?
-      (route.name || route.matched?.[0]?.path || route.path) : route.path) + queryKey
+        (route.name || route.matched?.[0]?.path || route.path) : route.path) +
+      queryKey
   }
 }
 
@@ -120,13 +128,17 @@ router.parse = (route) => {
 
   if (typeof route === 'string') {
     if (/^(http|https):\/\/[^ "]+$/.test(route)) {
-      route = route.replace((store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, ''), '')
+      route = route.replace(
+        (store.getters.get('Storage.hostname') || document.baseURI).replace(
+          /\/$/g, ''), '')
     }
 
     route = router.resolve(route)
   } else {
     if (/^(http|https):\/\/[^ "]+$/.test(route.path)) {
-      route.path = route.path.replace((store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, ''),
+      route.path = route.path.replace(
+        (store.getters.get('Storage.hostname') || document.baseURI).replace(
+          /\/$/g, ''),
         '')
     }
   }
