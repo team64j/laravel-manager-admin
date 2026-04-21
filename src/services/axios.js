@@ -29,7 +29,8 @@ axios.interceptors['request'].use(
     const params = Object.assign(
       {},
       Object.values(config.params || {}).length && config.params,
-      Object.values(router.currentRoute.value.params).length && router.currentRoute.value.params
+      Object.values(router.currentRoute.value.params).length && router.currentRoute.value.params,
+      store.getters.get('data.attributes') || {}
     )
 
     Object.entries(params).forEach(([k, v]) => {
@@ -37,6 +38,12 @@ axios.interceptors['request'].use(
         config.url = config.url.replace((new RegExp(':' + k, 'g')), v.toString()).
           replace(/\/\//g, '/').
           replace(/\/$/, '')
+
+        for (const i in config.params) {
+          if (config.params[i] === ':' + k) {
+            config.params[i] = v
+          }
+        }
       }
     })
 
