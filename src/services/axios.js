@@ -30,7 +30,7 @@ axios.interceptors['request'].use(
       {},
       Object.values(config.params || {}).length && config.params,
       Object.values(router.currentRoute.value.params).length && router.currentRoute.value.params,
-      window['Vue']._instance.refs.globalTabs?.$refs.keepAlive._.__current?.component?.exposed?.$data?.data || {}
+      window['Vue']._instance?.refs?.globalTabs?.$refs?.keepAlive._.__current?.component?.exposed?.$data?.data || {}
     )
 
     Object.entries(params).forEach(([k, v]) => {
