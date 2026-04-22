@@ -56,6 +56,10 @@ export default {
     view: String,
     views: [Object, Array],
     currentRoute: Object,
+    dataKey: {
+      type: String,
+      default: 'data',
+    },
   },
   data () {
     const key = `panel.` + this.id.toLowerCase()
@@ -103,16 +107,16 @@ export default {
           event.preventDefault()
 
           this.data.forEach(i => {
-            if (i.data) {
-              i.data.forEach(j => this.selectRow(event, j))
+            if (i[this.dataKey]) {
+              i[this.dataKey].forEach(j => this.selectRow(event, j))
             } else {
               this.selectRow(event, i)
             }
           })
         } else if (event.key === 'Escape') {
           this.data.forEach(i => {
-            if (i.data) {
-              i.data.forEach(j => j['@active'] = false)
+            if (i[this.dataKey]) {
+              i[this.dataKey].forEach(j => j['@active'] = false)
             } else {
               i['@active'] = false
             }
@@ -255,8 +259,8 @@ export default {
 
       if (!event.ctrlKey) {
         this.data.forEach(i => {
-          if (i.data) {
-            i.data.forEach(j => item['@key'] !== j['@key'] && (j['@active'] = false))
+          if (i[this.dataKey]) {
+            i[this.dataKey].forEach(j => item['@key'] !== j['@key'] && (j['@active'] = false))
           } else {
             item['@key'] !== i['@key'] && (i['@active'] = false)
           }
@@ -393,7 +397,7 @@ export default {
       const draggable = data?.draggable || this.draggable
 
       if (typeof draggable === 'string') {
-        (data?.data || data).forEach((i, k) => {
+        (data?.[this.dataKey] || data).forEach((i, k) => {
           if (i[draggable] !== undefined) {
             i[draggable] = k + 1
           }
@@ -413,16 +417,22 @@ export default {
       }
     },
     toggleCategory (category) {
+      const key = category['id'] ?? category['key']
+
+      if (!key) {
+        return
+      }
+
       if (!this.settings.closed) {
         this.settings.closed = []
       }
 
-      let index = this.settings.closed.indexOf(category['id'] ?? category['key'])
+      let index = this.settings.closed.indexOf(key)
 
       if (index > -1) {
         this.settings.closed.splice(index, 1)
       } else {
-        this.settings.closed.push(category['id'] ?? category['key'])
+        this.settings.closed.push(key)
       }
 
       store.dispatch('set', { ['Session.' + this.keyStorage]: { closed: this.settings.closed } })
@@ -698,9 +708,9 @@ export default {
 
     <div v-if="data" class="app-panel__data" ref="data">
       <table ref="table" :class="{ 'min-h-full': !data.length }">
-        <thead v-if="columns?.length && columns.filter(column => column.label).length">
+        <thead v-if="this.columns?.length && this.columns.filter(column => column.label).length">
         <tr>
-          <template v-for="column in columns">
+          <template v-for="column in this.columns">
             <th :style="column?.style">
               <div v-if="column.label" :style="{ minWidth: column.width }" class="relative">
                 {{ column.label }}
@@ -812,7 +822,7 @@ export default {
 
         <tbody v-if="!data || loading">
         <tr class="pointer-events-none !max-w-full">
-          <td :colspan="columns?.length || 1" class="text-center p-5">
+          <td :colspan="this.columns?.length || 1" class="text-center p-5">
             <div v-if="meta?.['message']">
               {{ meta?.['message'] }}
             </div>
@@ -822,16 +832,19 @@ export default {
         </tr>
         </tbody>
 
-        <template v-for="category in (data[0]?.data ? data : [{ data, route, draggable }])">
-          <tbody v-if="category.name && category.data.length" class="app-panel__category">
-          <tr class="cursor-pointer hover:text-blue-500"
-              :class="{ closed: this.hasClosedCategory(category) }"
+        <template v-for="category in (data[0]?.[this.dataKey] ? data : [{ data, route, draggable }])">
+          <tbody v-if="category.name && category[this.dataKey].length" class="app-panel__category">
+          <tr :class="[
+                  category['id'] ?? category['key'] ? 'cursor-pointer hover:text-blue-500' : 'pointer-events-none',
+                  this.hasClosedCategory(category) && 'closed'
+                  ]"
               @dblclick="toggleCategory(category)"
               @contextmenu="buildContextMenu($event, category)">
             <td class="px-4 pt-3 pb-1 border-b-2 font-bold"
-                :colspan="columns?.length || Object.values(category.data[0]).length">
+                :colspan="this.columns?.length || Object.values(category[this.dataKey][0]).length">
               <span class="toggle select-none">
-                <i :class="[!this.hasClosedCategory(category) ? 'fa-square-minus' : 'fa-square-plus']"
+                <i v-if="(category['id'] ?? category['key'])"
+                   :class="[!this.hasClosedCategory(category) ? 'fa-square-minus' : 'fa-square-plus']"
                    class="far fa-fw mr-1"
                    @mousedown.stop="toggleCategory(category)"/>
                 <span>{{ category.name }}</span>
@@ -841,9 +854,9 @@ export default {
           </tr>
           </tbody>
 
-          <template v-if="category.data && !this.hasClosedCategory(category)">
+          <template v-if="category[this.dataKey] && !this.hasClosedCategory(category)">
             <tbody v-if="category.route || route">
-            <tr v-for="(item, i) in category.data"
+            <tr v-for="(item, i) in category[this.dataKey]"
                 @click="selectRow($event, item, category.route || route)"
                 @dblclick="dblClickRow(item)"
                 :class="{
@@ -858,10 +871,10 @@ export default {
             </tbody>
 
             <draggable v-else-if="category.draggable ?? draggable"
-                       :list="category.data"
+                       :list="category[this.dataKey]"
                        item-key="id"
                        tag="tbody"
-                       @end="sortable(category.data)">
+                       @end="sortable(category[this.dataKey])">
               <template #item="{ element: item, index }">
                 <tr :class="{
                   'disabled' : item['@disabled'],
@@ -882,7 +895,7 @@ export default {
             </draggable>
 
             <tbody v-else>
-            <tr v-for="(item, i) in category.data"
+            <tr v-for="(item, i) in category[this.dataKey]"
                 @click="selectRow($event, item)"
                 @dblclick="dblClickRow(item)"
                 :class="{

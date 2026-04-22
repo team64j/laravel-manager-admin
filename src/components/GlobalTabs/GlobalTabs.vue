@@ -220,7 +220,7 @@ export default {
     <div class="grow flex overflow-hidden">
 
       <router-view v-slot="slot">
-        <keep-alive-component :include="keys">
+        <keep-alive-component :include="keys" ref="keepAlive">
           <component v-if="!slot.route?.meta?.['isIframe']"
                      :is="slot.Component"
                      :key="router.key(slot.route)"

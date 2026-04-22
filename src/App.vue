@@ -508,7 +508,7 @@ defineExpose({
           :class="{
             'app-main__overlay': store.getters.get('AppMainOverlay')
           }">
-          <global-tabs :current-route="router.currentRoute.value" @action="_action"/>
+          <global-tabs :current-route="router.currentRoute.value" @action="_action" ref="globalTabs"/>
         </div>
       </div>
 

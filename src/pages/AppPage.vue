@@ -237,7 +237,8 @@ onMounted(submit)
 defineExpose({
   submit,
   inputChangeQuery,
-  inputReloadQuery
+  inputReloadQuery,
+  $data
 })
 </script>
 

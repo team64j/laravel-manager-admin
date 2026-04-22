@@ -119,7 +119,7 @@ export default {
     }
     const cache = new Map()
     const keys = new Set()
-    let current = null
+    instance.__current = null
     if ((process.env.NODE_ENV !== 'production') || isProdDevTools) {
       instance.__v_cache = cache
     }
@@ -182,12 +182,12 @@ export default {
 
     function pruneCacheEntry (key) {
       const cached = cache.get(key)
-      if (!current || cached.key !== current.key || cached.type !== current.type) {
+      if (!instance.__current || cached.key !== instance.__current.key || cached.type !== instance.__current.type) {
         unmount(cached)
-      } else if (current) {
+      } else if (instance.__current) {
         // current active instance should no longer be kept-alive.
         // we can't unmount it now but it might be later, so reset its flag now.
-        resetShapeFlag(current)
+        resetShapeFlag(instance.__current)
       }
       cache.delete(key)
       keys.delete(key)
@@ -236,12 +236,12 @@ export default {
         if ((process.env.NODE_ENV !== 'production')) {
           warn(`KeepAlive should contain exactly one component child.`)
         }
-        current = null
+        instance.__current = null
         return children
       } else if (!isVNode(rawVNode) ||
           (!(rawVNode.shapeFlag & 4 /* ShapeFlags.STATEFUL_COMPONENT */) &&
               !(rawVNode.shapeFlag & 128 /* ShapeFlags.SUSPENSE */))) {
-        current = null
+        instance.__current = null
         return rawVNode
       }
       let vnode = getInnerChild(rawVNode)
@@ -254,7 +254,7 @@ export default {
       const { include, exclude, max } = props
       if ((include && (!name || !matches(include, name))) ||
           (exclude && name && matches(exclude, name))) {
-        current = vnode
+        instance.__current = vnode
         return rawVNode
       }
       const key = vnode.key == null ? comp : vnode.key
@@ -294,7 +294,7 @@ export default {
       }
       // avoid vnode being unmounted
       vnode.shapeFlag |= 256 /* ShapeFlags.COMPONENT_SHOULD_KEEP_ALIVE */
-      current = vnode
+      instance.__current = vnode
       return isSuspense(rawVNode.type) ? rawVNode : vnode
     }
   }

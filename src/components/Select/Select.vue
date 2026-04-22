@@ -171,9 +171,11 @@ if (props.load && props.url) {
       <Button v-show="itemNew !== model"
               :id="id"
               class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
-              :class="inputClass"
+              :class="[inputClass, $props.error ? '!border-rose-500 focus:ring-rose-500' : '']"
               :value="inputValue || placeholder"
               :loading="data.loading"
+              :disabled="disabled"
+              :readonly="readonly"
               @focus="onFocus"
               @blur="onBlur"
               @mousedown="onMousedown"/>
