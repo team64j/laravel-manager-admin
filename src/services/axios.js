@@ -8,7 +8,8 @@ axios.defaults['headers']['common']['X-Requested-With'] = 'XMLHttpRequest'
 
 axios.interceptors['request'].use(
   config => {
-    config.baseURL = (store.getters.get('Storage.hostname') || document.baseURI).replace(/\/$/g, '')
+    config.baseURL = (store.getters.get('Storage.hostname') ||
+      document.baseURI).replace(/\/$/g, '')
     config.headers['Accept-Language'] = store.getters.get('Storage.lang', 'en')
 
     const token = store.getters.get('Storage.token', '')
@@ -29,19 +30,28 @@ axios.interceptors['request'].use(
     const params = Object.assign(
       {},
       Object.values(config.params || {}).length && config.params,
-      Object.values(router.currentRoute.value.params).length && router.currentRoute.value.params,
-      window['Vue']._instance?.refs?.globalTabs?.$refs?.keepAlive._.__current?.component?.exposed?.$data?.data || {}
+      Object.values(router.currentRoute.value.params).length &&
+      router.currentRoute.value.params,
+      window['Vue']._instance?.refs?.globalTabs?.$refs?.keepAlive._.__current?.component?.exposed?.$data?.data ||
+      {},
     )
 
     Object.entries(params).forEach(([k, v]) => {
       if (!(v === undefined || v === null)) {
-        config.url = config.url.replace((new RegExp(':' + k, 'g')), v.toString()).
+        config.url = config.url.replace((new RegExp(':' + k, 'g')),
+          v.toString()).
           replace(/\/\//g, '/').
           replace(/\/$/, '')
 
         for (const i in config.params) {
           if (config.params[i] === ':' + k) {
             config.params[i] = v
+          }
+        }
+      } else if (v === null) {
+        for (const i in config.params) {
+          if (config.params[i] === ':' + k) {
+            delete config.params[i]
           }
         }
       }
@@ -51,11 +61,13 @@ axios.interceptors['request'].use(
       config.url = config.url.replace('/' + params.id, '')
     }
 
-    config.url = config.url.replace(/(\/?:\w+)/, '').replace(/^\w+:\/\/[^\/]+/, '').replace(/(\(.*?\))/g, '')
+    config.url = config.url.replace(/(\/?:\w+)/, '').
+      replace(/^\w+:\/\/[^\/]+/, '').
+      replace(/(\(.*?\))/g, '')
 
     return config
   },
-  error => Promise.reject(error)
+  error => Promise.reject(error),
 )
 
 axios.interceptors['response'].use(
@@ -70,17 +82,17 @@ axios.interceptors['response'].use(
     if (error.response?.data?.message) {
       notify({
         text: error.response.data.message.replace(/\r\n|\r|\n|\\n/g, '<br>'),
-        type: 'error'
+        type: 'error',
       })
     } else if (error.message) {
       notify({
         text: error.message,
-        type: 'error'
+        type: 'error',
       })
     }
 
     return Promise.reject(error)
-  }
+  },
 )
 
 export default axios

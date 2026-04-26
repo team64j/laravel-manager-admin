@@ -16,7 +16,7 @@ const $props = defineProps({
   type: {
     type: String,
     default: 'text',
-    validator: (type) => ['text', 'number', 'password', 'email', 'tel', 'date', 'datetime-local', 'button'].includes(
+    validator: (type) => ['text', 'number', 'password', 'email', 'tel', 'date', 'month', 'datetime-local', 'button'].includes(
         type)
   }
 })
