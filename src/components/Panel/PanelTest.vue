@@ -103,7 +103,7 @@ const filters = computed(() => {
 
 const columns = computed(() => {
   if ($props.columns.length) {
-    return toRaw($props.columns.map(i => i.name))
+    return toRaw($props.columns)
   }
 
   return $props.data[0][$props.dataKey][0].length || $props.data[0].length
@@ -198,6 +198,11 @@ function loadData (route, props) {
 }
 
 onMounted(() => {
+  if (currentInstance.vnode.el.parentElement.classList.contains('app-tabs__page')) {
+    currentInstance.vnode.el.parentElement.childElementCount === 1 &&
+    currentInstance.vnode.el.parentElement.classList.add('!p-0')
+  }
+
   if ($props.url) {
     getData()
   }
@@ -214,13 +219,16 @@ onMounted(() => {
     <div v-if="$props.data" class="grow overflow-auto rounded">
       <table class="w-full">
         <thead class="bg-slate-100 dark:bg-gray-600 sticky top-0">
-        <tr>
-          <th v-for="column in $props.columns" class="py-1 px-2 first:pl-6 last:pr-6 font-bold">
-            {{ column.label }}
+        <tr v-if="$props.columns">
+          <th v-for="column in $props.columns" class="font-bold border-l first:border-0 border-opacity-5"
+              :style="column?.style">
+            <div v-if="column.label" class="relative truncate px-5 py-1" :style="{ minWidth: column.width }">
+              {{ column.label }}
+            </div>
           </th>
         </tr>
-        <tr>
-          <td v-for="filter in filters">
+        <tr v-if="filters">
+          <td v-for="filter in filters" class="border-l first:border-0 border-opacity-5">
             <template v-if="filter">
               <Select v-if="filter.data" v-bind="filter" v-model="$data.filterModel[filter.name]"
                       input-class="input-sm"/>
@@ -237,8 +245,8 @@ onMounted(() => {
           draggable: $props.draggable
         }])">
           <tbody v-if="category.name && category[$props.dataKey].length">
-          <tr>
-            <td :colspan="columns.length" class="py-1 px-2 first:pl-6 last:pr-6">
+          <tr class="even:bg-blue-600/10">
+            <td :colspan="columns.length" class="p-2 first:pl-6 last:pr-6">
               <i v-if="(category.id ?? category.key)"
                  :class="[1 ? 'fa-square-minus' : 'fa-square-plus']"
                  class="far fa-fw mr-1"/>
@@ -248,29 +256,17 @@ onMounted(() => {
           </tr>
           </tbody>
 
-          <tbody v-if="category[$props.dataKey].length">
-          <tr v-for="(item, i) in (category[$props.dataKey] || category)">
-            <td v-for="ceil in columns" class="py-1 px-2 first:pl-6 last:pr-6">
-              <component v-if="item[ceil]?.component"
-                         :is="item[ceil].component"
-                         v-bind="{ ...item[ceil].attrs, modelValue: getValue(item[ceil].model, $props.modelValue) }"
+          <tbody v-if="category[$props.dataKey].length || category.length">
+          <tr v-for="(item, i) in (category[$props.dataKey] || category)"
+              class="even:bg-gray-400/5 hover:bg-blue-700/20">
+            <td v-for="ceil in columns" class="p-2 first:pl-6 last:pr-6">
+              <component v-if="item[ceil.name]?.component"
+                         :is="item[ceil.name].component"
+                         v-bind="{ ...item[ceil.name].attrs, modelValue: getValue(item[ceil.name].model, $props.modelValue) }"
               />
+              <div v-else-if="ceil.values && ceil.values[item[ceil.name]]" v-html="ceil.values[item[ceil.name]]"/>
               <template v-else>
-                {{ item[ceil] }}
-              </template>
-            </td>
-          </tr>
-          </tbody>
-
-          <tbody v-else-if="category.length">
-          <tr v-for="(item, i) in category">
-            <td v-for="ceil in columns">
-              <component v-if="item[ceil]?.component"
-                         :is="item[ceil].component"
-                         v-bind="{ ...item[ceil].attrs, modelValue: getValue(item[ceil].model, $props.modelValue) }"
-              />
-              <template v-else>
-                {{ item[ceil] }}
+                {{ item[ceil.name] }}
               </template>
             </td>
           </tr>
@@ -293,7 +289,7 @@ onMounted(() => {
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-5 w-5 animate-spin"/>
     </div>
 
-    <div v-if="$props.meta?.['pagination']['prev'] || $props.meta?.['pagination']['next']" class="flex">
+    <div v-if="$props.meta?.['pagination']['prev'] || $props.meta?.['pagination']['next']" class="flex p-3">
       <div class="grow">
         <Button class="btn-sm btn-gray"
                 :disabled="!$props.meta['pagination']['prev']"
@@ -306,7 +302,7 @@ onMounted(() => {
           <i class="fa fa-angle-right fa-fw"/>
         </Button>
       </div>
-      <div v-if="$props.meta['pagination']['info']">
+      <div v-if="$props.meta['pagination']['info']" class="pr-2">
         {{ $props.meta['pagination']['info'] }}
       </div>
     </div>
