@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, nextTick, reactive, ref } from 'vue'
+import { computed, getCurrentInstance, nextTick, ref, shallowRef, toRaw } from 'vue'
 import { props as _props } from '@/composables'
 import RadioComponent from '@/components/Radio/Radio.vue'
 import CheckboxComponent from '@/components/Checkbox/Checkbox.vue'
@@ -8,7 +8,7 @@ import router from '@/router'
 
 defineOptions({
   name: 'Select',
-  __isStatic: true
+  __isStatic: true,
 })
 
 const currentInstance = getCurrentInstance()
@@ -19,15 +19,14 @@ const props = defineProps({
   ..._props,
   multiple: Boolean,
   load: Boolean,
-  url: String
+  url: String,
 })
 
-const data = reactive({
-  loading: false,
-  options: props.data || []
-})
+const refOptions = ref()
 
-const options = ref()
+const loading = shallowRef(false)
+
+const options = ref(toRaw(props.data || []))
 
 const model = computed({
   get () {
@@ -36,7 +35,7 @@ const model = computed({
   },
   set (value) {
     emit('update:modelValue', value, currentInstance)
-  }
+  },
 })
 
 let newValue = null
@@ -45,7 +44,7 @@ let oldValue = null
 const inputValue = computed(() => {
   const values = []
 
-  data.options?.forEach(i => {
+  options?.value.forEach(i => {
     if (i['data']) {
       values.push(...i['data'])
     } else {
@@ -69,29 +68,29 @@ const inputValue = computed(() => {
 
 function get (callback) {
   if (props.url) {
-    data.loading = true
-    data.options = []
+    loading.value = true
+    options.value = []
 
     const route = router.parse(props.url)
     const query = {
       selected: Array.isArray(model.value) ? model.value : [model.value],
-      ...(route['query'] || {})
+      ...(route['query'] || {}),
     }
 
     axios({
       method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
       url: route.path,
       params: query,
-      data: query
+      data: query,
     }).then(r => {
-      data.loading = false
-      data.options = r.data.data
+      loading.value = false
+      options.value = r.data.data
 
       nextTick(() => {
         const checked = currentInstance.vnode.el.querySelector('input:checked')
 
         if (checked && options) {
-          options.value.scrollTop = checked.parentElement.offsetTop
+          refOptions.value.scrollTop = checked.parentElement.offsetTop
         }
       })
 
@@ -125,7 +124,7 @@ function onBlur (event) {
 function onClickClear () {
   newValue = null
   model.value = oldValue
-  emit('update:props', { error: '', modelValue: oldValue  })
+  emit('update:props', { error: '', modelValue: oldValue })
 }
 
 function onInput (event) {
@@ -173,19 +172,19 @@ if (props.load && props.url) {
               class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
               :class="[inputClass, $props.error ? '!border-rose-500 focus:ring-rose-500' : '']"
               :value="inputValue || placeholder"
-              :loading="data.loading"
+              :loading="loading"
               :disabled="disabled"
               :readonly="readonly"
               @focus="onFocus"
               @blur="onBlur"
               @mousedown="onMousedown"/>
 
-      <div v-if="data.options?.length"
-           ref="options"
+      <div v-if="options?.length"
+           ref="refOptions"
            class="hidden absolute z-20 left-0 top-full mt-1 p-2 w-full rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default"
            @mousedown.prevent="">
 
-        <template v-for="o in data.options">
+        <template v-for="o in options">
           <div v-if="o.name" class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
           <checkbox-component
               v-if="multiple"

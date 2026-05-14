@@ -1,17 +1,17 @@
 <script setup>
-import { computed, getCurrentInstance, onMounted, reactive, toRaw } from 'vue'
+import { computed, getCurrentInstance, onMounted, reactive, shallowRef, toRaw } from 'vue'
 import { uniqId } from '@/utils'
 import store from '@/store'
 import Button from '@/components/Button/Button.vue'
 import Input from '@/components/Input/Input.vue'
 import Select from '@/components/Select/Select.vue'
-import { getValue } from '@/composables'
 import router from '@/router'
+import { DynamicComponent } from '@/utils/dynamic-component'
 
 const currentInstance = getCurrentInstance()
 
 defineOptions({
-  name: 'PanelTest',
+  name: 'Panel',
   __isStatic: true,
 })
 
@@ -72,7 +72,6 @@ const $model = computed({
 const key = `panel.` + $props.id.toLowerCase()
 
 const $data = reactive({
-  loading: false,
   keyStorage: key,
   filterTimer: 0,
   filterModel: { ...$props.currentRoute.query },
@@ -85,28 +84,33 @@ const $data = reactive({
   sorting: {},
 })
 
+const loaded = shallowRef(true)
+
+const columns = computed(() => {
+  if ($props.columns.length) {
+    return toRaw($props.columns).map(i => {
+      i.key = i.key || i.name
+      return i
+    })
+  }
+
+  return $props.data[0][$props.dataKey][0].length || $props.data[0].length
+})
+
 const filters = computed(() => {
   const filters = []
 
-  for (const column of $props.columns) {
-    const filter = $props.filters.find(i => i.name === column.name)
+  for (const column of columns.value) {
+    const filter = ($props?.meta?.filters ?? []).find(i => i.name === column.name)
 
     if (filter || column.filter) {
-      filters.push(filter || {})
+      filters.push(toRaw(filter || { name: column.name }))
     } else {
       filters.push(null)
     }
   }
 
   return filters
-})
-
-const columns = computed(() => {
-  if ($props.columns.length) {
-    return toRaw($props.columns)
-  }
-
-  return $props.data[0][$props.dataKey][0].length || $props.data[0].length
 })
 
 const propUrl = computed(() => $props.url ?? $props.currentRoute['path'] ?? null)
@@ -120,59 +124,23 @@ function pagination (url) {
 }
 
 function getData (query, params) {
-  $data.loading = true
+  loaded.value = false
   const route = router.parse($props.currentRoute?.['meta']?.['url'] || propUrl)
-  query = Object.assign(route.query, $props.currentRoute?.query || {}, query)
+  query = Object.assign(route.query, $data.filterModel, query)
 
   $emit('update:props', {
     data: params,
     meta: params ? Object.assign({}, { ...$props.meta }) : {},
   }, this)
-
-  // if (this.$refs.data) {
-  //   this.$refs.data.style.height = this.$refs.data.offsetHeight + 'px'
-  // }
-
-  // currentInstance.$el.querySelectorAll('thead > tr > th').forEach(i => {
-  //   i.style.maxWidth = i.clientWidth + 'px'
-  //   i.style.minWidth = i.clientWidth + 'px'
-  // })
-
   axios({
     method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
     url: route.path,
-    params: route.query,
-    data: Object.assign({}, route.query),
+    params: query,
+    data: Object.assign({}, query),
   }).then(({ data }) => {
-    const props = {
-      data: data.data,
-      meta: data.meta,
-    }
-
-    if (data.meta?.columns) {
-      props.columns = data.meta.columns
-      delete data.meta.columns
-    }
-
-    if (data.meta?.filters) {
-      props.filters = data.meta.filters
-      delete data.meta.filters
-    }
-
-    // if (this.$refs.data) {
-    //   this.$refs.data.style.overflow = null
-    // }
-    //
-    // this.$el.querySelectorAll('thead > tr > th').forEach(i => {
-    //   i.style.maxWidth = null
-    //   i.style.minWidth = null
-    // })
-
-    $emit('update:props', props)
-
-    // this.$el.querySelector('.app-panel__data').style.height = null
+    $emit('update:props', { ...data })
   }).finally(() => {
-    $data.loading = false
+    loaded.value = true
   })
 }
 
@@ -187,14 +155,91 @@ function loadData (route, props) {
     } else {
       router.to(route)
       getData(route.query, [])
-
-      // if (props) {
-      //   this.$emit('update:props', props, this)
-      // }
     }
   } else {
     getData(route.query, [])
   }
+}
+
+let filterTimer = 0
+
+function onChangeFilter (value, key) {
+  clearTimeout(filterTimer)
+
+  filterTimer = setTimeout(() => {
+    if (value === '' || value === null) {
+      delete $data.filterModel[key]
+    } else {
+      $data.filterModel[key] = value
+    }
+
+    delete $data.filterModel['page']
+
+    loadData(router.parse({ query: $data.filterModel }))
+  }, 300)
+}
+
+function hasClosedCategory (category) {
+  return category['@closed'] || $data.settings?.['closed']?.includes(category['id'] ?? category['key'])
+}
+
+function onClickCategoryRow (category) {
+  const key = category['id'] ?? category['key']
+
+  if (!key) {
+    return
+  }
+
+  if (!$data.settings['closed']) {
+    $data.settings['closed'] = []
+  }
+
+  let index = $data.settings['closed'].indexOf(key)
+
+  if (index > -1) {
+    $data.settings['closed'].splice(index, 1)
+  } else {
+    $data.settings['closed'].push(key)
+  }
+
+  store.dispatch('set', { ['Session.' + $data.keyStorage]: { closed: $data.settings['closed'] } })
+}
+
+function onClickRow (item) {
+  if (item['@disabled']) {
+    return
+  }
+
+  if (item['@route']) {
+
+  } else if ($props.route) {
+    const route = typeof $props.route === 'object' ? toRaw($props.route) : { path: $props.route }
+
+    $emit(
+        'action',
+        'pushRouter',
+        {
+          ...route,
+          params: toRaw(item),
+        },
+    )
+  }
+
+  const active = item['@active']
+
+  $props.data.forEach(i => {
+    if (i['@active']) {
+      delete i['@active']
+    }
+
+    (i[$props.dataKey] || []).forEach(j => {
+      if (j['@active']) {
+        delete j['@active']
+      }
+    })
+  })
+
+  item['@active'] = !active
 }
 
 onMounted(() => {
@@ -218,9 +263,10 @@ onMounted(() => {
 
     <div v-if="$props.data" class="grow overflow-auto rounded">
       <table class="w-full">
-        <thead class="bg-slate-100 dark:bg-gray-600 sticky top-0">
-        <tr v-if="$props.columns">
-          <th v-for="column in $props.columns" class="font-bold border-l first:border-0 border-opacity-5"
+        <thead v-if="columns.some(i => i.label) /*|| filters.some(i => i.name)*/"
+               class="bg-slate-100 dark:bg-gray-600 sticky top-0">
+        <tr v-if="columns">
+          <th v-for="column in columns" class="font-bold border-l first:border-0 border-opacity-5"
               :style="column?.style">
             <div v-if="column.label" class="relative truncate px-5 py-1" :style="{ minWidth: column.width }">
               {{ column.label }}
@@ -231,49 +277,53 @@ onMounted(() => {
           <td v-for="filter in filters" class="border-l first:border-0 border-opacity-5">
             <template v-if="filter">
               <Select v-if="filter.data" v-bind="filter" v-model="$data.filterModel[filter.name]"
-                      input-class="input-sm"/>
-              <Input v-else v-bind="filter" v-model="$data.filterModel[filter.name]"
-                     input-class="input-sm"/>
+                      input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
+              <Input v-else v-bind="filter" v-model="$data.filterModel[filter.name]" :clear="true"
+                     input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
             </template>
           </td>
         </tr>
         </thead>
 
-        <template v-if="$props.data.length" v-for="category in ($props.data[0]?.[$props.dataKey] ? $props.data : [{
+        <template
+            v-if="$props.data.length && loaded"
+            v-for="category in ($props.data[0]?.[$props.dataKey] ? $props.data : [{
           data: $props.data,
           route: $props.route,
           draggable: $props.draggable
         }])">
           <tbody v-if="category.name && category[$props.dataKey].length">
-          <tr class="even:bg-blue-600/10">
-            <td :colspan="columns.length" class="p-2 first:pl-6 last:pr-6">
+          <tr class="even:bg-blue-600/10" @dblclick.stop="onClickCategoryRow(category)">
+            <td :colspan="columns.length"
+                class="p-2 px-5 border-b-2 font-bold hover:bg-blue-700/20 hover:text-blue-500">
               <i v-if="(category.id ?? category.key)"
-                 :class="[1 ? 'fa-square-minus' : 'fa-square-plus']"
-                 class="far fa-fw mr-1"/>
+                 :class="[!hasClosedCategory(category) ? 'fa-square-minus' : 'fa-square-plus']"
+                 class="far fa-fw mr-1 cursor-pointer"
+                 @mousedown="onClickCategoryRow(category)"/>
               <span>{{ category.name }}</span>
               <span v-if="category.id" class="ml-1">({{ category.id }})</span>
             </td>
           </tr>
           </tbody>
 
-          <tbody v-if="category[$props.dataKey].length || category.length">
+          <tbody v-if="(category.length || category[$props.dataKey].length) && !hasClosedCategory(category)">
           <tr v-for="(item, i) in (category[$props.dataKey] || category)"
-              class="even:bg-gray-400/5 hover:bg-blue-700/20">
+              class="even:bg-gray-400/5 hover:bg-blue-700/20"
+              :class="{ 'cursor-pointer': $props.route, '!bg-blue-700/20': item['@active'] }"
+              @mousedown="onClickRow(item)">
             <td v-for="ceil in columns" class="p-2 first:pl-6 last:pr-6">
-              <component v-if="item[ceil.name]?.component"
-                         :is="item[ceil.name].component"
-                         v-bind="{ ...item[ceil.name].attrs, modelValue: getValue(item[ceil.name].model, $props.modelValue) }"
-              />
-              <div v-else-if="ceil.values && ceil.values[item[ceil.name]]" v-html="ceil.values[item[ceil.name]]"/>
+              <component v-if="item[ceil.key]?.component"
+                         :is="() => DynamicComponent(item[ceil.key], $props.modelValue)"/>
+              <div v-else-if="ceil.values && ceil.values[item[ceil.key]]" v-html="ceil.values[item[ceil.key]]"/>
               <template v-else>
-                {{ item[ceil.name] }}
+                {{ item[ceil.key] }}
               </template>
             </td>
           </tr>
           </tbody>
         </template>
 
-        <tbody v-else>
+        <tbody v-else-if="!loaded">
         <tr>
           <td :colspan="columns.length">
             <div class="flex items-center justify-center text-center p-5 w-full">

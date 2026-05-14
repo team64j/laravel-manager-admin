@@ -6,7 +6,7 @@ import { uniqId } from '@/utils'
 import { getValue } from '@/composables'
 import { DynamicComponent } from '@/utils/dynamic-component'
 
-import('./Panel.css')
+//import('./Panel.css')
 
 export default {
   components: {
@@ -17,7 +17,7 @@ export default {
     Datetime: defineAsyncComponent(() => import('@/components/Datetime/Datetime.vue')),
   },
   __isStatic: true,
-  name: 'Panel',
+  name: 'PanelTest',
   emits: ['action', 'update:props', 'update:modelValue'],
   props: {
     id: {
