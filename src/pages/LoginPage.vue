@@ -3,6 +3,7 @@ import router from '@/router'
 import store from '@/store'
 import local from '@/services/local'
 import { defineAsyncComponent } from 'vue'
+import { notify } from '@kyvg/vue3-notification'
 
 export default {
   name: 'LoginPage',
@@ -58,7 +59,20 @@ export default {
         this.hostname = location.origin + '/manager/api'
       }
 
-      const url = new URL(this.hostname.replace(/\/$/g, ''))
+      let url
+
+      try {
+        url = new URL(this.hostname)
+      } catch (error) {
+        this.errors['hostname'] = true
+        this.isCheckServer = false
+        notify({
+          text: error.message,
+          type: 'error',
+        })
+        return
+      }
+
       const headers = JSON.parse(url.searchParams.get('headers'))
 
       this.hostname = url.origin + url.pathname
