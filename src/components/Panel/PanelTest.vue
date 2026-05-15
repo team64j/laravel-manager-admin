@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, onMounted, reactive, shallowRef, toRaw } from 'vue'
+import { computed, getCurrentInstance, onMounted, reactive, shallowRef, toRaw, watch } from 'vue'
 import { uniqId } from '@/utils'
 import store from '@/store'
 import Button from '@/components/Button/Button.vue'
@@ -60,15 +60,6 @@ const $props = defineProps({
 
 const $emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
-const $model = computed({
-  get () {
-    return $props.modelValue
-  },
-  set (value) {
-    $emit('update:modelValue', value, currentInstance)
-  },
-})
-
 const key = `panel.` + $props.id.toLowerCase()
 
 const $data = reactive({
@@ -116,8 +107,8 @@ const filters = computed(() => {
 const propUrl = computed(() => $props.url ?? $props.currentRoute['path'] ?? null)
 
 function pagination (url) {
-  if (propUrl) {
-    loadData(Object.assign({}, router.parse(propUrl), { query: router.parse(url).query }))
+  if (propUrl.value) {
+    loadData(Object.assign({}, router.parse(propUrl.value), { query: router.parse(url).query }))
   } else {
     $emit('action', 'pagination', ...arguments)
   }
@@ -125,7 +116,7 @@ function pagination (url) {
 
 function getData (query, params) {
   loaded.value = false
-  const route = router.parse($props.currentRoute?.['meta']?.['url'] || propUrl)
+  const route = router.parse($props.currentRoute?.['meta']?.['url'] || propUrl.value)
   query = Object.assign(route.query, $data.filterModel, query)
 
   $emit('update:props', {
@@ -205,22 +196,26 @@ function onClickCategoryRow (category) {
   store.dispatch('set', { ['Session.' + $data.keyStorage]: { closed: $data.settings['closed'] } })
 }
 
-function onClickRow (item) {
+function onClickRow (item, route) {
   if (item['@disabled']) {
     return
   }
 
-  if (item['@route']) {
+  if (!route) {
+    if (item['@route']) {
+      route = { path: item['@route'] }
+    } else if ($props.route) {
+      route = typeof $props.route === 'object' ? toRaw($props.route) : { path: $props.route }
+    }
+  }
 
-  } else if ($props.route) {
-    const route = typeof $props.route === 'object' ? toRaw($props.route) : { path: $props.route }
-
+  if (route) {
     $emit(
         'action',
         'pushRouter',
         {
           ...route,
-          params: toRaw(item),
+          params: item,
         },
     )
   }
@@ -246,6 +241,18 @@ onMounted(() => {
   if (currentInstance.vnode.el.parentElement.classList.contains('app-tabs__page')) {
     currentInstance.vnode.el.parentElement.childElementCount === 1 &&
     currentInstance.vnode.el.parentElement.classList.add('!p-0')
+  }
+
+  if ($props.history) {
+    watch(
+        () => router.currentRoute.value,
+        (a, b) => {
+          a['path'] === b['path'] &&
+          a['query'][$props.history] !== b['query'][$props.history] &&
+          getData(a['query'], [])
+        },
+        { deep: true },
+    )
   }
 
   if ($props.url) {
@@ -307,9 +314,9 @@ onMounted(() => {
           </tbody>
 
           <tbody v-if="(category.length || category[$props.dataKey].length) && !hasClosedCategory(category)">
-          <tr v-for="(item, i) in (category[$props.dataKey] || category)"
+          <tr v-for="item in (category[$props.dataKey] || category)"
               class="even:bg-gray-400/5 hover:bg-blue-700/20"
-              :class="{ 'cursor-pointer': $props.route, '!bg-blue-700/20': item['@active'] }"
+              :class="{ 'cursor-pointer': $props.route || item['@route'], '!bg-blue-700/20': item['@active'] }"
               @mousedown="onClickRow(item)">
             <td v-for="ceil in columns" class="p-2 first:pl-6 last:pr-6">
               <component v-if="item[ceil.key]?.component"
@@ -339,7 +346,7 @@ onMounted(() => {
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-5 w-5 animate-spin"/>
     </div>
 
-    <div v-if="$props.meta?.['pagination']['prev'] || $props.meta?.['pagination']['next']" class="flex p-3">
+    <div v-if="$props.meta?.['pagination']?.['prev'] || $props.meta?.['pagination']?.['next']" class="flex p-3">
       <div class="grow">
         <Button class="btn-sm btn-gray"
                 :disabled="!$props.meta['pagination']['prev']"

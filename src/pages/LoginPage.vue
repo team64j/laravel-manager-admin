@@ -1,6 +1,7 @@
 <script>
 import router from '@/router'
 import store from '@/store'
+import local from '@/services/local'
 import { defineAsyncComponent } from 'vue'
 
 export default {
@@ -29,8 +30,8 @@ export default {
         login: 'Login'
       },
       errors: {},
-      hostname: store.getters.get('Storage.hostname', location.origin + '/manager/api'),
-      hostnames: store.getters.get('Storage.hostnames', []),
+      hostname: local.get('hostname', location.origin + '/manager/api'),
+      hostnames: local.get('hostnames', []),
       logged: false,
       isCheckServer: false,
       isLogin: false,
@@ -39,7 +40,7 @@ export default {
     }
   },
   created () {
-    if (store.getters.get('Storage.token')) {
+    if (local.get('token')) {
       router.to('/')
     } else {
       this.checkServer()
@@ -57,7 +58,19 @@ export default {
         this.hostname = location.origin + '/manager/api'
       }
 
-      store.dispatch('set', { ['Storage.hostname']: this.hostname.replace(/\/$/g, '') })
+      const url = new URL(this.hostname.replace(/\/$/g, ''))
+
+      this.hostname = url.origin + url.pathname
+
+      local.set('hostname', this.hostname)
+
+      if (!this.hostnames.some(i => i.name === this.hostname)) {
+        this.hostnames.push({
+          name: this.hostname,
+          headers: JSON.parse(url.searchParams.get('headers'))
+        })
+        local.set('hostnames', this.hostnames)
+      }
 
       axios.get('/bootstrap').then(r => {
         if (typeof r.data === 'string') {
@@ -79,14 +92,7 @@ export default {
 
         if (this.languages.length) {
           this.lang = this.languages.filter(
-              i => i.key === (store.getters.get('Storage.lang') || 'en'))[0] ?? {}
-        }
-
-        if (!this.hostnames.some(i => i.name === this.hostname)) {
-          this.hostnames.push({
-            name: this.hostname
-          })
-          store.dispatch('set', { ['Storage.hostnames']: this.hostnames })
+              i => i.key === (local.get('lang') || 'en'))[0] ?? {}
         }
       }).catch(() => {
         this.connected = false
@@ -100,22 +106,22 @@ export default {
     },
     selectLanguage (lang) {
       this.lang = lang
-      store.dispatch('set', { ['Storage.lang']: lang.key })
+      local.set('lang', lang.key)
       this.toggleModal('isShowLanguages')
     },
     selectHostname (item) {
       this.hostname = item.name
-      store.dispatch('set', { ['Storage.hostname']: this.hostname })
+      local.set('hostname', this.hostname)
       this.toggleModal('isShowHostnames')
       this.checkServer()
     },
     removeHostname (item) {
       if (item.name === this.hostname) {
         this.hostname = ''
-        store.dispatch('set', { ['Storage.hostname']: this.hostname })
+        local.set('hostname', this.hostname)
       }
       this.hostnames = this.hostnames.filter(i => i.name !== item.name)
-      store.dispatch('set', { ['Storage.hostnames']: this.hostnames })
+      local.set('hostnames', this.hostnames)
       this.toggleModal('isShowHostnames')
       this.checkServer()
     },
@@ -128,9 +134,11 @@ export default {
 
         if (data['access_token']) {
           this.logged = true
-          store.dispatch('set', { ['Storage.lang']: this.lang.key })
-          store.dispatch('set', { ['Storage.token']: data['access_token'] })
-          store.dispatch('set', { ['Storage.tokenExpiresIn']: data['expires_in'] })
+          local.set({
+            lang: this.lang.key,
+            token: data['access_token'],
+            tokenExpiresIn: data['expires_in']
+          })
           store.dispatch('Session/clear')
           router.to('/')
         }

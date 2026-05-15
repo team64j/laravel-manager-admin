@@ -1,19 +1,18 @@
 <script setup>
 import { getCurrentInstance } from 'vue'
-import store from '@/store'
+import local from '@/services/local'
 import Button from '@/components/Button/Button.vue'
 
 const currentInstance = getCurrentInstance()
 const props = defineProps(['data', 'level'])
 
 if (props.data['values']) {
-  const value = store.getters.get('Storage.root.' + props.data['key'],
-      props.data['value'] ?? props.data['values'][0]['value'])
+  const value = local.get('root.' + props.data['key'], props.data['value'] ?? props.data['values'][0]['value'])
 
   for (const i of props['data']['values']) {
     if (i['value'] === value) {
       Object.assign(props['data'], i)
-      store.dispatch('set', { ['Storage.root.' + props['data']['key']]: i['value'] })
+      local.set('root.' + props['data']['key'], i['value'])
     }
   }
 }

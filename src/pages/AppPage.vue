@@ -45,7 +45,7 @@ function submit ({ action, method, route } = {}, changed = false) {
 
   const url = route?.['meta']?.['url'] ? route['meta']['url'] : route?.['path']
   const isNumericId = isNumber(route['params']['id'])
-  const stay = store.getters.get('Storage.stay')
+  const stay = store.getters.get('stay')
 
   if (route?.['meta']?.['method']) {
     method ??= route['meta']['method'].toLowerCase()

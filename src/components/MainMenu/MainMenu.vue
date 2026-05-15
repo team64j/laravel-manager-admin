@@ -4,6 +4,7 @@ import { action } from '@/composables'
 import MainMenuItem from './MainMenuItem.vue'
 import router from '@/router'
 import store from '@/store'
+import local from '@/services/local'
 
 defineOptions({
   name: 'MainMenu',
@@ -57,14 +58,14 @@ function onClick (event, $props) {
     data.active && loadData($props.data['url'], $props)
   } else if ($props.data['values']) {
     data.active = false
-    const value = store.getters['get']('Storage.root.' + $props.data['key'])
+    const value = local.get('root.' + $props.data['key'])
 
     for (let i in $props.data['values']) {
       i = parseInt(i)
       if (value === $props.data['values'][i].value) {
         const item = $props.data['values'][i + 1] ?? $props.data['values'][0]
         Object.assign($props.data, item)
-        store.dispatch('set', { ['Storage.root.' + $props.data['key']]: item.value })
+        local.set('root.' + $props.data['key'], item.value)
         break
       }
     }

@@ -13,6 +13,7 @@ import { css } from '@codemirror/lang-css'
 import { vue } from '@codemirror/lang-vue'
 import { sql } from '@codemirror/lang-sql'
 import store from '@/store'
+import local from '@/services/local'
 import { uniqId } from '@/utils'
 
 defineOptions({
@@ -105,7 +106,7 @@ const Component = computed(() => {
     extensions.push(languages[data.currentConfig['lang']]())
   }
 
-  if (store.getters['get']('Storage.root.dark') || data.currentConfig?.['dark']) {
+  if (local.get('root.dark') || data.currentConfig?.['dark']) {
     extensions.push(oneDark)
   }
 

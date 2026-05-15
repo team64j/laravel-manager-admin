@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import store from '@/store'
+import local from '@/services/local'
 
 const routes = [
   {
@@ -76,7 +76,7 @@ router.beforeEach((to, from, next) => {
     to.meta['__navigationId'] = 0
   }
 
-  if (!store.getters.get('Storage.token') && to.path !== '/login') {
+  if (!local.get('token') && to.path !== '/login') {
     next('/login')
   } else {
     next()
@@ -129,7 +129,7 @@ router.parse = (route) => {
   if (typeof route === 'string') {
     if (/^(http|https):\/\/[^ "]+$/.test(route)) {
       route = route.replace(
-        (store.getters.get('Storage.hostname') || document.baseURI).replace(
+        (local.get('hostname') || document.baseURI).replace(
           /\/$/g, ''), '')
     }
 
@@ -137,7 +137,7 @@ router.parse = (route) => {
   } else {
     if (/^(http|https):\/\/[^ "]+$/.test(route.path)) {
       route.path = route.path.replace(
-        (store.getters.get('Storage.hostname') || document.baseURI).replace(
+        (local.get('hostname') || document.baseURI).replace(
           /\/$/g, ''),
         '')
     }

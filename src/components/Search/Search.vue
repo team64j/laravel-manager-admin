@@ -1,39 +1,39 @@
 <script setup>
 import { getCurrentInstance, nextTick, reactive, watchEffect } from 'vue'
-import store from '@/store'
+import local from '@/services/local'
 
 const currentInstance = getCurrentInstance()
 
 const data = reactive({
   search: '',
   result: null,
-  searching: false
+  searching: false,
 })
 
 let timer = 0
 
-store.dispatch('set', { ['Storage.root.searchShow']: false })
+local.set('root.searchShow', false)
 
 document.addEventListener('keydown', (event) => {
   if (event.ctrlKey && event.code === 'KeyF' && document.activeElement.tagName === 'BODY') {
-    store.dispatch('set', { ['Storage.root.searchShow']: true })
+    local.set('root.searchShow', true)
     event.preventDefault()
   }
 
-  if (event.code === 'Escape' && store.getters.get('Storage.root.searchShow')) {
-    store.dispatch('set', { ['Storage.root.searchShow']: false })
+  if (event.code === 'Escape' && local.get('root.searchShow')) {
+    local.set('root.searchShow', false)
     event.preventDefault()
   }
 })
 
 watchEffect(() => {
-  if (store.getters.get('Storage.root.searchShow')) {
+  if (local.get('root.searchShow')) {
     nextTick(() => currentInstance.vnode.el.querySelector('.app-search__input input').focus())
   }
 })
 
 function onClose () {
-  store.dispatch('set', { ['Storage.root.searchShow']: false })
+  local.set('root.searchShow', false)
 }
 
 function onInput (event) {
@@ -61,7 +61,7 @@ function onClear () {
 
 <template>
   <transition name="fade">
-    <div v-show="store.getters.get('Storage.root.searchShow')" class="app-search">
+    <div v-show="local.get('root.searchShow')" class="app-search">
       <div class="app-search__back" @click="onClose"/>
       <div class="app-search__main">
         <div class="app-search__input">

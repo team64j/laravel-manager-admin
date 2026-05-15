@@ -3,6 +3,7 @@ import { getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch
 import { convertPixelsToRem, convertRemToPixels } from './utils'
 import router from '@/router'
 import store from '@/store'
+import local from '@/services/local'
 import { RouterView } from 'vue-router'
 import { Notifications, notify } from '@kyvg/vue3-notification'
 import GlobalTabs from '@/components/GlobalTabs/GlobalTabs.vue'
@@ -31,7 +32,7 @@ const datepickerElement = shallowRef()
 const data = reactive({
   loaded: false,
   layout: null,
-  sidebarWidth: store.getters.get('Storage.sidebarWidth', 26),
+  sidebarWidth: local.get('sidebarWidth', 26),
   breakpoints: {
     'sm': 0,
     'md': 768,
@@ -47,17 +48,17 @@ store.dispatch('set', {
 })
 
 watch(
-    () => store.state['Storage']['token'],
+    () => local.storage['token'],
     bootstrap
 )
 
 watch(
-    () => store.state['Storage']['root']?.['dark'],
+    () => local.storage['root']?.['dark'],
     (value) => document.documentElement.classList.toggle('dark', !!value)
 )
 
 watch(
-    () => store.state['Storage']['root']?.['sidebarShow'],
+    () => local.storage['root']?.['sidebarShow'],
     (value) => rootElement.value.classList.toggle('app-sidebar-hidden', !value)
 )
 
@@ -110,11 +111,11 @@ window.addEventListener('resize', () => {
 
 document.documentElement.classList.toggle(
     'dark',
-    store.getters.get('Storage.root.dark', false)
+    local.get('root.dark')
 )
 
 function login () {
-  store.dispatch('set', { ['Storage.token']: null })
+  local.set('token', null)
 
   if (!currentInstance.appContext.components.RouterView) {
     currentInstance.appContext.app.use(router)
@@ -132,7 +133,7 @@ function _action () {
 function bootstrap () {
   data.loaded = false
 
-  if (!store.getters.get('Storage.token')) {
+  if (!local.get('token')) {
     login()
   }
 
@@ -299,7 +300,7 @@ function onTouchstartSidebar (event) {
 
     if (event.touches[0].clientX - sx < 0) {
       sl = false
-      if (store.getters.get('Storage.root.sidebarShow')) {
+      if (local.get('root.sidebarShow')) {
         let x = event.touches[0].clientX - sx
 
         if (Math.abs(x) > sidebarElement.value.offsetWidth) {
@@ -311,7 +312,7 @@ function onTouchstartSidebar (event) {
       }
     } else if (sx < 40) {
       sl = true
-      if (!store.getters.get('Storage.root.sidebarShow')) {
+      if (!local.get('root.sidebarShow')) {
         let x = sidebarElement.value.offsetWidth - (event.touches[0].clientX - sx)
 
         if (x < 0) {
@@ -328,7 +329,7 @@ function onTouchstartSidebar (event) {
     let x = event.changedTouches[0].clientX - sx
 
     if (Math.abs(x) > sidebarElement.value.offsetWidth / 3) {
-      sl !== null && store.dispatch('set', { ['Storage.root.sidebarShow']: sl })
+      sl !== null && local.set('root.sidebarShow', sl)
     }
 
     sidebarElement.value.style.transform = null
@@ -354,7 +355,7 @@ function onMousedownSidebarSplitter (event) {
     data.sidebarWidth = convertPixelsToRem(
         Math.min(Math.max(w - (x - event.clientX), 64), window.innerWidth * .5)
     )
-    store.dispatch('Storage/set', { sidebarWidth: data.sidebarWidth })
+    local.set('sidebarWidth', data.sidebarWidth)
   }
 
   function onMouseupSidebarSplitter (event) {
@@ -372,7 +373,7 @@ function pushRouter (route, callback) {
 }
 
 function collapse (value) {
-  store.dispatch('set', { ['Storage.root.sidebarShow']: !value })
+  local.set('root.sidebarShow', !value)
 }
 
 function calcIsMobile () {
@@ -463,7 +464,7 @@ defineExpose({
        class="app"
        :class="{
           'app-mobile': store.getters.get('isMobile'),
-          'app-sidebar-hidden': !store.getters.get('Storage.root.sidebarShow', true)
+          'app-sidebar-hidden': !local.get('root.sidebarShow', true)
        }">
     <template v-if="data.layout">
       <div

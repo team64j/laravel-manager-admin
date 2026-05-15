@@ -2,6 +2,7 @@
 import { computed, getCurrentInstance } from 'vue'
 import store from '@/store'
 import router from '@/router'
+import local from '@/services/local'
 import Button from '@/components/Button/Button.vue'
 
 const currentInstance = getCurrentInstance()
@@ -45,12 +46,12 @@ const classes = computed(() => {
 const icon = computed(() => {
   let icon = null
   if (props.data['values']) {
-    let value = props.data['value'] ?? store.getters.get('Storage.root.' + props.data['key'])
+    let value = props.data['value'] ?? local.get('root.' + props.data['key'])
     let item = props.data['values'].filter(i => i.value === value)[0]
 
     if (item === undefined) {
       item = props.data['values'][0]
-      store.dispatch('set', { ['Storage.root.' + props.data['key']]: item.value })
+      local.set('root.' + props.data['key'], item.value)
     }
 
     props.data['icon'] = item.icon ?? props.data['icon']
@@ -88,13 +89,13 @@ const onClick = (event) => {
 
     return emit('action', 'show', false)
   } else if (props.data['values']) {
-    const value = store.getters['get']('Storage.root.' + props.data['key'])
+    const value = local.local('root.' + props.data['key'])
 
     for (let i in props.data['values']) {
       i = parseInt(i)
       if (value === props.data['values'][i].value) {
         const item = props.data['values'][i + 1] ?? props.data['values'][0]
-        store.dispatch('set', { ['Storage.root.' + props.data['key']]: item.value })
+        local.set('root.' + props.data['key'], item.value)
         break
       }
     }

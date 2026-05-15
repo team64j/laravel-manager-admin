@@ -2,6 +2,7 @@
 import { getCurrentInstance, h, watch } from 'vue'
 import store from '@/store'
 import router from '@/router'
+import local from '@/services/local'
 
 export default {
   props: {
@@ -14,11 +15,11 @@ export default {
       const style = getComputedStyle(document.body)
 
       if (win.contentDocument) {
-        win.contentDocument.documentElement.className = store.getters.get('Storage.root.dark') ? 'dark' : 'light'
+        win.contentDocument.documentElement.className = local.get('root.dark') ? 'dark' : 'light'
         win.contentDocument.body.style = style
       }
 
-      win.contentWindow?.postMessage({ dark: store.getters.get('Storage.root.dark') }, '*')
+      win.contentWindow?.postMessage({ dark: local.get('root.dark') }, '*')
     }
   },
 
@@ -32,7 +33,7 @@ export default {
     })
 
     watch(
-        () => store.state['Storage']['root']['dark'],
+        () => local.storage['root']['dark'],
         () => currentInstance['ctx'].message(currentInstance.vnode.el)
     )
 
@@ -67,8 +68,8 @@ export default {
       }
     }
 
-    const hostname = store.getters.get('Storage.hostname')
-    const token = store.getters.get('Storage.token')
+    const hostname = local.get('hostname')
+    const token = local.get('token')
 
     if (props.url) {
       attrs.src = (/https?:/.test(props.url) ? '' : hostname) +

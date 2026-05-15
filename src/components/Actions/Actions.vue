@@ -14,7 +14,7 @@ const props = defineProps({
 
 const emit = defineEmits(['action'])
 
-const stay = computed(() => store.getters['Storage/get']('stay') || 0)
+const stay = computed(() => store.getters.get('stay', 0))
 
 function click (params, stay) {
   if (params.to) {
@@ -40,7 +40,7 @@ function click (params, stay) {
   }
 
   if (stay !== undefined) {
-    store.dispatch('Storage/set', ['stay', stay])
+    store.dispatch('set', { 'stay': stay })
   }
 
   emit('action', 'submit', { ...params })

@@ -1,6 +1,6 @@
 import axios from 'axios'
-import store from '@/store'
 import router from '@/router'
+import local from '@/services/local'
 import { notify } from '@kyvg/vue3-notification'
 
 axios.defaults['headers']['common']['Accept'] = 'application/json'
@@ -8,14 +8,15 @@ axios.defaults['headers']['common']['X-Requested-With'] = 'XMLHttpRequest'
 
 axios.interceptors['request'].use(
   config => {
-    config.baseURL = (store.getters.get('Storage.hostname') ||
-      document.baseURI).replace(/\/$/g, '')
-    config.headers['Accept-Language'] = store.getters.get('Storage.lang', 'en')
+    config.baseURL = (local.get('hostname') || document.baseURI).replace(/\/$/g, '')
+    config.headers['Accept-Language'] = local.get('lang', 'en')
 
-    const token = store.getters.get('Storage.token', '')
+    const token = local.get('token', '')
     if (token) {
       config.headers['Authorization'] = 'Bearer ' + token
     }
+
+    Object.assign(config.headers, local.get('hostnames', []).find(i => i.name === config.baseURL)?.headers || {})
 
     if (!config.url) {
       return config
@@ -76,7 +77,7 @@ axios.interceptors['response'].use(
     const status = error.response?.status ?? 500
 
     if (status === 401) {
-      return store.dispatch('set', { ['Storage.token']: null })
+      return local.set('token', null)
     }
 
     if (error.response?.data?.message) {
