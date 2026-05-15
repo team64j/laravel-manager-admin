@@ -10,14 +10,14 @@ export default {
     Logo: defineAsyncComponent(() => import('@/components/Logo/Logo.vue')),
     Input: defineAsyncComponent(() => import('@/components/Input/Input.vue')),
     Button: defineAsyncComponent(() => import('@/components/Button/Button.vue')),
-    Checkbox: defineAsyncComponent(() => import('@/components/Checkbox/Checkbox.vue'))
+    Checkbox: defineAsyncComponent(() => import('@/components/Checkbox/Checkbox.vue')),
   },
   data () {
     return {
       form: {
         username: null,
         password: null,
-        remember: null
+        remember: null,
       },
       config: {},
       languages: [],
@@ -27,7 +27,7 @@ export default {
         user: 'User',
         password: 'Password',
         remember: 'Remember me',
-        login: 'Login'
+        login: 'Login',
       },
       errors: {},
       hostname: local.get('hostname', location.origin + '/manager/api'),
@@ -36,7 +36,7 @@ export default {
       isCheckServer: false,
       isLogin: false,
       isShowLanguages: false,
-      isShowHostnames: false
+      isShowHostnames: false,
     }
   },
   created () {
@@ -59,6 +59,7 @@ export default {
       }
 
       const url = new URL(this.hostname.replace(/\/$/g, ''))
+      const headers = JSON.parse(url.searchParams.get('headers'))
 
       this.hostname = url.origin + url.pathname
 
@@ -67,9 +68,15 @@ export default {
       if (!this.hostnames.some(i => i.name === this.hostname)) {
         this.hostnames.push({
           name: this.hostname,
-          headers: JSON.parse(url.searchParams.get('headers'))
+          headers,
         })
         local.set('hostnames', this.hostnames)
+      } else if (headers) {
+        this.hostnames.forEach(i => {
+          if (i.name === this.hostname) {
+            i.headers = headers
+          }
+        })
       }
 
       axios.get('/bootstrap').then(r => {
@@ -91,8 +98,7 @@ export default {
         }
 
         if (this.languages.length) {
-          this.lang = this.languages.filter(
-              i => i.key === (local.get('lang') || 'en'))[0] ?? {}
+          this.lang = this.languages.filter(i => i.key === (local.get('lang') || 'en'))[0] ?? {}
         }
       }).catch(() => {
         this.connected = false
@@ -137,7 +143,7 @@ export default {
           local.set({
             lang: this.lang.key,
             token: data['access_token'],
-            tokenExpiresIn: data['expires_in']
+            tokenExpiresIn: data['expires_in'],
           })
           store.dispatch('Session/clear')
           router.to('/')
@@ -148,8 +154,8 @@ export default {
       }).finally(() => {
         this.isLogin = false
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
