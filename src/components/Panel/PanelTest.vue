@@ -234,7 +234,7 @@ function onClickRow (item, route) {
     })
   })
 
-  item['@active'] = !active
+  item['@active'] = route ? true : !active
 }
 
 onMounted(() => {
