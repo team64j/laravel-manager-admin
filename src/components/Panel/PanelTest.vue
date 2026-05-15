@@ -302,7 +302,8 @@ onMounted(() => {
           <tbody v-if="category.name && category[$props.dataKey].length">
           <tr class="even:bg-blue-600/10" @dblclick.stop="onClickCategoryRow(category)">
             <td :colspan="columns.length"
-                class="p-2 px-5 border-b-2 font-bold hover:bg-blue-700/20 hover:text-blue-500">
+                class="p-2 px-5 border-b-2 font-bold"
+                :class="{ 'cursor-pointer hover:bg-blue-700/20 hover:text-blue-500': category.id ?? category.key }">
               <i v-if="(category.id ?? category.key)"
                  :class="[!hasClosedCategory(category) ? 'fa-square-minus' : 'fa-square-plus']"
                  class="far fa-fw mr-1 cursor-pointer"
