@@ -4,11 +4,14 @@ import { getValue, setValue } from '@/composables'
 export function DynamicComponent (data, model) {
   const props = data.attrs
 
+  if (data.model) {
+    props.modelValue = getValue(data.model, model)
+  }
+
   return h(
     window['Vue']._context.components[data.component],
     {
       ...props,
-      modelValue: getValue(data.model, model),
       onAction () {
         console.log('action', ...arguments)
       },

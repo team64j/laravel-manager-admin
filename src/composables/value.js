@@ -7,7 +7,14 @@ export function getValue (key, data) {
     if (current == null || typeof current !== 'object') {
       return undefined
     }
-    current = current[k]
+
+    if (/:/.test(k)) {
+      let j, n
+      [j, n] = k.split(':')
+      current = current.find(i => i[j].toString() === n.toString())
+    } else {
+      current = current[k]
+    }
   }
 
   return current
@@ -27,7 +34,13 @@ export function setValue (key, value, data) {
     if (typeof current[k] !== 'object' || current[k] === null) {
       current[k] = {}
     }
-    current = current[k]
+    if (/:/.test(k)) {
+      let j, n
+      [j, n] = k.split(':')
+      current = current.find(i => i[j].toString() === n.toString())
+    } else {
+      current = current[k]
+    }
   }
 
   current[lastKey] = value

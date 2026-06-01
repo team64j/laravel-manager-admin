@@ -6,7 +6,8 @@ import Button from '@/components/Button/Button.vue'
 import Input from '@/components/Input/Input.vue'
 import Select from '@/components/Select/Select.vue'
 import router from '@/router'
-import { DynamicComponent } from '@/utils/dynamic-component'
+import draggable from 'vuedraggable'
+import PanelRow from '@/components/Panel/PanelRow.vue'
 
 const currentInstance = getCurrentInstance()
 
@@ -73,6 +74,10 @@ const $data = reactive({
   classContextMenu: null,
   propView: $props.view,
   sorting: {},
+  draggable: {
+    type: [Boolean, String],
+    default: props => props?.meta?.draggable,
+  },
 })
 
 const loaded = shallowRef(true)
@@ -105,6 +110,12 @@ const filters = computed(() => {
 })
 
 const propUrl = computed(() => $props.url ?? $props.currentRoute['path'] ?? null)
+
+const rowProps = computed(() => ({
+  columns: columns.value,
+  modelValue: $props.modelValue,
+  route: $props.route,
+}))
 
 function pagination (url) {
   if (propUrl.value) {
@@ -197,7 +208,7 @@ function onClickCategoryRow (category) {
 }
 
 function onClickRow (item, route) {
-  if (item['@disabled']) {
+  if (item['@disabled'] || $props.draggable) {
     return
   }
 
@@ -235,6 +246,20 @@ function onClickRow (item, route) {
   })
 
   item['@active'] = route ? true : !active
+}
+
+function onSortableEnd (data, key) {
+  if (typeof key !== 'string') {
+    return
+  }
+
+  let counter = 1
+
+  for (const i in data) {
+    if (data[i][key] !== undefined) {
+      //data[i][key] = counter++
+    }
+  }
 }
 
 onMounted(() => {
@@ -295,10 +320,10 @@ onMounted(() => {
         <template
             v-if="$props.data.length && loaded"
             v-for="category in ($props.data[0]?.[$props.dataKey] ? $props.data : [{
-          data: $props.data,
-          route: $props.route,
-          draggable: $props.draggable
-        }])">
+              data: $props.data,
+              route: $props.route,
+              draggable: $props.draggable
+            }])">
           <tbody v-if="category.name && category[$props.dataKey].length">
           <tr class="even:bg-blue-600/10" @dblclick.stop="onClickCategoryRow(category)">
             <td :colspan="columns.length"
@@ -314,28 +339,24 @@ onMounted(() => {
           </tr>
           </tbody>
 
-          <tbody v-if="(category.length || category[$props.dataKey].length) && !hasClosedCategory(category)">
-          <tr v-for="item in (category[$props.dataKey] || category)"
-              class="even:bg-gray-400/5"
-              :class="{
-                'cursor-pointer': $props.route || item['@route'],
-                'pointer-events-none' : item['@disabled'],
-                '!bg-blue-600/20': item['@active'] && !item['@deleted'],
-                'hover:bg-blue-600/20': !item['@deleted'],
-                'bg-rose-600/20 even:bg-rose-600/10 hover:bg-rose-600/30 hover:even:bg-rose-600/20' : item['@deleted'],
-                'bg-rose-600/20 even:bg-rose-600/30' : item['@active'] && item['@deleted'],
-              }"
-              @mousedown="onClickRow(item)">
-            <td v-for="ceil in columns" class="p-2 first:pl-6 last:pr-6">
-              <component v-if="item[ceil.key]?.component"
-                         :is="() => DynamicComponent(item[ceil.key], $props.modelValue)"/>
-              <div v-else-if="ceil.values && ceil.values[item[ceil.key]]" v-html="ceil.values[item[ceil.key]]"/>
-              <template v-else>
-                {{ item[ceil.key] }}
+          <template v-if="(category.length || category[$props.dataKey].length) && !hasClosedCategory(category)">
+            <draggable v-if="category.draggable ?? $props.draggable"
+                       :list="category[$props.dataKey] || category"
+                       item-key="id"
+                       tag="tbody"
+                       @end="onSortableEnd(category[$props.dataKey] || category, category.draggable ?? $props.draggable)">
+              <template #item="{ element, index }">
+                <panel-row :item="element" :index="index" v-bind="rowProps" @on-click-row="onClickRow"/>
               </template>
-            </td>
-          </tr>
-          </tbody>
+            </draggable>
+
+            <tbody v-else>
+            <template v-for="item in (category[$props.dataKey] || category)">
+              <panel-row :item="item" v-bind="rowProps" @on-click-row="onClickRow"/>
+            </template>
+            </tbody>
+          </template>
+
         </template>
 
         <tbody v-else-if="!loaded">
