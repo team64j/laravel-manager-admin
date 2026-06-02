@@ -8,7 +8,8 @@ axios.defaults['headers']['common']['X-Requested-With'] = 'XMLHttpRequest'
 
 axios.interceptors['request'].use(
   config => {
-    config.baseURL = (local.get('hostname') || document.baseURI).replace(/\/$/g, '')
+    config.baseURL = (local.get('hostname') || document.baseURI).replace(/\/$/g,
+      '')
     config.headers['Accept-Language'] = local.get('lang', 'en')
 
     const token = local.get('token', '')
@@ -16,7 +17,8 @@ axios.interceptors['request'].use(
       config.headers['Authorization'] = 'Bearer ' + token
     }
 
-    Object.assign(config.headers, local.get('hostnames', []).find(i => i.name === config.baseURL)?.headers || {})
+    Object.assign(config.headers, local.get('hostnames', []).
+      find(i => i.name === config.baseURL)?.headers || {})
 
     if (!config.url) {
       return config
@@ -33,8 +35,8 @@ axios.interceptors['request'].use(
       Object.values(config.params || {}).length && config.params,
       Object.values(router.currentRoute.value.params).length &&
       router.currentRoute.value.params,
-      window['Vue']._instance?.refs?.globalTabs?.$refs?.keepAlive._.__current?.component?.exposed?.$data?.data ||
-      {},
+      window['Vue']._instance?.refs?.globalTabs?.$refs?.keepAlive?._?.__current?.component?.exposed?.$data?.data ||
+      {}
     )
 
     Object.entries(params).forEach(([k, v]) => {
@@ -68,7 +70,7 @@ axios.interceptors['request'].use(
 
     return config
   },
-  error => Promise.reject(error),
+  error => Promise.reject(error)
 )
 
 axios.interceptors['response'].use(
@@ -83,17 +85,17 @@ axios.interceptors['response'].use(
     if (error.response?.data?.message) {
       notify({
         text: error.response.data.message.replace(/\r\n|\r|\n|\\n/g, '<br>'),
-        type: 'error',
+        type: 'error'
       })
     } else if (error.message) {
       notify({
         text: error.message,
-        type: 'error',
+        type: 'error'
       })
     }
 
     return Promise.reject(error)
-  },
+  }
 )
 
 export default axios

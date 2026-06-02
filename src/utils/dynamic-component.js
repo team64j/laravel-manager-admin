@@ -1,15 +1,21 @@
-import { h } from 'vue'
+import { h, toRaw } from 'vue'
 import { getValue, setValue } from '@/composables'
 
-export function DynamicComponent (data, model) {
-  const props = data.attrs
+export function DynamicComponent (item = {}, model, ceil) {
+  const data = (item[ceil.key] || ceil)
+  const component = typeof data.component === 'object' ? data.component : data
+  const props = toRaw(component.attrs || {})
 
-  if (data.model) {
-    props.modelValue = getValue(data.model, model)
+  if (component.model) {
+    props.modelValue = getValue(component.model, model)
+  }
+
+  if (props.keyValue) {
+    props.value = item[props.keyValue]
   }
 
   return h(
-    window['Vue']._context.components[data.component],
+    window['Vue']._context.components[component.component],
     {
       ...props,
       onAction () {
@@ -19,8 +25,8 @@ export function DynamicComponent (data, model) {
         Object.assign(props, newProps)
       },
       ['onUpdate:modelValue'] (value) {
-        setValue(data.model, value, model)
-      },
-    },
+        setValue(component.model, value, model)
+      }
+    }
   )
 }

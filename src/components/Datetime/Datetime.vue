@@ -2,6 +2,8 @@
 import { computed, getCurrentInstance, reactive } from 'vue'
 import { props } from '@/composables'
 
+const currentInstance = getCurrentInstance()
+
 defineOptions({
   name: 'Datetime',
   __isStatic: true
@@ -22,7 +24,7 @@ const model = computed({
     return $props.value ?? $props.modelValue ?? ''
   },
   set (value) {
-    $emit('update:modelValue', value, getCurrentInstance())
+    $emit('update:modelValue', value, currentInstance)
   }
 })
 
@@ -35,7 +37,7 @@ function onClear () {
 }
 
 function onShow () {
-  $emit('action', 'datepicker:show', getCurrentInstance())
+  $emit('action', 'datepicker:show', currentInstance)
 }
 
 function onClose () {

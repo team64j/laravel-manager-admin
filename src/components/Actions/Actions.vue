@@ -8,24 +8,26 @@ defineOptions({
   __isStatic: true
 })
 
-const props = defineProps({
+const $props = defineProps({
   data: Array
 })
 
-const emit = defineEmits(['action'])
+const $emit = defineEmits(['action'])
 
 const stay = computed(() => store.getters.get('stay', 0))
 
-function click (params, stay) {
+const loading = computed(() => store.getters.get('tabsLoading'))
+
+function onClick (params, stay) {
   if (params.to) {
     if (params.to.href) {
       window.open(params.to.href)
     } else if (params.to.path) {
-      emit('action', 'pushRouter', params.to)
+      $emit('action', 'pushRouter', params.to)
     }
 
     if (params.to.close) {
-      emit('action', 'closeTab')
+      $emit('action', 'closeTab')
     }
 
     return
@@ -43,10 +45,10 @@ function click (params, stay) {
     store.dispatch('set', { 'stay': stay })
   }
 
-  emit('action', 'submit', { ...params })
+  $emit('action', 'submit', { ...params })
 }
 
-function clickGroup (event) {
+function onClickGroup (event) {
   if (event.currentTarget === document.activeElement) {
     event.currentTarget.blur()
     event.preventDefault()
@@ -55,21 +57,21 @@ function clickGroup (event) {
 </script>
 
 <template>
-  <div v-if="data.length" class="app-actions">
-    <template v-for="i in data">
+  <div v-if="$props.data.length" class="app-actions">
+    <template v-for="i in $props.data">
       <div v-if="i.data" class="app-actions__group">
         <Button v-for="j in i.data.filter(k => k.stay.toString() === stay.toString())"
                 class="btn-sm"
                 :icon="j.icon"
                 :class="i.class"
                 :value="i.title + ' + ' + j.title"
-                :loading="store.getters.get('tabsLoading')"
-                @click="click(i, j.stay)"/>
+                :loading="loading"
+                @click="onClick(i, j.stay)"/>
 
         <Button class="btn-sm app-actions__toggle"
                 :class="i.class"
                 icon="fa fa-angle-down fa-fw"
-                @mousedown="clickGroup"/>
+                @mousedown="onClickGroup"/>
 
         <div class="app-actions__save-buttons">
           <Button v-for="j in i.data.filter(k => k.stay.toString() !== stay.toString())"
@@ -77,8 +79,8 @@ function clickGroup (event) {
                   :icon="j.icon"
                   :class="i.class"
                   :value="j.title"
-                  :loading="store.getters.get('tabsLoading')"
-                  @mousedown="() => click(i, j.stay)">
+                  :loading="loading"
+                  @mousedown="() => onClick(i, j.stay)">
             <template #icon>
               <i :class="i.icon"/>
               <i class="fa fa-plus fa-fw"/>
@@ -92,7 +94,7 @@ function clickGroup (event) {
               :icon="i.icon"
               :class="i.class"
               :value="'<span>' + i.title + '</span>'"
-              @click="click(i)"/>
+              @click="onClick(i)"/>
     </template>
   </div>
 </template>

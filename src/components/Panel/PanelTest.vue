@@ -13,13 +13,13 @@ const currentInstance = getCurrentInstance()
 
 defineOptions({
   name: 'Panel',
-  __isStatic: true,
+  __isStatic: true
 })
 
 const $props = defineProps({
   id: {
     type: String,
-    default: uniqId(),
+    default: uniqId()
   },
   modelValue: null,
   url: String,
@@ -27,7 +27,7 @@ const $props = defineProps({
     type: Array,
     default (props) {
       return props.url ? [] : props.modelValue ?? []
-    },
+    }
   },
   meta: Object,
   layout: Object,
@@ -37,15 +37,15 @@ const $props = defineProps({
   },
   filters: {
     type: Array,
-    default: (props) => props?.meta?.filters ?? [],
+    default: (props) => props?.meta?.filters ?? []
   },
   route: {
     type: [String, Object],
-    default: (props) => props?.meta?.route,
+    default: (props) => props?.meta?.route
   },
   draggable: {
     type: [Boolean, String],
-    default: (props) => props?.meta?.draggable,
+    default: (props) => props?.meta?.draggable
   },
   history: [Boolean, String],
   rerender: Boolean,
@@ -55,8 +55,8 @@ const $props = defineProps({
   currentRoute: Object,
   dataKey: {
     type: String,
-    default: 'data',
-  },
+    default: 'data'
+  }
 })
 
 const $emit = defineEmits(['action', 'update:modelValue', 'update:props'])
@@ -76,21 +76,27 @@ const $data = reactive({
   sorting: {},
   draggable: {
     type: [Boolean, String],
-    default: props => props?.meta?.draggable,
-  },
+    default: props => props?.meta?.draggable
+  }
 })
 
 const loaded = shallowRef(true)
 
 const columns = computed(() => {
-  if ($props.columns.length) {
-    return toRaw($props.columns).map(i => {
+  const columns = $props?.meta?.columns || $props.columns || {}
+
+  if (columns.length) {
+    return toRaw(columns).map(i => {
       i.key = i.key || i.name
       return i
     })
+  } else if ($props.data[0]) {
+
   }
 
-  return $props.data[0][$props.dataKey][0].length || $props.data[0].length
+  return []
+
+  //return $props.data?.[0][$props.dataKey][0].length || $props.data?.[0].length
 })
 
 const filters = computed(() => {
@@ -114,7 +120,7 @@ const propUrl = computed(() => $props.url ?? $props.currentRoute['path'] ?? null
 const rowProps = computed(() => ({
   columns: columns.value,
   modelValue: $props.modelValue,
-  route: $props.route,
+  route: $props.route
 }))
 
 function pagination (url) {
@@ -132,13 +138,13 @@ function getData (query, params) {
 
   $emit('update:props', {
     data: params,
-    meta: params ? Object.assign({}, { ...$props.meta }) : {},
+    meta: params ? Object.assign({}, { ...$props.meta }) : {}
   }, this)
   axios({
     method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
     url: route.path,
     params: query,
-    data: Object.assign({}, query),
+    data: Object.assign({}, query)
   }).then(({ data }) => {
     $emit('update:props', { ...data })
   }).finally(() => {
@@ -152,7 +158,7 @@ function loadData (route, props) {
       $emit(
           'action',
           'pushRouter',
-          route,
+          route
       )
     } else {
       router.to(route)
@@ -226,8 +232,8 @@ function onClickRow (item, route) {
         'pushRouter',
         {
           ...route,
-          params: item,
-        },
+          params: item
+        }
     )
   }
 
@@ -253,11 +259,13 @@ function onSortableEnd (data, key) {
     return
   }
 
-  let counter = 1
+  let counter = $props.meta?.pagination?.['current'] > 1
+      ? ($props.meta.pagination['current'] - 1) * $props.meta.pagination['per']
+      : 0
 
   for (const i in data) {
     if (data[i][key] !== undefined) {
-      //data[i][key] = counter++
+      data[i][key] = counter++
     }
   }
 }
@@ -276,7 +284,7 @@ onMounted(() => {
           a['query'][$props.history] !== b['query'][$props.history] &&
           getData(a['query'], [])
         },
-        { deep: true },
+        { deep: true }
     )
   }
 
@@ -308,7 +316,13 @@ onMounted(() => {
         <tr v-if="filters">
           <td v-for="filter in filters" class="border-l first:border-0 border-opacity-5">
             <template v-if="filter">
-              <Select v-if="filter.data" v-bind="filter" v-model="$data.filterModel[filter.name]"
+              <div v-if="filter.type === 'date'" class="flex">
+                <Input v-bind="filter" v-model="$data.filterModel[filter.name]"
+                       input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
+                <Input v-bind="filter" v-model="$data.filterModel[filter.name]"
+                       input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
+              </div>
+              <Select v-else-if="filter.data" v-bind="filter" v-model="$data.filterModel[filter.name]"
                       input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
               <Input v-else v-bind="filter" v-model="$data.filterModel[filter.name]" :clear="true"
                      input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>

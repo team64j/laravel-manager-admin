@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance } from 'vue'
-import { props as _props } from '@/composables'
+import { props } from '@/composables'
 
 const currentInstance = getCurrentInstance()
 
@@ -9,8 +9,8 @@ defineOptions({
   __isStatic: true
 })
 
-const props = defineProps({
-  ..._props,
+const $props = defineProps({
+  ...props,
   modelValue: {
     type: [null, Object, String, Number, Boolean],
     default: ''
@@ -25,21 +25,21 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['action', 'update:modelValue'])
+const $emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
 const model = computed({
   get () {
-    return props.value ?? props.modelValue ?? ''
+    return $props.value ?? $props.modelValue ?? ''
   },
   set (value) {
-    emit('update:modelValue', value, currentInstance)
+    $emit('update:modelValue', value, currentInstance)
   }
 })
 
 const height = computed(() => {
   const fs = parseFloat(window.getComputedStyle(document.documentElement, null).getPropertyValue('font-size'))
 
-  return ((fs * 0.375) * 2) + (props.rows * 1.5 * fs) + 2 + 'px'
+  return ((fs * 0.375) * 2) + ($props.rows * 1.5 * fs) + 2 + 'px'
 })
 
 defineExpose({
@@ -48,24 +48,30 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="label" class="w-full flex flex-col" :class="$props.class">
+  <div v-if="$props.label" class="w-full flex flex-col" :class="$props.class">
     <div class="mb-1">
-      <label :for="id" class="font-bold cursor-pointer">
-        {{ label }}
-        <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
+      <label :for="$props.id" class="font-bold cursor-pointer">
+        {{ $props.label }}
+        <span v-if="$props.required" class="text-rose-500">*</span>
+        <i v-if="$props.help" class="ml-2 font-normal" :data-tooltip="$props.help"/>
       </label>
       <slot name="label"/>
     </div>
-    <textarea v-model="model" :id="id" :class="[resize ? 'resize-y' : 'resize-none']" class="min-h-10 grow" :rows="rows"
+    <textarea v-model="model" :id="$props.id" :class="[$props.resize ? 'resize-y' : 'resize-none']"
+              class="min-h-10 grow" :rows="$props.rows"
               :style="{ height }"/>
-    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
+    <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
+    <div v-if="$props.error" class="absolute text-xs text-rose-600" :class="$props.errorClass">
+      {{ $props.error.toString() }}
+    </div>
   </div>
   <template v-else>
-    <textarea v-model="model" :id="id" :class="[resize ? 'resize-y' : 'resize-none']" class="min-h-10 grow" :rows="rows"
+    <textarea v-model="model" :id="$props.id" :class="[$props.resize ? 'resize-y' : 'resize-none']"
+              class="min-h-10 grow" :rows="$props.rows"
               :style="{ height }"/>
-    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
+    <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
+    <div v-if="$props.error" class="absolute text-xs text-rose-600" :class="$props.errorClass">
+      {{ $props.error.toString() }}
+    </div>
   </template>
 </template>
