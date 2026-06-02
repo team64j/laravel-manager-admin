@@ -9,7 +9,7 @@ defineOptions({
 
 const currentInstance = getCurrentInstance()
 
-const props = defineProps({
+const $props = defineProps({
   data: Array,
   area: String,
   gap: String,
@@ -34,8 +34,8 @@ function calcGridArea (gridArea) {
 </script>
 
 <template>
-  <div class="app-grid grid auto-cols-fr w-full" :style="{ gridArea: props.area, gap: props.gap }">
-    <div v-for="(i, k) in props.gridAreas" :style="{ gridArea: calcGridArea(i) }" class="min-h-full">
+  <div class="app-grid grid auto-cols-fr w-full" :style="{ gridArea: $props.area, gap: $props.gap }">
+    <div v-for="(i, k) in $props.gridAreas" :style="{ gridArea: calcGridArea(i) }" class="min-h-full">
       <slot :name="`grid_${k}`"/>
     </div>
   </div>

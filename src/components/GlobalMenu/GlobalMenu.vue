@@ -11,8 +11,8 @@ defineOptions({
 })
 
 const currentInstance = getCurrentInstance()
-const props = defineProps(['data'])
-const emit = defineEmits(['action'])
+const $props = defineProps(['data'])
+const $emit = defineEmits(['action'])
 
 const methods = {
   show (value = true) {
@@ -86,7 +86,7 @@ const action = (...args) => {
   if (typeof methods[args[0]] === 'function') {
     methods[args[0]](...Array.from(args).splice(1))
   } else {
-    emit('action', ...args)
+    $emit('action', ...args)
   }
 }
 
@@ -112,7 +112,7 @@ onMounted(() => {
 <template>
   <div class="app-global-menu">
     <ul>
-      <global-menu-item v-for="(i, k) in data" :data="i" :key="k" @action="action"/>
+      <global-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" @action="action"/>
     </ul>
   </div>
 </template>

@@ -13,7 +13,7 @@ defineOptions({
 
 const currentInstance = getCurrentInstance()
 
-const props = defineProps({
+const $props = defineProps({
   data: [Array, Object],
   isVertical: Boolean
 })
@@ -22,11 +22,11 @@ const data = reactive({
   active: false
 })
 
-const emit = defineEmits(['action'])
+const $emit = defineEmits(['action'])
 
 let enterTimer = 0, filterTimer = 0
 
-function onClick (event, $props) {
+function onClick (event, props) {
   if (store.getters.get('isMobile')) {
     const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
     document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
@@ -40,32 +40,32 @@ function onClick (event, $props) {
 
     data.active = action === 'add'
 
-    if (event.target.classList.contains('app-main-menu__toggle') && $props.data['url']) {
-      loadData($props.data['url'], $props)
+    if (event.target.classList.contains('app-main-menu__toggle') && props.data['url']) {
+      loadData(props.data['url'], props)
       return
     }
   } else {
     data.active = !data.active
   }
 
-  if ($props.data['to']) {
+  if (props.data['to']) {
     data.active = false
-    router.to($props.data['to'])
-  } else if ($props.data['href']) {
+    router.to(props.data['to'])
+  } else if (props.data['href']) {
     data.active = false
-    window.open($props.data['href'])
-  } else if ($props.data['url']) {
-    data.active && loadData($props.data['url'], $props)
-  } else if ($props.data['values']) {
+    window.open(props.data['href'])
+  } else if (props.data['url']) {
+    data.active && loadData(props.data['url'], props)
+  } else if (props.data['values']) {
     data.active = false
-    const value = local.get('root.' + $props.data['key'])
+    const value = local.get('root.' + props.data['key'])
 
-    for (let i in $props.data['values']) {
+    for (let i in props.data['values']) {
       i = parseInt(i)
-      if (value === $props.data['values'][i].value) {
-        const item = $props.data['values'][i + 1] ?? $props.data['values'][0]
-        Object.assign($props.data, item)
-        local.set('root.' + $props.data['key'], item.value)
+      if (value === props.data['values'][i].value) {
+        const item = props.data['values'][i + 1] ?? props.data['values'][0]
+        Object.assign(props.data, item)
+        local.set('root.' + props.data['key'], item.value)
         break
       }
     }
@@ -73,7 +73,7 @@ function onClick (event, $props) {
   store.dispatch('set', { AppMainOverlay: data.active })
 }
 
-function onEnter (event, $props) {
+function onEnter (event, props) {
   if (event.currentTarget.classList.contains('app-main-menu__hover') || store.getters.get('isMobile')) {
     return
   }
@@ -82,7 +82,7 @@ function onEnter (event, $props) {
 
   clearTimeout(enterTimer)
 
-  if ($props.data['url'] && !$props.data['data']) {
+  if (props.data['url'] && !props.data['data']) {
     delay = 50
   }
 
@@ -96,54 +96,54 @@ function onEnter (event, $props) {
       item = item?.parentElement?.closest('li')
     }
 
-    if ($props.data['url'] && data.active) {
+    if (props.data['url'] && data.active) {
       clearTimeout(enterTimer)
-      $props.data['data'] = null
+      props.data['data'] = null
 
-      enterTimer = setTimeout(() => loadData($props.data['url'], $props), 150)
+      enterTimer = setTimeout(() => loadData(props.data['url'], props), 150)
     }
   }, delay)
 }
 
-function onOut (event, $props) {
+function onOut (event, props) {
   if (store.getters.get('isMobile')) {
     return
   }
 
-  if ($props.data['url']) {
+  if (props.data['url']) {
     clearTimeout(enterTimer)
   }
 
-  if ($props.data['data'] === undefined) {
+  if (props.data['data'] === undefined) {
     event.currentTarget.classList.remove('app-main-menu__hover')
   }
 }
 
-function onNav (event, url, $props) {
-  loadData(url, $props)
+function onNav (event, url, props) {
+  loadData(url, props)
 }
 
-function onFilterInput (event, $props) {
+function onFilterInput (event, props) {
   clearTimeout(filterTimer)
   filterTimer = setTimeout(() => {
     loadData(
-        router.parse({ path: $props.data['url'], query: { filter: event.target.value } }).fullPath,
-        $props
+        router.parse({ path: props.data['url'], query: { filter: event.target.value } }).fullPath,
+        props
     )
   }, 500)
 }
 
-function onFilterClear (event, $props) {
+function onFilterClear (event, props) {
   loadData(
-      router.parse({ path: $props.data['url'] }).fullPath,
-      $props
+      router.parse({ path: props.data['url'] }).fullPath,
+      props
   )
 }
 
-function loadData (url, $props) {
+function loadData (url, props) {
   const route = router.parse(url)
-  $props.data['loading'] = true
-  $props.data['data'] = null
+  props.data['loading'] = true
+  props.data['data'] = null
 
   axios({
     method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
@@ -153,7 +153,7 @@ function loadData (url, $props) {
   }).then(r => {
     const meta = r.data['meta'] || {}
 
-    $props.data['data'] = [].concat(
+    props.data['data'] = [].concat(
         meta['prepend'] ?? [],
         (meta['pagination'] && (meta['pagination']['total'] > meta['pagination']['per'])) || route.query['filter'] !==
         undefined
@@ -169,7 +169,7 @@ function loadData (url, $props) {
         meta['pagination'] && (meta['pagination']['prev'] || meta['pagination']['next']) ? [meta['pagination']] : []
     )
   }).finally(() => {
-    $props.data['loading'] = false
+    props.data['loading'] = false
   })
 }
 
@@ -198,10 +198,10 @@ defineExpose({
   <div class="app-main-menu"
        :class="{
         'app-main-menu__active': store.getters.get('AppMainOverlay'),
-        'app-main-menu__vertical': props.isVertical
+        'app-main-menu__vertical': $props.isVertical
       }">
     <ul>
-      <main-menu-item v-for="(i, k) in props.data" :data="i" :key="k" :level="1" @action="_action"/>
+      <main-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" :level="1" @action="_action"/>
     </ul>
   </div>
 </template>

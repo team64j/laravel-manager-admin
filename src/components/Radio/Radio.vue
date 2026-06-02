@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance } from 'vue'
-import { props as _props } from '@/composables'
+import { props } from '@/composables'
 
 const currentInstance = getCurrentInstance()
 
@@ -9,25 +9,25 @@ defineOptions({
   __isStatic: true
 })
 
-const props = defineProps({
-  ..._props,
+const $props = defineProps({
+  ...props,
   modelValue: { default: true },
   value: { default: true },
   asButton: Boolean
 })
 
-const emit = defineEmits(['action', 'update:modelValue'])
+const $emit = defineEmits(['action', 'update:modelValue'])
 
-const _labelClass = computed(() => {
+const labelClass = computed(() => {
   const c = []
 
-  if (props.disabled) {
+  if ($props.disabled) {
     c.push('cursor-no-drop')
   } else {
     c.push('cursor-pointer')
   }
 
-  if (props.asButton) {
+  if ($props.asButton) {
     c.push('label-as-button')
   }
 
@@ -36,10 +36,10 @@ const _labelClass = computed(() => {
 
 const model = computed({
   get () {
-    return props.modelValue
+    return $props.modelValue
   },
   set (value) {
-    emit('update:modelValue', value, currentInstance)
+    $emit('update:modelValue', value, currentInstance)
   }
 })
 
@@ -49,40 +49,42 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="label" class="w-full" :class="$props.class">
-    <template v-if="!data">
+  <div v-if="$props.label" class="w-full" :class="$props.class">
+    <template v-if="!$props.data">
       <label class="inline-flex items-center "
-             :class="[labelClass, _labelClass]">
+             :class="[$props.labelClass, labelClass]">
         <input v-model="model"
-               :id="id"
-               :value="value"
-               :true-value="trueValue"
-               :false-value="falseValue"
-               :disabled="disabled"
+               :id="$props.id"
+               :value="$props.value"
+               :true-value="$props.trueValue"
+               :false-value="$props.falseValue"
+               :disabled="$props.disabled"
                type="radio"
                class="mr-2">
-        {{ label }}
-        <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
+        {{ $props.label }}
+        <span v-if="$props.required" class="text-rose-500">*</span>
+        <i v-if="$props.help" class="ml-2 font-normal" :data-tooltip="$props.help"/>
       </label>
-      <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-      <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
+      <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
+      <div v-if="$props.error" class="absolute text-xs text-rose-600" :class="$props.errorClass">
+        {{ $props.error.toString() }}
+      </div>
     </template>
     <template v-else>
       <div class="block font-bold mb-1">
-        {{ label }}
-        <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
+        {{ $props.label }}
+        <span v-if="$props.required" class="text-rose-500">*</span>
+        <i v-if="$props.help" class="ml-2 font-normal" :data-tooltip="$props.help"/>
       </div>
-      <div v-for="(i, k) in data">
+      <div v-for="(i, k) in $props.data">
         <label :key="k" class="inline-flex items-center"
-               :class="[labelClass, _labelClass]">
+               :class="[$props.labelClass, labelClass]">
           <input v-model="model"
-                 :id="id+`_`+i.key"
-                 :class="inputClass"
+                 :id="$props.id+`_`+i.key"
+                 :class="$props.inputClass"
                  :value="i.key"
                  :true-value="i.key"
-                 :false-value="falseValue"
+                 :false-value="$props.falseValue"
                  type="radio"
                  class="mr-2">
           <span class="truncate">{{ i.value }}</span>
@@ -91,30 +93,32 @@ defineExpose({
     </template>
   </div>
   <template v-else>
-    <template v-if="!data">
+    <template v-if="!$props.data">
       <label class="inline-flex items-center"
-             :class="[labelClass, _labelClass]">
+             :class="[$props.labelClass, labelClass]">
         <input v-model="model"
-               :id="id"
-               :class="inputClass"
+               :id="$props.id"
+               :class="$props.inputClass"
                :value="value"
-               :true-value="trueValue"
-               :false-value="falseValue"
-               :disabled="disabled"
+               :true-value="$props.trueValue"
+               :false-value="$props.falseValue"
+               :disabled="$props.disabled"
                type="radio">
-        <span v-if="description" v-html="description" class="opacity-75 text-sm"/>
-        <span v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</span>
+        <span v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
+        <span v-if="$props.error" class="absolute text-xs text-rose-600" :class="$props.errorClass">
+          {{ $props.error.toString() }}
+        </span>
       </label>
     </template>
-    <div v-for="(i, k) in data" v-else :class="$props.class">
+    <div v-for="(i, k) in $props.data" v-else :class="$props.class">
       <label :key="k" class="inline-flex items-center"
-             :class="[labelClass, _labelClass]">
+             :class="[$props.labelClass, labelClass]">
         <input v-model="model"
-               :id="id+`_`+i.key"
-               :class="inputClass"
+               :id="$props.id+`_`+i.key"
+               :class="$props.inputClass"
                :value="i.key"
                :true-value="i.key"
-               :false-value="falseValue"
+               :false-value="$props.falseValue"
                type="radio"
                class="mr-2">
         <i class="fa fa-fw fa-check mr-1"/>

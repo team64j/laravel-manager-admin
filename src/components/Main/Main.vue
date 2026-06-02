@@ -8,7 +8,7 @@ defineOptions({
 
 const currentInstance = getCurrentInstance()
 
-const props = defineProps(['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'])
+const $props = defineProps(['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url'])
 
 const $emit = defineEmits(['action'])
 

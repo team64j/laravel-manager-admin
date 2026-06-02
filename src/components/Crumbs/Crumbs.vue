@@ -4,7 +4,7 @@ defineOptions({
   __isStatic: true
 })
 
-const props = defineProps({
+const $props = defineProps({
   data: Array
 })
 </script>
@@ -12,7 +12,7 @@ const props = defineProps({
 <template>
   <div
       class="app-crumbs flex items-center px-2 py-1 text-sm bg-white dark:bg-gray-700 border-t border-slate-100 dark:border-gray-800">
-    <template v-for="i in props.data">
+    <template v-for="i in $props.data">
 
       <router-link v-if="i['to']"
                    class="app-crumbs__item truncate max-w-48 hover:opacity-80"

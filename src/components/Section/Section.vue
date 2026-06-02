@@ -6,7 +6,7 @@ defineOptions({
   __isStatic: true
 })
 
-const props = defineProps({
+const $props = defineProps({
   label: String,
   icon: String,
   expanded: {
@@ -16,7 +16,7 @@ const props = defineProps({
 })
 
 const data = reactive({
-  propExpanded: props.expanded ?? null
+  propExpanded: $props.expanded ?? null
 })
 
 function click () {
@@ -28,12 +28,12 @@ function click () {
 
 <template>
   <div class="app-section flex flex-row flex-wrap grow-0 w-full rounded content-baseline overflow-hidden">
-    <div v-if="label" class="app-section__header relative flex flex-wrap items-center w-full px-3 py-2 transition"
+    <div v-if="$props.label" class="app-section__header relative flex flex-wrap items-center w-full px-3 py-2 transition"
          :class="{ 'cursor-pointer hover:text-blue-500 bg-gray-50 dark:bg-gray-600 py-2 px-4 rounded': data.propExpanded !== null}"
          @click="click">
       <div class="grow">
-        <i v-if="icon" :class="icon" class="mr-2"/>
-        <strong>{{ label }}</strong>
+        <i v-if="$props.icon" :class="$props.icon" class="mr-2"/>
+        <strong>{{ $props.label }}</strong>
       </div>
       <div v-if="data.propExpanded !== null" class="grow-0">
         <i class="fa fa-angle-down transition" :class="{ 'rotate-180' : !data.propExpanded }"/>

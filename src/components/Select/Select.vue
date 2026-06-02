@@ -1,6 +1,6 @@
 <script setup>
-import { computed, getCurrentInstance, nextTick, ref, shallowRef, toRaw } from 'vue'
-import { props as _props } from '@/composables'
+import { computed, getCurrentInstance, nextTick, ref, shallowRef } from 'vue'
+import { props } from '@/composables'
 import RadioComponent from '@/components/Radio/Radio.vue'
 import CheckboxComponent from '@/components/Checkbox/Checkbox.vue'
 import Button from '@/components/Button/Button.vue'
@@ -15,8 +15,8 @@ const currentInstance = getCurrentInstance()
 
 const emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
-const props = defineProps({
-  ..._props,
+const $props = defineProps({
+  ...props,
   multiple: Boolean,
   load: Boolean,
   url: String,
@@ -26,12 +26,12 @@ const refOptions = ref()
 
 const loading = shallowRef(false)
 
-const options = ref(toRaw(props.data || []))
+const options = computed(() => $props.data || [])
 
 const model = computed({
   get () {
-    const value = props.value ?? props.modelValue ?? ''
-    return props.multiple && !Array.isArray(value) ? [value] : value
+    const value = $props.value ?? $props.modelValue ?? ''
+    return $props.multiple && !Array.isArray(value) ? [value] : value
   },
   set (value) {
     emit('update:modelValue', value, currentInstance)
@@ -56,7 +56,7 @@ const inputValue = computed(() => {
     return newValue
   }
 
-  const value = !Array.isArray(model.value) || model.value !== null ? (props.multiple
+  const value = !Array.isArray(model.value) || model.value !== null ? ($props.multiple
       ? model.value
       : model.value.toString()) : model.value
 
@@ -67,11 +67,11 @@ const inputValue = computed(() => {
 })
 
 function get (callback) {
-  if (props.url) {
+  if ($props.url) {
     loading.value = true
-    options.value = []
+    emit('update:props', { data: [] })
 
-    const route = router.parse(props.url)
+    const route = router.parse($props.url)
     const query = {
       selected: Array.isArray(model.value) ? model.value : [model.value],
       ...(route['query'] || {}),
@@ -84,7 +84,7 @@ function get (callback) {
       data: query,
     }).then(r => {
       loading.value = false
-      options.value = r.data.data
+      emit('update:props', { data: r.data.data })
 
       nextTick(() => {
         const checked = currentInstance.vnode.el.querySelector('input:checked')
@@ -136,9 +136,9 @@ function onInput (event) {
 }
 
 function onUpdateModelValue (value) {
-  props.emitInput && emit('action', props.emitInput, value, currentInstance)
+  $props.emitInput && emit('action', $props.emitInput, value, currentInstance)
 
-  if (value === props.itemNew) {
+  if (value === $props.itemNew) {
     oldValue = model.value
     emit('update:props', { error: undefined, modelValue: value })
   } else {
@@ -146,35 +146,35 @@ function onUpdateModelValue (value) {
   }
 }
 
-if (props.load && props.url) {
+if ($props.load && $props.url) {
   get()
 }
 </script>
 
 <template>
   <div class="w-full" :class="$props.class">
-    <div v-if="label" class="mb-1">
-      <label :for="id" class="font-bold cursor-pointer">
-        {{ label }}
-        <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
-        <i v-if="error" :data-tooltip="error.toString()" data-type="error" class="ml-2 font-normal"/>
+    <div v-if="$props.label" class="mb-1">
+      <label :for="$props.id" class="font-bold cursor-pointer">
+        {{ $props.label }}
+        <span v-if="$props.required" class="text-rose-500">*</span>
+        <i v-if="$props.help" class="ml-2 font-normal" :data-tooltip="$props.help"/>
+        <i v-if="$props.error" :data-tooltip="$props.error.toString()" data-type="error" class="ml-2 font-normal"/>
       </label>
       <slot name="label"/>
     </div>
     <div class="relative">
-      <div v-if="itemNew === model">
-        <input type="text" :id="`input-`+id" :class="{ '!border-rose-500': error }" autofocus @change="onInput"/>
+      <div v-if="$props.itemNew === model">
+        <input type="text" :id="`input-`+$props.id" :class="{ '!border-rose-500': $props.error }" autofocus @change="onInput"/>
         <i class="fa fa-circle-xmark absolute top-3 right-3 cursor-pointer" @click="onClickClear"/>
       </div>
-      <Button v-show="itemNew !== model"
-              :id="id"
+      <Button v-show="$props.itemNew !== model"
+              :id="$props.id"
               class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
-              :class="[inputClass, $props.error ? '!border-rose-500 focus:ring-rose-500' : '']"
-              :value="inputValue || placeholder"
+              :class="[$props.inputClass, $props.error ? '!border-rose-500 focus:ring-rose-500' : '']"
+              :value="inputValue || $props.placeholder"
               :loading="loading"
-              :disabled="disabled"
-              :readonly="readonly"
+              :disabled="$props.disabled"
+              :readonly="$props.readonly"
               @focus="onFocus"
               @blur="onBlur"
               @mousedown="onMousedown"/>
@@ -187,7 +187,7 @@ if (props.load && props.url) {
         <template v-for="o in options">
           <div v-if="o.name" class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
           <checkbox-component
-              v-if="multiple"
+              v-if="$props.multiple"
               v-model="model"
               :data="o['data'] ?? [o]"
               false-value=""
@@ -209,7 +209,7 @@ if (props.load && props.url) {
         </template>
       </div>
     </div>
-    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
+    <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
   </div>
 </template>
 

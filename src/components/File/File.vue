@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance } from 'vue'
-import { props as _props } from '@/composables'
+import { props } from '@/composables'
 
 const currentInstance = getCurrentInstance()
 
@@ -9,8 +9,8 @@ defineOptions({
   __isStatic: true
 })
 
-const props = defineProps({
-  ..._props,
+const $props = defineProps({
+  ...props,
   type: {
     type: String,
     default: 'file',
@@ -18,20 +18,20 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['action', 'update:modelValue'])
+const $emit = defineEmits(['action', 'update:modelValue'])
 
 const model = computed({
   get () {
-    return props.modelValue
+    return $props.modelValue
   },
   set (value) {
-    emit('update:modelValue', value, currentInstance)
+    $emit('update:modelValue', value, currentInstance)
   }
 })
 
 function onClick (event) {
-  if (props.emitClick) {
-    return emit('action', props.emitClick, event, currentInstance)
+  if ($props.emitClick) {
+    return $emit('action', $props.emitClick, event, currentInstance)
   }
 }
 
@@ -41,44 +41,50 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="label" class="w-full" :class="props.class">
+  <div v-if="$props.label" class="w-full" :class="$props.class">
     <div class="mb-1">
-      <label :for="id" class="font-bold cursor-pointer">
-        {{ label }}
-        <span v-if="required" class="text-rose-500">*</span>
-        <i v-if="help" class="ml-2 font-normal" :data-tooltip="help"/>
+      <label :for="$props.id" class="font-bold cursor-pointer">
+        {{ $props.label }}
+        <span v-if="$props.required" class="text-rose-500">*</span>
+        <i v-if="$props.help" class="ml-2 font-normal" :data-tooltip="$props.help"/>
       </label>
-      <span v-if="requiredText" class="text-rose-500 ml-3 text-sm font-normal">{{ requiredText }}</span>
+      <span v-if="$props.requiredText" class="text-rose-500 ml-3 text-sm font-normal">
+        {{ $props.requiredText }}
+      </span>
       <slot name="label"/>
     </div>
     <div class="flex relative">
       <input v-model="model"
-             :id="id"
-             :class="inputClass"
-             :readonly="readonly"
+             :id="$props.id"
+             :class="$props.inputClass"
+             :readonly="$props.readonly"
              type="text"
              class="pr-8">
       <i class="far absolute top-0 right-0 py-2.5 px-3 cursor-pointer text-gray-400 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
-         :class="[ type === 'image' ? 'fa-file-image' : 'fa-file' ]"
+         :class="[ $props.type === 'image' ? 'fa-file-image' : 'fa-file' ]"
          @click="onClick"/>
     </div>
-    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
+    <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
+    <div v-if="$props.error" class="absolute text-xs text-rose-600" :class="$props.errorClass">
+      {{ $props.error.toString() }}
+    </div>
     <slot name="item"/>
   </div>
   <div v-else>
     <div class="flex relative">
       <input v-model="model"
-             :id="id"
-             :class="inputClass"
-             :readonly="readonly"
+             :id="$props.id"
+             :class="$props.inputClass"
+             :readonly="$props.readonly"
              type="text"
              class="pr-8">
       <i class="far absolute top-0 right-0 py-2.5 px-3 cursor-pointer text-gray-400 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-600"
-         :class="[ type === 'image' ? 'fa-file-image' : 'fa-file' ]"
+         :class="[ $props.type === 'image' ? 'fa-file-image' : 'fa-file' ]"
          @click="onClick"/>
     </div>
-    <div v-if="description" v-html="description" class="opacity-75 text-sm"/>
-    <div v-if="error" class="absolute text-xs text-rose-600" :class="errorClass">{{ error.toString() }}</div>
+    <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
+    <div v-if="$props.error" class="absolute text-xs text-rose-600" :class="$props.errorClass">
+      {{ $props.error.toString() }}
+    </div>
   </div>
 </template>

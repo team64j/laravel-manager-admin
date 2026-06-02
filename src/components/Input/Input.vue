@@ -4,7 +4,7 @@ import { computed, getCurrentInstance, reactive, ref } from 'vue'
 
 defineOptions({
   name: 'Input',
-  __isStatic: true
+  __isStatic: true,
 })
 
 const currentInstance = getCurrentInstance()
@@ -16,22 +16,38 @@ const $props = defineProps({
   type: {
     type: String,
     default: 'text',
-    validator: (type) => ['text', 'number', 'password', 'email', 'tel', 'date', 'month', 'datetime-local', 'button'].includes(
-        type)
-  }
+    validator: (type) => [
+      'text',
+      'number',
+      'password',
+      'email',
+      'tel',
+      'date',
+      'month',
+      'datetime-local',
+      'button'].includes(
+        type),
+  },
 })
 
 const $data = reactive({
-  loading: false
+  loading: false,
 })
 
 const model = computed({
   get () {
-    return $props.value ?? $props.modelValue ?? ''
+    let value = $props.value ?? $props.modelValue ?? ''
+
+    if ($props.type === 'month') {
+      const date = new Date(value)
+      value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    }
+
+    return value
   },
   set (value) {
     $emit('update:modelValue', value, currentInstance)
-  }
+  },
 })
 
 const input = ref()
@@ -58,7 +74,7 @@ function onClickMinus () {
 defineExpose({
   model,
   input,
-  data: $data
+  data: $data,
 })
 </script>
 
