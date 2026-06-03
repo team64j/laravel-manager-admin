@@ -11,14 +11,14 @@ export default {
     Logo: defineAsyncComponent(() => import('@/components/Logo/Logo.vue')),
     Input: defineAsyncComponent(() => import('@/components/Input/Input.vue')),
     Button: defineAsyncComponent(() => import('@/components/Button/Button.vue')),
-    Checkbox: defineAsyncComponent(() => import('@/components/Checkbox/Checkbox.vue')),
+    Checkbox: defineAsyncComponent(() => import('@/components/Checkbox/Checkbox.vue'))
   },
   data () {
     return {
       form: {
         username: null,
         password: null,
-        remember: null,
+        remember: null
       },
       config: {},
       languages: [],
@@ -28,7 +28,7 @@ export default {
         user: 'User',
         password: 'Password',
         remember: 'Remember me',
-        login: 'Login',
+        login: 'Login'
       },
       errors: {},
       hostname: local.get('hostname', location.origin + '/manager/api'),
@@ -37,7 +37,7 @@ export default {
       isCheckServer: false,
       isLogin: false,
       isShowLanguages: false,
-      isShowHostnames: false,
+      isShowHostnames: false
     }
   },
   created () {
@@ -68,7 +68,7 @@ export default {
         this.isCheckServer = false
         notify({
           text: error.message,
-          type: 'error',
+          type: 'error'
         })
         return
       }
@@ -82,7 +82,7 @@ export default {
       if (!this.hostnames.some(i => i.name === this.hostname)) {
         this.hostnames.push({
           name: this.hostname,
-          headers,
+          headers
         })
         local.set('hostnames', this.hostnames)
       } else if (headers) {
@@ -157,7 +157,7 @@ export default {
           local.set({
             lang: this.lang.key,
             token: data['access_token'],
-            tokenExpiresIn: data['expires_in'],
+            tokenExpiresIn: data['expires_in']
           })
           store.dispatch('Session/clear')
           router.to('/')
@@ -168,8 +168,8 @@ export default {
       }).finally(() => {
         this.isLogin = false
       })
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -297,7 +297,10 @@ export default {
                  :class="{ 'app__page__login-modal-row-selected': hostname === i.name}"
                  @click="selectHostname(i)">
               <i class="fa fa-check fa-fw app__page__login-modal-check"/>
-              <span class="app__page__login-modal-row-title">{{ i.name }}</span>
+              <div class="app__page__login-modal-row-title flex flex-col">
+                <div>{{ i.name }}</div>
+                <div v-if="i.headers" class="w-full text-sm opacity-50">{{ i.headers }}</div>
+              </div>
               <i class="fa fa-times-circle fa-fw app__page__login-modal-row-remove" @click.stop="removeHostname(i)"/>
             </div>
           </div>
