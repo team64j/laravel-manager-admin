@@ -30,6 +30,7 @@ if ($props.data['values']) {
     <div v-if="$props.data['prev'] || $props.data['next']" class="py-1 !bg-inherit" @click.stop="">
       <Button type="button" class="-ml-2 btn-sm btn-gray"
               :disabled="!$props.data['prev']"
+              :class="{ '!opacity-50': !$props.data['prev'] }"
               @click.stop="$emit('action', 'onNav', $event, $props.data['prev'], currentInstance.parent.props)">
         <i class="fa fa-angle-left fa-fw"/>
       </Button>
@@ -38,6 +39,7 @@ if ($props.data['values']) {
       </span>
       <Button type="button" class="-mr-2 btn-sm btn-gray"
               :disabled="!$props.data['next']"
+              :class="{ '!opacity-50': !$props.data['next'] }"
               @click.stop="$emit('action', 'onNav', $event, $props.data['next'], currentInstance.parent.props)">
         <i class="fa fa-angle-right fa-fw"/>
       </Button>
@@ -79,7 +81,8 @@ if ($props.data['values']) {
 
       <span v-if="$props.data['id'] !== undefined" class="text-sm opacity-70 ml-1" v-html="$props.data['id']"/>
 
-      <span v-if="$props.data['data'] || $props.data['url']" :class="[$props.level > 1 ? 'inline-flex' : 'hidden lg:!inline-flex']"
+      <span v-if="$props.data['data'] || $props.data['url']"
+            :class="[$props.level > 1 ? 'inline-flex' : 'hidden lg:!inline-flex']"
             class="px-2 -mr-4 h-full items-center opacity-50 app-main-menu__toggle">
         <i class="fa fa-fw w-5 !text-sm pointer-events-none"
            :class="[ $props.level === 1 ? 'fa-angle-down' : 'fa-angle-right']"/>

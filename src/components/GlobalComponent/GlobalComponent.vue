@@ -1,6 +1,6 @@
 <script>
 import { compile, getCurrentInstance, h } from 'vue'
-import { getValue } from '@/composables'
+import { getValue, setValue } from '@/composables'
 
 import('./GlobalComponent.css')
 
@@ -153,54 +153,54 @@ export default {
       return h(component, attrs, slots)
     }
 
-    function findValue (keys, data) {
-      const key = keys[0]
-      let value
+    // function findValue (keys, data) {
+    //   const key = keys[0]
+    //   let value
+    //
+    //   if (data[key] !== undefined) {
+    //     if (keys[1] !== undefined) {
+    //       keys.shift()
+    //       value = findValue(keys, data[key])
+    //     } else {
+    //       value = data[key]
+    //     }
+    //   }
+    //
+    //   return value
+    // }
 
-      if (data[key] !== undefined) {
-        if (keys[1] !== undefined) {
-          keys.shift()
-          value = findValue(keys, data[key])
-        } else {
-          value = data[key]
-        }
-      }
+    // function setValue (key, value) {
+    //   if (/\./.test(key)) {
+    //     if (props.data[key] !== undefined) {
+    //       props.data[key] = value
+    //     } else {
+    //       setDataValue(key.split('.'), value, /^data\./.test(key) ? props : props.data, true)
+    //     }
+    //   } else {
+    //     props.data[key] = value
+    //   }
+    // }
 
-      return value
-    }
-
-    function setValue (key, value) {
-      if (/\./.test(key)) {
-        if (props.data[key] !== undefined) {
-          props.data[key] = value
-        } else {
-          setDataValue(key.split('.'), value, /^data\./.test(key) ? props : props.data, true)
-        }
-      } else {
-        props.data[key] = value
-      }
-    }
-
-    function setDataValue (keys, value, data, first) {
-      const key = keys[0]
-
-      // if (!first && data && data[key] === undefined) {
-      //   data[key] = {}
-      // }
-
-      if (data[key] !== undefined) {
-        if (keys[1] !== undefined) {
-          keys.shift()
-          setDataValue(keys, value, data[key])
-        } else {
-          if (data === props.data) {
-            emit('update:modelValue', { [key]: value }, key)
-          } else {
-            data[key] = value
-          }
-        }
-      }
-    }
+    // function setDataValue (keys, value, data, first) {
+    //   const key = keys[0]
+    //
+    //   // if (!first && data && data[key] === undefined) {
+    //   //   data[key] = {}
+    //   // }
+    //
+    //   if (data[key] !== undefined) {
+    //     if (keys[1] !== undefined) {
+    //       keys.shift()
+    //       setDataValue(keys, value, data[key])
+    //     } else {
+    //       if (data === props.data) {
+    //         emit('update:modelValue', { [key]: value }, key)
+    //       } else {
+    //         data[key] = value
+    //       }
+    //     }
+    //   }
+    // }
 
     function updateModelValue (value, instance) {
       if (!instance) return
@@ -227,7 +227,7 @@ export default {
         }
       }
 
-      updates.forEach(({ key, value }) => setValue(key, value))
+      updates.forEach(({ key, value }) => setValue(key, value, props))
       emit('update:modelValue', value, instance)
 
       // if (!instance) {

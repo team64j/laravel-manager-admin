@@ -33,7 +33,7 @@ const $props = defineProps({
   layout: Object,
   columns: {
     type: Array,
-    default: (props) => props?.meta?.columns ?? [],
+    default: (props) => props?.meta?.columns ?? []
   },
   filters: {
     type: Array,
@@ -303,12 +303,16 @@ onMounted(() => {
 
     <div v-if="$props.data" class="grow overflow-auto rounded">
       <table class="w-full">
-        <thead v-if="columns.some(i => i.label) /*|| filters.some(i => i.name)*/"
+        <colgroup>
+          <col v-for="column in columns" :style="{ width: column.width }"/>
+        </colgroup>
+
+        <thead v-if="columns.some(i => i.label)"
                class="bg-slate-100 dark:bg-gray-600 sticky top-0">
         <tr v-if="columns">
           <th v-for="column in columns" class="font-bold border-l first:border-0 border-opacity-5"
               :style="column?.style">
-            <div v-if="column.label" class="relative truncate px-5 py-1" :style="{ minWidth: column.width }">
+            <div v-if="column.label" class="relative truncate px-5 py-1">
               {{ column.label }}
             </div>
           </th>
@@ -393,11 +397,13 @@ onMounted(() => {
       <div class="grow">
         <Button class="btn-sm btn-gray"
                 :disabled="!$props.meta['pagination']['prev']"
+                :class="{ '!opacity-50': !$props.meta['pagination']['prev'] }"
                 @click="pagination($props.meta['pagination']['prev'])">
           <i class="fa fa-angle-left fa-fw"/>
         </Button>
         <Button class="btn-sm btn-gray ml-1"
                 :disabled="!$props.meta['pagination']['next']"
+                :class="{ '!opacity-50': !$props.meta['pagination']['next'] }"
                 @click="pagination($props.meta['pagination']['next'])">
           <i class="fa fa-angle-right fa-fw"/>
         </Button>
