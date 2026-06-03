@@ -13,7 +13,7 @@ defineOptions({
 
 const currentInstance = getCurrentInstance()
 
-const emit = defineEmits(['action', 'update:modelValue', 'update:props'])
+const $emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
 const $props = defineProps({
   ...props,
@@ -34,7 +34,7 @@ const model = computed({
     return $props.multiple && !Array.isArray(value) ? [value] : value
   },
   set (value) {
-    emit('update:modelValue', value, currentInstance)
+    $emit('update:modelValue', value, currentInstance)
   },
 })
 
@@ -69,7 +69,7 @@ const inputValue = computed(() => {
 function get (callback) {
   if ($props.url) {
     loading.value = true
-    emit('update:props', { data: [] })
+    $emit('update:props', { data: [] })
 
     const route = router.parse($props.url)
     const query = {
@@ -84,7 +84,7 @@ function get (callback) {
       data: query,
     }).then(r => {
       loading.value = false
-      emit('update:props', { data: r.data.data })
+      $emit('update:props', { data: r.data.data })
 
       nextTick(() => {
         const checked = currentInstance.vnode.el.querySelector('input:checked')
@@ -124,25 +124,25 @@ function onBlur (event) {
 function onClickClear () {
   newValue = null
   model.value = oldValue
-  emit('update:props', { error: '', modelValue: oldValue })
+  $emit('update:props', { error: '', modelValue: oldValue })
 }
 
 function onInput (event) {
   newValue = event.target.value
 
-  emit('update:modelValue', newValue, currentInstance)
+  $emit('update:modelValue', newValue, currentInstance)
 
-  emit('update:props', { error: newValue === '' ? undefined : '', modelValue: newValue })
+  $emit('update:props', { error: newValue === '' ? undefined : '', modelValue: newValue })
 }
 
 function onUpdateModelValue (value) {
-  $props.emitInput && emit('action', $props.emitInput, value, currentInstance)
+  $props.emitInput && $emit('action', $props.emitInput, value, currentInstance)
 
   if (value === $props.itemNew) {
     oldValue = model.value
-    emit('update:props', { error: undefined, modelValue: value })
+    $emit('update:props', { error: undefined, modelValue: value })
   } else {
-    emit('update:props', { error: '', modelValue: value })
+    $emit('update:props', { error: '', modelValue: value })
   }
 }
 

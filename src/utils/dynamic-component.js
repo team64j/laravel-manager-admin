@@ -1,10 +1,10 @@
-import { h, toRaw } from 'vue'
+import { h } from 'vue'
 import { getValue, setValue } from '@/composables'
 
 export function DynamicComponent (item = {}, model, ceil) {
   const data = (item[ceil.key] || ceil)
   const component = typeof data.component === 'object' ? data.component : data
-  const props = toRaw(component.attrs || {})
+  const props = component.attrs || {}
 
   if (component.model) {
     props.modelValue = getValue(component.model, model)
