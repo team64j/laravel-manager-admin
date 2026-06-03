@@ -69,10 +69,10 @@ export default {
                     replace(/(<\/a>)/g, '</router-link>'),
                 {
                   parseMode: 'html',
-                  onWarn () {},
-                },
+                  onWarn () {}
+                }
             ),
-            { class: 'app-global-component-html' },
+            { class: 'app-global-component-html' }
         )
       }
 
@@ -127,7 +127,7 @@ export default {
       } else if (attrs.data?.[attrs.key] !== undefined) {
         attrs.data = attrs.data[attrs.key]
       } else if (/\./.test(attrs.key)) {
-        attrs.modelValue = getValue(attrs.key, /^data\./.test(attrs.key) ? props : props.data)
+        attrs.modelValue = getValue(attrs.key, props)
       } else if (data?.attrs?.value !== undefined) {
         attrs.modelValue = data.attrs.value
       }
@@ -153,55 +153,6 @@ export default {
       return h(component, attrs, slots)
     }
 
-    // function findValue (keys, data) {
-    //   const key = keys[0]
-    //   let value
-    //
-    //   if (data[key] !== undefined) {
-    //     if (keys[1] !== undefined) {
-    //       keys.shift()
-    //       value = findValue(keys, data[key])
-    //     } else {
-    //       value = data[key]
-    //     }
-    //   }
-    //
-    //   return value
-    // }
-
-    // function setValue (key, value) {
-    //   if (/\./.test(key)) {
-    //     if (props.data[key] !== undefined) {
-    //       props.data[key] = value
-    //     } else {
-    //       setDataValue(key.split('.'), value, /^data\./.test(key) ? props : props.data, true)
-    //     }
-    //   } else {
-    //     props.data[key] = value
-    //   }
-    // }
-
-    // function setDataValue (keys, value, data, first) {
-    //   const key = keys[0]
-    //
-    //   // if (!first && data && data[key] === undefined) {
-    //   //   data[key] = {}
-    //   // }
-    //
-    //   if (data[key] !== undefined) {
-    //     if (keys[1] !== undefined) {
-    //       keys.shift()
-    //       setDataValue(keys, value, data[key])
-    //     } else {
-    //       if (data === props.data) {
-    //         emit('update:modelValue', { [key]: value }, key)
-    //       } else {
-    //         data[key] = value
-    //       }
-    //     }
-    //   }
-    // }
-
     function updateModelValue (value, instance) {
       if (!instance) return
 
@@ -217,7 +168,7 @@ export default {
 
         updates.push({
           key: instance.props.relation['key'],
-          value: empty ? instance.props.relation['falseValue'] : instance.props.relation['trueValue'],
+          value: empty ? instance.props.relation['falseValue'] : instance.props.relation['trueValue']
         })
 
         if (empty && instance.props.relation['notEmpty']) {
@@ -229,28 +180,6 @@ export default {
 
       updates.forEach(({ key, value }) => setValue(key, value, props))
       emit('update:modelValue', value, instance)
-
-      // if (!instance) {
-      //   return
-      // }
-      //
-      // const key = typeof instance === 'object' ? (instance?._?.vnode?.key ?? instance?.vnode?.key) : instance
-      //
-      // setValue(key, value)
-      //
-      // if (instance.props?.relation?.['key']) {
-      //   const empty = !(Array.isArray(value) ? value.length : (!isNaN(parseFloat(value))
-      //       && !isNaN(value - 0)) ? parseFloat(value) : value)
-      //
-      //   setValue(instance.props.relation['key'],
-      //       empty ? instance.props.relation['falseValue'] : instance.props.relation['trueValue'])
-      //
-      //   if (empty && instance.props.relation['notEmpty']) {
-      //     nextTick(() => setValue(key, instance.props.trueValue))
-      //   }
-      // }
-      //
-      // emit('update:modelValue', ...arguments)
     }
 
     function updateProps (oldValue, newValue) {
@@ -258,6 +187,6 @@ export default {
     }
 
     return () => layout(props.layout)
-  },
+  }
 }
 </script>
