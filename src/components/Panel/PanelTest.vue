@@ -308,7 +308,7 @@ onMounted(() => {
         </colgroup>
 
         <thead v-if="columns.some(i => i.label)"
-               class="bg-slate-100 dark:bg-gray-600 sticky top-0">
+               class="bg-slate-100 dark:bg-gray-600 sticky top-0 z-20">
         <tr v-if="columns">
           <th v-for="column in columns" class="font-bold border-l first:border-0 border-opacity-5"
               :style="column?.style">
