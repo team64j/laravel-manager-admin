@@ -48,8 +48,8 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="$props.label" class="w-full flex flex-col" :class="$props.class">
-    <div class="mb-1">
+  <div class="w-full flex flex-col" :class="$props.class">
+    <div v-if="$props.label" class="mb-1">
       <label :for="$props.id" class="font-bold cursor-pointer">
         {{ $props.label }}
         <span v-if="$props.required" class="text-rose-500">*</span>
@@ -65,13 +65,4 @@ defineExpose({
       {{ $props.error.toString() }}
     </div>
   </div>
-  <template v-else>
-    <textarea v-model="model" :id="$props.id" :class="[$props.resize ? 'resize-y' : 'resize-none']"
-              class="min-h-10 grow" :rows="$props.rows"
-              :style="{ height }"/>
-    <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
-    <div v-if="$props.error" class="absolute text-xs text-rose-600" :class="$props.errorClass">
-      {{ $props.error.toString() }}
-    </div>
-  </template>
 </template>
