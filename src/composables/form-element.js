@@ -34,7 +34,7 @@ export const props = {
   type: String,
   value: [String, Number, Array, Object],
   keyValue: String,
-  itemNew: String,
+  itemNew: Boolean,
   icon: [Array, Object, String],
   loading: Boolean
 }

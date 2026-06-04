@@ -3,12 +3,11 @@ import { computed, getCurrentInstance, nextTick, ref, shallowRef } from 'vue'
 import { props } from '@/composables'
 import RadioComponent from '@/components/Radio/Radio.vue'
 import CheckboxComponent from '@/components/Checkbox/Checkbox.vue'
-import Button from '@/components/Button/Button.vue'
 import router from '@/router'
 
 defineOptions({
   name: 'Select',
-  __isStatic: true,
+  __isStatic: true
 })
 
 const currentInstance = getCurrentInstance()
@@ -19,7 +18,7 @@ const $props = defineProps({
   ...props,
   multiple: Boolean,
   load: Boolean,
-  url: String,
+  url: String
 })
 
 const refOptions = ref()
@@ -35,11 +34,11 @@ const model = computed({
   },
   set (value) {
     $emit('update:modelValue', value, currentInstance)
-  },
+  }
 })
 
-let newValue = null
-let oldValue = null
+let newValue = ref(null)
+let oldValue = ref(null)
 
 const inputValue = computed(() => {
   const values = []
@@ -52,8 +51,8 @@ const inputValue = computed(() => {
     }
   })
 
-  if (newValue !== null) {
-    return newValue
+  if (newValue.value !== null) {
+    return newValue.value
   }
 
   const value = !Array.isArray(model.value) || model.value !== null ? ($props.multiple
@@ -66,7 +65,7 @@ const inputValue = computed(() => {
       join(', ')
 })
 
-function get (callback) {
+function get () {
   if ($props.url) {
     loading.value = true
     $emit('update:props', { data: [] })
@@ -74,17 +73,17 @@ function get (callback) {
     const route = router.parse($props.url)
     const query = {
       selected: Array.isArray(model.value) ? model.value : [model.value],
-      ...(route['query'] || {}),
+      ...(route['query'] || {})
     }
 
     axios({
       method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
       url: route.path,
       params: query,
-      data: query,
-    }).then(r => {
+      data: query
+    }).then(({ data }) => {
       loading.value = false
-      $emit('update:props', { data: r.data.data })
+      $emit('update:props', { data: data.data })
 
       nextTick(() => {
         const checked = currentInstance.vnode.el.querySelector('input:checked')
@@ -93,10 +92,6 @@ function get (callback) {
           refOptions.value.scrollTop = checked.parentElement.offsetTop
         }
       })
-
-      if (callback) {
-        callback()
-      }
     })
   }
 }
@@ -122,28 +117,31 @@ function onBlur (event) {
 }
 
 function onClickClear () {
-  newValue = null
-  model.value = oldValue
-  $emit('update:props', { error: '', modelValue: oldValue })
+  newValue.value = null
+  model.value = oldValue.value
+
+  $emit('update:props', { error: '', modelValue: oldValue.value })
 }
 
 function onInput (event) {
-  newValue = event.target.value
+  newValue.value = event.target.value
 
-  $emit('update:modelValue', newValue, currentInstance)
+  $props.data.push({ key: newValue.value, value: newValue.value, '@custom': true })
 
-  $emit('update:props', { error: newValue === '' ? undefined : '', modelValue: newValue })
+  $emit('update:modelValue', newValue.value, currentInstance)
+  $emit('update:props', { error: newValue.value === '' ? undefined : '', modelValue: newValue.value })
 }
 
 function onUpdateModelValue (value) {
+  newValue.value = null
+
   $props.emitInput && $emit('action', $props.emitInput, value, currentInstance)
 
-  if (value === $props.itemNew) {
-    oldValue = model.value
-    $emit('update:props', { error: undefined, modelValue: value })
-  } else {
-    $emit('update:props', { error: '', modelValue: value })
+  if (!$props.itemNew) {
+    oldValue.value = model.value
   }
+
+  $emit('update:props', { error: value === '' ? undefined : '', modelValue: value })
 }
 
 if ($props.load && $props.url) {
@@ -163,21 +161,32 @@ if ($props.load && $props.url) {
       <slot name="label"/>
     </div>
     <div class="relative">
-      <div v-if="$props.itemNew === model">
-        <input type="text" :id="`input-`+$props.id" :class="{ '!border-rose-500': $props.error }" autofocus @change="onInput"/>
-        <i class="fa fa-circle-xmark absolute top-3 right-3 cursor-pointer" @click="onClickClear"/>
-      </div>
-      <Button v-show="$props.itemNew !== model"
-              :id="$props.id"
-              class="app-appearance-select flex cursor-pointer select-none font-normal items-center"
-              :class="[$props.inputClass, $props.error ? '!border-rose-500 focus:ring-rose-500' : '']"
-              :value="inputValue || $props.placeholder"
-              :loading="loading"
-              :disabled="$props.disabled"
-              :readonly="$props.readonly"
-              @focus="onFocus"
-              @blur="onBlur"
-              @mousedown="onMousedown"/>
+      <input type="text"
+             :id="$props.id"
+             class="app-appearance-select flex font-normal items-center placeholder:text-inherit"
+             :class="{
+                [$props.inputClass]: true,
+                 'cursor-pointer': !$props.itemNew,
+                 'cursor-text !pr-16': $props.itemNew,
+                 '!border-rose-500 focus:ring-rose-500': $props.error
+               }"
+             :placeholder="inputValue"
+             :value="newValue"
+             :disabled="$props.disabled"
+             :readonly="!$props.itemNew"
+             @focus="onFocus"
+             @blur="onBlur"
+             @mousedown="onMousedown"
+             @change="onInput"/>
+
+      <i v-if="newValue !== null"
+         class="fa fa-circle-xmark absolute top-3 right-8 cursor-pointer opacity-70 hover:opacity-100 transition"
+         @click="onClickClear"/>
+
+      <span v-if="loading" @click.stop.prevent=""
+            class="absolute left-3 top-0 !flex items-center h-full w-full bg-inherit">
+        <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+      </span>
 
       <div v-if="options?.length"
            ref="refOptions"
@@ -214,7 +223,7 @@ if ($props.load && $props.url) {
 </template>
 
 <style scoped>
-.app-appearance-select:focus + div {
+.app-select__focus ~ div {
   @apply block
 }
 </style>
