@@ -91,7 +91,7 @@ const columns = computed(() => {
       return i
     })
   } else if ($props.data[0]) {
-
+    return Object.entries($props.data[0]).map(i => ({ key: i[0] }))
   }
 
   return []
