@@ -28,7 +28,8 @@ const emit = defineEmits(['onClickRow'])
       <div v-if="props.item[ceil.key]?.component || ceil.component" @mousedown.stop>
         <component :is="() => DynamicComponent(props.item, props.modelValue, ceil)"/>
       </div>
-      <div v-else-if="ceil.values && ceil.values[props.item[ceil.key]]" v-html="ceil.values[props.item[ceil.key]]"/>
+      <div v-else-if="ceil.values && ceil.values[props.item[ceil.key].toString()] !== undefined"
+           v-html="ceil.values[props.item[ceil.key].toString()]"/>
       <template v-else>
         {{ props.item[ceil.key] }}
       </template>
