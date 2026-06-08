@@ -1,7 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance, onMounted, reactive, shallowRef, toRaw, watch } from 'vue'
 import { uniqId } from '@/utils'
-import store from '@/store'
 import Button from '@/components/Button/Button.vue'
 import Input from '@/components/Input/Input.vue'
 import Select from '@/components/Select/Select.vue'
@@ -83,21 +82,31 @@ const $data = reactive({
 
 const loaded = shallowRef(true)
 
+const colgroupColumns = shallowRef([])
+
 const columns = computed(() => {
   const columns = $props?.meta?.columns || $props.columns || {}
 
   if (columns.length) {
     return toRaw(columns).map(i => {
       i.key = i.key || i.name
+
+      colgroupColumns.value.push(i.style?.width ?? null)
+
+      if (i.style?.width) {
+        delete i.style.width
+      }
+
       return i
     })
   } else if ($props.data[0]) {
-    return Object.entries($props.data[0]).map(i => ({ key: i[0] }))
+    return Object.entries($props.data[0]).map(i => {
+      colgroupColumns.value.push(null)
+      return { key: i[0] }
+    })
   }
 
   return []
-
-  //return $props.data?.[0][$props.dataKey][0].length || $props.data?.[0].length
 })
 
 const filters = computed(() => {
@@ -304,12 +313,8 @@ onMounted(() => {
 
     <div v-if="$props.data" class="grow overflow-auto rounded">
       <table class="w-full" :class="{ 'min-h-full': !loaded }">
-        <colgroup>
-          <col v-for="column in columns" :style="{ width: column.width }"/>
-        </colgroup>
 
-        <thead v-if="columns.some(i => i.label)"
-               class="bg-slate-100 dark:bg-gray-600 sticky top-0 z-20">
+        <thead v-if="columns.some(i => i.label)" class="bg-slate-100 dark:bg-gray-600 sticky top-0 z-20">
         <tr v-if="columns">
           <th v-for="column in columns" class="font-bold border-l first:border-0 border-opacity-5"
               :style="column?.style">
@@ -335,6 +340,10 @@ onMounted(() => {
           </td>
         </tr>
         </thead>
+
+        <colgroup>
+          <col v-for="width in colgroupColumns" :style="{ width }"/>
+        </colgroup>
 
         <template
             v-if="$props.data.length && loaded"

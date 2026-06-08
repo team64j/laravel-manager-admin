@@ -24,7 +24,7 @@ const emit = defineEmits(['onClickRow'])
         'bg-rose-600/20 even:bg-rose-600/30' : props.item['@active'] && props.item['@deleted'],
       }"
       @mousedown="() => emit('onClickRow', props.item)">
-    <td v-for="ceil in props.columns" class="p-2 first:pl-6 last:pr-6">
+    <td v-for="ceil in props.columns" class="p-2 first:pl-6 last:pr-6" :style="ceil.style">
       <div v-if="props.item[ceil.key]?.component || ceil.component" @mousedown.stop>
         <component :is="() => DynamicComponent(props.item, props.modelValue, ceil)"/>
       </div>
