@@ -1,6 +1,7 @@
 <script setup>
 import { DynamicComponent } from '@/utils/dynamic-component'
 import { h } from 'vue'
+import { getValue } from '@/composables'
 
 const props = defineProps({
   item: Object,
@@ -20,7 +21,11 @@ function values (column, item) {
       for (const i in column.values) {
         for (const j in column.values[i]) {
           if (item[i]?.toString() === j.toString()) {
-            return h({ template: column.values[i][j] })
+            if (typeof column.values[i][j] === 'object') {
+              return null
+            } else {
+              return h({ template: column.values[i][j] })
+            }
           }
         }
       }
@@ -48,9 +53,6 @@ function values (column, item) {
         <component :is="() => DynamicComponent(props.item, props.modelValue, ceil)"/>
       </div>
 
-      <div v-else-if="ceil.values && ceil.values[props.item[ceil.key].toString()] !== undefined"
-           v-html="ceil.values[props.item[ceil.key].toString()]"/>
-
       <component v-else-if="ceil.values" :is="() => values(ceil, item)"/>
 
       <i v-else-if="ceil.icon" :class="ceil.icon"/>
@@ -60,7 +62,7 @@ function values (column, item) {
          @mousedown.prevent.stop/>
 
       <template v-else>
-        {{ props.item[ceil.key] }}
+        {{ getValue(ceil.key, props.item) }}
       </template>
     </td>
   </tr>
