@@ -303,7 +303,7 @@ onMounted(() => {
     </div>
 
     <div v-if="$props.data" class="grow overflow-auto rounded">
-      <table class="w-full">
+      <table class="w-full" :class="{ 'min-h-full': !loaded }">
         <colgroup>
           <col v-for="column in columns" :style="{ width: column.width }"/>
         </colgroup>
