@@ -3,6 +3,7 @@ import { defineAsyncComponent, provide } from 'vue'
 import { action } from '@/composables'
 import router from '@/router'
 import store from '@/store'
+import session from '@/services/session'
 
 import('./Tree.css')
 
@@ -47,7 +48,7 @@ export default {
   watch: {
     propSettings: {
       handler (data) {
-        store.dispatch('set', { [`Session.${this.keyStorage}`]: data })
+        session.set(this.keyStorage, data)
       },
       deep: true
     },
@@ -89,7 +90,7 @@ export default {
     })
   },
   mounted () {
-    Object.assign(this.propSettings, store.getters.get(`Session.${this.keyStorage}`, {}))
+    Object.assign(this.propSettings, session.get(this.keyStorage, {}))
 
     this.get()
 

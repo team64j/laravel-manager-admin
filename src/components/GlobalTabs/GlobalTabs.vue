@@ -4,6 +4,7 @@ import store from '@/store'
 import { action } from '@/composables'
 import { mergeDeep } from '@/utils'
 import { defineAsyncComponent } from 'vue'
+import session from '@/services/session'
 
 export default {
   name: 'GlobalTabs',
@@ -20,16 +21,14 @@ export default {
     },
     tabs: {
       handler (data) {
-        store.dispatch(`Session/set`, {
-          global_tabs: data.map(i => ({
-            path: i.path,
-            query: i.query,
-            meta: i?.meta,
-            params: i?.params,
-            name: i?.name,
-            matched: [{ path: i?.matched?.[0].path }]
-          }))
-        })
+        session.set('global_tabs', data.map(i => ({
+          path: i.path,
+          query: i.query,
+          meta: i?.meta,
+          params: i?.params,
+          name: i?.name,
+          matched: [{ path: i?.matched?.[0].path }]
+        })))
       },
       deep: true
     }
@@ -42,7 +41,7 @@ export default {
   },
   data () {
     return {
-      tabs: store.getters.get(`Session.global_tabs`) ?? [],
+      tabs: session.get('global_tabs') ?? [],
       keys: []
     }
   },

@@ -5,6 +5,7 @@ import store from '@/store'
 import { uniqId } from '@/utils'
 import { getValue } from '@/composables'
 import { DynamicComponent } from '@/utils/dynamic-component'
+import session from '@/services/session'
 
 //import('./Panel.css')
 
@@ -69,7 +70,7 @@ export default {
       keyStorage: key,
       filterTimer: 0,
       filterValues: { ...this.currentRoute.query },
-      settings: store.getters.get(`Session.${key}`, {}),
+      settings: session.get(key, {}),
       idContextMenu: null,
       showContextMenu: false,
       dataContextMenu: [],
@@ -435,7 +436,7 @@ export default {
         this.settings.closed.push(key)
       }
 
-      store.dispatch('set', { ['Session.' + this.keyStorage]: { closed: this.settings.closed } })
+      session.set(this.keyStorage, { closed: this.settings.closed })
     },
     hasClosedCategory (category) {
       return this.settings?.closed?.includes(category['id'] ?? category['key'])

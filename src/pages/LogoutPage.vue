@@ -1,17 +1,16 @@
 <script>
-import store from '@/store'
 import router from '@/router'
 import local from '@/services/local'
+import session from '@/services/session'
 
 export default {
   name: 'LogoutPage',
   setup () {
     local.set('token', null)
-    store.dispatch('Session/clear').then(() => {
-      router.to('/login')
-    })
+    session.set(null)
+    router.to('/login')
 
     return () => {}
-  },
+  }
 }
 </script>

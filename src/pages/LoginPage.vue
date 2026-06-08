@@ -4,6 +4,7 @@ import store from '@/store'
 import local from '@/services/local'
 import { defineAsyncComponent } from 'vue'
 import { notify } from '@kyvg/vue3-notification'
+import session from '@/services/session'
 
 export default {
   name: 'LoginPage',
@@ -159,7 +160,7 @@ export default {
             token: data['access_token'],
             tokenExpiresIn: data['expires_in']
           })
-          store.dispatch('Session/clear')
+          session.set(null)
           router.to('/')
         }
       }).catch(() => {

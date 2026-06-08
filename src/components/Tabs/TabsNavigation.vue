@@ -4,6 +4,7 @@ import { uniqId } from '@/utils'
 import router from '@/router'
 import store from '@/store'
 import Button from '@/components/Button/Button.vue'
+import session from '@/services/session'
 
 defineOptions({
   __isStatic: true,
@@ -37,7 +38,7 @@ const props = defineProps({
 const emit = defineEmits(['action', 'update:props'])
 const keyStorage = `tabs_` + props.id.toLowerCase()
 
-store.dispatch('set', { [keyStorage]: store.getters.get(`Session.${keyStorage}`, 0) })
+session.set(keyStorage, session.get(keyStorage, 0))
 
 const index = computed({
   set (value) {
@@ -98,7 +99,7 @@ function select (tab, key) {
     }
   }
 
-  store.dispatch('set', { [`Session.${keyStorage}`]: key })
+  session.set(keyStorage, key)
   store.dispatch('set', { [keyStorage]: key })
 
   // :TODO Сделать более универсальное решение для отправки события родительскому компоненту
@@ -116,7 +117,7 @@ function select (tab, key) {
 
 if (props.history) {
   if (typeof props.history === 'string') {
-    store.dispatch('set', { [keyStorage]: store.getters.get(`Session.${keyStorage}`, 0) })
+    session.set(keyStorage, session.get(keyStorage, 0))
     index.value = props.data.findIndex(i => i.id === props.currentRoute.params[props.history])
     props.data.forEach(i => i.active = i.render = i.id === index.value)
 

@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { getValue } from '@/composables'
+import { getValue, setValue } from '@/composables'
 
 const state = {}
 
@@ -10,48 +10,7 @@ const mutations = {
     }
 
     for (const key in data) {
-      if (/\./.test(key)) {
-        const keys = key.split('.')
-        const nameStore = keys.shift()
-        const keyStore = keys.shift()
-
-        if (this.state[nameStore]) {
-          if (keys.length) {
-            if (this.state[nameStore][keyStore] === undefined || typeof this.state[nameStore][keyStore] !== 'object') {
-              this.state[nameStore][keyStore] = {}
-            }
-
-            let s = this.state[nameStore][keyStore]
-
-            while (keys.length) {
-              const k = keys.shift()
-
-              if (s[k] === undefined) {
-                s[k] = {}
-              }
-
-              s[k] = data[key]
-              s = s[k]
-            }
-          } else {
-            if (!this.state[nameStore][keyStore] || typeof this.state[nameStore][keyStore] !== 'object') {
-              this.state[nameStore][keyStore] = data[key]
-            } else {
-              Object.assign(this.state[nameStore][keyStore], data[key])
-            }
-          }
-
-          if (this._mutations[nameStore + '/set']) {
-            this.dispatch(nameStore + '/set', this.state[nameStore])
-          }
-        }
-        delete data[key]
-      } else {
-        this.state[key] = data[key]
-        if (this._mutations[key + '/update']) {
-          this.dispatch(key + '/update')
-        }
-      }
+      setValue(key, data[key], state)
     }
   },
   remove (state, key) {
@@ -72,34 +31,13 @@ const actions = {
 
 const getters = {
   get: (state) => (key, def) => {
-    if (state[key] !== undefined) {
-      return state[key]
-    }
-
-    if (/\./.test(key)) {
-      const keys = key.split('.')
-      const nameStore = keys.shift()
-
-      if (state[nameStore] !== undefined) {
-        return getValue(keys, state[nameStore]) ?? def
-      }
-    }
-
-    return def
+    return getValue(key, state) ?? def
   }
 }
-
-const modules = {}
-
-Object.entries(import.meta.glob('./*.js', { eager: true })).forEach(([path, definition]) => {
-  const name = path.split('/').pop().replace(/\.\w+$/, '')
-  modules[name] = definition.default
-})
 
 export default createStore({
   state,
   getters,
   mutations,
-  actions,
-  modules
+  actions
 })

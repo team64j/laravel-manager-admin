@@ -8,6 +8,7 @@ import Select from '@/components/Select/Select.vue'
 import router from '@/router'
 import draggable from 'vuedraggable'
 import PanelRow from '@/components/Panel/PanelRow.vue'
+import session from '@/services/session'
 
 const currentInstance = getCurrentInstance()
 
@@ -67,7 +68,7 @@ const $data = reactive({
   keyStorage: key,
   filterTimer: 0,
   filterModel: { ...$props.currentRoute.query },
-  settings: store.getters.get(`Session.${key}`, {}),
+  settings: session.get(key, {}),
   idContextMenu: null,
   showContextMenu: false,
   dataContextMenu: [],
@@ -210,7 +211,7 @@ function onClickCategoryRow (category) {
     $data.settings['closed'].push(key)
   }
 
-  store.dispatch('set', { ['Session.' + $data.keyStorage]: { closed: $data.settings['closed'] } })
+  session.set($data.keyStorage, { closed: $data.settings['closed'] })
 }
 
 function onClickRow (item, route) {
