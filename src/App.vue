@@ -2,7 +2,7 @@
 import { getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
 import { convertPixelsToRem, convertRemToPixels } from './utils'
 import router from '@/router'
-import store from '@/store'
+import store from '@/services/store'
 import local from '@/services/local'
 import { RouterView } from 'vue-router'
 import { Notifications, notify } from '@kyvg/vue3-notification'
@@ -42,7 +42,7 @@ const data = reactive({
   }
 })
 
-store.dispatch('set', {
+store.set({
   isMobile: calcIsMobile(),
   breakpoint: calcBreakpoint()
 })
@@ -102,11 +102,11 @@ bootstrap()
 window.addEventListener('resize', () => {
   const check = calcIsMobile()
 
-  if (check !== store.getters.get('isMobile')) {
-    store.dispatch('set', { isMobile: check })
+  if (check !== store.get('isMobile')) {
+    store.set('isMobile', check)
   }
 
-  store.dispatch('set', { breakpoint: calcBreakpoint() })
+  store.set('breakpoint', calcBreakpoint())
 })
 
 document.documentElement.classList.toggle(
@@ -143,7 +143,7 @@ function bootstrap () {
         document.title = response.data['data']['config']['siteName']
       }
 
-      store.dispatch('set', {
+      store.set({
         config: response.data['data']['config'] || {},
         lang: response.data['data']['lang'] || {}
       })
@@ -283,7 +283,7 @@ function setLayout (layout) {
 }
 
 function onTouchstartSidebar (event) {
-  if (!store.getters.get('isMobile')) {
+  if (!store.get('isMobile')) {
     return
   }
 
@@ -343,7 +343,7 @@ function onTouchstartSidebar (event) {
 }
 
 function onMousedownSidebarSplitter (event) {
-  if (store.getters.get('isMobile')) {
+  if (store.get('isMobile')) {
     return
   }
 
@@ -397,14 +397,14 @@ function calcBreakpoint () {
 
 function inputTreeSelect (event, instance) {
   const input = instance.vnode.el.querySelector('input')
-  store.dispatch('set', { event, context: instance })
+  store.set({ event, context: instance })
 
   if (input.classList.contains('focus')) {
     input.classList.remove('focus')
-    store.dispatch('set', { treeSelect: false })
+    store.set({ treeSelect: false })
   } else {
     input.classList.add('focus')
-    store.dispatch('set', { treeSelect: true })
+    store.set({ treeSelect: true })
   }
 }
 
@@ -463,7 +463,7 @@ defineExpose({
   <div v-if="data.loaded" ref="rootElement"
        class="app"
        :class="{
-          'app-mobile': store.getters.get('isMobile'),
+          'app-mobile': store.get('isMobile'),
           'app-sidebar-hidden': !local.get('root.sidebarShow', true)
        }">
     <template v-if="data.layout">
@@ -498,7 +498,7 @@ defineExpose({
              :style="{ width: data.sidebarWidth + `rem` }"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"
              :class="{
-              'app-main__overlay': store.getters.get('AppMainOverlay')
+              'app-main__overlay': store.get('AppMainOverlay')
             }">
           <global-component :layout="data.layout['sidebar']" @action="_action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
@@ -507,7 +507,7 @@ defineExpose({
         </div>
         <div class="grow flex flex-col overflow-hidden z-10 app-main"
           :class="{
-            'app-main__overlay': store.getters.get('AppMainOverlay')
+            'app-main__overlay': store.get('AppMainOverlay')
           }">
           <global-tabs :current-route="router.currentRoute.value" @action="_action" ref="globalTabs"/>
         </div>

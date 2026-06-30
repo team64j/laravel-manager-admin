@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance, watch } from 'vue'
 import { uniqId } from '@/utils'
 import router from '@/router'
-import store from '@/store'
+import store from '@/services/store'
 import Button from '@/components/Button/Button.vue'
 import session from '@/services/session'
 
@@ -42,10 +42,10 @@ session.set(keyStorage, session.get(keyStorage, 0))
 
 const index = computed({
   set (value) {
-    store.dispatch('set', { [keyStorage]: value })
+    store.set(keyStorage, value)
   },
   get () {
-    return store.getters.get(keyStorage, 0)
+    return store.get(keyStorage, 0)
   }
 })
 
@@ -100,7 +100,7 @@ function select (tab, key) {
   }
 
   session.set(keyStorage, key)
-  store.dispatch('set', { [keyStorage]: key })
+  store.set(keyStorage, key)
 
   // :TODO Сделать более универсальное решение для отправки события родительскому компоненту
   if (props.hiddenTabs) {

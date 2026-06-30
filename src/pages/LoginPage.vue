@@ -1,6 +1,5 @@
 <script>
 import router from '@/router'
-import store from '@/store'
 import local from '@/services/local'
 import { defineAsyncComponent } from 'vue'
 import { notify } from '@kyvg/vue3-notification'

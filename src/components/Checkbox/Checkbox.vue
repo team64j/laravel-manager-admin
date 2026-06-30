@@ -94,7 +94,7 @@ defineExpose({
     </template>
   </div>
   <template v-else>
-    <template v-if="$props.data" :class="$props.class">
+    <template v-if="$props.data">
       <label v-for="(i, k) in $props.data" :key="k" class="inline-flex items-center"
              :class="[$props.labelClass, labelClass]">
         <input v-model="model"
@@ -109,7 +109,7 @@ defineExpose({
         <span class="truncate">{{ i.value }}</span>
       </label>
     </template>
-    <div v-else>
+    <div v-else class="flex" :class="$props.class">
       <input v-model="model"
              :id="$props.id"
              :class="$props.inputClass"

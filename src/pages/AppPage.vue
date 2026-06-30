@@ -3,7 +3,7 @@ import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
 import { action } from '@/composables'
 import { isNumber } from '@/utils'
 import router from '@/router'
-import store from '@/store'
+import store from '@/services/store'
 import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
 
 defineOptions({
@@ -45,7 +45,7 @@ function submit ({ action, method, route } = {}, changed = false) {
 
   const url = route?.['meta']?.['url'] ? route['meta']['url'] : route?.['path']
   const isNumericId = isNumber(route['params']['id'])
-  const stay = store.getters.get('stay')
+  const stay = store.get('stay')
 
   if (route?.['meta']?.['method']) {
     method ??= route['meta']['method'].toLowerCase()
@@ -130,7 +130,7 @@ function submit ({ action, method, route } = {}, changed = false) {
             return
           }
 
-          store.dispatch('set', {
+          store.set({
             action,
             data: r.data['data']?.['attributes'] ? r.data['data'] : {
               id: r.data['data']['id'],

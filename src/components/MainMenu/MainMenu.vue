@@ -3,7 +3,7 @@ import { getCurrentInstance, onMounted, reactive } from 'vue'
 import { action } from '@/composables'
 import MainMenuItem from './MainMenuItem.vue'
 import router from '@/router'
-import store from '@/store'
+import store from '@/services/store'
 import local from '@/services/local'
 
 defineOptions({
@@ -27,7 +27,7 @@ const $emit = defineEmits(['action'])
 let enterTimer = 0, filterTimer = 0
 
 function onClick (event, props) {
-  if (store.getters.get('isMobile')) {
+  if (store.get('isMobile')) {
     const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
     document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
 
@@ -70,11 +70,11 @@ function onClick (event, props) {
       }
     }
   }
-  store.dispatch('set', { AppMainOverlay: data.active })
+  store.set({ AppMainOverlay: data.active })
 }
 
 function onEnter (event, props) {
-  if (event.currentTarget.classList.contains('app-main-menu__hover') || store.getters.get('isMobile')) {
+  if (event.currentTarget.classList.contains('app-main-menu__hover') || store.get('isMobile')) {
     return
   }
 
@@ -106,7 +106,7 @@ function onEnter (event, props) {
 }
 
 function onOut (event, props) {
-  if (store.getters.get('isMobile')) {
+  if (store.get('isMobile')) {
     return
   }
 
@@ -180,7 +180,7 @@ function _action () {
 onMounted(() => {
   document.addEventListener('click', function () {
     data.active = false
-    store.dispatch('set', { AppMainOverlay: data.active })
+    store.set({ AppMainOverlay: data.active })
   })
 })
 
@@ -197,7 +197,7 @@ defineExpose({
 <template>
   <div class="app-main-menu"
        :class="{
-        'app-main-menu__active': store.getters.get('AppMainOverlay'),
+        'app-main-menu__active': store.get('AppMainOverlay'),
         'app-main-menu__vertical': $props.isVertical
       }">
     <ul>

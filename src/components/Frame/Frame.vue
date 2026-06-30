@@ -1,6 +1,5 @@
 <script>
 import { getCurrentInstance, h, watch } from 'vue'
-import store from '@/store'
 import router from '@/router'
 import local from '@/services/local'
 

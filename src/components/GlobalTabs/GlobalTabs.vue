@@ -1,6 +1,6 @@
 <script>
 import router from '@/router'
-import store from '@/store'
+import store from '@/services/store'
 import { action } from '@/composables'
 import { mergeDeep } from '@/utils'
 import { defineAsyncComponent } from 'vue'
@@ -123,7 +123,7 @@ export default {
       }
     },
     setTab (data) {
-      store.dispatch('set', { tabsLoading: data.loading })
+      store.set({ tabsLoading: data.loading })
 
       if (data.key) {
         const index = this.keys.findIndex(i => i === data.key)
@@ -137,7 +137,7 @@ export default {
       const index = this.keys.findIndex(i => i === router.key(route))
       const tab = this.tabs[index]
 
-      if (tab?.['changed'] && !confirm(store.getters.get('lang.warning_not_saved'))) {
+      if (tab?.['changed'] && !confirm(store.get('lang.warning_not_saved'))) {
         return
       }
 
@@ -159,7 +159,7 @@ export default {
     },
     toTab (data) {
       const tab = this.find(router.currentRoute.value)
-      if (tab?.['changed'] && !confirm(store.getters.get('lang.warning_not_saved'))) {
+      if (tab?.['changed'] && !confirm(store.get('lang.warning_not_saved'))) {
         return
       }
       this.closeTab(router.currentRoute.value)

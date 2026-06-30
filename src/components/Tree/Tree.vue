@@ -2,7 +2,7 @@
 import { defineAsyncComponent, provide } from 'vue'
 import { action } from '@/composables'
 import router from '@/router'
-import store from '@/store'
+import store from '@/services/store'
 import session from '@/services/session'
 
 import('./Tree.css')
@@ -52,28 +52,28 @@ export default {
       },
       deep: true
     },
-    '$store.state.treeSelect' (select) {
+    'store.storage.treeSelect' (select) {
       const route = router.currentRoute.value
 
       if (route['path'] === router.parse({ ...this.propRoute, ...route }).path) {
         this._.vnode.el.querySelector('.app-tree__body').classList.toggle('focused', !!select)
       }
     },
-    '$store.state.actionUpdate' () {
+    'store.storage.actionUpdate' () {
       const route = router.currentRoute.value
 
-      if (store.state['route'] === route['path']) {
-        switch (store.state['action']) {
+      if (store.storage['route'] === route['path']) {
+        switch (store.storage['action']) {
           case 'create':
-            this.createNode(store.state['data'], this.data)
+            this.createNode(store.storage['data'], this.data)
             break
 
           case 'update':
-            this.updateNode(store.state['data'], this.data)
+            this.updateNode(store.storage['data'], this.data)
             break
 
           case 'delete':
-            this.deleteNode(store.state['data'], this.data)
+            this.deleteNode(store.storage['data'], this.data)
             break
         }
       }
@@ -147,9 +147,9 @@ export default {
       const route = router.currentRoute.value
       const id = this.key(node)
 
-      if (store.getters.get('treeSelect') && route['path'] === router.parse({ ...this.propRoute, ...route }).path) {
-        const context = store.getters.get('context')
-        const event = store.getters.get('event')
+      if (store.get('treeSelect') && route['path'] === router.parse({ ...this.propRoute, ...route }).path) {
+        const context = store.get('context')
+        const event = store.get('event')
         context.exposed.data.loading = true
         this.loading = true
 
@@ -174,7 +174,7 @@ export default {
           } else {
             event.target.classList.remove('focus')
           }
-          store.dispatch('set', { treeSelect: false })
+          store.set('treeSelect', false)
         }).catch(() => {
           setTimeout(() => {
             event.target.classList.add('focus')
@@ -182,7 +182,7 @@ export default {
               context.exposed.input.value.focus()
             }
           }, 0)
-          store.dispatch('set', { treeSelect: true })
+          store.set('treeSelect', true)
         }).finally(() => {
           context.exposed.data.loading = false
           this.loading = false
@@ -260,8 +260,8 @@ export default {
       this.propSettings.opened = opened
     },
     updateNode (node, data) {
-      if (store.getters.get('treeSelect')) {
-        store.dispatch('remove', 'treeSelect')
+      if (store.get('treeSelect')) {
+        store.set('treeSelect', null)
         this.get()
         return
       }

@@ -34,6 +34,10 @@ function values (column, item) {
 
   return h({ template: column.values[item[column.name]] ?? column.values?.[item[column.key]] })
 }
+
+function onContextMenu () {
+
+}
 </script>
 
 <template>
@@ -47,9 +51,10 @@ function values (column, item) {
         'bg-rose-600/20 even:bg-rose-600/10 hover:bg-rose-600/30 hover:even:bg-rose-600/20' : props.item['@deleted'],
         'bg-rose-600/20 even:bg-rose-600/30' : props.item['@active'] && props.item['@deleted'],
       }"
-      @mousedown="() => emit('onClickRow', props.item)">
+      @click="() => emit('onClickRow', props.item)"
+      @contextmenu="onContextMenu($event, item)">
     <td v-for="ceil in props.columns" class="p-2 first:pl-6 last:pr-6" :style="ceil.style">
-      <div v-if="props.item[ceil.key]?.component || ceil.component" @mousedown.stop>
+      <div v-if="props.item[ceil.key]?.component || ceil.component" @click.stop>
         <component :is="() => DynamicComponent(props.item, props.modelValue, ceil)"/>
       </div>
 
@@ -57,13 +62,14 @@ function values (column, item) {
 
       <i v-else-if="ceil.icon" :class="ceil.icon"/>
 
-      <i v-else-if="props.item[ceil.key + `.help`]"
-         :data-tooltip="props.item[ceil.key + `.help`]"
-         @mousedown.prevent.stop/>
-
       <template v-else>
         {{ getValue(ceil.key, props.item) }}
       </template>
+
+      <i v-if="props.item[ceil.key + `.help`]"
+         :data-tooltip="props.item[ceil.key + `.help`]"
+         @click.prevent.stop
+         class="ml-2"/>
     </td>
   </tr>
 </template>

@@ -1,6 +1,6 @@
 <script setup>
 import { nextTick, reactive, ref, shallowRef, watch } from 'vue'
-import store from '../../store'
+import store from '@/services/store'
 import Radio from '../Radio/Radio.vue'
 import Select from '../Select/Select.vue'
 
@@ -32,10 +32,10 @@ const datepicker = shallowRef()
 const show = ref(false)
 
 const options = {
-  dateFormat: store.getters.get('config.datetimeFormat', 'dd-mm-YYYY'),
+  dateFormat: store.get('config.datetimeFormat', 'dd-mm-YYYY'),
   timeFormat: 'H:i:s',
   yearOffset: 10,
-  monthNames: store.getters.get('lang.monthNames', [
+  monthNames: store.get('lang.monthNames', [
     'January',
     'February',
     'March',
@@ -50,7 +50,7 @@ const options = {
     'December'
   ]),
   daysInMonth: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
-  dayNames: store.getters.get('lang.dayNames', [
+  dayNames: store.get('lang.dayNames', [
     'Sunday',
     'Monday',
     'Tuesday',
@@ -59,7 +59,7 @@ const options = {
     'Friday',
     'Saturday'
   ]),
-  startDay: parseInt(store.getters.get('lang.startDay', 1)),
+  startDay: parseInt(store.get('lang.startDay', 1)),
   dayChars: 1,
   patterns: {
     'dd-mm-YYYY': '^(?<day>0[1-9]|[12][0-9]|3[01])-(?<month>0[1-9]|1[0-2])-(?<year>\\d{4})$',

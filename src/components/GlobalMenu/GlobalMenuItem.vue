@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance } from 'vue'
-import store from '@/store'
+import store from '@/services/store'
 import router from '@/router'
 import local from '@/services/local'
 import Button from '@/components/Button/Button.vue'
@@ -63,13 +63,13 @@ const icon = computed(() => {
 })
 
 const showBack = computed(() => {
-  return store.getters.get('isMobile') && props.level > 1
+  return store.get('isMobile') && props.level > 1
 })
 
 const action = (...args) => emit('action', ...args)
 
 const load = () => {
-  if (props.data['url'] && store.getters.get('menuShow')) {
+  if (props.data['url'] && store.get('menuShow')) {
     props.data['data'] = null
 
     clearTimeout(timer)
@@ -105,15 +105,15 @@ const onClick = (event) => {
 
   let show = true
 
-  if (store.getters.get('isMobile')) {
-    if (store.getters.get('menuShow')) {
+  if (store.get('isMobile')) {
+    if (store.get('menuShow')) {
       if (event.currentTarget.classList.contains('app-global-menu__hover')) {
         show = false
       } else {
         show = props.level <= 1
       }
     }
-  } else if (store.getters.get('menuShow')) {
+  } else if (store.get('menuShow')) {
     show = false
   }
 
@@ -128,7 +128,7 @@ const onClick = (event) => {
 const onClickToggle = (event) => {
   clearTimeout(timer)
 
-  if (store.getters.get('isMobile')) {
+  if (store.get('isMobile')) {
     emit('action', 'setActiveClass', event.target)
   }
 
@@ -139,7 +139,7 @@ const onClickToggle = (event) => {
 }
 
 const onEnter = (event) => {
-  if (store.getters.get('isMobile') || event.target.classList.contains('app-global-menu__hover')) {
+  if (store.get('isMobile') || event.target.classList.contains('app-global-menu__hover')) {
     return
   }
 

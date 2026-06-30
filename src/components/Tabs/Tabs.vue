@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance } from 'vue'
 import { uniqId } from '@/utils'
 import { action } from '@/composables'
-import store from '@/store'
+import store from '@/services/store'
 import TabsNavigation from './TabsNavigation.vue'
 
 defineOptions({
@@ -46,7 +46,7 @@ const emit = defineEmits(['action', 'update:props'])
 
 const keyStorage = `tabs_${props.id.toLowerCase()}`
 
-const index = computed(() => store.getters.get(keyStorage, 0))
+const index = computed(() => store.get(keyStorage, 0))
 
 function _action () {
   return action.call(currentInstance, ...arguments)

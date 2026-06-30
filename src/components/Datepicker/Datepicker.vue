@@ -1,6 +1,6 @@
 <script setup>
 import { nextTick, reactive, ref, shallowRef } from 'vue'
-import store from '@/store'
+import store from '@/services/store'
 import Button from '@/components/Button/Button.vue'
 import Select from '@/components/Select/Select.vue'
 import Input from '@/components/Input/Input.vue'
@@ -28,11 +28,11 @@ const style = ref(null)
 
 const yearOffset = 10
 
-const dateFormat = store.getters.get('config.datetimeFormat', 'dd-mm-YYYY')
+const dateFormat = store.get('config.datetimeFormat', 'dd-mm-YYYY')
 
 const timeFormat = 'H:i:s'
 
-const monthNames = store.getters.get('lang.monthNames', [
+const monthNames = store.get('lang.monthNames', [
   'January',
   'February',
   'March',
@@ -49,7 +49,7 @@ const monthNames = store.getters.get('lang.monthNames', [
 
 const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-const dayNames = store.getters.get('lang.dayNames', [
+const dayNames = store.get('lang.dayNames', [
   'Sunday',
   'Monday',
   'Tuesday',
@@ -59,7 +59,7 @@ const dayNames = store.getters.get('lang.dayNames', [
   'Saturday'
 ])
 
-const startDay = parseInt(store.getters.get('lang.startDay', 1))
+const startDay = parseInt(store.get('lang.startDay', 1))
 
 const dayChars = 1
 

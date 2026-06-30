@@ -1,6 +1,6 @@
 <script setup>
 import { getCurrentInstance } from 'vue'
-import store from '@/store'
+import store from '@/services/store'
 
 defineOptions({
   name: 'Grid',
@@ -17,7 +17,7 @@ const $props = defineProps({
 })
 
 function calcGridArea (gridArea) {
-  if (typeof gridArea === 'object' && gridArea && store.getters.get('breakpoint')) {
+  if (typeof gridArea === 'object' && gridArea && store.get('breakpoint')) {
     let breakpoint = Object.values(gridArea)[0]
 
     for (const i in gridArea) {

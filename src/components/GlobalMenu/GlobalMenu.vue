@@ -1,7 +1,7 @@
 <script setup>
 import { getCurrentInstance, onMounted } from 'vue'
 import GlobalMenuItem from './GlobalMenuItem.vue'
-import store from '@/store'
+import store from '@/services/store'
 
 import('./GlobalMenu.css')
 
@@ -17,7 +17,7 @@ const $emit = defineEmits(['action'])
 const methods = {
   show (value = true) {
     currentInstance.vnode.el.classList.toggle('app-global-menu--active', value)
-    store.dispatch('set', { menuShow: value })
+    store.set('menuShow', value)
   },
   setActiveClass (el) {
     currentInstance.vnode.el.querySelectorAll('.app-global-menu__hover').

@@ -1,961 +1,440 @@
-<script>
-import { compile, defineAsyncComponent, h, toRaw, watch } from 'vue'
-import router from '@/router'
-import store from '@/store'
+<script setup>
+import { computed, getCurrentInstance, onMounted, reactive, shallowRef, toRaw, watch } from 'vue'
 import { uniqId } from '@/utils'
-import { getValue } from '@/composables'
-import { DynamicComponent } from '@/utils/dynamic-component'
+import Button from '@/components/Button/Button.vue'
+import Input from '@/components/Input/Input.vue'
+import Select from '@/components/Select/Select.vue'
+import router from '@/router'
 import session from '@/services/session'
+import draggable from 'vuedraggable'
+import PanelRow from './PanelRow.vue'
 
-//import('./Panel.css')
+const currentInstance = getCurrentInstance()
 
-export default {
-  components: {
-    draggable: defineAsyncComponent(() => import('vuedraggable')),
-    Input: defineAsyncComponent(() => import('@/components/Input/Input.vue')),
-    Button: defineAsyncComponent(() => import('@/components/Button/Button.vue')),
-    Select: defineAsyncComponent(() => import('@/components/Select/Select.vue')),
-    Datetime: defineAsyncComponent(() => import('@/components/Datetime/Datetime.vue')),
+defineOptions({
+  name: 'Panel',
+  __isStatic: true
+})
+
+const $props = defineProps({
+  id: {
+    type: String,
+    default: uniqId()
   },
-  __isStatic: true,
-  name: 'PanelTest',
-  emits: ['action', 'update:props', 'update:modelValue'],
-  props: {
-    id: {
-      type: String,
-      default: uniqId(),
-    },
-    modelValue: null,
-    url: String,
-    data: {
-      type: Array,
-      default (props) {
-        return props.url ? [] : props.modelValue ?? []
-      },
-    },
-    meta: Object,
-    layout: Object,
-    columns: {
-      type: Array,
-      default: (props) => props?.meta?.columns ?? [],
-    },
-    filters: {
-      type: Array,
-      default: (props) => props?.meta?.filters ?? [],
-    },
-    route: {
-      type: [String, Object],
-      default: (props) => props?.meta?.route,
-    },
-    draggable: {
-      type: [Boolean, String],
-      default: (props) => props?.meta?.draggable,
-    },
-    history: [Boolean, String],
-    rerender: Boolean,
-    contextMenu: Object,
-    view: String,
-    views: [Object, Array],
-    currentRoute: Object,
-    dataKey: {
-      type: String,
-      default: 'data',
-    },
-  },
-  data () {
-    const key = `panel.` + this.id.toLowerCase()
-
-    return {
-      loading: false,
-      keyStorage: key,
-      filterTimer: 0,
-      filterValues: { ...this.currentRoute.query },
-      settings: session.get(key, {}),
-      idContextMenu: null,
-      showContextMenu: false,
-      dataContextMenu: [],
-      classContextMenu: null,
-      propView: this.view,
-      sorting: {},
+  modelValue: null,
+  url: String,
+  data: {
+    type: Array,
+    default (props) {
+      return props.url ? [] : props.modelValue ?? []
     }
   },
-  mounted () {
-    if (this.url) {
-      this.get()
-    }
+  meta: Object,
+  layout: Object,
+  columns: {
+    type: Array,
+    default: (props) => props?.meta?.columns ?? []
+  },
+  filters: {
+    type: Array,
+    default: (props) => props?.meta?.filters ?? []
+  },
+  route: {
+    type: [String, Object],
+    default: (props) => props?.meta?.route
+  },
+  draggable: {
+    type: [Boolean, String],
+    default: (props) => props?.meta?.draggable
+  },
+  history: [Boolean, String],
+  rerender: Boolean,
+  contextMenu: Object,
+  view: String,
+  views: [Object, Array],
+  currentRoute: Object,
+  dataKey: {
+    type: String,
+    default: 'data'
+  }
+})
 
-    if (this.history) {
-      watch(
-          () => router.currentRoute.value,
-          (a, b) => {
-            a['path'] === b['path'] &&
-            a['query'][this.history] !== b['query'][this.history] &&
-            this.get(a['query'], [])
-          },
-          { deep: true },
-      )
-    }
+const $emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
-    document.addEventListener('click', () => {
-      if (this.showContextMenu) {
-        this.showContextMenu = false
+const key = `panel.` + $props.id.toLowerCase()
+
+const $data = reactive({
+  keyStorage: key,
+  filterTimer: 0,
+  filterModel: { ...$props.currentRoute.query },
+  settings: session.get(key, {}),
+  idContextMenu: null,
+  showContextMenu: false,
+  dataContextMenu: [],
+  classContextMenu: null,
+  propView: $props.view,
+  sorting: {},
+  draggable: {
+    type: [Boolean, String],
+    default: props => props?.meta?.draggable
+  }
+})
+
+const loaded = shallowRef(true)
+
+const colgroupColumns = shallowRef([])
+
+const columns = computed(() => {
+  const columns = $props?.meta?.columns || $props.columns || {}
+
+  if (columns.length) {
+    return toRaw(columns).map(i => {
+      i.key = i.key || i.name
+
+      colgroupColumns.value.push(i.style?.width ?? null)
+
+      if (i.style?.width) {
+        delete i.style.width
       }
+
+      return i
     })
-
-    document.addEventListener('keydown', event => {
-      if (this.keyStorage === store.getters.get('activePanel')) {
-        if (event.ctrlKey && event.key === 'a') {
-          event.preventDefault()
-
-          this.data.forEach(i => {
-            if (i[this.dataKey]) {
-              i[this.dataKey].forEach(j => this.selectRow(event, j))
-            } else {
-              this.selectRow(event, i)
-            }
-          })
-        } else if (event.key === 'Escape') {
-          this.data.forEach(i => {
-            if (i[this.dataKey]) {
-              i[this.dataKey].forEach(j => j['@active'] = false)
-            } else {
-              i['@active'] = false
-            }
-          })
-        }
-      }
+  } else if ($props.data[0]) {
+    return Object.entries($props.data[0]).map(i => {
+      colgroupColumns.value.push(null)
+      return { key: i[0] }
     })
+  }
 
-    if (this.$el.parentElement.classList.contains('app-tabs__page')) {
-      this.$el.parentElement.childElementCount === 1 && this.$el.parentElement.classList.add('!p-0')
+  return []
+})
+
+const filters = computed(() => {
+  const filters = []
+
+  for (const column of columns.value) {
+    const filter = ($props?.meta?.filters ?? []).find(i => i.name === column.name)
+
+    if (filter || column.filter) {
+      filters.push(toRaw(filter || { name: column.name }))
+    } else {
+      filters.push(null)
     }
-  },
-  computed: {
-    propUrl () {
-      return this.url ?? this.currentRoute['path'] ?? null
-    },
-  },
-  methods: {
-    action () {
-      if (typeof this[arguments[0]] === 'function') {
-        this[arguments[0]](...Array.from(arguments).splice(1))
-      } else {
-        this.$emit('action', ...arguments)
-      }
-    },
-    key (data) {
-      return data['id'] ?? data['key']
-    },
-    get (query, params) {
-      this.loading = true
-      const route = router.parse(this.currentRoute?.['meta']?.['url'] || this.propUrl)
-      query = Object.assign(route.query, this.currentRoute?.query || {}, query)
-
-      this.$emit('update:props', {
-        data: params,
-        meta: params ? Object.assign({}, { ...this.meta }) : {},
-      }, this)
-
-      if (this.$refs.data) {
-        this.$refs.data.style.height = this.$refs.data.offsetHeight + 'px'
-      }
-
-      this.$el.querySelectorAll('thead > tr > th').forEach(i => {
-        i.style.maxWidth = i.clientWidth + 'px'
-        i.style.minWidth = i.clientWidth + 'px'
-      })
-
-      axios({
-        method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
-        url: route.path,
-        params: route.query,
-        data: Object.assign({}, route.query),
-      }).then(({ data }) => {
-        const props = {
-          data: data.data,
-          meta: data.meta,
-        }
-
-        if (data.meta?.columns) {
-          props.columns = data.meta.columns
-          delete data.meta.columns
-        }
-
-        if (data.meta?.filters) {
-          props.filters = data.meta.filters
-          delete data.meta.filters
-        }
-
-        if (this.$refs.data) {
-          this.$refs.data.style.overflow = null
-        }
-
-        this.$el.querySelectorAll('thead > tr > th').forEach(i => {
-          i.style.maxWidth = null
-          i.style.minWidth = null
-        })
-
-        this.$emit('update:props', props)
-
-        this.$el.querySelector('.app-panel__data').style.height = null
-      }).finally(() => {
-        this.loading = false
-      })
-    },
-    load (route, props) {
-      if (this.history) {
-        if (this.rerender) {
-          this.$emit(
-              'action',
-              'pushRouter',
-              route,
-          )
-        } else {
-          router.to(route)
-          this.get(route.query, [])
-
-          // if (props) {
-          //   this.$emit('update:props', props, this)
-          // }
-        }
-      } else {
-        this.get(route.query, [])
-      }
-    },
-    selectRow (event, item, route) {
-      if (item['@disabled']) {
-        return
-      }
-
-      if (item.route) {
-        route = item.route
-      }
-
-      if (route) {
-        if (typeof route === 'object') {
-          this.$emit('action', 'pushRouter', {
-            ...route,
-            params: item,
-          })
-        } else {
-          this.$emit('action', 'pushRouter', {
-            path: route,
-            params: item,
-          })
-        }
-      } else {
-        store.dispatch('set', { activePanel: this.keyStorage })
-        const column = this.columns?.find(i => i.selectable)
-
-        if (column && item[column.component.attrs.keyValue] !== undefined) {
-          const index = this.modelValue.findIndex(i => i === item[column.component.attrs.keyValue])
-
-          if (index < 0) {
-            this.modelValue.push(item[column.component.attrs.keyValue])
-          } else {
-            this.modelValue.splice(index, 1)
-          }
-        }
-      }
-
-      if (!event.ctrlKey) {
-        this.data.forEach(i => {
-          if (i[this.dataKey]) {
-            i[this.dataKey].forEach(j => item['@key'] !== j['@key'] && (j['@active'] = false))
-          } else {
-            item['@key'] !== i['@key'] && (i['@active'] = false)
-          }
-        })
-      }
-
-      item['@active'] = !item['@active']
-    },
-    dblClickRow (item) {
-      if (item['dbClick']) {
-        this.$emit('action', item['dbClick'], item)
-      }
-    },
-    cells (item, index) {
-      const items = []
-
-      if (typeof item === 'object') {
-        if (!item.hasOwnProperty('@key')) {
-          Object.defineProperty(item, '@key', {
-            value: uniqId(),
-          })
-        }
-
-        if (!item['route'] && !item.hasOwnProperty('@active')) {
-          Object.defineProperty(item, '@active', {
-            value: false,
-            writable: true,
-          })
-        }
-      }
-
-      if (this.columns?.length) {
-        for (const i in this.columns) {
-          const style = this.columns[i].style
-
-          items.push(h('td', {
-            style,
-          }, this.value(item, this.columns[i], index)))
-        }
-      } else {
-        for (const i in item) {
-          const slots = []
-          const style = item[i]?.style
-
-          if (item[i] !== null) {
-            slots.push(h(compile(item[i]?.toString())))
-          }
-
-          items.push(h(`td`, { style }, slots))
-        }
-      }
-
-      return items
-    },
-    value (item, column, index) {
-      const key = column.key ?? column.name
-
-      if (/\./.test(key)) {
-        return getValue(key, item)
-      }
-
-      if (item[key]?.component) {
-        return DynamicComponent(item[key], this.modelValue)
-      } else if (column.component) {
-        const component = structuredClone(toRaw(column.component))
-
-        if (component?.attrs?.['keyValue'] !== undefined) {
-          component.attrs.value = item[component.attrs['keyValue']] ?? item
-          component.attrs.index = index
-        }
-
-        return DynamicComponent(component, this.modelValue)
-      }
-
-      const slots = []
-
-      if (column.values) {
-        slots.push(this.columnValues(item, column))
-      } else if (column.actions) {
-        for (const i in column.actions) {
-          slots.push(h(`i`, {
-            class: `mx-1 opacity-60 hover:opacity-80 ` + column.actions[i].icon,
-            'data-tooltip': column.actions[i].help,
-            onClick: (event) => {
-              this.action(i, item, column.values ? item[i] : column)
-              event.preventDefault()
-              event.stopPropagation()
-            },
-          }))
-        }
-      } else if ((item[key] ?? column) !== undefined) {
-        if (item[key] !== undefined) {
-          if (column.html) {
-            slots.push(h(compile(item[key])))
-          } else {
-            slots.push(h(`span`, item[key]))
-          }
-        } else if (item[`${key}.html`] !== undefined) {
-          slots.push(h(compile(item[`${key}.html`])))
-        } else if (column.icon) {
-          slots.push(h(`i`, {
-            class: column.icon,
-          }))
-        }
-
-        if (item[key + `.help`]) {
-          slots.push(h(`i`, {
-            class: `ml-2`,
-            'data-tooltip': item[key + `.help`],
-          }))
-        }
-      }
-
-      return slots
-    },
-    columnValues (item, column) {
-      if (typeof Object.values(column.values)[0] === 'object') {
-        if (item[column.name || column.key]) {
-          return h({ template: item[column.name || column.key] })
-        } else {
-          for (const i in column.values) {
-            for (const j in column.values[i]) {
-              if (item[i]?.toString() === j.toString()) {
-                return h({ template: column.values[i][j] })
-              }
-            }
-          }
-        }
-      } else {
-        return h({ template: column.values[item[column.name]] ?? column.values?.[item[column.key]] })
-      }
-    },
-    sortable (data) {
-      const draggable = data?.draggable || this.draggable
-
-      if (typeof draggable === 'string') {
-        (data?.[this.dataKey] || data).forEach((i, k) => {
-          if (i[draggable] !== undefined) {
-            i[draggable] = k + 1
-          }
-        })
-      }
-      this.$emit('action', 'sortable', ...arguments)
-    },
-    updateModelValue () {
-      this.$emit('update:modelValue', ...arguments)
-
-      if (this.rerender) {
-        // Обновляем весь компонент
-        this.renderComponent = false
-        this.$nextTick(() => {
-          this.renderComponent = true
-        })
-      }
-    },
-    toggleCategory (category) {
-      const key = category['id'] ?? category['key']
-
-      if (!key) {
-        return
-      }
-
-      if (!this.settings.closed) {
-        this.settings.closed = []
-      }
-
-      let index = this.settings.closed.indexOf(key)
-
-      if (index > -1) {
-        this.settings.closed.splice(index, 1)
-      } else {
-        this.settings.closed.push(key)
-      }
-
-      session.set(this.keyStorage, { closed: this.settings.closed })
-    },
-    hasClosedCategory (category) {
-      return this.settings?.closed?.includes(category['id'] ?? category['key'])
-    },
-    pagination (url) {
-      if (this.propUrl) {
-        this.load(Object.assign({}, router.parse(this.propUrl), { query: router.parse(url).query }))
-      } else {
-        this.$emit('action', 'pagination', ...arguments)
-      }
-    },
-    getFilters () {
-      const filters = []
-      let propFilters = this.filters
-
-      if (this.filters) {
-        if (Array.isArray(propFilters)) {
-          const keys = propFilters.map(i => i.name || i)
-          const values = propFilters.map(i => typeof i === 'object' ? i : { name: i })
-          propFilters = Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]))
-        }
-
-        for (const i of this.columns) {
-          if (propFilters[i.name]) {
-            if (typeof propFilters[i.name] == 'boolean') {
-              propFilters[i.name] = {
-                name: i.name,
-              }
-            }
-
-            filters.push(propFilters[i.name])
-          } else if (i.filter) {
-            filters.push({ name: i.name })
-          } else {
-            filters.push(null)
-          }
-        }
-      }
-
-      return filters
-    },
-    onUpdateFilters (value, ctx, filter) {
-      clearTimeout(this.filterTimer)
-
-      let name = filter.name,
-          delay = 300
-
-      if (filter?.type === 'date' || filter?.type === 'datetime') {
-        value = [value]
-      }
-
-      // if (filter?.type === 'date' || filter?.type === 'datetime') {
-      //   value = [
-      //     event.target.parentElement.firstElementChild['value'],
-      //     event.target.parentElement.lastElementChild['value']
-      //   ]
-      //
-      //   if (value[0] === '' || value[1] === '') {
-      //     value = ''
-      //   }
-      // } else if (filter.data && !filter.data.some(i => i.key === value) && filter.data.some(i => i.value === value)) {
-      //   value = filter.data.find(i => i.value === value)['key']
-      // }
-
-      if (this.propUrl) {
-        this.filterTimer = setTimeout(() => {
-          if (value === '') {
-            delete this.filterValues[name]
-          } else {
-            this.filterValues[name] = value
-          }
-
-          this.load(router.parse({ query: this.filterValues }))
-        }, delay)
-      }
-    },
-    onSorting (order, dir) {
-      const query = { ...router.currentRoute.value.query }
-
-      if (this.meta?.['sorting']?.[order] === dir) {
-        delete query.order
-        delete query.dir
-      } else {
-        query.order = order
-        query.dir = dir
-      }
-
-      this.load(router.parse({ query }))
-    },
-    getColumnFilters () {
-      const filters = []
-      let propFilters = this.filters
-
-      if (this.filters) {
-        if (Array.isArray(propFilters)) {
-          const keys = propFilters.map(i => i.name || i)
-          const values = propFilters.map(i => typeof i === 'object' ? i : { name: i })
-          propFilters = Object.fromEntries(keys.map((_, i) => [keys[i], values[i]]))
-        }
-
-        for (const i of this.columns) {
-          if (propFilters[i.name]) {
-            if (typeof propFilters[i.name] == 'boolean') {
-              propFilters[i.name] = {
-                name: i.name,
-              }
-            }
-
-            filters.push(propFilters[i.name])
-          } else if (i.filter) {
-            filters.push({ name: i.name })
-          } else {
-            filters.push(null)
-          }
-        }
-      } else if (this.columns?.length) {
-        for (const i of this.columns) {
-          if (i.filter) {
-            if (i.filter.data === undefined) {
-              i.filter = {
-                data: i.filter,
-              }
-            }
-
-            filters.push(i.filter)
-          } else {
-            filters.push(null)
-          }
-        }
-      }
-
-      return filters
-    },
-    columnFilters (value, filter) {
-      clearTimeout(this.filterTimer)
-      let name = filter.name,
-          delay = 300
-
-      if (filter?.type === 'date' || filter?.type === 'datetime') {
-        value = [
-          event.target.parentElement.firstElementChild['value'],
-          event.target.parentElement.lastElementChild['value'],
-        ]
-
-        if (value[0] === '' || value[1] === '') {
-          value = ''
-        }
-      } else if (filter.data && !filter.data.some(i => i.key === value) && filter.data.some(i => i.value === value)) {
-        value = filter.data.find(i => i.value === value)['key']
-      }
-
-      if (this.propUrl) {
-        this.filterTimer = setTimeout(() => {
-          const query = Object.assign({}, this.currentRoute['query'] || {})
-          if (value !== '') {
-            query[name] = value
-          } else {
-            delete query[name]
-          }
-
-          delete query['page']
-
-          this.filterValues = query
-          this.load(router.parse({ query }))
-        }, delay)
-      }
-    },
-    columnFilterClear (name) {
-      if (this.filterValues[name] !== undefined) {
-        delete this.filterValues[name]
-      }
-
-      this.load(router.parse({ query: this.filterValues }))
-    },
-    buildContextMenu (event, node) {
-      const contextMenu = node['contextMenu'] !== undefined ? node['contextMenu'] : this.contextMenu
-
-      if (!contextMenu) {
-        return
-      }
-
-      event.preventDefault()
-      this.idContextMenu = this.key(node)
-      this.showContextMenu = false
-      this.dataContextMenu = []
-
-      this.classContextMenu = contextMenu?.class ?? null
-
-      contextMenu?.actions.forEach(action => {
-        if (action.hidden) {
-          for (const h in action.hidden) {
-            if (node[h] === action.hidden[h]) {
-              return
-            }
-          }
-        }
-
-        if (action.split) {
-          this.dataContextMenu.push({
-            split: true,
-          })
-        } else {
-          this.dataContextMenu.push({
-            title: action.title,
-            icon: action.icon,
-            to: action.to,
-            node,
-          })
-        }
-      })
-
-      this.showContextMenu = true
-
-      this.$nextTick(() => {
-        let top = event.clientY + 16
-        let left = event.clientX + 16
-
-        if (left + this.$refs.ctx.offsetWidth + 16 > window.innerWidth) {
-          left -= this.$refs.ctx.offsetWidth + 16
-        }
-
-        if (top + this.$refs.ctx.offsetHeight + 16 > window.innerHeight) {
-          top -= this.$refs.ctx.offsetHeight + 16
-        }
-
-        this.$refs.ctx.style.top = top + `px`
-        this.$refs.ctx.style.left = left + `px`
-      })
-    },
-    clickContextMenu (item) {
-      if (item.to) {
-        item.to.query ??= {}
-        item.to.params ??= {}
-        const route = { ...item.to }
-        Object.assign(route.params, item.node)
-        if (item.to?.target) {
-          axios[route['meta']['method'].toLowerCase() ?? 'head'](router.parse({ ...item.to }).fullPath).then(r => {
-            r.request.responseURL && window.open(r.request.responseURL, item.to.target)
-          }).catch(r => {
-            r.request.responseURL && window.open(r.request.responseURL, item.to.target)
-          })
-        } else {
-          router.to(route)
-        }
-      }
-    },
-    clickView (i) {
-      this.propView = i.key
-    },
-  },
+  }
+
+  return filters
+})
+
+const propUrl = computed(() => $props.url ?? $props.currentRoute['path'] ?? null)
+
+const rowProps = computed(() => ({
+  columns: columns.value,
+  modelValue: $props.modelValue,
+  route: $props.route
+}))
+
+function pagination (url) {
+  if (propUrl.value) {
+    loadData(Object.assign({}, router.parse(propUrl.value), { query: router.parse(url).query }))
+  } else {
+    $emit('action', 'pagination', ...arguments)
+  }
 }
+
+function getData (query, params) {
+  loaded.value = false
+  const route = router.parse($props.currentRoute?.['meta']?.['url'] || propUrl.value)
+  query = Object.assign(route.query, $data.filterModel, query)
+
+  $emit('update:props', {
+    data: params,
+    meta: params ? Object.assign({}, { ...$props.meta }) : {}
+  }, this)
+  axios({
+    method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
+    url: route.path,
+    params: query,
+    data: Object.assign({}, query)
+  }).then(({ data }) => {
+    $emit('update:props', { ...data })
+  }).finally(() => {
+    loaded.value = true
+  })
+}
+
+function loadData (route, props) {
+  if ($props.history) {
+    if ($props.rerender) {
+      $emit(
+          'action',
+          'pushRouter',
+          route
+      )
+    } else {
+      router.to(route)
+      getData(route.query, [])
+    }
+  } else {
+    getData(route.query, [])
+  }
+}
+
+let filterTimer = 0
+
+function onChangeFilter (value, key) {
+  clearTimeout(filterTimer)
+
+  filterTimer = setTimeout(() => {
+    if (value === '' || value === null) {
+      delete $data.filterModel[key]
+    } else {
+      $data.filterModel[key] = value
+    }
+
+    delete $data.filterModel['page']
+
+    loadData(router.parse({ query: $data.filterModel }))
+  }, 300)
+}
+
+function hasClosedCategory (category) {
+  return category['@closed'] || $data.settings?.['closed']?.includes(category['id'] ?? category['key'])
+}
+
+function onClickCategoryRow (category) {
+  const key = category['id'] ?? category['key']
+
+  if (!key) {
+    return
+  }
+
+  if (!$data.settings['closed']) {
+    $data.settings['closed'] = []
+  }
+
+  let index = $data.settings['closed'].indexOf(key)
+
+  if (index > -1) {
+    $data.settings['closed'].splice(index, 1)
+  } else {
+    $data.settings['closed'].push(key)
+  }
+
+  session.set($data.keyStorage, { closed: $data.settings['closed'] })
+}
+
+function onClickRow (item, route) {
+  if (item['@disabled'] || $props.draggable) {
+    return
+  }
+
+  if (!route) {
+    if (item['@route']) {
+      route = { path: item['@route'] }
+    } else if ($props.route) {
+      route = typeof $props.route === 'object' ? toRaw($props.route) : { path: $props.route }
+    }
+  }
+
+  if (route) {
+    $emit(
+        'action',
+        'pushRouter',
+        {
+          ...route,
+          params: item
+        }
+    )
+  }
+
+  const active = item['@active']
+
+  $props.data.forEach(i => {
+    if (i['@active']) {
+      delete i['@active']
+    }
+
+    (i[$props.dataKey] || []).forEach(j => {
+      if (j['@active']) {
+        delete j['@active']
+      }
+    })
+  })
+
+  item['@active'] = route ? true : !active
+}
+
+function onSortableEnd (data, key) {
+  if (typeof key !== 'string') {
+    return
+  }
+
+  let counter = $props.meta?.pagination?.['current'] > 1
+      ? ($props.meta.pagination['current'] - 1) * $props.meta.pagination['per']
+      : 0
+
+  for (const i in data) {
+    if (data[i][key] !== undefined) {
+      data[i][key] = counter++
+    }
+  }
+}
+
+onMounted(() => {
+  if (currentInstance.vnode.el.parentElement.classList.contains('app-tabs__page')) {
+    currentInstance.vnode.el.parentElement.childElementCount === 1 &&
+    currentInstance.vnode.el.parentElement.classList.add('!p-0')
+  }
+
+  if ($props.history) {
+    watch(
+        () => router.currentRoute.value,
+        (a, b) => {
+          a['path'] === b['path'] &&
+          a['query'][$props.history] !== b['query'][$props.history] &&
+          getData(a['query'], [])
+        },
+        { deep: true }
+    )
+  }
+
+  if ($props.url) {
+    getData()
+  }
+})
 </script>
 
 <template>
-  <div class="app-panel" :class="{ ['app-panel__view-' + this.propView]: this.propView }">
+  <div class="app-panel overflow-hidden flex flex-col grow"
+       :class="{ ['app-panel__view-' + $data.propView]: $data.propView }">
     <div v-if="$slots['top']">
       <slot name="top"/>
     </div>
 
-    <div v-if="views" class="flex justify-end px-5 pb-2" :class="{ 'border-b': this.propView === 'icon' }">
-      <Button v-for="i in views"
-              type="button"
-              :class="{ 'btn-blue': this.propView === i.key }"
-              class="ml-1 inline-flex items-center"
-              @click="clickView(i)">
-        <i v-if="i.icon" :class="[i.icon, i.value ? 'mr-1' : '']"/>
-        <span>{{ i.value }}</span>
-      </Button>
-    </div>
+    <div v-if="$props.data" class="grow overflow-auto rounded">
+      <table class="w-full" :class="{ 'min-h-full': !loaded }">
 
-    <div v-if="data" class="app-panel__data" ref="data">
-      <table ref="table" :class="{ 'min-h-full': !data.length }">
-        <thead v-if="this.columns?.length && this.columns.filter(column => column.label).length">
-        <tr>
-          <template v-for="column in this.columns">
-            <th :style="column?.style">
-              <div v-if="column.label" :style="{ minWidth: column.width }" class="relative">
-                {{ column.label }}
-                <div v-if="column.sort" class="app-panel__sorter absolute top-0 !px-0 right-0 flex flex-col text-xs">
-                  <i class="fa hover:text-blue-500 hover:opacity-100 transition"
-                     :class="[
-                         `fa-sort-amount-` + (meta?.['sorting']?.[column.name] || 'asc'),
-                         meta?.['sorting']?.[column.name] ? 'text-blue-500' : 'opacity-60'
-                     ]"
-                     @click="onSorting(column.name, meta?.['sorting']?.[column.name] === 'asc' ? 'desc' : 'asc')"
-                  />
-                </div>
-                <!--                <div v-if="column.sort" class="app-panel__sorter absolute top-0 !px-0 right-0 flex flex-col text-xs">
-                                  <i class="fa fa-angle-up px-2 hover:text-blue-500 hover:opacity-100 transition"
-                                     :class="[meta?.['sorting']?.[column.name] === 'asc' ? 'text-blue-500 opacity-100' : 'opacity-60']"
-                                     @click="onSorting(column.name, 'asc')"/>
-                                  <i class="fa fa-angle-down px-2 hover:text-blue-500 hover:!opacity-100 transition"
-                                     :class="[meta?.['sorting']?.[column.name] === 'desc' ? 'text-blue-500 opacity-100' : 'opacity-60']"
-                                     @click="onSorting(column.name, 'desc')"/>
-                                </div>-->
-              </div>
-            </th>
-          </template>
-        </tr>
-        <tr v-if="this.filters" class="app-panel__filters">
-          <th v-for="f in getFilters()">
-            <div v-if="f">
-              <template v-if="f?.type === 'date'">
-                <Input type="date"
-                       :value="filterValues[f.name]?.from || f.data.from"
-                       :min="f.data.min"
-                       :max="f.data.to"
-                       input-class="input-sm"
-                       @action="action"
-                       @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
-
-                <Input type="date"
-                       :value="filterValues[f.name]?.to || f.data.to"
-                       input-class="input-sm"
-                       :min="f.data.from"
-                       :max="f.data.max"
-                       @action="action"
-                       @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
-              </template>
-
-              <Select v-else-if="f?.data"
-                      v-model="filterValues[f.name]"
-                      :data="f.data"
-                      input-class="input-sm"
-                      @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
-
-              <Input v-else
-                     v-model="filterValues[f.name]"
-                     :clear="true"
-                     class="w-full"
-                     input-class="input-sm"
-                     :placeholder="f.placeholder ?? '...'"
-                     @update:modelValue="(...args) => onUpdateFilters(...args, f)"/>
+        <thead v-if="columns.some(i => i.label)" class="bg-slate-100 dark:bg-gray-600 sticky top-0 z-20">
+        <tr v-if="columns">
+          <th v-for="column in columns" class="font-bold border-l first:border-0 border-opacity-5"
+              :style="column?.style">
+            <div v-if="column.label" class="relative truncate px-5 py-1">
+              {{ column.label }}
             </div>
           </th>
-          <!--          <th v-for="f in getColumnFilters()">
-                      <div v-if="f">
-
-                        <template v-if="f?.type === 'date'">
-                          <input type="date"
-                                 name="filter"
-                                 :value="f.data.from"
-                                 :min="f.data.min"
-                                 :max="f.data.to"
-                                 @input="columnFilters($event, f)"
-                                 autocomplete="off"/>
-                          <input type="date"
-                                 name="filter"
-                                 :value="f.data.to"
-                                 :min="f.data.from"
-                                 :max="f.data.max"
-                                 @input="columnFilters($event, f)"
-                                 autocomplete="off"/>
-                        </template>
-
-                        <select v-else-if="f?.data"
-                                @input="columnFilters($event, f)"
-                                autocomplete="off">
-                          <option v-for="o in f.data" :value="o.key" :selected="o.selected">{{ o.value }}</option>
-                        </select>
-
-                        <template v-else>
-                          <Input
-                              input-class="input-sm"
-                              :placeholder="f.placeholder ?? '...'"
-                              v-model="filterValues[f.name]"
-                              :clear="true"
-                              @update:modelValue="columnFilters($event, f)"/>
-
-                          &lt;!&ndash;                <input type="text"
-                                                 name="filter"
-                                                 @input="columnFilters($event, f)"
-                                                 :value="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]"
-                                                 :placeholder="f.placeholder ?? '...'"
-                                                 autocomplete="off">
-                                          <i v-if="currentRoute['value']?.query?.[f.name] ?? filterValues?.[f.name]" class="fa fa-remove"
-                                             @click="columnFilterClear(f.name)"/>&ndash;&gt;
-                        </template>
-
-                      </div>
-                    </th>-->
+        </tr>
+        <tr v-if="filters">
+          <td v-for="filter in filters" class="border-l first:border-0 border-opacity-5">
+            <template v-if="filter">
+              <div v-if="filter.type === 'date'" class="flex">
+                <Input v-bind="filter" v-model="$data.filterModel[filter.name]"
+                       input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
+                <Input v-bind="filter" v-model="$data.filterModel[filter.name]"
+                       input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
+              </div>
+              <Select v-else-if="filter.data" v-bind="filter" v-model="$data.filterModel[filter.name]"
+                      input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
+              <Input v-else v-bind="filter" v-model="$data.filterModel[filter.name]" :clear="true"
+                     input-class="input-sm" @update:model-value="onChangeFilter($event, filter.name)"/>
+            </template>
+          </td>
         </tr>
         </thead>
 
-        <tbody v-if="!data || loading">
-        <tr class="pointer-events-none !max-w-full">
-          <td :colspan="this.columns?.length || 1" class="text-center p-5">
-            <div v-if="meta?.['message']">
-              {{ meta?.['message'] }}
-            </div>
-            <i v-else
-               class="inline-block rounded-full border-2 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-5 w-5 animate-spin"/>
-          </td>
-        </tr>
-        </tbody>
+        <colgroup>
+          <col v-for="width in colgroupColumns" :style="{ width }"/>
+        </colgroup>
 
-        <template v-for="category in (data[0]?.[this.dataKey] ? data : [{ data, route, draggable }])">
-          <tbody v-if="category.name && category[this.dataKey].length" class="app-panel__category">
-          <tr :class="[
-                  category['id'] ?? category['key'] ? 'cursor-pointer hover:text-blue-500' : 'pointer-events-none',
-                  this.hasClosedCategory(category) && 'closed'
-                  ]"
-              @dblclick="toggleCategory(category)"
-              @contextmenu="buildContextMenu($event, category)">
-            <td class="px-4 pt-3 pb-1 border-b-2 font-bold"
-                :colspan="this.columns?.length || Object.values(category[this.dataKey][0]).length">
-              <span class="toggle select-none">
-                <i v-if="(category['id'] ?? category['key'])"
-                   :class="[!this.hasClosedCategory(category) ? 'fa-square-minus' : 'fa-square-plus']"
-                   class="far fa-fw mr-1"
-                   @mousedown.stop="toggleCategory(category)"/>
-                <span>{{ category.name }}</span>
-                <span v-if="category.id" class="ml-1">({{ category.id }})</span>
-              </span>
+        <template
+            v-if="$props.data.length && loaded"
+            v-for="category in ($props.data[0]?.[$props.dataKey] ? $props.data : [{
+              data: $props.data,
+              route: $props.route,
+              draggable: $props.draggable
+            }])">
+          <tbody v-if="category.name && category[$props.dataKey].length">
+          <tr class="even:bg-blue-600/10" @dblclick.stop="onClickCategoryRow(category)">
+            <td :colspan="columns.length"
+                class="p-2 px-5 border-b-2 font-bold"
+                :class="{ 'cursor-pointer hover:bg-blue-600/20 hover:text-blue-500': category.id ?? category.key }">
+              <i v-if="(category.id ?? category.key)"
+                 :class="[!hasClosedCategory(category) ? 'fa-square-minus' : 'fa-square-plus']"
+                 class="far fa-fw mr-1 cursor-pointer"
+                 @mousedown="onClickCategoryRow(category)"/>
+              <span>{{ category.name }}</span>
+              <span v-if="category.id" class="ml-1">({{ category.id }})</span>
             </td>
           </tr>
           </tbody>
 
-          <template v-if="category[this.dataKey] && !this.hasClosedCategory(category)">
-            <tbody v-if="category.route || route">
-            <tr v-for="(item, i) in category[this.dataKey]"
-                @click="selectRow($event, item, category.route || route)"
-                @dblclick="dblClickRow(item)"
-                :class="{
-                  'disabled' : item['@disabled'],
-                  'deleted' : item['@deleted'],
-                  'active': item['@active'],
-                  'cursor-pointer': !item['@disabled']
-                }"
-                @contextmenu="buildContextMenu($event, category)">
-              <component v-for="cell in cells(item, i)" :is="cell"/>
-            </tr>
-            </tbody>
-
-            <draggable v-else-if="category.draggable ?? draggable"
-                       :list="category[this.dataKey]"
+          <template v-if="(category.length || category[$props.dataKey].length) && !hasClosedCategory(category)">
+            <draggable v-if="category.draggable ?? $props.draggable"
+                       :list="category[$props.dataKey] || category"
                        item-key="id"
                        tag="tbody"
-                       @end="sortable(category[this.dataKey])">
-              <template #item="{ element: item, index }">
-                <tr :class="{
-                  'disabled' : item['@disabled'],
-                  'deleted' : item['@deleted'],
-                  'active': item['@active']
-                }"
-                    @click="selectRow($event, item)"
-                    @dblclick="dblClickRow(item)"
-                    @contextmenu="buildContextMenu($event, item)">
-                  <template v-for="cell in cells(item, index)">
-                    <component :is="cell"
-                               @action="action"
-                               :model-value="modelValue"
-                               @update:modelValue="updateModelValue"/>
-                  </template>
-                </tr>
+                       @end="onSortableEnd(category[$props.dataKey] || category, category.draggable ?? $props.draggable)">
+              <template #item="{ element, index }">
+                <panel-row :item="element" :index="index" v-bind="rowProps" @on-click-row="onClickRow"/>
               </template>
             </draggable>
 
             <tbody v-else>
-            <tr v-for="(item, i) in category[this.dataKey]"
-                @click="selectRow($event, item)"
-                @dblclick="dblClickRow(item)"
-                :class="{
-                  'disabled' : item['@disabled'],
-                  'deleted' : item['@deleted'],
-                  'active': item['@active'],
-                  'cursor-pointer': item.route
-                }"
-                @contextmenu="buildContextMenu($event, item)">
-              <component v-for="cell in cells(item, i)" :is="cell"/>
-            </tr>
+            <template v-for="item in (category[$props.dataKey] || category)">
+              <panel-row :item="item" v-bind="rowProps" @on-click-row="onClickRow"/>
+            </template>
             </tbody>
           </template>
+
         </template>
 
+        <tbody v-else-if="!loaded">
+        <tr>
+          <td :colspan="columns.length">
+            <div class="flex items-center justify-center text-center p-5 w-full">
+              <i class="inline-block rounded-full border-2 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-5 w-5 animate-spin"/>
+            </div>
+          </td>
+        </tr>
+        </tbody>
       </table>
     </div>
 
-    <div v-else class="flex grow items-center justify-center text-center p-5 w-full">
+    <div v-else class="flex items-center justify-center text-center p-5 w-full">
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-5 w-5 animate-spin"/>
     </div>
 
-    <div v-if="meta?.['pagination']?.['prev'] || meta?.['pagination']?.['next']" class="app-panel__pagination">
-      <div class="app-panel__pagination-arrows">
+    <div v-if="$props.meta?.['pagination']?.['prev'] || $props.meta?.['pagination']?.['next']" class="flex p-3">
+      <div class="grow">
         <Button class="btn-sm btn-gray"
-                :disabled="!meta['pagination']['prev']"
-                @click="pagination(meta['pagination']['prev'])">
+                :disabled="!$props.meta['pagination']['prev']"
+                :class="{ '!opacity-50': !$props.meta['pagination']['prev'] }"
+                @click="pagination($props.meta['pagination']['prev'])">
           <i class="fa fa-angle-left fa-fw"/>
         </Button>
         <Button class="btn-sm btn-gray ml-1"
-                :disabled="!meta['pagination']['next']"
-                @click="pagination(meta['pagination']['next'])">
+                :disabled="!$props.meta['pagination']['next']"
+                :class="{ '!opacity-50': !$props.meta['pagination']['next'] }"
+                @click="pagination($props.meta['pagination']['next'])">
           <i class="fa fa-angle-right fa-fw"/>
         </Button>
       </div>
-      <div class="app-panel__pagination-info" v-if="meta['pagination']['info']">
-        {{ meta['pagination']['info'] }}
+      <div v-if="$props.meta['pagination']['info']" class="pr-2">
+        {{ $props.meta['pagination']['info'] }}
       </div>
     </div>
 
     <div v-if="$slots['bottom']">
       <slot name="bottom"/>
     </div>
-
-    <transition>
-      <div v-if="showContextMenu && dataContextMenu.length" ref="ctx" class="app-panel__context-menu"
-           :class="classContextMenu">
-        <template v-for="i in dataContextMenu">
-          <div v-if="i.split" class="app-panel__context-menu__split"/>
-          <div v-else-if="i.title && Object.values(i).length === 1" class="app-panel__context-menu__item">
-            {{ i.title }}
-          </div>
-          <div v-else class="app-panel__context-menu__item" @mousedown="clickContextMenu(i)">
-            <i v-if="i.icon" :class="i.icon" class="fa fa-fw"/>
-            {{ i.title }}
-          </div>
-        </template>
-      </div>
-    </transition>
-
   </div>
 </template>
+
+<style scoped>
+
+</style>
+
+<style>
+.app-tabs__page > .app-panel {
+  @apply h-full
+}
+</style>

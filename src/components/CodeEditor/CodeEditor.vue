@@ -12,7 +12,6 @@ import { xml } from '@codemirror/lang-xml'
 import { css } from '@codemirror/lang-css'
 import { vue } from '@codemirror/lang-vue'
 import { sql } from '@codemirror/lang-sql'
-import store from '@/store'
 import local from '@/services/local'
 import { uniqId } from '@/utils'
 

@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import store from '@/store'
+import store from '@/services/store'
 import Button from '@/components/Button/Button.vue'
 
 defineOptions({
@@ -14,9 +14,9 @@ const $props = defineProps({
 
 const $emit = defineEmits(['action'])
 
-const stay = computed(() => store.getters.get('stay', 0))
+const stay = computed(() => store.get('stay', 0))
 
-const loading = computed(() => store.getters.get('tabsLoading'))
+const loading = computed(() => store.get('tabsLoading'))
 
 function onClick (params, stay) {
   if (params.to) {
@@ -42,7 +42,7 @@ function onClick (params, stay) {
   }
 
   if (stay !== undefined) {
-    store.dispatch('set', { 'stay': stay })
+    store.set('stay', stay)
   }
 
   $emit('action', 'submit', { ...params })
