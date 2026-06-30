@@ -5,7 +5,7 @@ import { ref } from 'vue'
 const storageKey = 'laravel-manager-admin'
 const storageVersion = 1.5
 
-let storage = ref(JSON.parse(localStorage[storageKey] || '{"version":' + storageVersion + '}'))
+const storage = ref(JSON.parse(localStorage[storageKey] || '{"version":' + storageVersion + '}'))
 
 if (!storage.value.version || storage.value.version < storageVersion) {
   storage.value = {

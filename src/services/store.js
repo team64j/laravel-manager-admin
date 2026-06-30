@@ -2,7 +2,7 @@ import { getValue, setValue } from '@/composables'
 import { mergeDeep } from '@/utils'
 import { ref } from 'vue'
 
-let storage = ref({})
+const storage = ref({})
 
 export default {
   storage: storage.value,

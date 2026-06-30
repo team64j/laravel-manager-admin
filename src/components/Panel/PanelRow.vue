@@ -62,6 +62,8 @@ function onContextMenu () {
 
       <i v-else-if="ceil.icon" :class="ceil.icon"/>
 
+      <div v-else-if="props.item[ceil.key + `.html`]" v-html="props.item[ceil.key + `.html`]"/>
+
       <template v-else>
         {{ getValue(ceil.key, props.item) }}
       </template>

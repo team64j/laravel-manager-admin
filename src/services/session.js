@@ -4,7 +4,7 @@ import { ref } from 'vue'
 
 const storageKey = 'laravel-manager-admin'
 
-let storage = ref(JSON.parse(sessionStorage[storageKey] || '{}'))
+const storage = ref(JSON.parse(sessionStorage[storageKey] || '{}'))
 
 export default {
   storage: storage.value,
