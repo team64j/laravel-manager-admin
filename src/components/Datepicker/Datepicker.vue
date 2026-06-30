@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, reactive, ref, shallowRef } from 'vue'
+import { nextTick, ref, shallowRef } from 'vue'
 import store from '@/services/store'
 import Button from '@/components/Button/Button.vue'
 import Select from '@/components/Select/Select.vue'
@@ -12,10 +12,6 @@ defineOptions({
 defineExpose({
   on: make,
   off: destroy
-})
-
-const data = reactive({
-  days: []
 })
 
 let instance = null
@@ -144,10 +140,6 @@ function make (self) {
 
 function destroy () {
   showDatepicker.value = false
-}
-
-function clear (ctx) {
-  ctx.model = ''
 }
 
 function setDays () {
@@ -344,7 +336,7 @@ document.addEventListener('mousedown', () => {
 
 <style scoped>
 .app-datepicker {
-  @apply absolute z-50 top-0 py-0.5
+  @apply absolute z-50 top-0 py-0.5 w-80
 }
 .app-datepicker__content {
   @apply relative overflow-hidden bg-white dark:bg-gray-700 border shadow-2xl rounded

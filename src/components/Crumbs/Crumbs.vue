@@ -29,7 +29,7 @@ const $props = defineProps({
         {{ i['name'] ?? i['title'] }}
       </div>
 
-      <i class="fa fa-angle-right opacity-60 leading-[0] mx-4 last-of-type:hidden" style="font-size: 70%"/>
+      <i class="fa fa-angle-right opacity-60 leading-[0] mx-4 last-of-type:hidden text-xs"/>
     </template>
   </div>
 </template>
