@@ -8,17 +8,16 @@ axios.defaults['headers']['common']['X-Requested-With'] = 'XMLHttpRequest'
 
 axios.interceptors['request'].use(
   config => {
-    config.baseURL = (local.get('hostname') || document.baseURI).replace(/\/$/g,
-      '')
+    config.baseURL = (local.get('hostname') || document.baseURI).replace(/\/$/g, '')
     config.headers['Accept-Language'] = local.get('lang', 'en')
 
     const token = local.get('token', '')
+
     if (token) {
       config.headers['Authorization'] = 'Bearer ' + token
     }
 
-    Object.assign(config.headers, local.get('hostnames', []).
-      find(i => i.name === config.baseURL)?.headers || {})
+    Object.assign(config.headers, local.get('hostnames', []).find(i => i.name === config.baseURL)?.headers || {})
 
     if (!config.url) {
       return config
