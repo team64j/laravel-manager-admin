@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
+import { computed, getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
 import { convertPixelsToRem, convertRemToPixels } from './utils'
 import router from '@/router'
 import store from '@/services/store'
@@ -8,12 +8,12 @@ import { RouterView } from 'vue-router'
 import { Notifications, notify } from '@kyvg/vue3-notification'
 import GlobalTabs from '@/components/GlobalTabs/GlobalTabs.vue'
 import Datepicker from '@/components/Datepicker/Datepicker.vue'
-import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
 import Tooltip from '@/components/Tooltip/Tooltip.vue'
 import Search from '@/components/Search/Search.vue'
 import Modal from '@/components/Modal/Modal.vue'
 import Logo from '@/components/Logo/Logo.vue'
 import { action } from '@/composables'
+import { DynamicComponent } from '@/utils/dynamic-component'
 
 defineOptions({
   name: 'App'
@@ -24,6 +24,7 @@ const emit = defineEmits(['action'])
 const currentInstance = getCurrentInstance()
 
 const rootElement = shallowRef()
+const globalTabs = shallowRef()
 const midElement = shallowRef()
 const modalElement = shallowRef()
 const sidebarElement = shallowRef()
@@ -471,13 +472,13 @@ defineExpose({
           v-if="data.layout['top.left'] || data.layout['top'] || data.layout['top.right']"
           class="dark app-position-horizontal grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 border-b border-b-gray-900">
         <div class="grow-0 flex app-position-start" v-if="data.layout['top.left']">
-          <global-component :layout="data.layout['top.left']" @action="_action"/>
+          <component :is="DynamicComponent({}, null, data.layout['top.left'])" @action="_action"/>
         </div>
         <div class="grow flex justify-between" v-if="data.layout['top']">
-          <global-component :layout="data.layout['top']" @action="_action"/>
+          <component :is="DynamicComponent({}, null, data.layout['top.top'])" @action="_action"/>
         </div>
         <div class="grow-0 flex app-position-end" v-if="data.layout['top.right']">
-          <global-component :layout="data.layout['top.right']" @action="_action"/>
+          <component :is="DynamicComponent({}, null, data.layout['top.right'])" @action="_action"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
@@ -485,13 +486,13 @@ defineExpose({
             v-if="data.layout['left.top'] || data.layout['left'] || data.layout['left.bottom']"
             class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 text-white/80 w-12 border-r border-r-gray-800 app-position-vertical dark">
           <div class="grow-0 flex" v-if="data.layout['left.top']">
-            <global-component :layout="data.layout['left.top']" @action="_action"/>
+            <component :is="DynamicComponent({}, null, data.layout['left.top'])" @action="_action"/>
           </div>
           <div class="grow flex items-center" v-if="data.layout['left']">
-            <global-component :layout="data.layout['left']" @action="_action"/>
+            <component :is="DynamicComponent({}, null, data.layout['left'])" @action="_action"/>
           </div>
           <div class="grow-0 flex app-position-end" v-if="data.layout['left.bottom']">
-            <global-component :layout="data.layout['left.bottom']" @action="_action"/>
+            <component :is="DynamicComponent({}, null, data.layout['left.bottom'])" @action="_action"/>
           </div>
         </div>
         <div v-if="data.layout['sidebar']" ref="sidebarElement"
@@ -500,13 +501,13 @@ defineExpose({
              :class="{
               'app-main__overlay': store.get('AppMainOverlay')
             }">
-          <global-component :layout="data.layout['sidebar']" @action="_action"/>
+          <component :is="DynamicComponent({}, null, data.layout['sidebar'])" @action="_action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>
         </div>
         <div class="grow flex flex-col overflow-hidden z-10 app-main"
-          :class="{
+             :class="{
             'app-main__overlay': store.get('AppMainOverlay')
           }">
           <global-tabs :current-route="router.currentRoute.value" @action="_action" ref="globalTabs"/>

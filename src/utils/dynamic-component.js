@@ -14,12 +14,15 @@ export function DynamicComponent (item = {}, model, ceil) {
     props.value = item[props.keyValue]
   }
 
+  const slots = data.slots ? Object.fromEntries(Object.entries(data.slots || {}).
+    map(i => [i[0], () => DynamicComponent({}, null, i[1])])) : undefined
+
   return h(
     window['Vue']._context.components[component.component],
     {
       ...props,
       onAction () {
-        console.log('action', ...arguments)
+        //console.log('action', ...arguments)
       },
       ['onUpdate:props'] (newProps) {
         Object.assign(props, newProps)
@@ -27,6 +30,7 @@ export function DynamicComponent (item = {}, model, ceil) {
       ['onUpdate:modelValue'] (value) {
         setValue(component.model, value, model)
       }
-    }
+    },
+    slots
   )
 }

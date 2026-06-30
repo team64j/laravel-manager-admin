@@ -1,5 +1,4 @@
 import { getValue, setValue } from '@/composables'
-import { mergeDeep } from '@/utils'
 import { ref } from 'vue'
 
 const storageKey = 'laravel-manager-admin'
@@ -9,7 +8,7 @@ const storage = ref(JSON.parse(localStorage[storageKey] || '{"version":' + stora
 
 if (!storage.value.version || storage.value.version < storageVersion) {
   storage.value = {
-    version: storageVersion,
+    version: storageVersion
   }
 }
 
@@ -20,11 +19,11 @@ export default {
   },
   set (key, value) {
     if (typeof key === 'object') {
-      storage.value = key === null ? {} : mergeDeep(storage.value, key)
+      storage.value = key === null ? {} : Object.assign(storage.value, key)
     } else {
       setValue(key, value, storage.value)
     }
 
     localStorage[storageKey] = JSON.stringify(storage.value)
-  },
+  }
 }

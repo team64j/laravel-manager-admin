@@ -79,7 +79,7 @@ function onClickItem (action) {
         v-if="icon"
         :data-tooltip="title"
         class="app-tree__menu__item"
-        @mousedown="onClickButton"
+        @click="onClickButton"
         @blur="onBlurButton">
       <template v-if="loader">
         <i v-if="data.loading"
@@ -97,7 +97,7 @@ function onClickItem (action) {
             {{ action.title }}
           </div>
           <div v-else-if="action.split" class="app-tree__context-menu__split"/>
-          <div v-else class="app-tree__context-menu__item" @mousedown="onClickItem(action)">
+          <div v-else class="app-tree__context-menu__item" @click="onClickItem(action)">
             <i v-if="hasActiveItem(action)" class="fa fa-check w-4"/>
             <i v-else class="fa w-4"/>
             {{ action.title }}

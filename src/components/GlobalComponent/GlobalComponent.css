@@ -1,3 +1,0 @@
-.app-global-component-html table th, .app-global-component-html table td {
-    @apply px-2 first:pl-0 last:pr-0
-}

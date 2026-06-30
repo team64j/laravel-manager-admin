@@ -1,26 +1,186 @@
-<script>
+<script setup>
+import { computed, getCurrentInstance, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
+import { action as _action } from '@/composables'
+import { mergeDeep } from '@/utils'
 import router from '@/router'
 import store from '@/services/store'
-import { action } from '@/composables'
-import { mergeDeep } from '@/utils'
-import { defineAsyncComponent } from 'vue'
 import session from '@/services/session'
+import KeepAliveComponent from '@/components/GlobalTabs/KeepAlive.vue'
+import Frame from '@/components/Frame/Frame.vue'
+import Button from '@/components/Button/Button.vue'
 
-export default {
+const currentInstance = getCurrentInstance()
+
+defineOptions({
   name: 'GlobalTabs',
-  __isStatic: true,
-  components: {
-    KeepAliveComponent: defineAsyncComponent(() => import('./KeepAlive')),
-    Button: defineAsyncComponent(() => import('@/components/Button/Button.vue')),
-    Frame: defineAsyncComponent(() => import('@/components/Frame/Frame.vue'))
-  },
-  emits: ['action'],
-  watch: {
-    '$route' (route) {
-      this.addTab(route)
-    },
-    tabs: {
-      handler (data) {
+  __isStatic: true
+})
+
+const $props = defineProps({
+  currentRoute: {
+    type: Object,
+    default: router.currentRoute.value
+  }
+})
+
+const $data = reactive({
+  tabs: session.get('global_tabs') ?? [],
+  keys: []
+})
+
+const frames = computed(() => $data.tabs.filter(i => i.meta['isIframe']))
+
+const keepAlive = shallowRef()
+
+function action (...args) {
+  return _action.call(currentInstance, ...args)
+}
+
+function init () {
+  router.getRoutes().filter(i => i?.meta?.fixed).map(i => addTab(router.parse(i)))
+}
+
+function addTab (data) {
+  if (!data) {
+    return
+  }
+
+  data = router.parse(data)
+
+  let is = false
+
+  $data.tabs.forEach(i => {
+    i.active = router.key(i, data)
+
+    if (i.active) {
+      is = true
+      data.meta = i.meta
+      Object.assign(i, data)
+    }
+  })
+
+  if (!is && !data.meta['hidden']) {
+    data.active = true
+    $data.tabs.push(data)
+  }
+
+  $data.keys = $data.tabs.map(i => router.key(i))
+
+  let right = 0,
+      width = 0,
+      index = $data.tabs.findIndex(i => i.active)
+
+  if (currentInstance.refs.panel) {
+    nextTick(() => {
+      if (!currentInstance.refs.panel) {
+        return
+      }
+
+      currentInstance.refs.panel.querySelectorAll('button').forEach((i, k) => {
+        i.styles = getComputedStyle(i)
+
+        if (k <= index) {
+          width += i.offsetWidth + parseFloat(i.styles.marginLeft) + parseFloat(i.styles.marginRight)
+
+          if (k < index) {
+            right += i.offsetWidth + parseFloat(i.styles.marginLeft)
+          }
+        }
+      })
+
+      if (currentInstance.refs.panel.scrollLeft > right) {
+        currentInstance.refs.panel.scrollLeft = right
+      }
+
+      if (currentInstance.refs.panel.offsetWidth < width) {
+        currentInstance.refs.panel.scrollLeft = width - currentInstance.refs.panel.offsetWidth
+      }
+    })
+  }
+}
+
+function setTab (data) {
+  store.set({ tabsLoading: data.loading })
+
+  if (data.key) {
+    const index = $data.keys.findIndex(i => i === data.key)
+    index > -1 && mergeDeep($data.tabs[index], data)
+  } else {
+    $data.tabs.map(i => i.active && mergeDeep(i, data))
+  }
+}
+
+function closeTab (callback) {
+  let route = typeof callback === 'object' ? callback : router.currentRoute.value
+  const index = $data.keys.findIndex(i => i === router.key(route))
+  const tab = $data.tabs[index]
+
+  if (tab?.['changed'] && !confirm(store.get('lang.warning_not_saved'))) {
+    return
+  }
+
+  if (tab?.meta['fixed']) {
+    return
+  }
+
+  index > -1 && $data.tabs.splice(index, 1) && $data.keys.splice(index, 1)
+
+  if (tab.active && index > 0 && $data.tabs[index - 1]) {
+    router.to($data.tabs[index - 1])
+  }
+
+  if (typeof callback === 'function') {
+    callback()
+  }
+
+  return index
+}
+
+function toTab (data) {
+  const tab = find(router.currentRoute.value)
+  if (tab?.['changed'] && !confirm(store.get('lang.warning_not_saved'))) {
+    return
+  }
+  this.closeTab(router.currentRoute.value)
+  router.to(data)
+}
+
+function replaceTab (data) {
+  for (const i in $data.tabs) {
+    if (router.key($data.tabs[i], router.currentRoute.value)) {
+      Object.assign($data.tabs[i], data)
+      $data.keys[i] = router.key(data)
+      router.to(data)
+      break
+    }
+  }
+}
+
+function clickTab (tab) {
+  router.to(tab)
+}
+
+function dblClickTab (data) {
+  router.key(router.currentRoute.value, data) &&
+  router.replace(router.parse({ path: '/redirect' + data.path, query: data.query })).then(() => {
+    const index = $data.keys.indexOf(router.key(data))
+    index > -1 && $data.keys.splice(index, 1)
+  })
+}
+
+function find (data) {
+  return $data.tabs.filter(i => router.key(i, data))[0] || null
+}
+
+onMounted(() => {
+  watch(
+      () => router.currentRoute.value,
+      addTab
+  )
+
+  watch(
+      () => $data.tabs,
+      (data) => {
         session.set('global_tabs', data.map(i => ({
           path: i.path,
           query: i.query,
@@ -30,166 +190,20 @@ export default {
           matched: [{ path: i?.matched?.[0].path }]
         })))
       },
-      deep: true
-    }
-  },
-  props: {
-    currentRoute: {
-      type: Object,
-      default: router.currentRoute.value
-    }
-  },
-  data () {
-    return {
-      tabs: session.get('global_tabs') ?? [],
-      keys: []
-    }
-  },
-  computed: {
-    pages () {
-      return this.tabs.filter(i => !i.meta['isIframe']).map(i => router.key(i))
-    },
-    frames () {
-      return this.tabs.filter(i => i.meta['isIframe'])
-    },
-    router () {
-      return router
-    }
-  },
-  created () {
-    this.init()
-  },
-  methods: {
-    action,
-    init () {
-      router.getRoutes().filter(i => i?.meta?.fixed).map(i => this.addTab(router.parse(i)))
-    },
-    addTab (data) {
-      if (!data) {
-        return
-      }
+      { deep: true }
+  )
 
-      data = router.parse(data)
+  init()
+})
 
-      let is = false
-
-      this.tabs.forEach(i => {
-        i.active = router.key(i, data)
-
-        if (i.active) {
-          is = true
-          data.meta = i.meta
-          Object.assign(i, data)
-        }
-      })
-
-      if (!is && !data.meta['hidden']) {
-        data.active = true
-        this.tabs.push(data)
-      }
-
-      this.keys = this.tabs.map(i => router.key(i))
-
-      let right = 0,
-          width = 0,
-          index = this.tabs.findIndex(i => i.active)
-
-      if (this.$refs.panel) {
-        this.$nextTick(() => {
-          if (!this.$refs.panel) {
-            return
-          }
-
-          this.$refs.panel.querySelectorAll('button').forEach((i, k) => {
-            i.styles = getComputedStyle(i)
-
-            if (k <= index) {
-              width += i.offsetWidth + parseFloat(i.styles.marginLeft) + parseFloat(i.styles.marginRight)
-
-              if (k < index) {
-                right += i.offsetWidth + parseFloat(i.styles.marginLeft)
-              }
-            }
-          })
-
-          if (this.$refs.panel.scrollLeft > right) {
-            this.$refs.panel.scrollLeft = right
-          }
-
-          if (this.$refs.panel.offsetWidth < width) {
-            this.$refs.panel.scrollLeft = width - this.$refs.panel.offsetWidth
-          }
-        })
-      }
-    },
-    setTab (data) {
-      store.set({ tabsLoading: data.loading })
-
-      if (data.key) {
-        const index = this.keys.findIndex(i => i === data.key)
-        index > -1 && mergeDeep(this.tabs[index], data)
-      } else {
-        this.tabs.map(i => i.active && mergeDeep(i, data))
-      }
-    },
-    closeTab (callback) {
-      let route = typeof callback === 'object' ? callback : router.currentRoute.value
-      const index = this.keys.findIndex(i => i === router.key(route))
-      const tab = this.tabs[index]
-
-      if (tab?.['changed'] && !confirm(store.get('lang.warning_not_saved'))) {
-        return
-      }
-
-      if (tab?.meta['fixed']) {
-        return
-      }
-
-      index > -1 && this.tabs.splice(index, 1) && this.keys.splice(index, 1)
-
-      if (tab.active && index > 0 && this.tabs[index - 1]) {
-        router.to(this.tabs[index - 1])
-      }
-
-      if (typeof callback === 'function') {
-        callback()
-      }
-
-      return index
-    },
-    toTab (data) {
-      const tab = this.find(router.currentRoute.value)
-      if (tab?.['changed'] && !confirm(store.get('lang.warning_not_saved'))) {
-        return
-      }
-      this.closeTab(router.currentRoute.value)
-      router.to(data)
-    },
-    replaceTab (data) {
-      for (const i in this.tabs) {
-        if (router.key(this.tabs[i], router.currentRoute.value)) {
-          Object.assign(this.tabs[i], data)
-          this.keys[i] = router.key(data)
-          router.to(data)
-          break
-        }
-      }
-    },
-    clickTab (tab) {
-      router.to(tab)
-    },
-    dblClickTab (data) {
-      router.key(router.currentRoute.value, data) &&
-      router.replace(router.parse({ path: '/redirect' + data.path, query: data.query })).then(() => {
-        const index = this.keys.indexOf(router.key(data))
-        index > -1 && this.keys.splice(index, 1)
-      })
-    },
-    find (data) {
-      return this.tabs.filter(i => router.key(i, data))[0] || null
-    }
-  }
-}
+defineExpose({
+  toTab,
+  addTab,
+  setTab,
+  closeTab,
+  replaceTab,
+  keepAlive
+})
 </script>
 
 <template>
@@ -197,7 +211,7 @@ export default {
 
     <div class="grow-0 dark">
       <div ref="panel" class="relative flex flex-nowrap bg-gray-100 dark:bg-gray-800 overflow-hidden !overflow-x-auto">
-        <Button v-for="(tab, i) in this.tabs"
+        <Button v-for="(tab, i) in $data.tabs"
                 :key="i"
                 :data-to="tab.path"
                 :class="{ '!bg-blue-600 !text-slate-50': tab.active }"
@@ -220,7 +234,7 @@ export default {
     <div class="grow flex overflow-hidden">
 
       <router-view v-slot="slot">
-        <keep-alive-component :include="keys" ref="keepAlive">
+        <keep-alive-component :include="$data.keys" ref="keepAlive">
           <component v-if="!slot.route?.meta?.['isIframe']"
                      :is="slot.Component"
                      :key="router.key(slot.route)"
@@ -231,7 +245,7 @@ export default {
 
       <div class="grow overflow-hidden">
         <template v-for="{ path } in frames" :key="path">
-          <Frame v-if="keys.includes(path)" v-show="currentRoute['path'] === path" @action="action"/>
+          <Frame v-if="$data.keys.includes(path)" v-show="currentRoute['path'] === path" @action="action"/>
         </template>
       </div>
 
