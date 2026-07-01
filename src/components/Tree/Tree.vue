@@ -82,18 +82,21 @@ onMounted(() => {
       () => {
         const route = router.currentRoute.value
 
-        if (store.storage['route'] === route['path']) {
-          switch (store.storage['action']) {
+        if (router.key(router.parse({ path: $props.route, params: route.params }), route)) {
+          switch (store.get('action')) {
             case 'create':
-              createNode(store.storage['data'], data)
+              get(true)
+              //createNode(store.get('data'), refData.value)
               break
 
             case 'update':
-              updateNode(store.storage['data'], data)
+              get(true)
+              //updateNode(store.get('data'), refData.value)
               break
 
             case 'delete':
-              deleteNode(store.storage['data'], data)
+              get(true)
+              //deleteNode(store.get('data'), refData.value)
               break
           }
         }
@@ -263,10 +266,9 @@ function updateNode (node, data) {
   }
 
   data.forEach(i => {
-    if (keyNode(i) === keyNode(node) &&
-        (!i?.route?.path || i.route.path === router.currentRoute.value.fullPath)) {
+    if (keyNode(i) === keyNode(node) && (!i?.route?.path || i.route.path === router.currentRoute.value.fullPath)) {
       for (const j in node) {
-        if (node[j] !== undefined) {
+        if (i[j] !== undefined) {
           i[j] = node[j]
         }
       }

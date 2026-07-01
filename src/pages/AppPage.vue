@@ -1,9 +1,10 @@
 <script setup>
-import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
+import { getCurrentInstance, onMounted, reactive, ref, toRef, watch } from 'vue'
 import { action } from '@/composables'
 import { isNumber } from '@/utils'
 import router from '@/router'
 import store from '@/services/store'
+import session from '@/services/session'
 import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
 
 defineOptions({
@@ -45,7 +46,7 @@ function submit ({ action, method, route } = {}, changed = false) {
 
   const url = route?.['meta']?.['url'] ? route['meta']['url'] : route?.['path']
   const isNumericId = isNumber(route['params']['id'])
-  const stay = store.get('stay')
+  const stay = session.get('stay')
 
   if (route?.['meta']?.['method']) {
     method ??= route['meta']['method'].toLowerCase()

@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import store from '@/services/store'
+import session from '@/services/session'
 import Button from '@/components/Button/Button.vue'
 
 defineOptions({
@@ -40,7 +41,7 @@ function onClick (params, stay) {
   }
 
   if (stay !== undefined) {
-    store.set('stay', stay)
+    session.set('stay', stay)
   }
 
   $emit('action', 'submit', { ...params })
@@ -58,7 +59,7 @@ function onClickGroup (event) {
   <div v-if="$props.data.length" class="app-actions">
     <template v-for="i in $props.data">
       <div v-if="i.data" class="app-actions__group">
-        <Button v-for="j in i.data.filter(k => k.stay.toString() === store.get('stay', 0).toString())"
+        <Button v-for="j in i.data.filter(k => k.stay.toString() === session.get('stay', 0).toString())"
                 class="btn-sm"
                 :icon="j.icon"
                 :class="i.class"
@@ -72,7 +73,7 @@ function onClickGroup (event) {
                 @mousedown="onClickGroup"/>
 
         <div class="app-actions__save-buttons">
-          <Button v-for="j in i.data.filter(k => k.stay.toString() !== store.get('stay', 0).toString())"
+          <Button v-for="j in i.data.filter(k => k.stay.toString() !== session.get('stay', 0).toString())"
                   class="btn-sm justify-start"
                   :icon="j.icon"
                   :class="i.class"
