@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
 import { convertPixelsToRem, convertRemToPixels } from './utils'
 import router from '@/router'
 import store from '@/services/store'
@@ -12,7 +12,7 @@ import Tooltip from '@/components/Tooltip/Tooltip.vue'
 import Search from '@/components/Search/Search.vue'
 import Modal from '@/components/Modal/Modal.vue'
 import Logo from '@/components/Logo/Logo.vue'
-import { action } from '@/composables'
+import { action as _action } from '@/composables'
 import { DynamicComponent } from '@/utils/dynamic-component'
 
 defineOptions({
@@ -98,8 +98,6 @@ onMounted(() => {
   })
 })
 
-bootstrap()
-
 window.addEventListener('resize', () => {
   const check = calcIsMobile()
 
@@ -115,6 +113,12 @@ document.documentElement.classList.toggle(
     local.get('root.dark')
 )
 
+bootstrap()
+
+function action (...args) {
+  return _action.call(currentInstance.exposed, ...args)
+}
+
 function login () {
   local.set('token', null)
 
@@ -125,10 +129,6 @@ function login () {
   data.loaded = true
   data.layout = null
   router.to('/login')
-}
-
-function _action () {
-  return action.call(currentInstance.exposed, ...arguments)
 }
 
 function bootstrap () {
@@ -472,13 +472,13 @@ defineExpose({
           v-if="data.layout['top.left'] || data.layout['top'] || data.layout['top.right']"
           class="dark app-position-horizontal grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 border-b border-b-gray-900">
         <div class="grow-0 flex app-position-start" v-if="data.layout['top.left']">
-          <component :is="DynamicComponent({}, null, data.layout['top.left'])" @action="_action"/>
+          <component :is="DynamicComponent({}, null, data.layout['top.left'])" @action="action"/>
         </div>
         <div class="grow flex justify-between" v-if="data.layout['top']">
-          <component :is="DynamicComponent({}, null, data.layout['top.top'])" @action="_action"/>
+          <component :is="DynamicComponent({}, null, data.layout['top.top'])" @action="action"/>
         </div>
         <div class="grow-0 flex app-position-end" v-if="data.layout['top.right']">
-          <component :is="DynamicComponent({}, null, data.layout['top.right'])" @action="_action"/>
+          <component :is="DynamicComponent({}, null, data.layout['top.right'])" @action="action"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
@@ -486,13 +486,13 @@ defineExpose({
             v-if="data.layout['left.top'] || data.layout['left'] || data.layout['left.bottom']"
             class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 text-white/80 w-12 border-r border-r-gray-800 app-position-vertical dark">
           <div class="grow-0 flex" v-if="data.layout['left.top']">
-            <component :is="DynamicComponent({}, null, data.layout['left.top'])" @action="_action"/>
+            <component :is="DynamicComponent({}, null, data.layout['left.top'])" @action="action"/>
           </div>
           <div class="grow flex items-center" v-if="data.layout['left']">
-            <component :is="DynamicComponent({}, null, data.layout['left'])" @action="_action"/>
+            <component :is="DynamicComponent({}, null, data.layout['left'])" @action="action"/>
           </div>
           <div class="grow-0 flex app-position-end" v-if="data.layout['left.bottom']">
-            <component :is="DynamicComponent({}, null, data.layout['left.bottom'])" @action="_action"/>
+            <component :is="DynamicComponent({}, null, data.layout['left.bottom'])" @action="action"/>
           </div>
         </div>
         <div v-if="data.layout['sidebar']" ref="sidebarElement"
@@ -501,7 +501,7 @@ defineExpose({
              :class="{
               'app-main__overlay': store.get('AppMainOverlay')
             }">
-          <component :is="DynamicComponent({}, null, data.layout['sidebar'])" @action="_action"/>
+          <component :is="DynamicComponent({}, null, data.layout['sidebar'])" @action="action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>
@@ -510,7 +510,7 @@ defineExpose({
              :class="{
             'app-main__overlay': store.get('AppMainOverlay')
           }">
-          <global-tabs :current-route="router.currentRoute.value" @action="_action" ref="globalTabs"/>
+          <global-tabs :current-route="router.currentRoute.value" @action="action" ref="globalTabs"/>
         </div>
       </div>
 
