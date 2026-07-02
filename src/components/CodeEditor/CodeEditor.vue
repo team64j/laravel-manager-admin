@@ -201,7 +201,7 @@ document.addEventListener('keydown', event => {
 
 <style scoped>
 .app-editor__settings {
-  @apply absolute z-10 top-1.5 right-2 w-5
+  @apply absolute z-20 top-2 right-2 flex flex-col
 }
 .app-editor__settings i {
   @apply relative mb-2 opacity-80 hover:opacity-100
@@ -232,7 +232,7 @@ document.addEventListener('keydown', event => {
 
 <style>
 .app-editor .ͼ1.cm-editor {
-  @apply overflow-hidden w-full h-full bg-white dark:bg-gray-800 rounded border transition-all
+  @apply overflow-hidden w-full h-full bg-white dark:bg-gray-800 !outline-0 rounded border transition-all
 }
 .app-editor.app-editor__full-size .ͼ1.cm-editor {
   @apply h-full
@@ -253,10 +253,10 @@ document.addEventListener('keydown', event => {
   @apply grow !basis-0 max-w-full whitespace-pre-wrap break-words break-all
 }
 .app-editor .app-editor__editor > div {
-  @apply !h-full
+  @apply !h-full p-0
 }
-.app-editor.app-editor__full-screen .app-editor__editor, .app-editor.app-editor__full-screen .app-editor__editor > textarea, .app-editor.app-editor__full-screen .v-codemirror, .app-editor.app-editor__full-screen .v-codemirror .cm-editor {
-  @apply !h-full text-lg
+.app-editor.app-editor__full-screen .app-editor__editor, .app-editor.app-editor__full-screen .app-editor__editor textarea, .app-editor.app-editor__full-screen .v-codemirror, .app-editor.app-editor__full-screen .v-codemirror .cm-editor {
+  @apply !h-full !rounded-none text-lg transition-none
 }
 </style>
 

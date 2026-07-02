@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, onMounted, reactive } from 'vue'
+import { getCurrentInstance, onMounted, ref } from 'vue'
 import { action } from '@/composables'
 import MainMenuItem from './MainMenuItem.vue'
 import router from '@/router'
@@ -18,13 +18,13 @@ const $props = defineProps({
   isVertical: Boolean
 })
 
-const data = reactive({
-  active: false
-})
-
 const $emit = defineEmits(['action'])
 
-let enterTimer = 0, filterTimer = 0
+const refData = ref($props.data)
+
+let enterTimer = 0,
+    filterTimer = 0,
+    active = false
 
 function onClick (event, props) {
   if (store.get('isMobile')) {
@@ -38,26 +38,26 @@ function onClick (event, props) {
       item = item?.parentElement?.closest('li')
     }
 
-    data.active = action === 'add'
+    active = action === 'add'
 
     if (event.target.classList.contains('app-main-menu__toggle') && props.data['url']) {
       loadData(props.data['url'], props)
       return
     }
   } else {
-    data.active = !data.active
+    active = !active
   }
 
   if (props.data['to']) {
-    data.active = false
+    active = false
     router.to(props.data['to'])
   } else if (props.data['href']) {
-    data.active = false
+    active = false
     window.open(props.data['href'])
   } else if (props.data['url']) {
-    data.active && loadData(props.data['url'], props)
+    active && loadData(props.data['url'], props)
   } else if (props.data['values']) {
-    data.active = false
+    active = false
     const value = local.get('root.' + props.data['key'])
 
     for (let i in props.data['values']) {
@@ -70,7 +70,7 @@ function onClick (event, props) {
       }
     }
   }
-  store.set({ AppMainOverlay: data.active })
+  store.set({ AppMainOverlay: active })
 }
 
 function onEnter (event, props) {
@@ -78,25 +78,21 @@ function onEnter (event, props) {
     return
   }
 
-  let delay = 0
-
-  clearTimeout(enterTimer)
-
-  if (props.data['url'] && !props.data['data']) {
-    delay = 50
-  }
+  document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
 
   let item = event.currentTarget
 
+  while (item) {
+    item.classList.add('app-main-menu__hover')
+    item = item?.parentElement?.closest('li')
+  }
+
+  const delay = props.data['url'] && !props.data['data'] ? 50 : 0
+
+  clearTimeout(enterTimer)
+
   enterTimer = setTimeout(() => {
-    document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
-
-    while (item) {
-      item.classList.add('app-main-menu__hover')
-      item = item?.parentElement?.closest('li')
-    }
-
-    if (props.data['url'] && data.active) {
+    if (props.data['url'] && active) {
       clearTimeout(enterTimer)
       props.data['data'] = null
 
@@ -179,8 +175,8 @@ function _action () {
 
 onMounted(() => {
   document.addEventListener('click', function () {
-    data.active = false
-    store.set({ AppMainOverlay: data.active })
+    active = false
+    store.set({ AppMainOverlay: active })
   })
 })
 
@@ -201,7 +197,7 @@ defineExpose({
         'app-main-menu__vertical': $props.isVertical
       }">
     <ul>
-      <main-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" :level="1" @action="_action"/>
+      <main-menu-item v-for="(i, k) in refData" :data="i" :key="k" :level="1" @action="_action"/>
     </ul>
   </div>
 </template>

@@ -468,7 +468,7 @@ defineExpose({
     <template v-if="data.layout">
       <div
           v-if="data.layout['top.left'] || data.layout['top'] || data.layout['top.right']"
-          class="dark app-position-horizontal grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-750 text-white/80 border-b border-b-gray-900">
+          class="dark app-position-horizontal grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-700 text-white/80 border-b border-b-gray-900">
         <div class="grow-0 flex app-position-start" v-if="data.layout['top.left']">
           <component :is="DynamicComponent({}, null, data.layout['top.left'])" @action="action"/>
         </div>
@@ -482,7 +482,7 @@ defineExpose({
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
             v-if="data.layout['left.top'] || data.layout['left'] || data.layout['left.bottom']"
-            class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-750 text-white/80 w-12 border-r border-r-gray-800 app-position-vertical dark">
+            class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 text-white/80 w-12 border-r border-r-gray-900 app-position-vertical dark">
           <div class="grow-0 flex" v-if="data.layout['left.top']">
             <component :is="DynamicComponent({}, null, data.layout['left.top'])" @action="action"/>
           </div>

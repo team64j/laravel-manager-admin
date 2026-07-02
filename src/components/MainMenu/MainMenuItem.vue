@@ -9,10 +9,10 @@ const $props = defineProps(['data', 'level'])
 if ($props.data['values']) {
   const value = $props.data['value'] ?? local.get('root.' + $props.data['key'], $props.data['values'][0]['value'])
 
-  for (const i of $props['data']['values']) {
+  for (const i of $props.data['values']) {
     if (i['value'] === value) {
-      Object.assign($props['data'], i)
-      local.set('root.' + $props['data']['key'], i['value'])
+      Object.assign($props.data, i)
+      local.set('root.' + $props.data['key'], i['value'])
     }
   }
 }
