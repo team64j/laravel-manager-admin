@@ -28,7 +28,7 @@ const dateFormat = store.get('config.datetimeFormat', 'dd-mm-YYYY')
 
 const timeFormat = 'H:i:s'
 
-const monthNames = store.get('lang.monthNames', [
+const monthNames = store.get('lexicon.months', [
   'January',
   'February',
   'March',
@@ -45,7 +45,7 @@ const monthNames = store.get('lang.monthNames', [
 
 const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-const dayNames = store.get('lang.dayNames', [
+const dayNames = store.get('lexicon.days', [
   'Sunday',
   'Monday',
   'Tuesday',
@@ -55,7 +55,7 @@ const dayNames = store.get('lang.dayNames', [
   'Saturday'
 ])
 
-const startDay = parseInt(store.get('lang.startDay', 1))
+const startDay = parseInt(store.get('lexicon.firstDay', 1))
 
 const dayChars = 1
 

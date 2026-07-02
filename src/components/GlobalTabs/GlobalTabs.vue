@@ -115,7 +115,7 @@ function closeTab (callback) {
   const index = $data.keys.findIndex(i => i === router.key(route))
   const tab = $data.tabs[index]
 
-  if (tab?.['changed'] && !confirm(store.get('lang.warning_not_saved'))) {
+  if (tab?.['changed'] && !confirm(store.get('lexicon.messages.warning.notSaved'))) {
     return
   }
 
@@ -138,7 +138,7 @@ function closeTab (callback) {
 
 function toTab (data) {
   const tab = find(router.currentRoute.value)
-  if (tab?.['changed'] && !confirm(store.get('lang.warning_not_saved'))) {
+  if (tab?.['changed'] && !confirm(store.get('lexicon.messages.warning.notSaved'))) {
     return
   }
   this.closeTab(router.currentRoute.value)

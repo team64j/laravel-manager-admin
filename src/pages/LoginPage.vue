@@ -108,7 +108,6 @@ export default {
 
         if (this.config['version']) {
           this.connected = true
-          //this.$nextTick(() => this.$el.querySelector('[name="username"]').focus())
         }
 
         if (this.languages.length) {
@@ -175,8 +174,7 @@ export default {
 
 <template>
   <div class="app__page__login dark">
-    <div
-        class="app__page__login-wrapper">
+    <div class="app__page__login-wrapper">
 
       <div class="app__page__login-logo">
         <logo/>

@@ -7,7 +7,7 @@ const currentInstance = getCurrentInstance()
 const $props = defineProps(['data', 'level'])
 
 if ($props.data['values']) {
-  const value = local.get('root.' + $props.data['key'], $props.data['value'] ?? $props.data['values'][0]['value'])
+  const value = $props.data['value'] ?? local.get('root.' + $props.data['key'], $props.data['values'][0]['value'])
 
   for (const i of $props['data']['values']) {
     if (i['value'] === value) {

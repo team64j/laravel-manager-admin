@@ -1,5 +1,5 @@
 <script setup>
-import { defineAsyncComponent, getCurrentInstance, h, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
+import { getCurrentInstance, h, nextTick, onMounted, reactive, ref, shallowReactive, shallowRef, watch } from 'vue'
 import { convertPixelsToRem, convertRemToPixels } from './utils'
 import router from '@/router'
 import store from '@/services/store'
@@ -30,7 +30,7 @@ const modalElement = shallowRef()
 const sidebarElement = shallowRef()
 const datepickerElement = shallowRef()
 
-const data = reactive({
+const data = shallowReactive({
   loaded: false,
   layout: null,
   sidebarWidth: local.get('sidebarWidth', 26),
@@ -144,10 +144,8 @@ function bootstrap () {
         document.title = response.data['data']['config']['siteName']
       }
 
-      store.set({
-        config: response.data['data']['config'] || {},
-        lang: response.data['data']['lang'] || {}
-      })
+      store.set('lexicon', response.data['data']['lexicon'] || {})
+      store.set('config', response.data['data']['config'] || {})
 
       setComponents()
 
@@ -513,11 +511,6 @@ defineExpose({
           <global-tabs :current-route="router.currentRoute.value" @action="action" ref="globalTabs"/>
         </div>
       </div>
-
-      <modal ref="modalElement"/>
-      <search/>
-      <tooltip/>
-      <datepicker ref="datepickerElement"/>
     </template>
 
     <router-view v-else/>
@@ -527,6 +520,10 @@ defineExpose({
     <logo class="w-24 h-24 animate-ping"/>
   </div>
 
+  <modal ref="modalElement"/>
+  <search/>
+  <tooltip/>
+  <datepicker ref="datepickerElement"/>
   <notifications position="top right" class="app-notifications" :dangerouslySetInnerHtml="true"/>
 </template>
 
