@@ -499,7 +499,7 @@ defineExpose({
              :class="{
               'app-main__overlay': store.get('AppMainOverlay')
             }">
-          <component :is="DynamicComponent({}, null, data.layout['sidebar'])" @action="action"/>
+          <component :is="DynamicComponent({}, null, data.layout['sidebar'])"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>
