@@ -120,7 +120,11 @@ function createComponent (data) {
     attrs.currentRoute = props.currentRoute
   }
 
-  if (attrs.key === 'data') {
+  if (attrs.key) {
+    attrs.modelValue = getValue(attrs.key, props)
+  }
+
+  /*if (attrs.key === 'data') {
     attrs.modelValue = props.data
   } else if (props.data?.[attrs.key] !== undefined) {
     attrs.modelValue = props.data[attrs.key]
@@ -130,7 +134,7 @@ function createComponent (data) {
     attrs.modelValue = getValue(attrs.key, props)
   } else if (data?.attrs?.value !== undefined) {
     attrs.modelValue = data.attrs.value
-  }
+  }*/
 
   if ((component?.extends?.props || component?.props)?.['meta']) {
     attrs.meta = attrs.meta ?? props.meta

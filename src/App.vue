@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, h, nextTick, onMounted, reactive, ref, shallowReactive, shallowRef, watch } from 'vue'
+import { getCurrentInstance, h, nextTick, onMounted, shallowReactive, shallowRef, watch } from 'vue'
 import { convertPixelsToRem, convertRemToPixels } from './utils'
 import router from '@/router'
 import store from '@/services/store'
@@ -144,7 +144,7 @@ function bootstrap () {
         document.title = response.data['data']['config']['siteName']
       }
 
-      store.set('lexicon', response.data['data']['lexicon'] || {})
+      store.set('lexicon', response.data['data']['lexicon'] || response.data['data']['lang'] || {})
       store.set('config', response.data['data']['config'] || {})
 
       setComponents()

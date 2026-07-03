@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, ref, shallowRef } from 'vue'
+import { computed, nextTick, ref, shallowRef } from 'vue'
 import store from '@/services/store'
 import Button from '@/components/Button/Button.vue'
 import Select from '@/components/Select/Select.vue'
@@ -24,11 +24,7 @@ const style = ref(null)
 
 const yearOffset = 10
 
-const dateFormat = store.get('config.datetimeFormat', 'dd-mm-YYYY')
-
-const timeFormat = 'H:i:s'
-
-const monthNames = store.get('lexicon.months', [
+const monthNames = computed(() => store.get('lexicon.months', [
   'January',
   'February',
   'March',
@@ -41,11 +37,11 @@ const monthNames = store.get('lexicon.months', [
   'October',
   'November',
   'December'
-])
+]))
 
 const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-const dayNames = store.get('lexicon.days', [
+const dayNames = computed(() => store.get('lexicon.days', [
   'Sunday',
   'Monday',
   'Tuesday',
@@ -53,9 +49,9 @@ const dayNames = store.get('lexicon.days', [
   'Thursday',
   'Friday',
   'Saturday'
-])
+]))
 
-const startDay = parseInt(store.get('lexicon.firstDay', 1))
+const firstDay = computed(() => parseInt(store.get('lexicon.firstDay', 1)))
 
 const dayChars = 1
 
@@ -144,7 +140,7 @@ function destroy () {
 
 function setDays () {
   const date = new Date(currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1) + '-01')
-  let day = 1 - (7 + date.getDay() - startDay) % 7, week = 0
+  let day = 1 - (7 + date.getDay() - firstDay.value) % 7, week = 0
   daysInMonth[1] = date.getFullYear() % 4 === 0 ? 29 : 28
 
   days.value = []
@@ -196,7 +192,7 @@ function setDays () {
 }
 
 function getDate () {
-  return dateFormat.replace(
+  return store.get('config.dateFormat', 'dd-mm-YYYY').replace(
       /dd|mm|YYYY/g,
       a => ({
         dd: currentDate.getDate().toString().padStart(2, '0'),
@@ -207,7 +203,7 @@ function getDate () {
 }
 
 function getTime () {
-  return timeFormat.replace(
+  return store.get('config.timeFormat', 'H:i:s').replace(
       /[His]/g,
       a => ({
         H: currentDate.getHours().toString().padStart(2, '0'),
@@ -292,7 +288,7 @@ document.addEventListener('mousedown', () => {
             </thead>
             <tbody>
             <tr>
-              <th v-for="i in Array.from({ length: 7 }, (_, j) => dayNames[(startDay + j) % 7])"
+              <th v-for="i in Array.from({ length: 7 }, (_, j) => dayNames[(firstDay + j) % 7])"
                   :title="i">
                 {{ i.substring(0, dayChars) }}
               </th>

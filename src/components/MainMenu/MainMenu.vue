@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, onMounted, ref } from 'vue'
+import { getCurrentInstance, onMounted } from 'vue'
 import { action } from '@/composables'
 import MainMenuItem from './MainMenuItem.vue'
 import router from '@/router'
@@ -19,8 +19,6 @@ const $props = defineProps({
 })
 
 const $emit = defineEmits(['action'])
-
-const refData = ref($props.data)
 
 let enterTimer = 0,
     filterTimer = 0,
@@ -197,7 +195,7 @@ defineExpose({
         'app-main-menu__vertical': $props.isVertical
       }">
     <ul>
-      <main-menu-item v-for="(i, k) in refData" :data="i" :key="k" :level="1" @action="_action"/>
+      <main-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" :level="1" @action="_action"/>
     </ul>
   </div>
 </template>
