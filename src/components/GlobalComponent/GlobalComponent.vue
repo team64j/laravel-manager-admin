@@ -121,20 +121,24 @@ function createComponent (data) {
   }
 
   if (attrs.key) {
-    attrs.modelValue = getValue(attrs.key, props)
+    if (attrs.data?.[attrs.key] !== undefined) {
+      attrs.data = attrs.data[attrs.key]
+    } else {
+      attrs.modelValue = getValue(attrs.key, props)
+    }
   }
 
-  /*if (attrs.key === 'data') {
-    attrs.modelValue = props.data
-  } else if (props.data?.[attrs.key] !== undefined) {
-    attrs.modelValue = props.data[attrs.key]
-  } else if (attrs.data?.[attrs.key] !== undefined) {
-    attrs.data = attrs.data[attrs.key]
-  } else if (/\./.test(attrs.key)) {
-    attrs.modelValue = getValue(attrs.key, props)
-  } else if (data?.attrs?.value !== undefined) {
-    attrs.modelValue = data.attrs.value
-  }*/
+/*    if (attrs.key === 'data') {
+      attrs.modelValue = props.data
+    } else if (props.data?.[attrs.key] !== undefined) {
+      attrs.modelValue = props.data[attrs.key]
+    } else if (attrs.data?.[attrs.key] !== undefined) {
+      attrs.data = attrs.data[attrs.key]
+    } else if (/\./.test(attrs.key)) {
+      attrs.modelValue = getValue(attrs.key, props)
+    } else if (data?.attrs?.value !== undefined) {
+      attrs.modelValue = data.attrs.value
+    }*/
 
   if ((component?.extends?.props || component?.props)?.['meta']) {
     attrs.meta = attrs.meta ?? props.meta
