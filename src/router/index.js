@@ -6,36 +6,36 @@ const routes = [
     path: '/',
     redirect: '/dashboard',
     meta: {
-      hidden: true,
-    },
+      hidden: true
+    }
   },
   {
     path: '/dashboard',
     component: () => import('../pages/AppPage.vue'),
     meta: {
       fixed: true,
-      icon: 'fa fa-home',
-    },
+      icon: 'fa fa-home'
+    }
   },
   {
     path: '/login',
     component: () => import('../pages/LoginPage.vue'),
     meta: {
-      hidden: true,
-    },
+      hidden: true
+    }
   },
   {
     path: '/logout',
     component: () => import('../pages/LogoutPage.vue'),
     meta: {
-      hidden: true,
-    },
+      hidden: true
+    }
   },
   {
     path: '/forgot',
     meta: {
-      hidden: true,
-    },
+      hidden: true
+    }
   },
   {
     path: '/redirect',
@@ -43,25 +43,25 @@ const routes = [
     children: [
       {
         path: '/redirect/:path(.*)',
-        component: () => import('../pages/RedirectPage.vue'),
-      },
+        component: () => import('../pages/RedirectPage.vue')
+      }
     ],
     meta: {
-      hidden: true,
-    },
+      hidden: true
+    }
   },
   {
     path: '/:pathMatch(.*)*',
     component: () => import('../pages/NotFoundPage.vue'),
     meta: {
-      icon: 'fa fa-circle-exclamation',
-    },
-  },
+      icon: 'fa fa-circle-exclamation'
+    }
+  }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes
 })
 
 router.beforeEach((to, from, next) => {
