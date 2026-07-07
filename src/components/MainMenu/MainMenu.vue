@@ -1,6 +1,6 @@
 <script setup>
 import { getCurrentInstance, onMounted } from 'vue'
-import { action } from '@/composables'
+import { action as _action } from '@/composables'
 import MainMenuItem from './MainMenuItem.vue'
 import router from '@/router'
 import store from '@/services/store'
@@ -24,12 +24,16 @@ let enterTimer = 0,
     filterTimer = 0,
     active = false
 
-function onClick (event, props) {
-  if (store.get('isMobile')) {
-    const action = event.currentTarget.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
-    document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
+function action () {
+  return _action.call(currentInstance.exposed, ...arguments)
+}
 
-    let item = event.currentTarget
+function onClick (instance, props) {
+  if (store.get('isMobile')) {
+    let item = instance.vnode.el
+
+    const action = item.classList.contains('app-main-menu__hover') ? 'remove' : 'add'
+    document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
 
     while (item) {
       item.classList[action]('app-main-menu__hover')
@@ -38,7 +42,7 @@ function onClick (event, props) {
 
     active = action === 'add'
 
-    if (event.target.classList.contains('app-main-menu__toggle') && props.data['url']) {
+    if (instance.vnode.el.classList.contains('app-main-menu__toggle') && props.data['url']) {
       loadData(props.data['url'], props)
       return
     }
@@ -71,14 +75,14 @@ function onClick (event, props) {
   store.set({ AppMainOverlay: active })
 }
 
-function onEnter (event, props) {
-  if (event.currentTarget.classList.contains('app-main-menu__hover') || store.get('isMobile')) {
+function onEnter (instance, props) {
+  let item = instance.vnode.el
+
+  if (item.classList.contains('app-main-menu__hover') || store.get('isMobile')) {
     return
   }
 
   document.querySelectorAll('.app-main-menu__hover').forEach(i => i.classList.remove('app-main-menu__hover'))
-
-  let item = event.currentTarget
 
   while (item) {
     item.classList.add('app-main-menu__hover')
@@ -99,7 +103,7 @@ function onEnter (event, props) {
   }, delay)
 }
 
-function onOut (event, props) {
+function onOut (instance, props) {
   if (store.get('isMobile')) {
     return
   }
@@ -109,25 +113,25 @@ function onOut (event, props) {
   }
 
   if (props.data['data'] === undefined) {
-    event.currentTarget.classList.remove('app-main-menu__hover')
+    instance.vnode.el.classList.remove('app-main-menu__hover')
   }
 }
 
-function onNav (event, url, props) {
+function onNav (instance, url, props) {
   loadData(url, props)
 }
 
-function onFilterInput (event, props) {
+function onFilterInput (instance, props) {
   clearTimeout(filterTimer)
   filterTimer = setTimeout(() => {
     loadData(
-        router.parse({ path: props.data['url'], query: { filter: event.target.value } }).fullPath,
+        router.parse({ path: props.data['url'], query: { filter: instance.vnode.el.value } }).fullPath,
         props
     )
   }, 500)
 }
 
-function onFilterClear (event, props) {
+function onFilterClear (instance, props) {
   loadData(
       router.parse({ path: props.data['url'] }).fullPath,
       props
@@ -167,10 +171,6 @@ function loadData (url, props) {
   })
 }
 
-function _action () {
-  return action.call(currentInstance.exposed, ...arguments)
-}
-
 onMounted(() => {
   document.addEventListener('click', function () {
     active = false
@@ -195,7 +195,7 @@ defineExpose({
         'app-main-menu__vertical': $props.isVertical
       }">
     <ul>
-      <main-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" :level="1" @action="_action"/>
+      <main-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" :level="1" @action="action"/>
     </ul>
   </div>
 </template>
@@ -216,10 +216,10 @@ defineExpose({
 .app-main-menu li[data-level="1"] > div {
   @apply rounded
 }
-.app-main-menu li.app-main-menu__hover:not(.app-main-menu__filter) > div {
+.app-main-menu li.app-main-menu__hover:not(.app-main-menu__filter) > div, .app-main-menu li:hover:not(.app-main-menu__filter) > div {
   @apply bg-blue-600 text-white
 }
-.app-main-menu li[data-level="1"].app-main-menu__hover > div {
+.app-main-menu li[data-level="1"].app-main-menu__hover > div, .app-main-menu li[data-level="1"]:hover > div {
   @apply bg-gray-600
 }
 .app-main-menu li ul {
@@ -243,7 +243,7 @@ defineExpose({
 .app-position-vertical .app-main-menu__toggle {
   @apply !hidden
 }
-.app-main-menu.app-main-menu__active li.app-main-menu__hover > ul {
+.app-main-menu.app-main-menu__active li.app-main-menu__hover > ul, .app-main-menu.app-main-menu__active li:hover > ul {
   @apply opacity-100 visible
 }
 </style>

@@ -5,6 +5,7 @@ import Button from '@/components/Button/Button.vue'
 
 const currentInstance = getCurrentInstance()
 const $props = defineProps(['data', 'level'])
+const emit = defineEmits(['action'])
 
 if ($props.data['values']) {
   const value = $props.data['value'] ?? local.get('root.' + $props.data['key'], $props.data['values'][0]['value'])
@@ -24,14 +25,14 @@ if ($props.data['values']) {
         'sticky bottom-0 mt-auto !bg-inherit': $props.data['prev'] || $props.data['next'],
         'app-main-menu__filter': $props.data['filter'] !== undefined
       }"
-      @mouseleave="$emit('action', 'onOut', $event, $props)"
-      @mouseenter="$emit('action', 'onEnter', $event, $props)">
+      @mouseleave="() => emit('action', 'onOut', currentInstance, $props)"
+      @mouseenter="() => emit('action', 'onEnter', currentInstance, $props)">
 
     <div v-if="$props.data['prev'] || $props.data['next']" class="py-1 !bg-inherit" @click.stop="">
       <Button type="button" class="-ml-2 btn-sm btn-gray"
               :disabled="!$props.data['prev']"
               :class="{ '!opacity-50': !$props.data['prev'] }"
-              @click.stop="$emit('action', 'onNav', $event, $props.data['prev'], currentInstance.parent.props)">
+              @click.stop="() => emit('action', 'onNav', currentInstance, $props.data['prev'], currentInstance.parent.props)">
         <i class="fa fa-angle-left fa-fw"/>
       </Button>
       <span class="grow truncate text-center py-1.5 text-sm text-blue-400">
@@ -40,7 +41,7 @@ if ($props.data['values']) {
       <Button type="button" class="-mr-2 btn-sm btn-gray"
               :disabled="!$props.data['next']"
               :class="{ '!opacity-50': !$props.data['next'] }"
-              @click.stop="$emit('action', 'onNav', $event, $props.data['next'], currentInstance.parent.props)">
+              @click.stop="() => emit('action', 'onNav', currentInstance, $props.data['next'], currentInstance.parent.props)">
         <i class="fa fa-angle-right fa-fw"/>
       </Button>
     </div>
@@ -54,13 +55,14 @@ if ($props.data['values']) {
           autocomplete="off"
           autofocus
           :value="$props.data['filter']"
-          @input="$emit('action', 'onFilterInput', $event, currentInstance.parent.props)"/>
+          @input="() => emit('action', 'onFilterInput', currentInstance, currentInstance.parent.props)"/>
 
       <i class="fa fa-remove absolute right-4 hover:text-rose-600" :class="{ 'hidden': !$props.data['filter'] }"
-         @click="$emit('action', 'onFilterClear', $event, currentInstance.parent.props)"/>
+         @click="() => emit('action', 'onFilterClear', currentInstance, currentInstance.parent.props)"/>
     </div>
 
-    <div v-else :data-tooltip="$props.data['title']" @click.stop="$emit('action', 'onClick', $event, $props)">
+    <div v-else :data-tooltip="$props.data['title']"
+         @click.stop="() => emit('action', 'onClick', currentInstance, $props)">
       <span :class="{ 'w-8': $props.level > 1, 'lg:mr-2': $props.data['name'] && $props.level === 1 }"
             class="grow-0 shrink-0 flex items-center">
         <i v-if="$props.data['loading']"
@@ -99,7 +101,7 @@ if ($props.data['values']) {
         </div>
       </li>
       <main-menu-item v-for="(i, k) in $props.data['data']" :data="i" :key="k" :level="$props.level + 1"
-                      @action="(...args) => $emit('action', ...args)"/>
+                      @action="(...args) => emit('action', ...args)"/>
     </ul>
   </li>
 </template>
