@@ -1,6 +1,6 @@
 <script setup>
-import { getCurrentInstance, onMounted } from 'vue'
-import { action as _action } from '@/composables'
+import { getCurrentInstance, onMounted, ref } from 'vue'
+import { action } from '@/composables'
 import MainMenuItem from './MainMenuItem.vue'
 import router from '@/router'
 import store from '@/services/store'
@@ -20,13 +20,11 @@ const $props = defineProps({
 
 const $emit = defineEmits(['action'])
 
+const refData = ref($props.data)
+
 let enterTimer = 0,
     filterTimer = 0,
     active = false
-
-function action () {
-  return _action.call(currentInstance.exposed, ...arguments)
-}
 
 function onClick (instance, props) {
   if (store.get('isMobile')) {
@@ -195,7 +193,8 @@ defineExpose({
         'app-main-menu__vertical': $props.isVertical
       }">
     <ul>
-      <main-menu-item v-for="(i, k) in $props.data" :data="i" :key="k" :level="1" @action="action"/>
+      <main-menu-item v-for="(i, k) in refData" :data="i" :key="k" :level="1"
+                      @action="(...args) => action.call(currentInstance.exposed, ...args)"/>
     </ul>
   </div>
 </template>

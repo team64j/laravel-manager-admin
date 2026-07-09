@@ -1,7 +1,9 @@
 <script setup>
 import { DynamicComponent } from '@/utils/dynamic-component'
-import { h } from 'vue'
-import { getValue } from '@/composables'
+import { getCurrentInstance, h } from 'vue'
+import { action, getValue } from '@/composables'
+
+const currentInstance = getCurrentInstance()
 
 const props = defineProps({
   item: Object,
@@ -11,7 +13,7 @@ const props = defineProps({
   modelValue: [Object, Array]
 })
 
-const emit = defineEmits(['onClickRow'])
+const emit = defineEmits(['onClickRow', 'action'])
 
 function values (column, item) {
   if (typeof Object.values(column.values)[0] === 'object') {
@@ -55,7 +57,8 @@ function onContextMenu () {
       @contextmenu="onContextMenu($event, item)">
     <td v-for="ceil in props.columns" class="p-2 first:pl-6 last:pr-6" :style="ceil.style">
       <div v-if="props.item[ceil.key]?.component || ceil.component" @click.stop>
-        <component :is="() => DynamicComponent(props.item, props.modelValue, ceil)"/>
+        <component :is="() => DynamicComponent(props.item, props.modelValue, ceil)"
+                   @action="(...args) => action.call(currentInstance, ...args)"/>
       </div>
 
       <component v-else-if="ceil.values" :is="() => values(ceil, item)"/>

@@ -1,5 +1,5 @@
 import { computed, getCurrentInstance, h, reactive } from 'vue'
-import { action, getValue, setValue } from '@/composables'
+import { getValue, setValue, action } from '@/composables'
 
 export function DynamicComponent (item = {}, model, ceil) {
   const currentInstance = getCurrentInstance()
@@ -28,7 +28,9 @@ export function DynamicComponent (item = {}, model, ceil) {
     },
 
     'onAction': (...args) => {
-      action.call(currentInstance, ...args)
+      if (!currentInstance.attrs.onAction) {
+        action.call(currentInstance, ...args)
+      }
     }
   }
 

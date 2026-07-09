@@ -117,6 +117,10 @@ function action (...args) {
 }
 
 function get (update) {
+  if (!$props.url) {
+    return
+  }
+
   const route = router.currentRoute.value
 
   if (!update) {

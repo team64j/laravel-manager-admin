@@ -1,6 +1,7 @@
 <script setup>
 import { computed, getCurrentInstance, onMounted, reactive, shallowRef, toRaw, watch } from 'vue'
 import { uniqId } from '@/utils'
+import { action } from '@/composables'
 import Button from '@/components/Button/Button.vue'
 import Input from '@/components/Input/Input.vue'
 import Select from '@/components/Select/Select.vue'
@@ -314,7 +315,7 @@ onMounted(() => {
     <div v-if="$props.data" class="grow overflow-auto rounded">
       <table class="w-full" :class="{ 'min-h-full': !loaded }">
 
-        <thead v-if="columns.some(i => i.label)" class="bg-slate-100 dark:bg-gray-600 sticky top-0 z-20">
+        <thead v-if="columns.some(i => i.label)" class="bg-slate-100 dark:bg-gray-600 sticky top-0 z-[11]">
         <tr v-if="columns">
           <th v-for="column in columns" class="font-bold border-l first:border-0 border-opacity-5"
               :style="column?.style">
@@ -374,13 +375,17 @@ onMounted(() => {
                        tag="tbody"
                        @end="onSortableEnd(category[$props.dataKey] || category, category.draggable ?? $props.draggable)">
               <template #item="{ element, index }">
-                <panel-row :item="element" :index="index" v-bind="rowProps" @on-click-row="onClickRow"/>
+                <panel-row :item="element" :index="index" v-bind="rowProps"
+                           @on-click-row="onClickRow"
+                           @action="(...args) => action.call(currentInstance, ...args)"/>
               </template>
             </draggable>
 
             <tbody v-else>
             <template v-for="item in (category[$props.dataKey] || category)">
-              <panel-row :item="item" v-bind="rowProps" @on-click-row="onClickRow"/>
+              <panel-row :item="item" v-bind="rowProps"
+                         @on-click-row="onClickRow"
+                         @action="(...args) => action.call(currentInstance, ...args)"/>
             </template>
             </tbody>
           </template>

@@ -26,10 +26,6 @@ const data = reactive({
 
 const modalElement = shallowRef()
 
-function _action () {
-  return action.call(currentInstance.exposed, ...arguments)
-}
-
 function open (opt) {
   Object.assign(data, { ...opt })
 
@@ -68,14 +64,14 @@ function setUrl (route) {
   if (!data.componentLoaded) {
     axios({
       method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
-      url: route.path,
+      url: route.fullPath,
       params: route.query,
       data: route.query
-    }).get(route.fullPath).then(r => {
+    }).then(r => {
       data.componentLoaded = true
       data.componentProps = r.data
-      data.icon = r.data['meta']['icon']
-      data.title = r.data['meta']['title']
+      data.icon = r.data?.['meta']?.['icon']
+      data.title = r.data?.['meta']?.['title']
     })
   }
 
@@ -145,15 +141,15 @@ defineExpose({
               <i :class="data.icon"/>
             </div>
             <div class="grow px-4 py-1" v-html="data.title" @mousedown="onMousedown"/>
-            <Button type="button" class="btn-red items-center" @click="close">
-              <i class="fa fa-close"/>
+            <Button type="button" class="btn-red btn-sm m-1 w-8 h-8 items-center justify-center" @click="close">
+              <i class="fa fa-close leading-none"/>
             </Button>
           </div>
           <div class="app-modal__main">
             <global-component v-if="data.componentLoaded"
                        v-bind="data.componentProps"
                        :currentRoute="data.currentRoute"
-                       @action="_action"/>
+                       @action="(...args) => action.call(currentInstance.exposed, ...args)"/>
           </div>
           <div class="app-modal__footer"/>
         </div>
@@ -164,7 +160,7 @@ defineExpose({
 
 <style>
 .app-modal {
-  @apply fixed z-50 top-0 left-0 w-full h-full bg-black/5 p-5 flex items-center justify-center
+  @apply fixed z-50 top-0 left-0 w-full h-full bg-black/50 p-5 flex items-center justify-center
 }
 .app-modal__overlay {
   @apply absolute left-0 top-0 right-0 bottom-0

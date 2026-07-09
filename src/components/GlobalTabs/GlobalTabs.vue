@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance, nextTick, onMounted, reactive, shallowRef, watch } from 'vue'
-import { action as _action } from '@/composables'
+import { action } from '@/composables'
 import { mergeDeep } from '@/utils'
 import router from '@/router'
 import store from '@/services/store'
@@ -23,6 +23,8 @@ const $props = defineProps({
   }
 })
 
+const $emit = defineEmits(['action'])
+
 const $data = reactive({
   tabs: session.get('global_tabs') ?? [],
   keys: []
@@ -31,10 +33,6 @@ const $data = reactive({
 const frames = computed(() => $data.tabs.filter(i => i.meta['isIframe']))
 
 const keepAlive = shallowRef()
-
-function action (...args) {
-  return _action.call(currentInstance, ...args)
-}
 
 function init () {
   router.getRoutes().filter(i => i?.meta?.fixed).map(i => addTab(router.parse(i)))
@@ -239,13 +237,14 @@ defineExpose({
                      :is="slot.Component"
                      :key="router.key(slot.route)"
                      :currentRoute="currentRoute"
-                     @action="action"/>
+                     @action="(...args) => action.call(currentInstance, ...args)"/>
         </keep-alive-component>
       </router-view>
 
       <div class="grow overflow-hidden">
         <template v-for="{ path } in frames" :key="path">
-          <Frame v-if="$data.keys.includes(path)" v-show="currentRoute['path'] === path" @action="action"/>
+          <Frame v-if="$data.keys.includes(path)" v-show="currentRoute['path'] === path"
+                 @action="(...args) => action.call(currentInstance, ...args)"/>
         </template>
       </div>
 

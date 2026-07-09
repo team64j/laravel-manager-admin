@@ -2,7 +2,7 @@
 import { computed, getCurrentInstance } from 'vue'
 import { uniqId } from '@/utils'
 import { action } from '@/composables'
-import store from '@/services/store'
+import session from '@/services/session'
 import TabsNavigation from './TabsNavigation.vue'
 
 defineOptions({
@@ -46,11 +46,7 @@ const emit = defineEmits(['action', 'update:props'])
 
 const keyStorage = `tabs_${props.id.toLowerCase()}`
 
-const index = computed(() => store.get(keyStorage, 0))
-
-function _action () {
-  return action.call(currentInstance, ...arguments)
-}
+const index = computed(() => session.get(keyStorage, 0))
 </script>
 
 <template>
@@ -61,7 +57,7 @@ function _action () {
         'app-tabs__vertical': vertical
       }"
        class="app-tabs flex flex-col grow content-start overflow-hidden">
-    <TabsNavigation v-if="navigation" v-bind="props" @action="_action"/>
+    <TabsNavigation v-if="navigation" v-bind="props" @action="(...args) => action.call(currentInstance, ...args)"/>
 
     <template v-for="(i, k) in data">
       <div v-if="history || (i['needUpdate'] && k === index) || !i['needUpdate']"

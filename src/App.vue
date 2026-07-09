@@ -35,7 +35,7 @@ defineOptions({
   name: 'App'
 })
 
-const emit = defineEmits(['action'])
+const $emit = defineEmits(['action'])
 
 const currentInstance = getCurrentInstance()
 
@@ -435,7 +435,7 @@ defineExpose({
   pushRouter,
   collapse,
   inputTreeSelect,
-  'modal:component': modalShow,
+  'modal:show': modalShow,
   'datepicker:show': datepickerShow,
   data: {
     breakpoints

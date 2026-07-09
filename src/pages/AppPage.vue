@@ -1,11 +1,11 @@
 <script setup>
-import { getCurrentInstance, onMounted, reactive, ref, toRef, watch } from 'vue'
-import { action } from '@/composables'
+import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue'
 import { isNumber } from '@/utils'
 import router from '@/router'
 import store from '@/services/store'
 import session from '@/services/session'
 import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
+import { action as _action } from '@/composables'
 
 defineOptions({
   name: 'AppPage'
@@ -13,7 +13,7 @@ defineOptions({
 
 const currentInstance = getCurrentInstance()
 
-const emit = defineEmits(['action'])
+const emit = defineEmits(['action', 'update:props'])
 
 const $props = defineProps({
   currentRoute: {
@@ -33,8 +33,8 @@ const $data = reactive({
 
 const loaded = ref(false)
 
-function _action () {
-  return action.call(currentInstance, ...arguments)
+function action () {
+  return _action.call(currentInstance, ...arguments)
 }
 
 function submit ({ action, method, route } = {}, changed = false) {
@@ -222,6 +222,13 @@ function inputChangeQuery (value, instance) {
   emit('action', 'pushRouter', route, () => submit({}, true))
 }
 
+function inputClearData () {
+  Object.assign($data, {
+    data: {},
+    meta: {},
+  })
+}
+
 function updateModelValue () {
   emit('action', 'setTab', {
     changed: true
@@ -239,13 +246,15 @@ defineExpose({
   submit,
   inputChangeQuery,
   inputReloadQuery,
+  inputClearData,
   $data
 })
 </script>
 
 <template>
   <div class="app-page__default w-full h-full flex flex-col overflow-auto">
-    <global-component v-if="loaded" v-bind="$data" @action="_action" @update:modelValue="updateModelValue"/>
+    <global-component v-if="loaded" v-bind="$data" @action="action"
+                      @update:modelValue="updateModelValue"/>
     <div v-else class="flex items-center justify-center grow">
       <div
           class="inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500"/>
