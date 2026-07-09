@@ -128,17 +128,17 @@ function createComponent (data) {
     }
   }
 
-/*    if (attrs.key === 'data') {
-      attrs.modelValue = props.data
-    } else if (props.data?.[attrs.key] !== undefined) {
-      attrs.modelValue = props.data[attrs.key]
-    } else if (attrs.data?.[attrs.key] !== undefined) {
-      attrs.data = attrs.data[attrs.key]
-    } else if (/\./.test(attrs.key)) {
-      attrs.modelValue = getValue(attrs.key, props)
-    } else if (data?.attrs?.value !== undefined) {
-      attrs.modelValue = data.attrs.value
-    }*/
+  /*    if (attrs.key === 'data') {
+        attrs.modelValue = props.data
+      } else if (props.data?.[attrs.key] !== undefined) {
+        attrs.modelValue = props.data[attrs.key]
+      } else if (attrs.data?.[attrs.key] !== undefined) {
+        attrs.data = attrs.data[attrs.key]
+      } else if (/\./.test(attrs.key)) {
+        attrs.modelValue = getValue(attrs.key, props)
+      } else if (data?.attrs?.value !== undefined) {
+        attrs.modelValue = data.attrs.value
+      }*/
 
   if ((component?.extends?.props || component?.props)?.['meta']) {
     attrs.meta = attrs.meta ?? props.meta
@@ -170,19 +170,27 @@ function updateModelValue (value, instance) {
 
   const updates = [{ key, value }]
 
-  if (instance.props?.relation?.['key']) {
-    const empty = !(Array.isArray(value) ? value.length :
-        (!isNaN(parseFloat(value)) && !isNaN(value - 0)) ? parseFloat(value) : value)
+  const relations = instance.props?.relation ? (Array.isArray(instance.props.relation)
+      ? instance.props.relation
+      : [instance.props?.relation]) : null
 
-    updates.push({
-      key: instance.props.relation['key'],
-      value: empty ? instance.props.relation['falseValue'] : instance.props.relation['trueValue']
-    })
+  if (relations && relations.length) {
+    for (const relation of relations) {
+      if (relation['key']) {
+        const empty = !(Array.isArray(value) ? value.length :
+            (!isNaN(parseFloat(value)) && !isNaN(value - 0)) ? parseFloat(value) : value)
 
-    if (empty && instance.props.relation['notEmpty']) {
-      setTimeout(() => {
-        emit('update:modelValue', instance.props.trueValue, key)
-      }, 0)
+        updates.push({
+          key: relation['key'],
+          value: empty ? relation['falseValue'] : relation['trueValue']
+        })
+
+        if (empty && relation['notEmpty']) {
+          setTimeout(() => {
+            emit('update:modelValue', instance.props.trueValue, key)
+          }, 0)
+        }
+      }
     }
   }
 

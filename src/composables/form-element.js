@@ -27,7 +27,7 @@ export const props = {
   },
   placeholder: String,
   readonly: Boolean,
-  relation: Object,
+  relation: [Object, Array],
   required: Boolean,
   requiredText: String,
   trueValue: { default: true },

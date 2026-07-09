@@ -29,13 +29,17 @@ axios.interceptors['request'].use(
       config.url = url.href.replace(url.origin, '')
     }
 
+    const route = router.currentRoute.value
+    const globalData = window['Vue']._container._vnode.component.refs?.globalTabs?.keepAlive?._?.__current?.component?.exposed?.$data
+
     const params = Object.assign(
       {},
       Object.values(config.params || {}).length && config.params,
-      Object.values(router.currentRoute.value.params).length &&
-      router.currentRoute.value.params,
-      window['Vue']._container._vnode.component.refs?.globalTabs?.keepAlive?._?.__current?.component?.exposed?.$data?.data ??
-      {}
+      Object.values(route.params).length &&
+      route.params,
+      route.query,
+      globalData?.data ?? {},
+      globalData?.meta ?? {}
     )
 
     Object.entries(params).forEach(([k, v]) => {

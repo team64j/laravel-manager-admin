@@ -143,6 +143,10 @@ router.parse = (route) => {
     }
   }
 
+  return router.resolve(router.parseParams(route))
+}
+
+router.parseParams = (route) => {
   if (route.path && route.params) {
     route.params = { ...route.params }
     const query = route.path.split('?')[1] ?? null
@@ -178,25 +182,24 @@ router.parse = (route) => {
         if (route?.query?.[k]) {
           route.query[k] = route.query[k].replace(re, v)
         }
-
-        //delete route.params[k]
       }
     })
-
-    // for(const i in route.params) {
-    //   if (route.params[i] === null) {
-    //     delete route.params[i]
-    //   }
-    // }
   }
 
-  return router.resolve(route)
+  return route
 }
 
 /**
  * @param route - Raw route location to push
  * @see router.push()
  */
-router.to = (route) => router.push(router.parse(route))
+router.to = (route) => {
+  if ((route.href || route.path) && route.target) {
+    window.open(router.parseParams(Object.assign(route, { path: route.href || route.path })).path, route.target)
+    return router.push(router.currentRoute.value.fullPath)
+  }
+
+  return router.push(router.parse(route))
+}
 
 export default router

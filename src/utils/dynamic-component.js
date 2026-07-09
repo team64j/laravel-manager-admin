@@ -3,9 +3,9 @@ import { action, getValue, setValue } from '@/composables'
 
 export function DynamicComponent (item = {}, model, ceil) {
   const currentInstance = getCurrentInstance()
-  const data = (item[ceil.key] || ceil)
+  const data = item[ceil.key] || ceil
   const component = typeof data.component === 'object' ? data.component : data
-  const props = reactive({ ...(component.attrs || {}) })
+  const props = component.attrs || {}
 
   if (component.attrs?.keyValue) {
     const keyValue = computed(() => item[component.attrs.keyValue])
@@ -20,11 +20,7 @@ export function DynamicComponent (item = {}, model, ceil) {
 
   const eventHandlers = {
     'onUpdate:props': (newProps) => {
-      Object.keys(newProps).forEach(key => {
-        if (key in props) {
-          props[key] = newProps[key]
-        }
-      })
+      Object.assign(props, newProps)
     },
 
     'onUpdate:modelValue': (value) => {

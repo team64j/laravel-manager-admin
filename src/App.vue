@@ -15,6 +15,22 @@ import Logo from '@/components/Logo/Logo.vue'
 import { action as _action } from '@/composables'
 import { DynamicComponent } from '@/utils/dynamic-component'
 
+const breakpoints = {
+  'sm': 0,
+  'md': 768,
+  'lg': 1024,
+  'xl': 1280,
+  '2xl': 1536
+}
+
+const lexicon = {
+  messages: {
+    warning: {
+      notSaved: 'Changes not saved!',
+    }
+  }
+}
+
 defineOptions({
   name: 'App'
 })
@@ -33,14 +49,7 @@ const datepickerElement = shallowRef()
 const data = shallowReactive({
   loaded: false,
   layout: null,
-  sidebarWidth: local.get('sidebarWidth', 26),
-  breakpoints: {
-    'sm': 0,
-    'md': 768,
-    'lg': 1024,
-    'xl': 1280,
-    '2xl': 1536
-  }
+  sidebarWidth: local.get('sidebarWidth', 26)
 })
 
 store.set({
@@ -143,7 +152,8 @@ function bootstrap () {
         document.title = response.data['data']['config']['siteName']
       }
 
-      store.set('lexicon', response.data['data']['lexicon'] || response.data['data']['lang'] || {})
+      store.set('lexicon',
+          Object.assign(lexicon, response.data['data']['lexicon'] || response.data['data']['lang'] || {}))
       store.set('config', response.data['data']['config'] || {})
 
       setComponents()
@@ -384,8 +394,8 @@ function calcIsMobile () {
 function calcBreakpoint () {
   let breakpoint = 'sm'
 
-  for (const i in data.breakpoints) {
-    if (window.innerWidth > data.breakpoints[i]) {
+  for (const i in breakpoints) {
+    if (window.innerWidth > breakpoints[i]) {
       breakpoint = i
     }
   }
@@ -428,7 +438,7 @@ defineExpose({
   'modal:component': modalShow,
   'datepicker:show': datepickerShow,
   data: {
-    breakpoints: data.breakpoints
+    breakpoints
   }
 })
 
