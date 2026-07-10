@@ -4,8 +4,9 @@ import { isNumber } from '@/utils'
 import router from '@/router'
 import store from '@/services/store'
 import session from '@/services/session'
-import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
 import { action as _action } from '@/composables'
+import { DynamicComponent } from '@/utils/dynamic-component'
+import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
 
 defineOptions({
   name: 'AppPage'
@@ -225,7 +226,7 @@ function inputChangeQuery (value, instance) {
 function inputClearData () {
   Object.assign($data, {
     data: {},
-    meta: {},
+    meta: {}
   })
 }
 
@@ -253,8 +254,11 @@ defineExpose({
 
 <template>
   <div class="app-page__default w-full h-full flex flex-col overflow-auto">
-    <global-component v-if="loaded" v-bind="$data" @action="action"
-                      @update:modelValue="updateModelValue"/>
+<!--    <component v-if="loaded" v-for="i in $data.layout" :is="() => DynamicComponent({}, $data, i)"
+               :currentRoute="$props.currentRoute"
+               @action="action"
+               @update:modelValue="updateModelValue"/>-->
+        <global-component v-if="loaded" v-bind="$data" @action="action" @update:modelValue="updateModelValue"/>
     <div v-else class="flex items-center justify-center grow">
       <div
           class="inline-block rounded-full border-4 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-20 w-20 animate-spin transition duration-500"/>

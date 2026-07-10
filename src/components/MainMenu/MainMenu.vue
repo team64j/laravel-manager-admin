@@ -23,10 +23,11 @@ const $emit = defineEmits(['action'])
 const refData = ref($props.data)
 
 let enterTimer = 0,
-    filterTimer = 0,
-    active = false
+    filterTimer = 0
 
 function onClick (instance, props) {
+  let active
+
   if (store.get('isMobile')) {
     let item = instance.vnode.el
 
@@ -92,7 +93,7 @@ function onEnter (instance, props) {
   clearTimeout(enterTimer)
 
   enterTimer = setTimeout(() => {
-    if (props.data['url'] && active) {
+    if (props.data['url'] && store.get('AppMainOverlay')) {
       clearTimeout(enterTimer)
       props.data['data'] = null
 
@@ -171,8 +172,7 @@ function loadData (url, props) {
 
 onMounted(() => {
   document.addEventListener('click', function () {
-    active = false
-    store.set({ AppMainOverlay: active })
+    store.set({ AppMainOverlay: false })
   })
 })
 

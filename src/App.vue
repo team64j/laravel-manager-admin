@@ -4,6 +4,7 @@ import { convertPixelsToRem, convertRemToPixels } from './utils'
 import router from '@/router'
 import store from '@/services/store'
 import local from '@/services/local'
+import session from '@/services/session'
 import { RouterView } from 'vue-router'
 import { Notifications, notify } from '@kyvg/vue3-notification'
 import GlobalTabs from '@/components/GlobalTabs/GlobalTabs.vue'
@@ -26,9 +27,13 @@ const breakpoints = {
 const lexicon = {
   messages: {
     warning: {
-      notSaved: 'Changes not saved!',
+      notSaved: 'Changes not saved!'
     }
   }
+}
+
+const config = {
+  siteName: 'Evo Admin'
 }
 
 defineOptions({
@@ -121,6 +126,8 @@ document.documentElement.classList.toggle(
     local.get('root.dark')
 )
 
+document.title = session.get('config.siteName', config.siteName)
+
 bootstrap()
 
 function action (...args) {
@@ -148,13 +155,10 @@ function bootstrap () {
 
   axios.post('/bootstrap').then((response) => {
     if (response.data['data']) {
-      if (response.data['data']?.['config']?.['siteName']) {
-        document.title = response.data['data']['config']['siteName']
-      }
+      store.set('lexicon', Object.assign(
+          lexicon, response.data['data']['lexicon'] || response.data['data']['lang'] || {}))
 
-      store.set('lexicon',
-          Object.assign(lexicon, response.data['data']['lexicon'] || response.data['data']['lang'] || {}))
-      store.set('config', response.data['data']['config'] || {})
+      session.set('config', response.data['data']['config'] || {})
 
       setComponents()
 
@@ -170,8 +174,9 @@ function bootstrap () {
         currentInstance.appContext.app.use(router)
       }
 
-      data.loaded = true
+      document.title = session.get('config.siteName', config.siteName)
 
+      data.loaded = true
     } else {
       notify({
         text: 'No data',

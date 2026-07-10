@@ -458,21 +458,19 @@ defineExpose({
       </div>
     </div>
 
-    <transition>
-      <div v-if="$data.showContextMenu && $data.dataContextMenu.length" ref="ctx" class="app-tree__context-menu"
-           :class="$data.classContextMenu">
-        <template v-for="i in $data.dataContextMenu">
-          <div v-if="i.split" class="app-tree__context-menu__split"/>
-          <div v-else-if="i.title && Object.values(i).length === 1" class="app-tree__context-menu__item">
-            {{ i.title }}
-          </div>
-          <div v-else class="app-tree__context-menu__item" @mousedown="clickContextMenu($event, i)">
-            <i v-if="i.icon" :class="i.icon" class="fa fa-fw"/>
-            {{ i.title }}
-          </div>
-        </template>
-      </div>
-    </transition>
+    <div v-if="$data.showContextMenu && $data.dataContextMenu.length" ref="ctx" class="app-tree__context-menu"
+         :class="$data.classContextMenu">
+      <template v-for="i in $data.dataContextMenu">
+        <div v-if="i.split" class="app-tree__context-menu__split"/>
+        <div v-else-if="i.title && Object.values(i).length === 1" class="app-tree__context-menu__item">
+          {{ i.title }}
+        </div>
+        <div v-else class="app-tree__context-menu__item" @mousedown="clickContextMenu($event, i)">
+          <i v-if="i.icon" :class="i.icon" class="fa fa-fw"/>
+          {{ i.title }}
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 

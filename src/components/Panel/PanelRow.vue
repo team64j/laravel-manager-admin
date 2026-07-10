@@ -5,7 +5,7 @@ import { action, getValue } from '@/composables'
 
 const currentInstance = getCurrentInstance()
 
-const props = defineProps({
+const $props = defineProps({
   item: Object,
   index: Number,
   columns: [Object, Array],
@@ -46,18 +46,18 @@ function onContextMenu () {
   <tr
       class="even:bg-gray-400/5"
       :class="{
-        'cursor-pointer': props.route || props.item['@route'],
-        'pointer-events-none' : props.item['@disabled'],
-        '!bg-blue-600/20': props.item['@active'] && !props.item['@deleted'],
-        'hover:bg-blue-600/20': !props.item['@deleted'],
-        'bg-rose-600/20 even:bg-rose-600/10 hover:bg-rose-600/30 hover:even:bg-rose-600/20' : props.item['@deleted'],
-        'bg-rose-600/20 even:bg-rose-600/30' : props.item['@active'] && props.item['@deleted'],
+        'cursor-pointer': $props.route || $props.item['@route'],
+        'pointer-events-none' : $props.item['@disabled'],
+        '!bg-blue-600/20': $props.item['@active'] && !$props.item['@deleted'],
+        'hover:bg-blue-600/20': !$props.item['@deleted'],
+        'bg-rose-600/20 even:bg-rose-600/10 hover:bg-rose-600/30 hover:even:bg-rose-600/20' : $props.item['@deleted'],
+        'bg-rose-600/20 even:bg-rose-600/30' : $props.item['@active'] && $props.item['@deleted'],
       }"
-      @click="() => emit('onClickRow', props.item)"
+      @click="() => emit('onClickRow', $props.item)"
       @contextmenu="onContextMenu($event, item)">
-    <td v-for="ceil in props.columns" class="p-2 first:pl-6 last:pr-6" :style="ceil.style">
-      <div v-if="props.item[ceil.key]?.component || ceil.component" @click.stop>
-        <component :is="() => DynamicComponent(props.item, props.modelValue, ceil)"
+    <td v-for="ceil in $props.columns" class="p-2 first:pl-6 last:pr-6" :style="ceil.style">
+      <div v-if="$props.item[ceil.key]?.component || ceil.component" @click.stop>
+        <component :is="DynamicComponent($props.item, $props.modelValue, ceil)"
                    @action="(...args) => action.call(currentInstance, ...args)"/>
       </div>
 
@@ -65,14 +65,14 @@ function onContextMenu () {
 
       <i v-else-if="ceil.icon" :class="ceil.icon"/>
 
-      <div v-else-if="props.item[ceil.key + `.html`]" v-html="props.item[ceil.key + `.html`]"/>
+      <div v-else-if="$props.item[ceil.key + `.html`]" v-html="$props.item[ceil.key + `.html`]"/>
 
       <template v-else>
-        {{ getValue(ceil.key, props.item) }}
+        {{ getValue(ceil.key, $props.item) }}
       </template>
 
-      <i v-if="props.item[ceil.key + `.help`]"
-         :data-tooltip="props.item[ceil.key + `.help`]"
+      <i v-if="$props.item[ceil.key + `.help`]"
+         :data-tooltip="$props.item[ceil.key + `.help`]"
          @click.prevent.stop
          class="ml-2"/>
     </td>

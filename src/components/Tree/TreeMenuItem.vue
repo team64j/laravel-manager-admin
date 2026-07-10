@@ -89,21 +89,19 @@ function onClickItem (action) {
       <i v-else :class="icon" class="fa-fw"/>
     </Button>
 
-    <transition>
-      <div v-if="data.active && actions" class="app-tree__context-menu"
-           :class="`app-tree__context-menu__position-`+position">
-        <template v-for="action in actions">
-          <div v-if="action.title && Object.values(action).length === 1" class="app-tree__context-menu__header">
-            {{ action.title }}
-          </div>
-          <div v-else-if="action.split" class="app-tree__context-menu__split"/>
-          <div v-else class="app-tree__context-menu__item" @click="onClickItem(action)">
-            <i v-if="hasActiveItem(action)" class="fa fa-check w-4"/>
-            <i v-else class="fa w-4"/>
-            {{ action.title }}
-          </div>
-        </template>
-      </div>
-    </transition>
+    <div v-if="data.active && actions" class="app-tree__context-menu"
+         :class="`app-tree__context-menu__position-`+position">
+      <template v-for="action in actions">
+        <div v-if="action.title && Object.values(action).length === 1" class="app-tree__context-menu__header">
+          {{ action.title }}
+        </div>
+        <div v-else-if="action.split" class="app-tree__context-menu__split"/>
+        <div v-else class="app-tree__context-menu__item" @click="onClickItem(action)">
+          <i v-if="hasActiveItem(action)" class="fa fa-check w-4"/>
+          <i v-else class="fa w-4"/>
+          {{ action.title }}
+        </div>
+      </template>
+    </div>
   </div>
 </template>
