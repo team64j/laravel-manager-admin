@@ -14,7 +14,7 @@ import Search from '@/components/Search/Search.vue'
 import Modal from '@/components/Modal/Modal.vue'
 import Logo from '@/components/Logo/Logo.vue'
 import { action as _action } from '@/composables'
-import { DynamicComponent } from '@/utils/dynamic-component'
+import GlobalComponent from '@/components/GlobalComponent/GlobalComponent.vue'
 
 const breakpoints = {
   'sm': 0,
@@ -51,6 +51,8 @@ const modalElement = shallowRef()
 const sidebarElement = shallowRef()
 const datepickerElement = shallowRef()
 
+let layout = null
+
 const data = shallowReactive({
   loaded: false,
   layout: null,
@@ -70,11 +72,6 @@ watch(
 watch(
     () => local.storage['root']?.['dark'],
     (value) => document.documentElement.classList.toggle('dark', !!value)
-)
-
-watch(
-    () => local.storage['root']?.['sidebarShow'],
-    (value) => rootElement.value.classList.toggle('app-sidebar-hidden', !value)
 )
 
 /**
@@ -142,7 +139,7 @@ function login () {
   }
 
   data.loaded = true
-  data.layout = null
+  layout = null
   router.to('/login')
 }
 
@@ -285,12 +282,12 @@ function setSlots (data) {
   }
 }
 
-function setLayout (layout) {
-  if (layout?.length) {
-    data['layout'] = {}
+function setLayout (data) {
+  if (data?.length) {
+    layout = {}
 
-    layout.forEach(i => {
-      data.layout[i.slot] = i
+    data.forEach(i => {
+      layout[i.slot] = i
     })
   }
 }
@@ -386,7 +383,7 @@ function pushRouter (route, callback) {
 }
 
 function collapse (value) {
-  local.set('root.sidebarShow', !value)
+  local.set('root.sidebarShow', !(value && local.get('root.sidebarShow', true)))
 }
 
 function calcIsMobile () {
@@ -479,41 +476,41 @@ defineExpose({
           'app-mobile': store.get('isMobile'),
           'app-sidebar-hidden': !local.get('root.sidebarShow', true)
        }">
-    <template v-if="data.layout">
+    <template v-if="layout">
       <div
-          v-if="data.layout['top.left'] || data.layout['top'] || data.layout['top.right']"
+          v-if="layout['top.left'] || layout['top'] || layout['top.right']"
           class="dark app-position-horizontal grow-0 shrink-0 flex justify-between z-40 shadow bg-gray-700 text-white/80 border-b border-b-gray-900">
-        <div class="grow-0 flex app-position-start" v-if="data.layout['top.left']">
-          <component :is="DynamicComponent({}, null, data.layout['top.left'])" @action="action"/>
+        <div class="grow-0 flex app-position-start" v-if="layout['top.left']">
+          <global-component :layout="layout['top.left']" @action="action"/>
         </div>
-        <div class="grow flex justify-between" v-if="data.layout['top']">
-          <component :is="DynamicComponent({}, null, data.layout['top.top'])" @action="action"/>
+        <div class="grow flex justify-between" v-if="layout['top']">
+          <global-component :layout="layout['top.top']" @action="action"/>
         </div>
-        <div class="grow-0 flex app-position-end" v-if="data.layout['top.right']">
-          <component :is="DynamicComponent({}, null, data.layout['top.right'])" @action="action"/>
+        <div class="grow-0 flex app-position-end" v-if="layout['top.right']">
+          <global-component :layout="layout['top.right']" @action="action"/>
         </div>
       </div>
       <div ref="midElement" class="grow flex flex-row overflow-hidden relative" @touchstart="onTouchstartSidebar">
         <div
-            v-if="data.layout['left.top'] || data.layout['left'] || data.layout['left.bottom']"
+            v-if="layout['left.top'] || layout['left'] || layout['left.bottom']"
             class="app-left z-30 grow-0 shrink-0 flex flex-col justify-between bg-gray-800 text-white/80 w-12 border-r border-r-gray-900 app-position-vertical dark">
-          <div class="grow-0 flex" v-if="data.layout['left.top']">
-            <component :is="DynamicComponent({}, null, data.layout['left.top'])" @action="action"/>
+          <div class="grow-0 flex" v-if="layout['left.top']">
+            <global-component :layout="layout['left.top']" @action="action"/>
           </div>
-          <div class="grow flex items-center" v-if="data.layout['left']">
-            <component :is="DynamicComponent({}, null, data.layout['left'])" @action="action"/>
+          <div class="grow flex items-center" v-if="layout['left']">
+            <global-component :layout="layout['left']" @action="action"/>
           </div>
-          <div class="grow-0 flex app-position-end" v-if="data.layout['left.bottom']">
-            <component :is="DynamicComponent({}, null, data.layout['left.bottom'])" @action="action"/>
+          <div class="grow-0 flex app-position-end" v-if="layout['left.bottom']">
+            <global-component :layout="layout['left.bottom']" @action="action"/>
           </div>
         </div>
-        <div v-if="data.layout['sidebar']" ref="sidebarElement"
+        <div v-if="layout['sidebar']" ref="sidebarElement"
              :style="{ width: data.sidebarWidth + `rem` }"
              class="relative z-20 grow-0 shrink-0 max-w-full lg:max-w-[75%] app-sidebar dark"
              :class="{
               'app-main__overlay': store.get('AppMainOverlay')
             }">
-          <component :is="DynamicComponent({}, null, data.layout['sidebar'])"/>
+          <global-component :layout="layout['sidebar']" @action="action"/>
           <div class="app-resizer grow-0 shrink-0 flex" @mousedown="onMousedownSidebarSplitter">
             <div/>
           </div>

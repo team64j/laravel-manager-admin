@@ -3,6 +3,8 @@ import { action, getValue, setValue } from '@/composables'
 import router from '@/router'
 
 export function DynamicComponent (item = {}, model, ceil) {
+  ceil = toRaw(ceil)
+
   if (typeof ceil === 'string') {
     console.log(ceil)
   }
@@ -33,7 +35,7 @@ export function DynamicComponent (item = {}, model, ceil) {
     }
   }
 
-  props.key = component.model || component.component || ''
+  props.key = component.model || component.component?.name || ''
 
   if (component.model) {
     if (component?.attrs.data?.[component.model] !== undefined) {
@@ -47,8 +49,6 @@ export function DynamicComponent (item = {}, model, ceil) {
     props.meta = model.meta
   }
 
-  props.currentRoute = toRaw(router.currentRoute.value)
-
   if (Array.isArray(component) && component.length) {
     return renderList(
       component,
@@ -56,7 +56,9 @@ export function DynamicComponent (item = {}, model, ceil) {
     )
   }
 
-  if (!window['Vue']._context.components[component.component]) {
+  const vueComponent = window['Vue']._context.components[component.component]
+
+  if (!vueComponent) {
     return null
   }
 
@@ -118,8 +120,12 @@ export function DynamicComponent (item = {}, model, ceil) {
     )
   }
 
+  if (vueComponent.props.currentRoute) {
+    props.currentRoute = toRaw(router.currentRoute.value)
+  }
+
   return h(
-    window['Vue']._context.components[component.component],
+    vueComponent,
     {
       ...props,
       ...eventHandlers

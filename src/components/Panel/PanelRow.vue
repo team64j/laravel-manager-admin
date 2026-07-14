@@ -1,7 +1,7 @@
 <script setup>
-import { DynamicComponent } from '@/utils/dynamic-component'
 import { getCurrentInstance, h } from 'vue'
 import { action, getValue } from '@/composables'
+import { DynamicComponent } from '@/utils/dynamic-component'
 
 const currentInstance = getCurrentInstance()
 
@@ -13,7 +13,7 @@ const $props = defineProps({
   modelValue: [Object, Array]
 })
 
-const emit = defineEmits(['onClickRow', 'action'])
+const emit = defineEmits(['onClickRow', 'action', 'update:modelValue'])
 
 function values (column, item) {
   if (typeof Object.values(column.values)[0] === 'object') {

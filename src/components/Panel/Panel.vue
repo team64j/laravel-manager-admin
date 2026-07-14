@@ -62,13 +62,12 @@ const $props = defineProps({
 
 const $emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
-const key = `panel.` + $props.id.toLowerCase()
+const keyStorage = `panel.` + $props.id.toLowerCase()
 
 const $data = reactive({
-  keyStorage: key,
   filterTimer: 0,
   filterModel: { ...$props.currentRoute.query },
-  settings: session.get(key, {}),
+  settings: session.get(keyStorage, {}),
   idContextMenu: null,
   showContextMenu: false,
   dataContextMenu: [],
@@ -78,15 +77,16 @@ const $data = reactive({
   draggable: {
     type: [Boolean, String],
     default: props => props?.meta?.draggable
-  }
+  },
+  loaded: true,
+  data: $props.data,
+  meta: $props.meta
 })
-
-const loaded = shallowRef(true)
 
 const colgroupColumns = shallowRef([])
 
 const columns = computed(() => {
-  const columns = $props?.meta?.columns || $props.columns || {}
+  const columns = $data.meta?.columns || $props.columns || {}
 
   if (columns.length) {
     return toRaw(columns).map(i => {
@@ -100,8 +100,8 @@ const columns = computed(() => {
 
       return i
     })
-  } else if ($props.data[0]) {
-    return Object.entries($props.data[0]).map(i => {
+  } else if ($data.data[0]) {
+    return Object.entries($data.data[0]).map(i => {
       colgroupColumns.value.push(null)
       return { key: i[0] }
     })
@@ -114,7 +114,7 @@ const filters = computed(() => {
   const filters = []
 
   for (const column of columns.value) {
-    const filter = ($props?.meta?.filters ?? []).find(i => i.name === column.name)
+    const filter = ($data.meta?.filters ?? []).find(i => i.name === column.name)
 
     if (filter || column.filter) {
       filters.push(toRaw(filter || { name: column.name }))
@@ -130,7 +130,7 @@ const propUrl = computed(() => $props.url ?? $props.currentRoute['path'] ?? null
 
 const rowProps = computed(() => ({
   columns: columns.value,
-  modelValue: $props.modelValue,
+  modelValue: $props.modelValue ?? $data.data,
   route: $props.route
 }))
 
@@ -143,13 +143,13 @@ function pagination (url) {
 }
 
 function getData (query, params) {
-  loaded.value = false
+  $data.loaded = false
   const route = router.parse($props.currentRoute?.['meta']?.['url'] || propUrl.value)
   query = Object.assign(route.query, $data.filterModel, query)
 
   $emit('update:props', {
     data: params,
-    meta: params ? Object.assign({}, { ...$props.meta }) : {}
+    meta: params ? Object.assign({}, { ...$data.meta }) : {}
   }, this)
   axios({
     method: route?.['meta']?.['method']?.toLowerCase() ?? 'get',
@@ -157,9 +157,10 @@ function getData (query, params) {
     params: query,
     data: Object.assign({}, query)
   }).then(({ data }) => {
-    $emit('update:props', { ...data })
+    $data.data = data.data
+    $data.meta = data.meta
   }).finally(() => {
-    loaded.value = true
+    $data.loaded = true
   })
 }
 
@@ -221,7 +222,7 @@ function onClickCategoryRow (category) {
     $data.settings['closed'].push(key)
   }
 
-  session.set($data.keyStorage, { closed: $data.settings['closed'] })
+  session.set(keyStorage, { closed: $data.settings['closed'] })
 }
 
 function onClickRow (item, route) {
@@ -250,7 +251,7 @@ function onClickRow (item, route) {
 
   const active = item['@active']
 
-  $props.data.forEach(i => {
+  $data.data.forEach(i => {
     if (i['@active']) {
       delete i['@active']
     }
@@ -270,8 +271,8 @@ function onSortableEnd (data, key) {
     return
   }
 
-  let counter = $props.meta?.pagination?.['current'] > 1
-      ? ($props.meta.pagination['current'] - 1) * $props.meta.pagination['per']
+  let counter = $data.meta?.pagination?.['current'] > 1
+      ? ($data.meta.pagination['current'] - 1) * $data.meta.pagination['per']
       : 0
 
   for (const i in data) {
@@ -312,8 +313,8 @@ onMounted(() => {
       <slot name="top"/>
     </div>
 
-    <div v-if="$props.data" class="grow overflow-auto rounded">
-      <table class="w-full" :class="{ 'min-h-full': !loaded }">
+    <div v-if="$data.data" class="grow overflow-auto rounded">
+      <table class="w-full" :class="{ 'min-h-full': !$data.loaded }">
 
         <thead v-if="columns.some(i => i.label)" class="bg-slate-100 dark:bg-gray-600 sticky top-0 z-[11]">
         <tr v-if="columns">
@@ -347,9 +348,9 @@ onMounted(() => {
         </colgroup>
 
         <template
-            v-if="$props.data.length && loaded"
-            v-for="category in ($props.data[0]?.[$props.dataKey] ? $props.data : [{
-              data: $props.data,
+            v-if="$data.data.length && $data.loaded"
+            v-for="category in ($data.data[0]?.[$props.dataKey] ? $data.data : [{
+              data: $data.data,
               route: $props.route,
               draggable: $props.draggable
             }])">
@@ -392,7 +393,7 @@ onMounted(() => {
 
         </template>
 
-        <tbody v-else-if="!loaded">
+        <tbody v-else-if="!$data.loaded">
         <tr>
           <td :colspan="columns.length">
             <div class="flex items-center justify-center text-center p-5 w-full">
@@ -408,23 +409,23 @@ onMounted(() => {
       <i class="inline-block rounded-full border-2 border-slate-200 border-r-blue-500 dark:border-white/20 dark:border-r-blue-500 h-5 w-5 animate-spin"/>
     </div>
 
-    <div v-if="$props.meta?.['pagination']?.['prev'] || $props.meta?.['pagination']?.['next']" class="flex p-3">
+    <div v-if="$data.meta?.['pagination']?.['prev'] || $data.meta?.['pagination']?.['next']" class="flex p-3">
       <div class="grow">
         <Button class="btn-sm btn-gray"
-                :disabled="!$props.meta['pagination']['prev']"
-                :class="{ '!opacity-50': !$props.meta['pagination']['prev'] }"
-                @click="pagination($props.meta['pagination']['prev'])">
+                :disabled="!$data.meta['pagination']['prev']"
+                :class="{ '!opacity-50': !$data.meta['pagination']['prev'] }"
+                @click="pagination($data.meta['pagination']['prev'])">
           <i class="fa fa-angle-left fa-fw"/>
         </Button>
         <Button class="btn-sm btn-gray ml-1"
-                :disabled="!$props.meta['pagination']['next']"
-                :class="{ '!opacity-50': !$props.meta['pagination']['next'] }"
-                @click="pagination($props.meta['pagination']['next'])">
+                :disabled="!$data.meta['pagination']['next']"
+                :class="{ '!opacity-50': !$data.meta['pagination']['next'] }"
+                @click="pagination($data.meta['pagination']['next'])">
           <i class="fa fa-angle-right fa-fw"/>
         </Button>
       </div>
-      <div v-if="$props.meta['pagination']['info']" class="pr-2">
-        {{ $props.meta['pagination']['info'] }}
+      <div v-if="$data.meta['pagination']['info']" class="pr-2">
+        {{ $data.meta['pagination']['info'] }}
       </div>
     </div>
 

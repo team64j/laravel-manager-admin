@@ -22,11 +22,17 @@ const $emit = defineEmits(['action'])
 
 const refData = ref($props.data)
 
+onMounted(() => {
+  document.addEventListener('click', function () {
+    store.set('AppMainOverlay', false)
+  })
+})
+
 let enterTimer = 0,
     filterTimer = 0
 
 function onClick (instance, props) {
-  let active
+  let active = store.get('AppMainOverlay', false)
 
   if (store.get('isMobile')) {
     let item = instance.vnode.el
@@ -71,7 +77,7 @@ function onClick (instance, props) {
       }
     }
   }
-  store.set({ AppMainOverlay: active })
+  store.set('AppMainOverlay', active)
 }
 
 function onEnter (instance, props) {
@@ -120,11 +126,11 @@ function onNav (instance, url, props) {
   loadData(url, props)
 }
 
-function onFilterInput (instance, props) {
+function onFilterInput (value, props) {
   clearTimeout(filterTimer)
   filterTimer = setTimeout(() => {
     loadData(
-        router.parse({ path: props.data['url'], query: { filter: instance.vnode.el.value } }).fullPath,
+        router.parse({ path: props.data['url'], query: { filter: value } }).fullPath,
         props
     )
   }, 500)
@@ -169,12 +175,6 @@ function loadData (url, props) {
     props.data['loading'] = false
   })
 }
-
-onMounted(() => {
-  document.addEventListener('click', function () {
-    store.set({ AppMainOverlay: false })
-  })
-})
 
 defineExpose({
   onEnter,

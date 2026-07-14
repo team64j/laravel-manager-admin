@@ -2,6 +2,7 @@
 import { getCurrentInstance } from 'vue'
 import local from '@/services/local'
 import Button from '@/components/Button/Button.vue'
+import Input from '@/components/Input/Input.vue'
 
 const currentInstance = getCurrentInstance()
 const $props = defineProps(['data', 'level'])
@@ -46,20 +47,17 @@ if ($props.data['values']) {
       </Button>
     </div>
 
-    <div v-else-if="$props.data['filter'] !== undefined" class="py-1 !px-2 relative" @click.stop="">
-      <input
-          type="text"
-          name="filter"
-          class="px-2 pr-4 py-0.5 h-7"
-          placeholder="..."
-          autocomplete="off"
-          autofocus
-          :value="$props.data['filter']"
-          @input="() => emit('action', 'onFilterInput', currentInstance, currentInstance.parent.props)"/>
-
-      <i class="fa fa-remove absolute right-4 hover:text-rose-600" :class="{ 'hidden': !$props.data['filter'] }"
-         @click="() => emit('action', 'onFilterClear', currentInstance, currentInstance.parent.props)"/>
-    </div>
+    <Input
+        v-else-if="$props.data['filter'] !== undefined"
+        type="text"
+        class="py-1"
+        input-class="input-sm !h-7"
+        v-model="$props.data['filter']"
+        :clear="true"
+        :size="`sm`"
+        @click.stop
+        @update:model-value="(value) => emit('action', 'onFilterInput', value, currentInstance.parent.props)"
+    />
 
     <div v-else :data-tooltip="$props.data['title']"
          @click.stop="() => emit('action', 'onClick', currentInstance, $props)">

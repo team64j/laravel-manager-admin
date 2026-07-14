@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, watch } from 'vue'
+import { computed, getCurrentInstance, onMounted } from 'vue'
 import { uniqId } from '@/utils'
 import router from '@/router'
 import Button from '@/components/Button/Button.vue'
@@ -37,24 +37,19 @@ const props = defineProps({
 const emit = defineEmits(['action', 'update:props'])
 const keyStorage = `tabs_` + props.id.toLowerCase()
 
-session.set(keyStorage, session.get(keyStorage, 0))
+const index = computed(() => session.get(keyStorage, 0))
 
-const index = computed({
-  set (value) {
-    session.set(keyStorage, value)
-  },
-  get () {
-    return session.get(keyStorage, 0)
-  }
-})
+onMounted(init)
 
 function init () {
   let right = 0,
       width = 0
 
-  currentInstance.vnode.el.styles = getComputedStyle(currentInstance.vnode.el)
+  const el = currentInstance.vnode.el
 
-  currentInstance.vnode.el.querySelectorAll('button').forEach((t, i) => {
+  el.styles = getComputedStyle(el)
+
+  el.querySelectorAll('button').forEach((t, i) => {
     t.styles = getComputedStyle(t)
 
     if (i <= index.value) {
@@ -66,14 +61,14 @@ function init () {
     }
   })
 
-  if (currentInstance.vnode.el.scrollLeft > right) {
-    currentInstance.vnode.el.scrollLeft = right
+  if (el.scrollLeft > right) {
+    el.scrollLeft = right
   }
 
-  if (currentInstance.vnode.el.offsetWidth < width) {
-    currentInstance.vnode.el.scrollLeft = width - currentInstance.vnode.el.offsetWidth +
-        (parseFloat(currentInstance.vnode.el.styles.paddingLeft) +
-            parseFloat(currentInstance.vnode.el.styles.paddingRight))
+  if (el.offsetWidth < width) {
+    el.scrollLeft = width - el.offsetWidth +
+        (parseFloat(el.styles.paddingLeft) +
+            parseFloat(el.styles.paddingRight))
   }
 }
 
@@ -98,54 +93,13 @@ function select (tab, key) {
     }
   }
 
+  if (props.hiddenTabs) {
+    emit('action', 'collapse', key === index.value)
+  }
+
   session.set(keyStorage, key)
 
-  // :TODO Сделать более универсальное решение для отправки события родительскому компоненту
-  if (props.hiddenTabs) {
-    const active = !tab.active
-    props.data.forEach(i => i.active = false)
-    tab.active = active
-    emit('action', 'collapse', !tab.active)
-  } else {
-    props.data.forEach((i, k) => i.active = i.render = k === key)
-  }
-
   init()
-}
-
-if (props.history) {
-  if (typeof props.history === 'string') {
-    session.set(keyStorage, session.get(keyStorage, 0))
-    index.value = props.data.findIndex(i => i.id === props.currentRoute.params[props.history])
-    props.data.forEach(i => i.active = i.render = i.id === index.value)
-
-    watch(
-        () => props.currentRoute.params[props.history],
-        a => {
-          if (!a) {
-            return
-          }
-
-          const key = props.data.findIndex(i => i.id === a)
-
-          if (key >= 0 && index.value !== key) {
-            index.value = key
-          }
-        }
-    )
-  } else {
-    index.value = props.data.findIndex(i => router.parse(i?.route)?.['path'] === props.currentRoute.path)
-
-    watch(
-        () => props.currentRoute.path,
-        a => index.value = props.data.findIndex(i => router.parse(i?.route)['path'] === a)
-    )
-  }
-} else if (!props.data.some((i, k) => k === index.value) && props.data[0]) {
-  index.value = 0
-  props.data[0].active = props.data[0].render = true
-} else {
-  props.data.forEach((i, k) => i.active = i.render = k === index.value)
 }
 </script>
 

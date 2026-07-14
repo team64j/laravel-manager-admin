@@ -4,7 +4,7 @@ import { computed, getCurrentInstance, reactive, ref } from 'vue'
 
 defineOptions({
   name: 'Input',
-  __isStatic: true,
+  __isStatic: true
 })
 
 const currentInstance = getCurrentInstance()
@@ -26,12 +26,12 @@ const $props = defineProps({
       'month',
       'datetime-local',
       'button'].includes(
-        type),
-  },
+        type)
+  }
 })
 
 const $data = reactive({
-  loading: false,
+  loading: false
 })
 
 const model = computed({
@@ -47,7 +47,7 @@ const model = computed({
   },
   set (value) {
     $emit('update:modelValue', value, currentInstance)
-  },
+  }
 })
 
 const input = ref()
@@ -74,13 +74,13 @@ function onClickMinus () {
 defineExpose({
   model,
   input,
-  data: $data,
+  data: $data
 })
 </script>
 
 <template>
-  <div v-if="$props.label" class="w-full" :class="$props.class">
-    <div class="mb-1">
+  <div class="w-full relative" :class="$props.class">
+    <div v-if="$props.label" class="mb-1">
       <label :for="$props.id" class="font-bold cursor-pointer" :class="$props.labelClass">
         {{ $props.label }}
         <span v-if="$props.required" class="text-rose-500">*</span>
@@ -90,11 +90,14 @@ defineExpose({
       <span v-if="$props.requiredText" class="text-rose-500 ml-3 text-sm font-normal">{{ $props.requiredText }}</span>
       <slot name="label"/>
     </div>
-    <div class="relative" :class="{ 'app-input__number': $props.type === 'number' }">
+    <div class="w-full relative" :class="{ 'app-input__number': $props.type === 'number' }">
       <div v-if="$data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
            :class="[$props.type === 'button' ? 'right-0 bottom-0' : '']">
-        <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
+        <i class="inline-block rounded-full border-2 border-gray-200 border-r-gray-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </div>
+      <i v-if="$props.clear && model"
+         class="app-input__clear fa fa-circle-xmark absolute block top-1.5 right-2 my-auto cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
+         @click="onClear" :data-model="model"/>
       <input v-model="model"
              ref="input"
              :id="$props.id"
@@ -109,37 +112,9 @@ defineExpose({
         <i class="fa fa-angle-up app-input__plus" @click="onClickPlus"/>
         <i class="fa fa-angle-down app-input__minus" @click="onClickMinus"/>
       </template>
-      <i v-if="$props.clear && model"
-         class="app-input__clear fa fa-circle-xmark absolute block right-2 my-auto cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
-         @click="onClear" :data-model="model"/>
     </div>
     <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
     <slot name="item"/>
-  </div>
-  <div v-else class="w-full relative flex items-center"
-       :class="[$props.class, $props.type === 'number' ? 'app-input__number' : '']">
-    <div v-if="$data.loading" class="absolute left-0 top-1 my-1 mx-2 flex items-center justify-center"
-         :class="[$props.type === 'button' ? 'right-0 bottom-0' : '']">
-      <i class="inline-block rounded-full border-2 border-gray-200 border-r-gray-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
-    </div>
-    <input v-model="model"
-           ref="input"
-           :id="$props.id"
-           :type="$props.type"
-           :placeholder="$props.placeholder"
-           :class="[$props.inputClass, $props.error ? '!border-rose-500' : '', $data.loading ? '!text-transparent' : '']"
-           :readonly="$props.readonly"
-           :required="$props.required"
-           :disabled="$props.disabled"
-           @mousedown="onMousedown">
-    <template v-if="$props.type === 'number'">
-      <i class="fa fa-angle-up app-input__plus" @click="onClickPlus"/>
-      <i class="fa fa-angle-down app-input__minus" @click="onClickMinus"/>
-    </template>
-    <i v-if="$props.clear && model"
-       class="app-input__clear fa fa-circle-xmark absolute block right-2 my-auto cursor-pointer text-gray-300 dark:text-gray-500 hover:text-rose-500 dark:hover:text-rose-600 transition"
-       @click="onClear" :data-model="model"/>
-    <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
   </div>
 </template>
 

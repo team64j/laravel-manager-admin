@@ -1,5 +1,5 @@
 <script setup>
-import { compile, getCurrentInstance, h } from 'vue'
+import { compile, computed, getCurrentInstance, h } from 'vue'
 import { getValue, setValue } from '@/composables'
 
 defineOptions({
@@ -7,7 +7,7 @@ defineOptions({
   __isStatic: true
 })
 
-const props = defineProps(['data', 'meta', 'layout', 'errors', 'loaderDelay', 'class', 'url', 'currentRoute'])
+const props = defineProps(['data', 'meta', 'layout', 'modelValue', 'errors', 'loaderDelay', 'class', 'url', 'currentRoute'])
 
 const emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
@@ -124,7 +124,14 @@ function createComponent (data) {
     if (attrs.data?.[attrs.key] !== undefined) {
       attrs.data = attrs.data[attrs.key]
     } else {
-      attrs.modelValue = getValue(attrs.key, props)
+      attrs.modelValue = getValue(attrs.key, props.modelValue ?? props)
+    }
+  }
+
+  if (attrs?.keyValue) {
+    const keyValue = computed(() => props.data?.[attrs.keyValue])
+    if (keyValue.value !== undefined) {
+      attrs.value = keyValue.value
     }
   }
 
@@ -194,7 +201,7 @@ function updateModelValue (value, instance) {
     }
   }
 
-  updates.forEach(({ key, value }) => setValue(key, value, props))
+  updates.forEach(({ key, value }) => setValue(key, value, props.modelValue ?? props))
   emit('update:modelValue', value, instance)
 }
 
