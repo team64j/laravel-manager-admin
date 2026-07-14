@@ -8,7 +8,7 @@
     "src": "favicon.ico"
   },
   "index.css": {
-    "file": "assets/index-672ffc05.css",
+    "file": "assets/index-b83f1468.css",
     "src": "index.css"
   },
   "index.html": {
@@ -24,9 +24,9 @@
       "assets/background-6bcc27f1.jpg"
     ],
     "css": [
-      "assets/index-672ffc05.css"
+      "assets/index-b83f1468.css"
     ],
-    "file": "assets/index-f0034aaa.js",
+    "file": "assets/index-c5c458e8.js",
     "isEntry": true,
     "src": "index.html"
   },

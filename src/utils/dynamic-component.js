@@ -35,7 +35,7 @@ export function DynamicComponent (item = {}, model, ceil) {
     }
   }
 
-  props.key = component.model || component.component?.name || ''
+  props.key = component.model || component.component || ''
 
   if (component.model) {
     if (component?.attrs.data?.[component.model] !== undefined) {
@@ -49,6 +49,8 @@ export function DynamicComponent (item = {}, model, ceil) {
     props.meta = model.meta
   }
 
+  //props.currentRoute = toRaw(router.currentRoute.value)
+
   if (Array.isArray(component) && component.length) {
     return renderList(
       component,
@@ -56,9 +58,7 @@ export function DynamicComponent (item = {}, model, ceil) {
     )
   }
 
-  const vueComponent = window['Vue']._context.components[component.component]
-
-  if (!vueComponent) {
+  if (!window['Vue']._context.components[component.component]) {
     return null
   }
 
@@ -104,7 +104,7 @@ export function DynamicComponent (item = {}, model, ceil) {
     },
 
     'onAction': (...args) => {
-      if (!currentInstance.attrs.onAction || args[0] !== 'action') {
+      if (!currentInstance.attrs.onAction && args[0] !== 'action') {
         action.call(currentInstance, ...args)
       }
     }
@@ -120,12 +120,8 @@ export function DynamicComponent (item = {}, model, ceil) {
     )
   }
 
-  if (vueComponent.props.currentRoute) {
-    props.currentRoute = toRaw(router.currentRoute.value)
-  }
-
   return h(
-    vueComponent,
+    window['Vue']._context.components[component.component],
     {
       ...props,
       ...eventHandlers

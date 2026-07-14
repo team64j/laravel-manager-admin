@@ -57,7 +57,7 @@ function onContextMenu () {
       @contextmenu="onContextMenu($event, item)">
     <td v-for="ceil in $props.columns" class="p-2 first:pl-6 last:pr-6" :style="ceil.style">
       <div v-if="$props.item[ceil.key]?.component || ceil.component" @click.stop>
-        <component :is="DynamicComponent($props.item, $props.modelValue, ceil)"
+        <component :is="() => DynamicComponent($props.item, $props.modelValue, ceil)"
                    @action="(...args) => action.call(currentInstance, ...args)"/>
       </div>
 

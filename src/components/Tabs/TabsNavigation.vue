@@ -47,6 +47,10 @@ function init () {
 
   const el = currentInstance.vnode.el
 
+  if (el.nodeType !== 1) {
+    return
+  }
+
   el.styles = getComputedStyle(el)
 
   el.querySelectorAll('button').forEach((t, i) => {
@@ -73,6 +77,12 @@ function init () {
 }
 
 function select (tab, key) {
+  if (props.hiddenTabs) {
+    emit('action', 'collapse', key === index.value)
+  }
+
+  session.set(keyStorage, key)
+
   if (props.history) {
     if (typeof props.history === 'string') {
       emit('action', 'pushRouter', {
@@ -91,15 +101,9 @@ function select (tab, key) {
         }
       })
     }
+  } else {
+    init()
   }
-
-  if (props.hiddenTabs) {
-    emit('action', 'collapse', key === index.value)
-  }
-
-  session.set(keyStorage, key)
-
-  init()
 }
 </script>
 

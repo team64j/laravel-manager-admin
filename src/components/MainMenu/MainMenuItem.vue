@@ -29,7 +29,7 @@ if ($props.data['values']) {
       @mouseleave="() => emit('action', 'onOut', currentInstance, $props)"
       @mouseenter="() => emit('action', 'onEnter', currentInstance, $props)">
 
-    <div v-if="$props.data['prev'] || $props.data['next']" class="py-1 !bg-inherit" @click.stop="">
+    <div v-if="$props.data['prev'] || $props.data['next']" class="pt-1 pb-2 -mb-1 !bg-inherit" @click.stop="">
       <Button type="button" class="-ml-2 btn-sm btn-gray"
               :disabled="!$props.data['prev']"
               :class="{ '!opacity-50': !$props.data['prev'] }"
@@ -54,7 +54,7 @@ if ($props.data['values']) {
         input-class="input-sm !h-7"
         v-model="$props.data['filter']"
         :clear="true"
-        :size="`sm`"
+        placeholder="..."
         @click.stop
         @update:model-value="(value) => emit('action', 'onFilterInput', value, currentInstance.parent.props)"
     />

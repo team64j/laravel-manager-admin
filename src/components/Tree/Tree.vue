@@ -244,7 +244,7 @@ function toggleNode (node) {
     node['loading'] = true
     axios.get($props.url, {
       params: {
-        settings: Object.assign({}, $data.propSettings, { parent: id })
+        settings: Object.assign({}, $data.propSettings, { parent: id }, node)
       }
     }).then(({ data }) => {
       if (data['data']) {

@@ -146,9 +146,10 @@ router.parse = (route) => {
   return router.resolve(router.parseParams(route))
 }
 
-router.parseParams = (route) => {
-  if (route.path && route.params) {
-    route.params = { ...route.params }
+router.parseParams = (route, params) => {
+  params ??= route.params
+
+  if (route.path && params) {
     const query = route.path.split('?')[1] ?? null
 
     if (query) {
@@ -162,7 +163,7 @@ router.parseParams = (route) => {
       }
     }
 
-    Object.entries(route.params).forEach(([k, v]) => {
+    Object.entries(params).forEach(([k, v]) => {
       if (!(v === undefined || v === null)) {
         const re = new RegExp(':' + k, 'g')
         v = v.toString()
