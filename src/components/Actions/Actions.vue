@@ -115,10 +115,10 @@ function onClickGroup (event) {
   @apply relative
 }
 .app-actions .app-actions__group > button {
-  @apply rounded-r-none last-of-type:rounded-r last-of-type:rounded-l-none
+  @apply first-of-type:rounded-r-none last-of-type:rounded-r last-of-type:rounded-l-none
 }
-.app-actions .app-actions__toggle:not(:focus):not(:hover) {
-  @apply border-l border-l-white/20
+.app-actions .app-actions__toggle {
+  @apply -ml-[1px]
 }
 .app-actions .app-actions__toggle > i {
   @apply transition

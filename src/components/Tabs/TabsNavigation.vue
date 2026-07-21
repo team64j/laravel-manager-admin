@@ -15,7 +15,9 @@ const currentInstance = getCurrentInstance()
 const props = defineProps({
   id: {
     type: String,
-    default: uniqId()
+    default () {
+      return uniqId()
+    }
   },
   data: {
     type: [null, Array],
@@ -35,7 +37,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['action', 'update:props'])
-const keyStorage = `tabs_` + props.id.toLowerCase()
+
+const keyStorage = `tabs.${props.id.toLowerCase()}`
 
 const index = computed(() => session.get(keyStorage, 0))
 

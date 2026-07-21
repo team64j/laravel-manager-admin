@@ -73,5 +73,14 @@ module.exports = {
     }
   },
 
+  safelist: [
+    {
+      pattern: /^m-\d+$/,
+    },
+    {
+      pattern: /^p-\d+$/,
+    },
+  ],
+
   plugins: []
 }

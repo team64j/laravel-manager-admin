@@ -31,7 +31,7 @@ const $props = defineProps({
   menu: Object
 })
 
-const keyStorage = `tree.` + $props.id.toLowerCase()
+const keyStorage = `tree.${$props.id.toLowerCase()}`
 
 const $data = reactive({
   propSettings: $props.settings || {},

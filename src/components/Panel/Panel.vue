@@ -62,7 +62,7 @@ const $props = defineProps({
 
 const $emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
-const keyStorage = `panel.` + $props.id.toLowerCase()
+const keyStorage = `panel.${$props.id.toLowerCase()}`
 
 const $data = reactive({
   filterTimer: 0,

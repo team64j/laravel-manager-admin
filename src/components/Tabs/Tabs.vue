@@ -31,22 +31,22 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  smallTabs: Boolean,
+  hiddenTabs: Boolean,
+  currentRoute: Object,
   navigation: {
     type: Boolean,
     default: true
-  },
-  smallTabs: Boolean,
-  hiddenTabs: Boolean,
-  currentRoute: Object
+  }
 })
-
-const slots = defineSlots()
 
 const emit = defineEmits(['action', 'update:props'])
 
-const keyStorage = `tabs_${props.id.toLowerCase()}`
+const keyStorage = `tabs.${props.id.toLowerCase()}`
 
 const index = computed(() => session.get(keyStorage, 0))
+
+const slots = defineSlots()
 </script>
 
 <template>
