@@ -1,35 +1,39 @@
 <script setup>
-import { nextTick, ref, shallowRef } from 'vue'
+import { nextTick, shallowRef } from 'vue'
 
 defineOptions({
   name: 'Tooltip'
 })
 
-const rootElement = shallowRef()
-const isShow = ref(false)
-const style = ref(null)
+const rootElement = shallowRef(null)
+const isShow = shallowRef(false)
+const style = shallowRef(null)
 
 let element, html, type, timer = 0
 
-function create (event) {
+function create (event, delay) {
   element = event.target.closest('[data-tooltip]')
 
-  if (!event.target || !rootElement.value || event.target === rootElement.value || !event.target.getAttribute ||
-      !element || event.target.getAttribute('data-tooltip') === '...') {
+  if (
+      !event.target ||
+      !rootElement.value ||
+      event.target === rootElement.value ||
+      !event.target.getAttribute ||
+      !element ||
+      event.target.getAttribute('data-tooltip') === '...'
+  ) {
     return
   }
 
   event.preventDefault()
 
-  element.addEventListener('mousedown', destroy)
-  element.addEventListener('mouseup', destroy)
-  element.addEventListener('keydown', destroy)
-  element.addEventListener('click', destroy)
+  element.onclick = destroy
 
   html = element.getAttribute('data-tooltip')
   type = element.getAttribute('data-type')
+  delay ??= element.nodeName === 'I' ? 100 : 500
 
-  style.value = { top: `0px`, left: `0px` }
+  style.value = { top: event.pageY, left: event.pageX }
 
   nextTick(() => {
     const position = element.getBoundingClientRect()
@@ -48,20 +52,20 @@ function create (event) {
     }
 
     style.value = { top: `${top}px`, left: `${left}px` }
-  }).then(() => timer = setTimeout(() => isShow.value = true, 300))
+  }).then(() => timer = setTimeout(() => isShow.value = true, delay))
 }
 
 function destroy (event) {
   event.preventDefault()
 
   if (!element || event.relatedTarget === rootElement.value) {
-    return
+    return event.currentTarget.nodeName === 'I' && create(event, 0)
   }
 
   clearTimeout(timer)
 
   element = null
-  timer = null
+
   isShow.value = false
 }
 
@@ -79,9 +83,9 @@ document.addEventListener('mouseout', destroy)
             '!duration-0': !isShow
           }"
          :style="style"
-         @click.stop=""
-         @mousedown.stop=""
-         @mouseover.stop="">
+         @click.stop
+         @mousedown.stop
+         @mouseover.stop>
       <div class="pointer-events-none" v-html="html"/>
     </div>
   </teleport>
@@ -89,7 +93,7 @@ document.addEventListener('mouseout', destroy)
 
 <style scoped>
 .app-tooltip {
-  @apply fixed z-[999] opacity-0 invisible -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-gray-50/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50 text-sm shadow transition-all
+  @apply fixed z-[999] opacity-0 invisible -translate-x-1 -translate-y-1 m-3 py-2.5 px-4 max-w-80 rounded bg-gray-50/90 text-gray-800 dark:bg-gray-600/90 dark:text-gray-50 text-sm shadow transition
 }
 </style>
 
