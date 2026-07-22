@@ -54,6 +54,7 @@ function addTab (data) {
       is = true
       data.meta = i.meta
       Object.assign(i, data)
+      setTitle(data?.meta)
     }
   })
 
@@ -99,6 +100,7 @@ function addTab (data) {
 
 function setTab (data) {
   store.set({ tabsLoading: data.loading })
+  setTitle(data?.meta)
 
   if (data.key) {
     const index = $data.keys.findIndex(i => i === data.key)
@@ -168,6 +170,14 @@ function dblClickTab (data) {
 
 function find (data) {
   return $data.tabs.filter(i => router.key(i, data))[0] || null
+}
+
+function setTitle (meta) {
+  if (meta?.title) {
+    document.title = ((meta?.title ? meta.title + ' – ' : '') + session.get('config.siteName')).trim()
+  } else if (meta?.hasOwnProperty('title')) {
+    document.title = session.get('config.siteName')
+  }
 }
 
 onMounted(() => {
