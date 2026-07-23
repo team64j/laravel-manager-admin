@@ -1,9 +1,9 @@
 <script setup>
 import { computed, getCurrentInstance, nextTick, ref, shallowRef } from 'vue'
 import { props } from '@/composables'
-import RadioComponent from '@/components/Radio/Radio.vue'
-import CheckboxComponent from '@/components/Checkbox/Checkbox.vue'
 import router from '@/router'
+import Radio from '@/components/Radio/Radio.vue'
+import Checkbox from '@/components/Checkbox/Checkbox.vue'
 
 defineOptions({
   name: 'Select',
@@ -195,7 +195,7 @@ if ($props.load && $props.url) {
 
         <template v-for="o in options">
           <div v-if="o.name" class="px-3 pt-1 pb-0.5 font-bold">{{ o.name }}</div>
-          <checkbox-component
+          <Checkbox
               v-if="$props.multiple"
               v-model="model"
               :data="o['data'] ?? [o]"
@@ -205,7 +205,7 @@ if ($props.load && $props.url) {
               input-class="!ring-0"
               :as-button="true"
               @update:modelValue="onUpdateModelValue"/>
-          <radio-component
+          <Radio
               v-else
               v-model="model"
               :data="o['data'] ?? [o]"

@@ -133,10 +133,11 @@ defineExpose({
 <template>
   <transition name="fade">
     <teleport to="body" v-if="data.show">
-      <div class="app-modal">
-        <div class="app-modal__overlay" @click="data.show=!data.show"/>
-        <div class="app-modal__wrap" ref="modalElement">
-          <div class="app-modal__header">
+      <div class="fixed z-50 top-0 left-0 w-full h-full bg-black/50 p-5 flex items-center justify-center">
+        <div class="absolute left-0 top-0 right-0 bottom-0" @click="data.show=!data.show"/>
+        <div ref="modalElement"
+             class="absolute flex flex-col rounded bg-white dark:bg-gray-700 shadow-lg w-4/5 h-4/5 min-w-60 min-h-60 max-w-[98%] max-h-[98%] resize overflow-hidden transition-opacity">
+          <div class="flex bg-white/5 cursor-grab active:cursor-grabbing">
             <div v-if="data.icon" class="pl-4 flex items-center">
               <i :class="data.icon"/>
             </div>
@@ -145,36 +146,15 @@ defineExpose({
               <i class="fa fa-close leading-none"/>
             </Button>
           </div>
-          <div class="app-modal__main">
+          <div class="grow flex overflow-auto">
             <global-component v-if="data.componentLoaded"
-                       v-bind="data.componentProps"
-                       :currentRoute="data.currentRoute"
-                       @action="(...args) => action.call(currentInstance.exposed, ...args)"/>
+                              v-bind="data.componentProps"
+                              :currentRoute="data.currentRoute"
+                              @action="(...args) => action.call(currentInstance.exposed, ...args)"/>
           </div>
-          <div class="app-modal__footer"/>
+          <div class="flex"/>
         </div>
       </div>
     </teleport>
   </transition>
 </template>
-
-<style>
-.app-modal {
-  @apply fixed z-50 top-0 left-0 w-full h-full bg-black/50 p-5 flex items-center justify-center
-}
-.app-modal__overlay {
-  @apply absolute left-0 top-0 right-0 bottom-0
-}
-.app-modal__wrap {
-  @apply absolute flex flex-col rounded bg-white dark:bg-gray-700 shadow-lg w-4/5 h-4/5 min-w-60 min-h-60 max-w-[98%] max-h-[98%] resize overflow-hidden transition-opacity
-}
-.app-modal__header {
-  @apply flex bg-white/5 cursor-grab active:cursor-grabbing
-}
-.app-modal__main {
-  @apply grow flex overflow-auto
-}
-.app-modal__footer {
-  @apply flex
-}
-</style>

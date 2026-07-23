@@ -27,21 +27,29 @@ const model = computed({
   }
 })
 
-const labelClass = computed(() => {
-  const c = []
+function cx (a) {
+  return {
+    label () {
+      const c = []
 
-  if ($props.disabled) {
-    c.push('cursor-no-drop')
-  } else {
-    c.push('cursor-pointer')
-  }
+      if ($props.labelClass) {
+        c.push($props.labelClass)
+      }
 
-  if ($props.asButton) {
-    c.push('label-as-button')
-  }
+      if ($props.disabled) {
+        c.push('cursor-no-drop')
+      } else {
+        c.push('cursor-pointer')
+      }
 
-  return c
-})
+      if ($props.asButton) {
+        c.push('label-as-button')
+      }
+
+      return c
+    }
+  }[a]()
+}
 
 defineExpose({
   model
@@ -58,7 +66,7 @@ defineExpose({
       </div>
       <div v-for="(i, k) in $props.data">
         <label :key="k" class="inline-flex items-center"
-               :class="[$props.labelClass, labelClass]">
+               :class="cx('label')">
           <input v-model="model"
                  :id="$props.id+`_`+i.key"
                  :class="$props.inputClass"
@@ -73,7 +81,7 @@ defineExpose({
     </template>
     <template v-else>
       <label class="inline-flex items-center"
-             :class="[$props.labelClass, labelClass]">
+             :class="cx('label')">
         <input v-model="model"
                :id="$props.id"
                :value="value"
@@ -96,7 +104,7 @@ defineExpose({
   <template v-else>
     <template v-if="$props.data">
       <label v-for="(i, k) in $props.data" :key="k" class="inline-flex items-center"
-             :class="[$props.labelClass, labelClass]">
+             :class="cx('label')">
         <input v-model="model"
                :id="$props.id+`_`+i.key"
                :class="$props.inputClass"

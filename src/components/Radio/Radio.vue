@@ -18,21 +18,29 @@ const $props = defineProps({
 
 const $emit = defineEmits(['action', 'update:modelValue'])
 
-const labelClass = computed(() => {
-  const c = []
+function cx (a) {
+  return {
+    label () {
+      const c = []
 
-  if ($props.disabled) {
-    c.push('cursor-no-drop')
-  } else {
-    c.push('cursor-pointer')
-  }
+      if ($props.labelClass) {
+        c.push($props.labelClass)
+      }
 
-  if ($props.asButton) {
-    c.push('label-as-button')
-  }
+      if ($props.disabled) {
+        c.push('cursor-no-drop')
+      } else {
+        c.push('cursor-pointer')
+      }
 
-  return c
-})
+      if ($props.asButton) {
+        c.push('label-as-button')
+      }
+
+      return c
+    }
+  }[a]()
+}
 
 const model = computed({
   get () {
@@ -52,7 +60,7 @@ defineExpose({
   <div v-if="$props.label" class="w-full" :class="$props.class">
     <template v-if="!$props.data">
       <label class="inline-flex items-center "
-             :class="[$props.labelClass, labelClass]">
+             :class="cx('label')">
         <input v-model="model"
                :id="$props.id"
                :value="$props.value"
@@ -78,7 +86,7 @@ defineExpose({
       </div>
       <div v-for="(i, k) in $props.data">
         <label :key="k" class="inline-flex items-center"
-               :class="[$props.labelClass, labelClass]">
+               :class="cx('label')">
           <input v-model="model"
                  :id="$props.id+`_`+i.key"
                  :class="$props.inputClass"
@@ -95,7 +103,7 @@ defineExpose({
   <template v-else>
     <template v-if="!$props.data">
       <label class="inline-flex items-center"
-             :class="[$props.labelClass, labelClass]">
+             :class="cx('label')">
         <input v-model="model"
                :id="$props.id"
                :class="$props.inputClass"
@@ -112,7 +120,7 @@ defineExpose({
     </template>
     <div v-for="(i, k) in $props.data" v-else :class="$props.class">
       <label :key="k" class="inline-flex items-center"
-             :class="[$props.labelClass, labelClass]">
+             :class="cx('label')">
         <input v-model="model"
                :id="$props.id+`_`+i.key"
                :class="$props.inputClass"
