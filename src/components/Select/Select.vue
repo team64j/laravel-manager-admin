@@ -1,5 +1,5 @@
 <script setup>
-import { computed, getCurrentInstance, nextTick, ref, shallowRef } from 'vue'
+import { computed, getCurrentInstance, nextTick, shallowRef } from 'vue'
 import { props } from '@/composables'
 import router from '@/router'
 import Radio from '@/components/Radio/Radio.vue'
@@ -21,9 +21,11 @@ const $props = defineProps({
   url: String
 })
 
-const refOptions = ref()
-
+const showOptions = shallowRef(false)
+const refOptions = shallowRef()
 const loading = shallowRef(false)
+const newValue = shallowRef(null)
+const oldValue = shallowRef(null)
 
 const options = computed(() => $props.data || [])
 
@@ -36,9 +38,6 @@ const model = computed({
     $emit('update:modelValue', value, currentInstance)
   }
 })
-
-let newValue = ref(null)
-let oldValue = ref(null)
 
 const inputValue = computed(() => {
   const values = []
@@ -97,7 +96,7 @@ function get () {
 }
 
 function onMousedown (event) {
-  if (event.currentTarget.classList.contains('app-select__focus')) {
+  if (showOptions.value) {
     event.currentTarget.blur()
     event.stopPropagation()
     event.preventDefault()
@@ -105,15 +104,15 @@ function onMousedown (event) {
   }
 }
 
-function onFocus (event) {
-  if (!event.currentTarget.classList.contains('app-select__focus')) {
-    event.currentTarget.classList.add('app-select__focus')
+function onFocus () {
+  if (!showOptions.value) {
+    showOptions.value = true
     get()
   }
 }
 
-function onBlur (event) {
-  event.currentTarget.classList.remove('app-select__focus')
+function onBlur () {
+  setTimeout(() => showOptions.value = false, 0)
 }
 
 function onClickClear () {
@@ -188,9 +187,9 @@ if ($props.load && $props.url) {
         <i class="inline-block rounded-full border-2 border-slate-200 border-r-slate-500 dark:border-white/20 dark:border-r-white h-5 w-5 animate-spin"/>
       </span>
 
-      <div v-if="options?.length"
+      <div v-if="showOptions"
            ref="refOptions"
-           class="hidden absolute z-20 left-0 top-full mt-1 p-2 w-full rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default"
+           class="absolute z-20 left-0 top-full mt-1 p-2 w-full rounded bg-white dark:bg-gray-800 shadow-lg max-h-48 overflow-auto cursor-default"
            @mousedown.prevent="">
 
         <template v-for="o in options">
@@ -221,9 +220,3 @@ if ($props.load && $props.url) {
     <div v-if="$props.description" v-html="$props.description" class="opacity-75 text-sm"/>
   </div>
 </template>
-
-<style scoped>
-.app-select__focus ~ div {
-  @apply block
-}
-</style>

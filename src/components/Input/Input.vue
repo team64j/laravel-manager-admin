@@ -103,7 +103,7 @@ defineExpose({
              :id="$props.id"
              :type="$props.type"
              :placeholder="$props.placeholder"
-             :class="[$props.inputClass, $props.error ? '!border-rose-500 focus:ring-rose-500' : '', $data.loading ? '!text-transparent' : '']"
+             :class="[$props.inputClass, $props.error ? '!border-rose-500 !ring-rose-500' : '', $data.loading ? '!text-transparent' : '']"
              :readonly="$props.readonly"
              :required="$props.required"
              :disabled="$props.disabled"
