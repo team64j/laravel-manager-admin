@@ -96,6 +96,8 @@ function addTab (data) {
       }
     })
   }
+
+  setTitle(data?.meta)
 }
 
 function setTab (data) {

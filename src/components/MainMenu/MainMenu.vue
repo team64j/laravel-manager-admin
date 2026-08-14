@@ -222,19 +222,19 @@ defineExpose({
   @apply bg-gray-600
 }
 .app-main-menu li ul {
-  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-12 lg:top-full left-12 lg:left-0 w-[calc(100vw_-_3.5rem)] lg:w-80 h-[calc(100vh_-_3.5rem)] lg:h-auto lg:max-h-[calc(100vh_-_3rem)] m-1 lg:m-0 lg:mt-1.5 py-1 rounded bg-gray-700 shadow-2xl transition-all
+  @apply fixed lg:absolute flex flex-col opacity-0 invisible top-12 lg:top-full left-12 lg:left-0 right-0 lg:right-auto bottom-0 lg:bottom-auto w-auto lg:w-80 h-auto lg:max-h-[calc(100vh_-_3rem)] mr-1 mb-1 lg:m-0 lg:mt-1.5 py-1 rounded bg-gray-700 shadow-2xl transition-all
 }
 .app-main-menu li[data-level="2"] ul {
   @apply z-10 left-12 lg:left-full lg:top-0 m-0 overflow-hidden overflow-y-auto h-[calc(100vh_-_3.5rem)] lg:h-auto
 }
 .app-position-horizontal .app-position-end .app-main-menu li[data-level="1"] ul {
-  @apply left-auto right-0
+  @apply lg:left-auto right-0
 }
 .app-position-horizontal .app-position-end .app-main-menu li[data-level="2"] ul {
   @apply left-auto top-0 right-full
 }
 .app-position-vertical .app-main-menu li ul {
-  @apply lg:left-full top-auto right-auto bottom-0 lg:m-0 lg:ml-1.5
+  @apply lg:left-full lg:top-auto lg:right-auto lg:bottom-0 lg:m-0 lg:ml-1.5
 }
 .app-position-vertical .app-main-menu li > div {
   @apply px-3
