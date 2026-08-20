@@ -7,7 +7,8 @@ defineOptions({
   __isStatic: true
 })
 
-const props = defineProps(['data', 'meta', 'layout', 'modelValue', 'errors', 'loaderDelay', 'class', 'url', 'currentRoute'])
+const props = defineProps(
+    ['data', 'meta', 'layout', 'modelValue', 'errors', 'loaderDelay', 'class', 'url', 'currentRoute'])
 
 const emit = defineEmits(['action', 'update:modelValue', 'update:props'])
 
@@ -177,11 +178,13 @@ function updateModelValue (value, instance) {
 
   const updates = [{ key, value }]
 
-  const relations = instance.props?.relation ? (Array.isArray(instance.props.relation)
-      ? instance.props.relation
-      : [instance.props?.relation]) : null
+  let relations = instance.props?.relation ?? null
 
-  if (relations && relations.length) {
+  if (relations) {
+    if (!Array.isArray(relations)) {
+      relations = [relations]
+    }
+
     for (const relation of relations) {
       if (relation['key']) {
         const empty = !(Array.isArray(value) ? value.length :
