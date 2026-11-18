@@ -12,37 +12,13 @@ import {
   warn,
   watch
 } from 'vue'
-import { invokeArrayFns, isArray, isFunction, isString } from '@vue/shared'
+import { invokeArrayFns, isArray, isString } from '@vue/shared'
 
 let devtools
-let buffer = []
-let devtoolsNotInstalled = false
 
 const queuePostRenderEffect = queueEffectWithSuspense
-const devtoolsComponentAdded = /*#__PURE__*/ createDevtoolsComponentHook('component:added' /* DevtoolsHooks.COMPONENT_ADDED */)
-const isAsyncWrapper = (i) => !!i.type.__asyncLoader
 const isSuspense = (type) => type.__isSuspense
 const isProdDevTools = typeof global !== 'undefined' && global.__VUE_PROD_DEVTOOLS__ || null
-
-function createDevtoolsComponentHook (hook) {
-  return (component) => {
-    emit(hook, component.appContext.app, component.uid, component.parent ? component.parent.uid : undefined, component)
-  }
-}
-
-function emit (event, ...args) {
-  if (devtools) {
-    devtools.emit(event, ...args)
-  } else if (!devtoolsNotInstalled) {
-    buffer.push({ event, args })
-  }
-}
-
-function getComponentName (Component, includeInferred = true) {
-  return isFunction(Component)
-      ? Component.displayName || Component.name
-      : Component.name || (includeInferred && Component.__name)
-}
 
 function queueEffectWithSuspense (fn, suspense) {
   if (suspense && suspense.pendingBranch) {
@@ -90,6 +66,13 @@ function invokeVNodeHook (hook, instance, vnode, prevVNode = null) {
   ])
 }
 
+function invalidateMount (hooks) {
+  if (hooks) {
+    for (let i = 0; i < hooks.length; i++)
+      hooks[i].flags |= 8
+  }
+}
+
 export default {
   name: 'KeepAliveComponent',
   // Marker for special handling inside the renderer. We are not using a ===
@@ -126,43 +109,54 @@ export default {
     const parentSuspense = instance.suspense
     const { renderer: { p: patch, m: move, um: _unmount, o: { createElement } } } = sharedContext
     const storageContainer = createElement('div')
-    sharedContext.activate = (vnode, container, anchor, isSVG, optimized) => {
-      const instance = vnode.component
-      move(vnode, container, anchor, 0 /* MoveType.ENTER */, parentSuspense)
-      // in case props have changed
-      patch(instance.vnode, vnode, container, anchor, instance, parentSuspense, isSVG, vnode.slotScopeIds, optimized)
+    sharedContext.activate = (vnode, container, anchor, namespace, optimized) => {
+      const instance2 = vnode.component
+      move(vnode, container, anchor, 0, parentSuspense)
+      patch(
+          instance2.vnode,
+          vnode,
+          container,
+          anchor,
+          instance2,
+          parentSuspense,
+          namespace,
+          vnode.slotScopeIds,
+          optimized
+      )
       queuePostRenderEffect(() => {
-        instance.isDeactivated = false
-        if (instance.a) {
-          invokeArrayFns(instance.a)
+        instance2.isDeactivated = false
+        if (instance2.a) {
+          invokeArrayFns(instance2.a)
         }
         const vnodeHook = vnode.props && vnode.props.onVnodeMounted
         if (vnodeHook) {
-          invokeVNodeHook(vnodeHook, instance.parent, vnode)
+          invokeVNodeHook(vnodeHook, instance2.parent, vnode)
         }
       }, parentSuspense)
-      if ((process.env.NODE_ENV !== 'production') || isProdDevTools) {
-        // Update components tree
-        devtoolsComponentAdded(instance)
-      }
     }
     sharedContext.deactivate = (vnode) => {
-      const instance = vnode.component
-      move(vnode, storageContainer, null, 1 /* MoveType.LEAVE */, parentSuspense)
+      const cached = cache.get(vnode.key)
+      if (!cached || cached.component !== vnode.component) {
+        return false
+      }
+      const instance2 = vnode.component
+      invalidateMount(instance2.m)
+      invalidateMount(instance2.a)
+      move(vnode, storageContainer, null, 1, parentSuspense)
       queuePostRenderEffect(() => {
-        if (instance.da) {
-          invokeArrayFns(instance.da)
+        if (instance2.da) {
+          invokeArrayFns(instance2.da)
         }
         const vnodeHook = vnode.props && vnode.props.onVnodeUnmounted
         if (vnodeHook) {
-          invokeVNodeHook(vnodeHook, instance.parent, vnode)
+          invokeVNodeHook(vnodeHook, instance2.parent, vnode)
         }
-        instance.isDeactivated = true
+        instance2.isDeactivated = true
       }, parentSuspense)
-      if ((process.env.NODE_ENV !== 'production') || isProdDevTools) {
-        // Update components tree
-        devtoolsComponentAdded(instance)
+      {
+        instance2.__keepAliveStorageContainer = storageContainer
       }
+      return true
     }
 
     function unmount (vnode) {
@@ -172,12 +166,9 @@ export default {
     }
 
     function pruneCache (filter) {
-      cache.forEach((vnode, key) => {
-        const name = vnode.key || getComponentName(vnode.type)
-        if (name && (!filter || !filter(name))) {
-          pruneCacheEntry(key)
-        }
-      })
+      for (const key of cache.keys()) {
+        if (!filter(key)) pruneCacheEntry(key)
+      }
     }
 
     function pruneCacheEntry (key) {
@@ -214,7 +205,7 @@ export default {
       cache.forEach(cached => {
         const { subTree, suspense } = instance
         const vnode = getInnerChild(subTree)
-        if (cached.type === vnode.type) {
+        if (cached.type === vnode.type && cached.key === vnode.key) {
           // current instance will be unmounted as part of keep-alive's unmount
           resetShapeFlag(vnode)
           // but invoke its deactivated hook here
@@ -248,16 +239,19 @@ export default {
       const comp = vnode.type
       // for async components, name check should be based in its loaded
       // inner component if available
-      const name = vnode.key || getComponentName(isAsyncWrapper(vnode)
-          ? vnode.type.__asyncResolved || {}
-          : comp)
+      const key = vnode.key
       const { include, exclude, max } = props
-      if ((include && (!name || !matches(include, name))) ||
-          (exclude && name && matches(exclude, name))) {
+
+      if (
+          key == null ||
+          (include && !matches(include, key)) ||
+          (exclude && matches(exclude, key))
+      ) {
+        resetShapeFlag(vnode)
         instance.__current = vnode
         return rawVNode
       }
-      const key = vnode.key == null ? comp : vnode.key
+
       const cachedVNode = cache.get(key)
       // clone vnode if it's reused because we are going to mutate it
       if (vnode.el) {

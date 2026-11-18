@@ -5,7 +5,6 @@ import { mergeDeep } from '@/utils'
 import router from '@/router'
 import store from '@/services/store'
 import session from '@/services/session'
-import KeepAliveComponent from '@/components/GlobalTabs/KeepAlive.vue'
 import Frame from '@/components/Frame/Frame.vue'
 import Button from '@/components/Button/Button.vue'
 
@@ -243,15 +242,31 @@ defineExpose({
 
     <div class="grow flex overflow-hidden">
 
-      <router-view v-slot="slot">
-        <keep-alive-component :include="$data.keys" ref="keepAlive">
-          <component v-if="!slot.route?.meta?.['isIframe']"
-                     :is="slot.Component"
-                     :key="router.key(slot.route)"
-                     :currentRoute="currentRoute"
-                     @action="(...args) => action.call(currentInstance, ...args)"/>
-        </keep-alive-component>
+      <router-view v-slot="{ Component, route }">
+        <KeepAlive
+            v-for="tabKey in $data.keys"
+            :key="tabKey"
+            ref="keepAlive"
+        >
+          <component
+              v-if="tabKey === router.key(route) && !route.meta.isIframe"
+              :is="Component"
+              :key="tabKey"
+              :current-route="route"
+              @action="(...args) => action.call(currentInstance, ...args)"
+          />
+        </KeepAlive>
       </router-view>
+
+      <!--      <router-view v-slot="slot">
+              <keep-alive-component :include="$data.keys" ref="keepAlive">
+                <component v-if="!slot.route?.meta?.['isIframe']"
+                           :is="slot.Component"
+                           :key="router.key(slot.route)"
+                           :currentRoute="currentRoute"
+                           @action="(...args) => action.call(currentInstance, ...args)"/>
+              </keep-alive-component>
+            </router-view>-->
 
       <div class="grow overflow-hidden">
         <template v-for="{ path } in frames" :key="path">
