@@ -101,7 +101,7 @@ html, body, #app {
         @apply inline-flex items-center text-sm px-2 min-h-[2rem] rounded whitespace-nowrap select-none cursor-pointer transition
     }
     .btn-green {
-        @apply bg-green-500 !border-transparent text-white hover:!bg-green-600 active:!bg-green-600 focus:!bg-green-600 focus:!border-green-500 focus:!ring-green-500 dark:!bg-green-700 dark:hover:!bg-green-800 dark:active:!bg-green-800 dark:focus:!bg-green-800 dark:focus:!border-green-600 dark:focus:!ring-green-600
+        @apply bg-green-600 !border-transparent text-white hover:!bg-green-700 active:!bg-green-700 focus:!bg-green-700 focus:!border-green-600 focus:!ring-green-600 dark:!bg-green-700 dark:hover:!bg-green-800 dark:active:!bg-green-800 dark:focus:!bg-green-800 dark:focus:!border-green-600 dark:focus:!ring-green-600
     }
     .btn-red {
         @apply bg-rose-600 !border-transparent text-white hover:!bg-rose-700 active:!bg-rose-700 focus:!bg-rose-700 focus:!border-rose-500 focus:!ring-rose-500 dark:!bg-rose-700 dark:hover:!bg-rose-800 dark:active:!bg-rose-800 dark:focus:!bg-rose-800 dark:focus:!border-rose-600 dark:focus:!ring-rose-600
