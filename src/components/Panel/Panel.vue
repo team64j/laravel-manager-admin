@@ -414,13 +414,13 @@ onMounted(() => {
         <Button class="btn-sm btn-gray"
                 :disabled="!$data.meta['pagination']['prev']"
                 :class="{ '!opacity-50': !$data.meta['pagination']['prev'] }"
-                @click="pagination($data.meta['pagination']['prev'])">
+                @mousedown="pagination($data.meta['pagination']['prev'])">
           <i class="fa fa-angle-left fa-fw"/>
         </Button>
         <Button class="btn-sm btn-gray ml-1"
                 :disabled="!$data.meta['pagination']['next']"
                 :class="{ '!opacity-50': !$data.meta['pagination']['next'] }"
-                @click="pagination($data.meta['pagination']['next'])">
+                @mousedown="pagination($data.meta['pagination']['next'])">
           <i class="fa fa-angle-right fa-fw"/>
         </Button>
       </div>

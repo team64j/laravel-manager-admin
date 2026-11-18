@@ -4,6 +4,7 @@ import { uniqId } from '@/utils'
 import { action } from '@/composables'
 import session from '@/services/session'
 import TabsNavigation from './TabsNavigation.vue'
+import router from '@/router'
 
 defineOptions({
   __isStatic: true,
@@ -61,7 +62,7 @@ const slots = defineSlots()
 
     <template v-for="(i, k) in data">
       <div v-if="history || (i['needUpdate'] && k === index) || !i['needUpdate']"
-           v-show="k === index"
+           v-show="history ? i.route === router.currentRoute.value.path : k === index"
            :id="id + `Tab-` + i.id"
            :class="i.class"
            class="app-tabs__page relative h-full p-5 flex flex-wrap items-start content-start rounded overflow-auto grow bg-white dark:bg-gray-700">

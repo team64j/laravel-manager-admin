@@ -116,9 +116,9 @@ function select (tab, key) {
           'app-tabs-navigation__small': props.smallTabs
        }">
     <Button v-for="(i, k) in data"
-            :class="{ 'app-tabs-navigation__active': k === index }"
+            :class="{ 'app-tabs-navigation__active': history ? i.route === router.currentRoute.value.path : k === index }"
             :data-tooltip="i.title"
-            @click="select(i, k)">
+            @mousedown="select(i, k)">
       <i v-if="i.icon" :class="['app-tabs__tab-icon', i.icon, i.name ? 'mr-3' : '']"/>
       <span v-if="i.name">{{ i.name }}</span>
     </Button>
