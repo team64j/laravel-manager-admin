@@ -1,16 +1,13 @@
 <script setup>
-import { computed, getCurrentInstance, onMounted } from 'vue'
+import { onActivated, ref, watchPostEffect } from 'vue'
 import { uniqId } from '@/utils'
-import router from '@/router'
 import Button from '@/components/Button/Button.vue'
-import session from '@/services/session'
+import { useTabs } from './use-tabs'
 
 defineOptions({
   __isStatic: true,
   name: 'TabsNavigation'
 })
-
-const currentInstance = getCurrentInstance()
 
 const props = defineProps({
   id: {
@@ -38,87 +35,52 @@ const props = defineProps({
 
 const emit = defineEmits(['action', 'update:props'])
 
-const keyStorage = `tabs.${props.id.toLowerCase()}`
+const { tabs, activeId, selectTab } = useTabs(props, emit)
+const navigationElement = ref()
 
-const index = computed(() => session.get(keyStorage, 0))
-
-onMounted(init)
+watchPostEffect(() => {
+  activeId.value
+  tabs.value.length
+  init()
+})
+onActivated(init)
 
 function init () {
-  let right = 0,
-      width = 0
+  const el = navigationElement.value
+  const button = el?.querySelector('.app-tabs-navigation__active')
+  if (!button) return
 
-  const el = currentInstance.vnode.el
+  const viewport = el.getBoundingClientRect()
+  const target = button.getBoundingClientRect()
+  const left = viewport.left + el.clientLeft
+  const top = viewport.top + el.clientTop
 
-  if (el.nodeType !== 1) {
-    return
-  }
+  if (target.left < left) el.scrollLeft += target.left - left
+  else if (target.right > left + el.clientWidth) el.scrollLeft += target.right - left - el.clientWidth
 
-  el.styles = getComputedStyle(el)
-
-  el.querySelectorAll('button').forEach((t, i) => {
-    t.styles = getComputedStyle(t)
-
-    if (i <= index.value) {
-      width += t.offsetWidth + parseFloat(t.styles.marginLeft) + parseFloat(t.styles.marginRight)
-
-      if (i < index.value) {
-        right += t.offsetWidth + parseFloat(t.styles.marginLeft)
-      }
-    }
-  })
-
-  if (el.scrollLeft > right) {
-    el.scrollLeft = right
-  }
-
-  if (el.offsetWidth < width) {
-    el.scrollLeft = width - el.offsetWidth +
-        (parseFloat(el.styles.paddingLeft) +
-            parseFloat(el.styles.paddingRight))
-  }
+  if (target.top < top) el.scrollTop += target.top - top
+  else if (target.bottom > top + el.clientHeight) el.scrollTop += target.bottom - top - el.clientHeight
 }
 
-function select (tab, key) {
+function select (tab) {
   if (props.hiddenTabs) {
-    emit('action', 'collapse', key === index.value)
+    emit('action', 'collapse', tab.id === activeId.value)
   }
 
-  session.set(keyStorage, key)
-
-  if (props.history) {
-    if (typeof props.history === 'string') {
-      emit('action', 'pushRouter', {
-        params: {
-          [props.history]: tab.id
-        },
-        meta: {
-          group: true
-        }
-      })
-    } else {
-      emit('action', 'pushRouter', {
-        ...router.parse(tab.route),
-        meta: {
-          group: true
-        }
-      })
-    }
-  } else {
-    init()
-  }
+  selectTab(tab.id)
 }
 </script>
 
 <template>
-  <div v-if="data.length > 1" class="app-tabs-navigation" :class="{
+  <div v-if="tabs.length > 1" ref="navigationElement" class="app-tabs-navigation" :class="{
           'app-tabs-navigation__vertical': props.vertical,
           'app-tabs-navigation__small': props.smallTabs
        }">
-    <Button v-for="(i, k) in data"
-            :class="{ 'app-tabs-navigation__active': history ? i.route === router.currentRoute.value.path : k === index }"
+    <Button v-for="i in tabs"
+            :key="i.id"
+            :class="{ 'app-tabs-navigation__active': i.id === activeId }"
             :data-tooltip="i.title"
-            @mousedown="select(i, k)">
+            @mousedown="select(i)">
       <i v-if="i.icon" :class="['app-tabs__tab-icon', i.icon, i.name ? 'mr-3' : '']"/>
       <span v-if="i.name">{{ i.name }}</span>
     </Button>

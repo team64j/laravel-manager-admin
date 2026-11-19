@@ -1,10 +1,9 @@
 <script setup>
-import { computed, getCurrentInstance } from 'vue'
+import { getCurrentInstance } from 'vue'
 import { uniqId } from '@/utils'
 import { action } from '@/composables'
-import session from '@/services/session'
 import TabsNavigation from './TabsNavigation.vue'
-import router from '@/router'
+import { useTabs } from './use-tabs'
 
 defineOptions({
   __isStatic: true,
@@ -43,26 +42,30 @@ const props = defineProps({
 
 const emit = defineEmits(['action', 'update:props'])
 
-const keyStorage = `tabs.${props.id.toLowerCase()}`
-
-const index = computed(() => session.get(keyStorage, 0))
+const { tabs, activeId, selectTab } = useTabs(props, emit)
 
 const slots = defineSlots()
+
+defineExpose({
+  selectTab
+})
 </script>
 
 <template>
   <div :id="id + 'Tabs'" :class="{
         'app-tabs__with-navigation': navigation,
-        'app-tabs__without-rows': data.length === 1,
+        'app-tabs__without-rows': tabs.length === 1,
         'app-tabs__small': smallTabs,
         'app-tabs__vertical': vertical
       }"
        class="app-tabs flex flex-col grow content-start overflow-hidden">
-    <TabsNavigation v-if="navigation" v-bind="props" @action="(...args) => action.call(currentInstance, ...args)"/>
+    <TabsNavigation v-if="navigation"
+                    v-bind="props"
+                    @action="(...args) => action.call(currentInstance, ...args)"/>
 
-    <template v-for="(i, k) in data">
-      <div v-if="history || (i['needUpdate'] && k === index) || !i['needUpdate']"
-           v-show="history ? i.route === router.currentRoute.value.path : k === index"
+    <template v-for="i in tabs" :key="i.id">
+      <div v-if="history || i.id === activeId || !i['needUpdate']"
+           v-show="i.id === activeId"
            :id="id + `Tab-` + i.id"
            :class="i.class"
            class="app-tabs__page relative h-full p-5 flex flex-wrap items-start content-start rounded overflow-auto grow bg-white dark:bg-gray-700">
