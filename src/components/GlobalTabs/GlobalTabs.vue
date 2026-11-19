@@ -33,6 +33,12 @@ const frames = computed(() => $data.tabs.filter(i => i.meta['isIframe']))
 
 const keepAlive = shallowRef()
 
+const refreshVersions = reactive(new Map())
+
+function renderKey (tabKey) {
+  return JSON.stringify([tabKey, refreshVersions.get(tabKey) ?? 0])
+}
+
 function init () {
   router.getRoutes().filter(i => i?.meta?.fixed).map(i => addTab(router.parse(i)))
 }
@@ -134,6 +140,8 @@ function closeTab (callback) {
     callback()
   }
 
+  refreshVersions.delete(router.key(route))
+
   return index
 }
 
@@ -161,12 +169,13 @@ function clickTab (tab) {
   router.to(tab)
 }
 
-function dblClickTab (data) {
-  router.key(router.currentRoute.value, data) &&
-  router.replace(router.parse({ path: '/redirect' + data.path, query: data.query })).then(() => {
-    const index = $data.keys.indexOf(router.key(data))
-    index > -1 && $data.keys.splice(index, 1)
-  })
+function dblClickTab (tab) {
+  const key = router.key(tab)
+
+  if (key !== router.key(router.currentRoute.value)) return
+  if (tab.changed && !confirm(store.get('lexicon.messages.warning.notSaved'))) return
+
+  refreshVersions.set(key, (refreshVersions.get(key) ?? 0) + 1)
 }
 
 function find (data) {
@@ -245,7 +254,7 @@ defineExpose({
       <router-view v-slot="{ Component, route }">
         <KeepAlive
             v-for="tabKey in $data.keys"
-            :key="tabKey"
+            :key="renderKey(tabKey)"
             ref="keepAlive"
         >
           <component
@@ -258,20 +267,15 @@ defineExpose({
         </KeepAlive>
       </router-view>
 
-      <!--      <router-view v-slot="slot">
-              <keep-alive-component :include="$data.keys" ref="keepAlive">
-                <component v-if="!slot.route?.meta?.['isIframe']"
-                           :is="slot.Component"
-                           :key="router.key(slot.route)"
-                           :currentRoute="currentRoute"
-                           @action="(...args) => action.call(currentInstance, ...args)"/>
-              </keep-alive-component>
-            </router-view>-->
-
       <div class="grow overflow-hidden">
-        <template v-for="{ path } in frames" :key="path">
-          <Frame v-if="$data.keys.includes(path)" v-show="currentRoute['path'] === path"
-                 @action="(...args) => action.call(currentInstance, ...args)"/>
+        <template v-for="tab in frames" :key="renderKey(router.key(tab))">
+          <Frame
+              v-if="$data.keys.includes(router.key(tab))"
+              v-show="router.key(currentRoute) === router.key(tab)"
+              :key="router.key(tab)"
+              :url="tab.path"
+              @action="(...args) => action.call(currentInstance, ...args)"
+          />
         </template>
       </div>
 
