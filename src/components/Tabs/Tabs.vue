@@ -47,8 +47,14 @@ const { tabs, activeId, selectTab } = useTabs(props, emit)
 const slots = defineSlots()
 
 defineExpose({
-  selectTab
+  selectTab,
+  setIndex
 })
+
+function setIndex (value) {
+  const tab = tabs.value[value]
+  if (tab) selectTab(tab.id)
+}
 </script>
 
 <template>
@@ -61,7 +67,9 @@ defineExpose({
        class="app-tabs flex flex-col grow content-start overflow-hidden">
     <TabsNavigation v-if="navigation"
                     v-bind="props"
-                    @action="(...args) => action.call(currentInstance, ...args)"/>
+                    :active-id="activeId"
+                    @action="(...args) => action.call(currentInstance, ...args)"
+                    @select="selectTab"/>
 
     <template v-for="i in tabs" :key="i.id">
       <div v-if="history || i.id === activeId || !i['needUpdate']"

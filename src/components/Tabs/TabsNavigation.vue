@@ -1,5 +1,5 @@
 <script setup>
-import { onActivated, ref, watchPostEffect } from 'vue'
+import { computed, onActivated, ref, watchPostEffect } from 'vue'
 import { uniqId } from '@/utils'
 import Button from '@/components/Button/Button.vue'
 import { useTabs } from './use-tabs'
@@ -30,12 +30,15 @@ const props = defineProps({
   },
   smallTabs: Boolean,
   hiddenTabs: Boolean,
-  currentRoute: Object
+  currentRoute: Object,
+  activeId: [String, Number]
 })
 
-const emit = defineEmits(['action', 'update:props'])
+const emit = defineEmits(['action', 'select', 'update:props'])
 
-const { tabs, activeId, selectTab } = useTabs(props, emit)
+const tabs = computed(() => props.data ?? [])
+const tabsState = useTabs(props, emit)
+const activeId = computed(() => props.activeId !== undefined ? props.activeId : tabsState.activeId.value)
 const navigationElement = ref()
 
 watchPostEffect(() => {
@@ -67,7 +70,11 @@ function select (tab) {
     emit('action', 'collapse', tab.id === activeId.value)
   }
 
-  selectTab(tab.id)
+  if (props.activeId !== undefined) {
+    emit('select', tab.id)
+  } else {
+    tabsState.selectTab(tab.id)
+  }
 }
 </script>
 
